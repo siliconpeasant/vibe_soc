@@ -1,0 +1,225 @@
+{
+  "top_module": "vibe_soc_top",
+  "output_file": "/Users/ninghechuan/vibe_soc/chip/top/de/rtl/vibe_soc_top.v",
+  "modules": [
+    {
+      "file": "/Users/ninghechuan/vibe_soc/chip/core/de/rtl/core.v",
+      "module_name": "core"
+    },
+    {
+      "file": "/Users/ninghechuan/vibe_soc/chip/bus/de/rtl/bus.v",
+      "module_name": "bus"
+    },
+    {
+      "file": "/Users/ninghechuan/vibe_soc/ip/third_party/uart/de/rtl/uart.v",
+      "module_name": "uart"
+    },
+    {
+      "file": "/Users/ninghechuan/vibe_soc/ip/digital/timer/de/rtl/timer.v",
+      "module_name": "timer"
+    }
+  ],
+  "mappings": {},
+  "shared_signals": {},
+  "port_snapshot": {
+    "core": [
+      {
+        "direction": "input",
+        "width": "",
+        "name": "clk"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "rst_n"
+      },
+      {
+        "direction": "input",
+        "width": "[7:0]",
+        "name": "data_in"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "valid_in"
+      },
+      {
+        "direction": "output",
+        "width": "[7:0]",
+        "name": "data_out"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "valid_out"
+      }
+    ],
+    "bus": [
+      {
+        "direction": "input",
+        "width": "",
+        "name": "clk"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "rst_n"
+      },
+      {
+        "direction": "input",
+        "width": "[7:0]",
+        "name": "data_in"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "valid_in"
+      },
+      {
+        "direction": "output",
+        "width": "[7:0]",
+        "name": "data_out"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "valid_out"
+      }
+    ],
+    "uart": [
+      {
+        "direction": "input",
+        "width": "",
+        "name": "clk"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "rst_n"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "psel"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "penable"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "pwrite"
+      },
+      {
+        "direction": "input",
+        "width": "[7:0]",
+        "name": "paddr"
+      },
+      {
+        "direction": "input",
+        "width": "[31:0]",
+        "name": "pwdata"
+      },
+      {
+        "direction": "output",
+        "width": "[31:0]",
+        "name": "prdata"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "pready"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "uart_rx"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "uart_tx"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "tx_ready"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "rx_valid"
+      },
+      {
+        "direction": "output",
+        "width": "[7:0]",
+        "name": "rx_data"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "irq"
+      }
+    ],
+    "timer": [
+      {
+        "direction": "input",
+        "width": "",
+        "name": "clk"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "rst_n"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "psel"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "penable"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "pwrite"
+      },
+      {
+        "direction": "input",
+        "width": "[7:0]",
+        "name": "paddr"
+      },
+      {
+        "direction": "input",
+        "width": "[31:0]",
+        "name": "pwdata"
+      },
+      {
+        "direction": "output",
+        "width": "[31:0]",
+        "name": "prdata"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "pready"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "tick"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "timeout"
+      }
+    ]
+  },
+  "generated_at": "2026-05-02T11:16:26.788950"
+}
