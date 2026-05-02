@@ -38,14 +38,13 @@ source scripts/setup.sh
 ```bash
 cd ip/digital/template_ip
 make comp    # 编译 IP 级 testbench
-make sim     # 运行 IP 级仿真
-make wave    # 查看波形
+make lint    # lint 检查
 ```
 
 ### 3. Chip 级仿真
 ```bash
-cd chip/core && make comp && make sim
-cd chip/top  && make comp && make sim
+cd chip/core && make comp && make lint
+cd chip/top  && make comp && make lint
 ```
 
 ## 工具链支持
