@@ -19,8 +19,88 @@
       "module_name": "timer"
     }
   ],
-  "mappings": {},
-  "shared_signals": {},
+  "mappings": {
+    "core.clk": "clk",
+    "core.rst_n": "rst_n",
+    "core.data_in": "data_in",
+    "core.valid_in": "valid_in",
+    "core.data_out": "core_data_out",
+    "core.valid_out": "core_valid_out",
+    "bus.clk": "clk",
+    "bus.rst_n": "rst_n",
+    "bus.data_in": "core_data_out",
+    "bus.valid_in": "core_valid_out",
+    "bus.data_out": "bus_data_out",
+    "bus.valid_out": "bus_valid_out",
+    "uart.clk": "clk",
+    "uart.rst_n": "rst_n",
+    "uart.psel": "psel",
+    "uart.penable": "penable",
+    "uart.pwrite": "pwrite",
+    "uart.paddr": "paddr",
+    "uart.pwdata": "pwdata",
+    "uart.prdata": "uart_prdata",
+    "uart.pready": "uart_pready",
+    "uart.uart_rx": "uart_uart_rx",
+    "uart.uart_tx": "uart_uart_tx",
+    "uart.tx_ready": "uart_tx_ready",
+    "uart.rx_valid": "uart_rx_valid",
+    "uart.rx_data": "uart_rx_data",
+    "uart.irq": "uart_irq",
+    "timer.clk": "clk",
+    "timer.rst_n": "rst_n",
+    "timer.psel": "psel",
+    "timer.penable": "penable",
+    "timer.pwrite": "pwrite",
+    "timer.paddr": "paddr",
+    "timer.pwdata": "pwdata",
+    "timer.prdata": "timer_prdata",
+    "timer.pready": "timer_pready",
+    "timer.tick": "timer_tick",
+    "timer.timeout": "timer_timeout"
+  },
+  "shared_signals": {
+    "clk": [
+      "core.clk",
+      "bus.clk",
+      "uart.clk",
+      "timer.clk"
+    ],
+    "rst_n": [
+      "core.rst_n",
+      "bus.rst_n",
+      "uart.rst_n",
+      "timer.rst_n"
+    ],
+    "core_data_out": [
+      "core.data_out",
+      "bus.data_in"
+    ],
+    "core_valid_out": [
+      "core.valid_out",
+      "bus.valid_in"
+    ],
+    "psel": [
+      "uart.psel",
+      "timer.psel"
+    ],
+    "penable": [
+      "uart.penable",
+      "timer.penable"
+    ],
+    "pwrite": [
+      "uart.pwrite",
+      "timer.pwrite"
+    ],
+    "paddr": [
+      "uart.paddr",
+      "timer.paddr"
+    ],
+    "pwdata": [
+      "uart.pwdata",
+      "timer.pwdata"
+    ]
+  },
   "port_snapshot": {
     "core": [
       {

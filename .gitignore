@@ -1,0 +1,13 @@
+# Generated artifacts
+**/run/
+**/sim/
+*.log
+*.out
+*.vcd
+*.vpd
+obj_dir/
+work/
+csrc/
+simv*
+ucli.key
+vc_hdrs.h
