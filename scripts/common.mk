@@ -76,11 +76,11 @@ endif
 # --------------- Icarus -------------
 ifeq ($(SIMULATOR),iverilog)
 ifdef FILELIST
-COMP_CMD = iverilog -g2012 -o $(SIM_DIR)/sim.out \
+COMP_CMD = iverilog -g2012 -s $(TOP_MODULE) -o $(SIM_DIR)/sim.out \
            $(FLIST_SRCS) $(TB_FILES) \
            2>&1 | tee $(SIM_DIR)/compile.log
 else
-COMP_CMD = iverilog -g2012 -o $(SIM_DIR)/sim.out \
+COMP_CMD = iverilog -g2012 -s $(TOP_MODULE) -o $(SIM_DIR)/sim.out \
            $(RTL_FILES) $(TB_FILES) \
            2>&1 | tee $(SIM_DIR)/compile.log
 endif
@@ -109,7 +109,7 @@ endif
 # 公共目标
 # =============================================================================
 
-.PHONY: comp sim wave clean
+.PHONY: comp sim run wave clean
 
 comp:
 	@echo "[COMP] Simulator: $(SIMULATOR) | Top: $(TOP_MODULE)"
@@ -119,7 +119,9 @@ comp:
 sim:
 	@echo "[SIM] Running $(TOP_MODULE) ..."
 	@mkdir -p $(SIM_DIR)
-	$(SIM_CMD) | tee $(SIM_DIR)/sim.log
+	@cd $(SIM_DIR) && $(SIM_CMD) | tee $(SIM_DIR)/sim.log
+
+run: sim
 
 wave:
 	@echo "[WAVE] Opening waveform ..."

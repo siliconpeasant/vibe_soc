@@ -2,3 +2,8 @@ run/
 *.vcd
 *.vpd
 *.log
+de/syn/netlist.v
+de/syn/*_netlist.v
+de/syn/rtl.f
+de/syn/rst_synchronizer/*.log
+de/syn/*.dot

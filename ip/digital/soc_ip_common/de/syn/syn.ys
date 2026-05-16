@@ -1,0 +1,6 @@
+# Auto-generated Yosys synthesis script for std_cell_buf
+read_verilog /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/clk_gen/clk_divider.v /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_and.v /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_mux.v /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/rst_gen/rst_synchronizer.v /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_icg.v /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_or.v /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_inv.v /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_buf.v 
+hierarchy -check -top std_cell_buf
+proc; flatten; opt; fsm; opt; memory; opt; techmap; opt
+write_verilog std_cell_buf_netlist.v
+stat

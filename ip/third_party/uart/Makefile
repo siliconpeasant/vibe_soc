@@ -61,7 +61,12 @@ include $(PROJECT_ROOT)/scripts/common.mk
 # Lint 工具配置
 LINT_TOOL    ?= verilator
 
-.PHONY: flist lint
+# 综合配置
+SYN_DIR       = $(MODULE_PATH)/de/syn
+SYN_NETLIST   = $(SYN_DIR)/$(RTL_TOP)_netlist.v
+SYN_REPORT    = $(SYN_DIR)/synth.log
+
+.PHONY: flist lint syn
 
 # 生成 rtl/filelist.f（仅当不存在时自动生成，用户可手动编辑）
 flist:
@@ -102,3 +107,30 @@ else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 endif
 	@echo "[LINT] Report: $(RUN_DIR)/lint.log"
+# Yosys synthesis
+syn: flist
+	@echo "[SYN] Yosys | Top: $(RTL_TOP)"
+	@mkdir -p $(SYN_DIR)
+	@> $(SYN_DIR)/rtl.f
+ifneq (,$(MODULE_FILELISTS))
+	@for fl in $(MODULE_FILELISTS); do \
+		if [ -f $$fl ]; then \
+			sed 's|[$$]SOC|$(PROJECT_ROOT)|g' $$fl >> $(SYN_DIR)/rtl.f; \
+		fi; \
+	done
+else
+	@sed 's|[$$]SOC|$(PROJECT_ROOT)|g' $(RTL_PATH)/filelist.f > $(SYN_DIR)/rtl.f
+endif
+	@if [ ! -s $(SYN_DIR)/rtl.f ]; then \
+		echo "[SYN] ERROR: No RTL files found in $(RTL_PATH)"; \
+		exit 1; \
+	fi
+	@echo "# Auto-generated Yosys synthesis script for $(RTL_TOP)" > $(SYN_DIR)/syn.ys
+	@echo "read_verilog $$(grep -v '^#' $(SYN_DIR)/rtl.f | grep -v '^//' | grep -v '^$$' | tr '\n' ' ')" >> $(SYN_DIR)/syn.ys
+	@echo "hierarchy -check -top $(RTL_TOP)" >> $(SYN_DIR)/syn.ys
+	@echo "proc; flatten; opt; fsm; opt; memory; opt; techmap; opt" >> $(SYN_DIR)/syn.ys
+	@echo "write_verilog $$(notdir $(SYN_NETLIST))" >> $(SYN_DIR)/syn.ys
+	@echo "stat" >> $(SYN_DIR)/syn.ys
+	@cd $(SYN_DIR) && yosys syn.ys 2>&1 | tee $$(notdir $(SYN_REPORT))
+	@echo "[SYN] Netlist: $(SYN_NETLIST)"
+	@echo "[SYN] Report:  $(SYN_REPORT)"

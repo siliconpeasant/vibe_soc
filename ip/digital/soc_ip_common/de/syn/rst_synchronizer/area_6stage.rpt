@@ -1,0 +1,24 @@
+================================================================================
+Area Report: rst_synchronizer (STAGES = 6)
+Tool: yosys 0.9
+generic techmap (no target library)
+================================================================================
+
+Cell Type                Count
+------------------------ -----
+$_DFF_PN0_                  6    (async active-low reset D flip-flop)
+------------------------ -----
+Total Cells                  6
+
+Wires:
+  Number of wires:            4
+  Number of wire bits:        9
+
+Area Estimation (generic):
+  - Each $_DFF_PN0_ ~ 6 GE (NAND2-equivalent, incl. reset mux)
+  - Total estimated area: ~36 GE
+
+Latch Count: 0
+FF Count:    6
+
+================================================================================
