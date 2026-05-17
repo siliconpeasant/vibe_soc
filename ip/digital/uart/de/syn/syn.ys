@@ -1,0 +1,6 @@
+# Auto-generated Yosys synthesis script for uart
+read_verilog /Users/ninghechuan/vibe_soc/ip/digital/uart/de/rtl/uart.v 
+hierarchy -check -top uart
+proc; flatten; opt; fsm; opt; memory; opt; techmap; opt
+write_verilog uart_netlist.v
+stat

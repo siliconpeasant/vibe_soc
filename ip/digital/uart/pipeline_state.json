@@ -1,0 +1,118 @@
+{
+  "ip": "uart",
+  "workspace": "/Users/ninghechuan/vibe_soc/ip/digital/uart",
+  "mode": "multi_module",
+  "created_at": "2026-05-17T09:22:00Z",
+  "last_updated": "2026-05-17T09:51:08Z",
+  "modules": {
+    "uart": {
+      "pipeline": {
+        "doc": {
+          "step_id": "doc",
+          "name": "设计文档编写",
+          "agent": "soc-doc-engineer",
+          "status": "done",
+          "started_at": "2026-05-17T09:22:00Z",
+          "completed_at": "2026-05-17T09:30:01Z",
+          "artifacts": [
+            "docs/uart/design_spec.md",
+            "docs/uart/interface_spec.md",
+            "docs/uart/regmap.md",
+            "docs/uart/verification_plan.md"
+          ],
+          "check_results": [
+            {
+              "tool": "doc_completeness",
+              "passed": true,
+              "note": ""
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T09:30:01Z"
+        },
+        "rtl": {
+          "step_id": "rtl",
+          "name": "RTL设计与编码",
+          "agent": "soc-rtl-designer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T09:32:35Z",
+          "artifacts": [
+            "de/rtl/uart.v",
+            "de/rtl/filelist.f",
+            "de/syn/uart.sdc"
+          ],
+          "check_results": [
+            {
+              "tool": "rtl_quality",
+              "passed": true,
+              "note": ""
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T09:32:35Z"
+        },
+        "verif": {
+          "step_id": "verif",
+          "name": "验证环境搭建与仿真",
+          "agent": "soc-verification-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T09:51:08Z",
+          "artifacts": [
+            "dv/tb/tb_uart.v",
+            "dv/sim/tb_uart.log"
+          ],
+          "check_results": [
+            {
+              "tool": "sim",
+              "passed": true,
+              "note": "0 ERROR 0 MISMATCH"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T09:51:08Z"
+        },
+        "syn": {
+          "step_id": "syn",
+          "name": "逻辑综合与时序分析",
+          "agent": "soc-synthesis-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T09:35:34Z",
+          "artifacts": [
+            "de/syn/uart_netlist.v",
+            "de/syn/uart.sdc",
+            "de/syn/timing.rpt",
+            "de/syn/area.rpt",
+            "de/syn/yosys.log",
+            "docs/synthesis_report.md"
+          ],
+          "check_results": [
+            {
+              "tool": "timing",
+              "passed": true,
+              "note": "WNS >= 0"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T09:35:34Z"
+        },
+        "release": {
+          "step_id": "release",
+          "name": "集成与版本发布",
+          "agent": "soc-release-engineer",
+          "status": "done",
+          "blocked_by": [],
+          "started_at": null,
+          "completed_at": "2026-05-17T09:51:08Z",
+          "artifacts": [],
+          "check_results": [],
+          "notes": "release stage removed from workflow"
+        }
+      },
+      "next_actions": []
+    }
+  },
+  "next_actions": []
+}
