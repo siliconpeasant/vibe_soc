@@ -1,0 +1,22 @@
+# Timing Report: std_cell_clk_mux
+# Generated: 2026-05-17
+# Tool: Yosys 0.9 (generic synthesis, no STA)
+#
+# NOTE: This is a glitch-free clock multiplexer with latch-based architecture.
+#       There are no sequential timing paths (no flip-flops).
+#       The design uses 2 transparent latches for safe clock switching.
+#       WNS/TNS are N/A for pure combinational/latch-based clock mux cells.
+#
+# Clock constraints (from SDC):
+#   clk0: period = 10.0 ns
+#   clk1: period = 10.0 ns
+#   Clock groups: logically exclusive (clk0 vs clk1)
+#
+# Latch-based designs do not have traditional setup/hold paths.
+# Timing analysis for this module should be performed at the SoC level
+# with proper latch transparency window analysis.
+
+WNS = N/A
+TNS = N/A
+Number of failing endpoints: N/A
+RESULT: TIMING N/A - Clock mux (latch-based, no sequential paths)

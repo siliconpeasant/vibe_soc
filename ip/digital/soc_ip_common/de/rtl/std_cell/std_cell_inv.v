@@ -4,8 +4,6 @@
 // Version     : 1.0
 // Description : Combinational standard cell, y = ~a
 
-`timescale 1ns / 1ps
-
 module std_cell_inv #(
     parameter WIDTH = 1
 )(

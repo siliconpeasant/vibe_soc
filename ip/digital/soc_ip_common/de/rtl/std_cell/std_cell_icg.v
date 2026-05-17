@@ -5,8 +5,6 @@
 // Author       : RTL Designer Agent
 // Version      : 1.0
 
-`timescale 1ns / 1ps
-
 module std_cell_icg (
     input  wire clk,
     input  wire en,

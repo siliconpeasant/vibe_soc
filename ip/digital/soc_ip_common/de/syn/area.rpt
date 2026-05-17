@@ -1,15 +1,40 @@
+# Area Report: std_cell_clk_mux
+# Generated: 2026-05-17
+# Tool: Yosys 0.9
 
-8. Printing statistics.
+=== Cell Statistics (from Yosys stat) ===
 
-=== std_cell_mux ===
+  Number of cells:                 10
+    $_AND_                          4
+    $_DLATCH_P_                     2
+    $_NOT_                          3
+    $_OR_                           1
 
-   Number of wires:                  4
-   Number of wire bits:              4
-   Number of public wires:           4
-   Number of public wire bits:       4
-   Number of memories:               0
-   Number of memory bits:            0
-   Number of processes:              0
-   Number of cells:                  1
-     $_MUX_                          1
+  Number of wires:                 14
+  Number of wire bits:             14
+  Number of public wires:          11
+  Number of public wire bits:      11
+  Number of memories:               0
+  Number of memory bits:            0
+  Number of processes:              0
 
+=== Latch Analysis ===
+  Total latches:                    2 (INTENTIONAL - glitch-free clock mux core)
+    en0_latch: 1 x $_DLATCH_P_ (negative-level transparent latch on clk0 domain)
+    en1_latch: 1 x $_DLATCH_P_ (negative-level transparent latch on clk1 domain)
+  Total flip-flops:                 0
+
+=== Estimated Gate Equivalent (GE) ===
+  Based on typical 28nm standard cell library:
+    $_NOT_     : 3  x 0.5 GE =  1.5 GE
+    $_AND_     : 4  x 1.0 GE =  4.0 GE
+    $_OR_      : 1  x 1.0 GE =  1.0 GE
+    $_DLATCH_P_: 2  x 3.0 GE =  6.0 GE
+  ----------------------------------------
+  Total estimated GE:              ~12.5 GE
+
+=== Notes ===
+- All 2 latches are INTENTIONAL and form the core of the glitch-free
+  clock switching mechanism. No unintended latches were inferred.
+- The latch structure ensures enable signals only change when the
+  respective clock is low, preventing runt pulses on clk_out.

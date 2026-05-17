@@ -1,0 +1,21 @@
+version: v1.0.0
+module: rstn_test_mux
+date: 2026-05-17
+owner: silicon-crew
+
+files:
+  - rtl/rstn_test_mux.v
+  - rtl/rtl.f
+  - tb/rstn_test_mux_tb.v
+  - docs/design_spec.md
+  - docs/interface_spec.md
+  - docs/regmap.md
+  - docs/verification_plan.md
+  - docs/synthesis_report.md
+  - syn/netlist.v
+  - syn/final.sdc
+  - syn/timing.rpt
+  - syn/area.rpt
+  - constraints/base.sdc
+  - checksums.txt
+  - RELEASE_NOTES.md

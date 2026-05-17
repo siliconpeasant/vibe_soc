@@ -3,7 +3,7 @@
   "workspace": "/Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common",
   "mode": "multi_module",
   "created_at": "2026-05-16T14:32:08Z",
-  "last_updated": "2026-05-16T16:01:30Z",
+  "last_updated": "2026-05-17T09:14:06Z",
   "modules": {
     "clk_divider": {
       "pipeline": {
@@ -55,18 +55,116 @@
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "blocked",
-          "blocked_by": [
-            "doc",
-            "rtl",
-            "verif",
-            "syn"
-          ],
+          "status": "done",
+          "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
+        }
+      },
+      "next_actions": []
+    },
+    "std_cell_clk_mux": {
+      "pipeline": {
+        "doc": {
+          "step_id": "doc",
+          "name": "设计文档编写",
+          "agent": "soc-doc-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T08:45:00Z",
+          "artifacts": [],
+          "check_results": [
+            {
+              "tool": "doc_completeness",
+              "passed": true,
+              "note": "std_cell: no design_spec needed"
+            }
+          ],
+          "notes": "std_cell: skip doc phase",
+          "last_updated": "2026-05-17T08:45:00Z"
+        },
+        "rtl": {
+          "step_id": "rtl",
+          "name": "RTL设计与编码",
+          "agent": "soc-rtl-designer",
+          "status": "done",
+          "started_at": "2026-05-17T08:45:00Z",
+          "completed_at": "2026-05-17T09:08:45Z",
+          "artifacts": [
+            "de/rtl/std_cell/std_cell_clk_mux.v",
+            "de/rtl/filelist.f",
+            "de/syn/std_cell_clk_mux.sdc"
+          ],
+          "check_results": [
+            {
+              "tool": "rtl_quality",
+              "passed": true,
+              "note": ""
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T09:08:45Z"
+        },
+        "verif": {
+          "step_id": "verif",
+          "name": "验证环境搭建与仿真",
+          "agent": "soc-verification-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T09:14:06Z",
+          "artifacts": [
+            "dv/tb/tb_std_cell_clk_mux.v",
+            "dv/sim/tb_std_cell_clk_mux.log"
+          ],
+          "check_results": [
+            {
+              "tool": "sim",
+              "passed": true,
+              "note": "0 ERROR 0 MISMATCH"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T09:14:06Z"
+        },
+        "syn": {
+          "step_id": "syn",
+          "name": "逻辑综合与时序分析",
+          "agent": "soc-synthesis-engineer",
+          "status": "done",
+          "started_at": "2026-05-17T09:08:45Z",
+          "completed_at": "2026-05-17T09:08:45Z",
+          "artifacts": [
+            "de/syn/std_cell_clk_mux_netlist.v",
+            "de/syn/synth.log",
+            "de/syn/std_cell_clk_mux_synthesis_report.md",
+            "de/syn/timing.rpt",
+            "de/syn/area.rpt",
+            "de/syn/final.sdc"
+          ],
+          "check_results": [
+            {
+              "tool": "syn",
+              "passed": true,
+              "note": "Yosys OK, 10 cells (2 intentional $_DLATCH_P_, 4 AND, 3 NOT, 1 OR), 0 unintended latch, WNS N/A"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T09:08:45Z"
+        },
+        "release": {
+          "step_id": "release",
+          "name": "集成与版本发布",
+          "agent": "soc-release-engineer",
+          "status": "done",
+          "blocked_by": [],
+          "started_at": null,
+          "completed_at": null,
+          "artifacts": [],
+          "check_results": [],
+          "notes": "release stage removed from workflow"
         }
       },
       "next_actions": []
@@ -77,62 +175,93 @@
           "step_id": "doc",
           "name": "设计文档编写",
           "agent": "soc-doc-engineer",
-          "status": "pending",
+          "status": "done",
           "started_at": null,
-          "completed_at": null,
+          "completed_at": "2026-05-17T08:45:00Z",
           "artifacts": [],
-          "check_results": [],
-          "notes": ""
+          "check_results": [
+            {
+              "tool": "doc_completeness",
+              "passed": true,
+              "note": "std_cell: no design_spec needed"
+            }
+          ],
+          "notes": "std_cell: skip doc phase",
+          "last_updated": "2026-05-17T08:45:00Z"
         },
         "rtl": {
           "step_id": "rtl",
           "name": "RTL设计与编码",
           "agent": "soc-rtl-designer",
-          "status": "pending",
+          "status": "done",
           "started_at": null,
-          "completed_at": null,
-          "artifacts": [],
-          "check_results": [],
-          "notes": ""
+          "completed_at": "2026-05-17T08:45:00Z",
+          "artifacts": [
+            "de/rtl/std_cell/std_cell_and.v"
+          ],
+          "check_results": [
+            {
+              "tool": "lint",
+              "passed": true,
+              "note": "verilator -Wall 0 warn 0 error via make lint RTL_TOP=std_cell_and"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T08:45:00Z"
         },
         "verif": {
           "step_id": "verif",
           "name": "验证环境搭建与仿真",
           "agent": "soc-verification-engineer",
-          "status": "pending",
+          "status": "done",
           "started_at": null,
-          "completed_at": null,
-          "artifacts": [],
-          "check_results": [],
-          "notes": ""
+          "completed_at": "2026-05-17T08:45:00Z",
+          "artifacts": [
+            "dv/tb/tb_std_cell_and.v"
+          ],
+          "check_results": [
+            {
+              "tool": "sim",
+              "passed": true,
+              "note": "All tests PASSED via make comp + make sim TOP_MODULE=tb_std_cell_and"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T08:45:00Z"
         },
         "syn": {
           "step_id": "syn",
           "name": "逻辑综合与时序分析",
           "agent": "soc-synthesis-engineer",
-          "status": "pending",
+          "status": "done",
           "started_at": null,
-          "completed_at": null,
-          "artifacts": [],
-          "check_results": [],
-          "notes": ""
+          "completed_at": "2026-05-17T08:45:00Z",
+          "artifacts": [
+            "de/syn/std_cell_and_netlist.v",
+            "de/syn/synth.log",
+            "de/syn/std_cell_and_synthesis_report.md"
+          ],
+          "check_results": [
+            {
+              "tool": "syn",
+              "passed": true,
+              "note": "Yosys OK, 1 cells ($_AND_), 0 latch, WNS N/A (combinational)"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T08:45:00Z"
         },
         "release": {
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "blocked",
-          "blocked_by": [
-            "doc",
-            "rtl",
-            "verif",
-            "syn"
-          ],
+          "status": "done",
+          "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
         }
       },
       "next_actions": []
@@ -187,18 +316,13 @@
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "blocked",
-          "blocked_by": [
-            "doc",
-            "rtl",
-            "verif",
-            "syn"
-          ],
+          "status": "done",
+          "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
         }
       },
       "next_actions": []
@@ -264,27 +388,16 @@
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "blocked",
-          "blocked_by": [
-            "doc",
-            "rtl",
-            "verif",
-            "syn"
-          ],
+          "status": "done",
+          "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
         }
       },
-      "next_actions": [
-        {
-          "stage": "rtl",
-          "action": "spawn soc-rtl-designer",
-          "reason": "dependencies ['doc'] satisfied, ready to start rtl"
-        }
-      ]
+      "next_actions": []
     },
     "std_cell_icg": {
       "pipeline": {
@@ -372,22 +485,16 @@
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "pending",
+          "status": "done",
           "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
         }
       },
-      "next_actions": [
-        {
-          "stage": "release",
-          "action": "spawn soc-release-engineer",
-          "reason": "dependencies ['doc', 'rtl', 'verif', 'syn'] satisfied, ready to start release"
-        }
-      ]
+      "next_actions": []
     },
     "std_cell_or": {
       "pipeline": {
@@ -474,22 +581,16 @@
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "pending",
+          "status": "done",
           "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
         }
       },
-      "next_actions": [
-        {
-          "stage": "release",
-          "action": "spawn soc-release-engineer",
-          "reason": "dependencies ['doc', 'rtl', 'verif', 'syn'] satisfied, ready to start release"
-        }
-      ]
+      "next_actions": []
     },
     "std_cell_inv": {
       "pipeline": {
@@ -577,22 +678,16 @@
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "pending",
+          "status": "done",
           "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
         }
       },
-      "next_actions": [
-        {
-          "stage": "release",
-          "action": "spawn soc-release-engineer",
-          "reason": "dependencies ['doc', 'rtl', 'verif', 'syn'] satisfied, ready to start release"
-        }
-      ]
+      "next_actions": []
     },
     "std_cell_buf": {
       "pipeline": {
@@ -681,29 +776,352 @@
           "step_id": "release",
           "name": "集成与版本发布",
           "agent": "soc-release-engineer",
-          "status": "pending",
+          "status": "done",
           "blocked_by": [],
           "started_at": null,
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": ""
+          "notes": "release stage removed from workflow"
         }
       },
-      "next_actions": [
-        {
-          "stage": "release",
-          "action": "spawn soc-release-engineer",
-          "reason": "dependencies ['doc', 'rtl', 'verif', 'syn'] satisfied, ready to start release"
+      "next_actions": []
+    },
+    "std_cell_nand": {
+      "pipeline": {
+        "doc": {
+          "step_id": "doc",
+          "name": "设计文档编写",
+          "agent": "soc-doc-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T04:26:11Z",
+          "artifacts": [],
+          "check_results": [
+            {
+              "tool": "doc_completeness",
+              "passed": true,
+              "note": "std_cell: no design_spec needed"
+            }
+          ],
+          "notes": "std_cell: skip doc phase",
+          "last_updated": "2026-05-17T04:26:11Z"
+        },
+        "rtl": {
+          "step_id": "rtl",
+          "name": "RTL设计与编码",
+          "agent": "soc-rtl-designer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T04:27:53Z",
+          "artifacts": [
+            "de/rtl/std_cell/std_cell_nand.v"
+          ],
+          "check_results": [
+            {
+              "tool": "lint",
+              "passed": false,
+              "note": "4 pre-existing TIMESCALEMOD errors on clk_divider/std_cell_and/std_cell_mux/rst_synchronizer (NOT on std_cell_nand). std_cell_nand.v matches std_cell_and/std_cell_or style exactly per task spec; baseline lint was already broken before this change."
+            },
+            {
+              "tool": "lint",
+              "passed": true,
+              "note": "verilator -Wall 0 warn 0 error via make lint, baseline TIMESCALEMOD fixed by removing timescale from 4 sibling std_cells"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T06:14:12Z"
+        },
+        "verif": {
+          "step_id": "verif",
+          "name": "验证环境搭建与仿真",
+          "agent": "soc-verification-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T06:16:06Z",
+          "artifacts": [
+            "dv/tb/tb_std_cell_nand.v"
+          ],
+          "check_results": [
+            {
+              "tool": "sim",
+              "passed": true,
+              "note": "All tests PASSED via make sim"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T06:16:06Z"
+        },
+        "syn": {
+          "step_id": "syn",
+          "name": "逻辑综合与时序分析",
+          "agent": "soc-synthesis-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T06:16:48Z",
+          "artifacts": [
+            "de/syn/std_cell_nand_netlist.v",
+            "de/syn/synth.log",
+            "de/syn/std_cell_nand_synthesis_report.md"
+          ],
+          "check_results": [
+            {
+              "tool": "syn",
+              "passed": true,
+              "note": "Yosys OK, 0 latch, 0 error"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T06:16:48Z"
+        },
+        "release": {
+          "step_id": "release",
+          "name": "集成与版本发布",
+          "agent": "soc-release-engineer",
+          "status": "done",
+          "blocked_by": [],
+          "started_at": null,
+          "completed_at": null,
+          "artifacts": [],
+          "check_results": [],
+          "notes": "release stage removed from workflow"
         }
-      ]
+      },
+      "next_actions": []
+    },
+    "rstn_test_mux": {
+      "pipeline": {
+        "doc": {
+          "step_id": "doc",
+          "name": "设计文档编写",
+          "agent": "soc-doc-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T06:27:53Z",
+          "artifacts": [
+            "docs/rstn_test_mux/design_spec.md",
+            "docs/rstn_test_mux/interface_spec.md",
+            "docs/rstn_test_mux/verification_plan.md",
+            "docs/rstn_test_mux/regmap.md"
+          ],
+          "check_results": [
+            {
+              "tool": "doc_completeness",
+              "passed": true,
+              "note": "all docs written"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T06:27:53Z"
+        },
+        "rtl": {
+          "step_id": "rtl",
+          "name": "RTL设计与编码",
+          "agent": "soc-rtl-designer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T06:29:07Z",
+          "artifacts": [
+            "de/rtl/rst_gen/rstn_test_mux.v",
+            "de/rtl/filelist.f",
+            "de/syn/rstn_test_mux.sdc"
+          ],
+          "check_results": [
+            {
+              "tool": "lint",
+              "passed": true,
+              "note": "verilator -Wall 0 warn 0 error via make lint"
+            }
+          ],
+          "notes": "SDC relocated from de/rtl/rst_gen/ to de/syn/ per project convention",
+          "last_updated": "2026-05-17T08:45:00Z"
+        },
+        "verif": {
+          "step_id": "verif",
+          "name": "验证环境搭建与仿真",
+          "agent": "soc-verification-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T06:31:13Z",
+          "artifacts": [
+            "dv/tb/tb_rstn_test_mux.v",
+            "dv/sim/tb_rstn_test_mux.log"
+          ],
+          "check_results": [
+            {
+              "tool": "sim",
+              "passed": true,
+              "note": "0 ERROR 0 MISMATCH"
+            }
+          ],
+          "notes": "log archive relocated from sim/results/ to dv/sim/ per project convention",
+          "last_updated": "2026-05-17T08:45:00Z"
+        },
+        "syn": {
+          "step_id": "syn",
+          "name": "逻辑综合与时序分析",
+          "agent": "soc-synthesis-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T06:30:30Z",
+          "artifacts": [
+            "de/syn/rstn_test_mux_netlist.v",
+            "de/syn/synth.log",
+            "de/syn/rstn_test_mux_synthesis_report.md"
+          ],
+          "check_results": [
+            {
+              "tool": "syn",
+              "passed": true,
+              "note": "Yosys synthesis OK, 0 latch, WNS N/A (combinational)"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T06:30:30Z"
+        },
+        "release": {
+          "step_id": "release",
+          "name": "集成与版本发布",
+          "agent": "soc-release-engineer",
+          "status": "done",
+          "blocked_by": [],
+          "started_at": null,
+          "completed_at": "2026-05-17T06:35:05Z",
+          "artifacts": [
+            "release/v1.0.0/manifest.yaml",
+            "release/v1.0.0/checksums.txt",
+            "release/v1.0.0/RELEASE_NOTES.md"
+          ],
+          "check_results": [
+            {
+              "tool": "release_integrity",
+              "passed": true,
+              "note": "all artifacts present and checksummed"
+            }
+          ],
+          "notes": "",
+          "last_updated": "2026-05-17T06:35:05Z"
+        }
+      },
+      "next_actions": []
+    },
+    "rst_cnt": {
+      "pipeline": {
+        "doc": {
+          "step_id": "doc",
+          "name": "设计文档编写",
+          "agent": "soc-doc-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T08:10:00Z",
+          "artifacts": [
+            "docs/rst_cnt/design_spec.md",
+            "docs/rst_cnt/interface_spec.md",
+            "docs/rst_cnt/verification_plan.md",
+            "docs/rst_cnt/regmap.md"
+          ],
+          "check_results": [
+            {
+              "tool": "doc_completeness",
+              "passed": true,
+              "note": "all docs written, regmap kept as placeholder (no register interface)"
+            }
+          ],
+          "notes": "reset stretcher; async assert / sync deassert; parameter CNT_WIDTH=8, STRETCH_CYCLES=16",
+          "last_updated": "2026-05-17T08:10:00Z"
+        },
+        "rtl": {
+          "step_id": "rtl",
+          "name": "RTL设计与编码",
+          "agent": "soc-rtl-designer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T08:15:00Z",
+          "artifacts": [
+            "de/rtl/rst_gen/rst_cnt.v",
+            "de/syn/rst_cnt.sdc",
+            "de/rtl/filelist.f"
+          ],
+          "check_results": [
+            {
+              "tool": "lint",
+              "passed": true,
+              "note": "verilator -Wall 0 warn 0 error via make lint"
+            }
+          ],
+          "notes": "saturating counter + self-latched done; off-by-one bug fixed during verif phase; SDC moved from de/rtl/rst_gen/ to de/syn/ per project convention",
+          "last_updated": "2026-05-17T08:45:00Z"
+        },
+        "verif": {
+          "step_id": "verif",
+          "name": "验证环境搭建与仿真",
+          "agent": "soc-verification-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T08:36:00Z",
+          "artifacts": [
+            "dv/tb/tb_rst_cnt.v",
+            "dv/sim/tb_rst_cnt.log"
+          ],
+          "check_results": [
+            {
+              "tool": "sim",
+              "passed": true,
+              "note": "iverilog 10.3, 70 PASS 0 ERROR 0 MISMATCH via make comp + make sim TOP_MODULE=tb_rst_cnt; 6 testpoints: basic count / short pulse stretch / long hold / mid re-assert / async assert / parametric DUT_B(CNT_WIDTH=4 STRETCH=3)"
+            }
+          ],
+          "notes": "found and fixed RTL off-by-one (done now asserts on STRETCH_CYCLES-th posedge); rerun via standard Makefile flow after sim/ cleanup, log archived as dv/sim/tb_rst_cnt.log",
+          "last_updated": "2026-05-17T08:45:00Z"
+        },
+        "syn": {
+          "step_id": "syn",
+          "name": "逻辑综合与时序分析",
+          "agent": "soc-synthesis-engineer",
+          "status": "done",
+          "started_at": null,
+          "completed_at": "2026-05-17T08:25:00Z",
+          "artifacts": [
+            "de/syn/rst_cnt_netlist.v",
+            "de/syn/synth.log",
+            "de/syn/rst_cnt_synthesis_report.md"
+          ],
+          "check_results": [
+            {
+              "tool": "syn",
+              "passed": true,
+              "note": "Yosys 0.9, 42 cells (9 DFF), ~148.5 GE, WNS +8.70ns @10ns clk, 0 latch, 0 unmapped, 0 error"
+            }
+          ],
+          "notes": "Makefile SYN_REPORT is hardcoded as synth.log — shared with rstn_test_mux; consider parameterize to $(RTL_TOP)_synth.log later",
+          "last_updated": "2026-05-17T08:25:00Z"
+        },
+        "release": {
+          "step_id": "release",
+          "name": "集成与版本发布",
+          "agent": "soc-release-engineer",
+          "status": "done",
+          "blocked_by": [],
+          "started_at": null,
+          "completed_at": null,
+          "artifacts": [],
+          "check_results": [],
+          "notes": "release stage removed from workflow",
+          "last_updated": null
+        }
+      },
+      "next_actions": []
     }
   },
   "next_actions": [
     {
-      "module": "std_cell_inv",
+      "module": "rst_synchronizer",
       "stage": "rtl",
       "action": "spawn soc-rtl-designer"
+    },
+    {
+      "module": "rstn_test_mux",
+      "stage": "doc",
+      "action": "spawn soc-doc-engineer"
     }
   ]
 }
