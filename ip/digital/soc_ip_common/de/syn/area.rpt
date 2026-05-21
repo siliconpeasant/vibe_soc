@@ -1,40 +1,58 @@
-# Area Report: std_cell_clk_mux
-# Generated: 2026-05-17
+# Area Report: clk_glitch_free_mux v3.3
+# Generated: 2026-05-21
 # Tool: Yosys 0.9
 
 === Cell Statistics (from Yosys stat) ===
 
-  Number of cells:                 10
-    $_AND_                          4
-    $_DLATCH_P_                     2
-    $_NOT_                          3
-    $_OR_                           1
-
-  Number of wires:                 14
-  Number of wire bits:             14
-  Number of public wires:          11
-  Number of public wire bits:      11
+  Number of wires:                 42
+  Number of wire bits:             44
+  Number of public wires:          35
+  Number of public wire bits:      37
   Number of memories:               0
   Number of memory bits:            0
   Number of processes:              0
+  Number of cells:                 18
+    $_AND_                          4
+    $_DFF_PN0_                      4
+    $_DLATCH_P_                     2
+    $_NOT_                          5
+    $_OR_                           3
 
-=== Latch Analysis ===
-  Total latches:                    2 (INTENTIONAL - glitch-free clock mux core)
-    en0_latch: 1 x $_DLATCH_P_ (negative-level transparent latch on clk0 domain)
-    en1_latch: 1 x $_DLATCH_P_ (negative-level transparent latch on clk1 domain)
-  Total flip-flops:                 0
+=== Latch / FF Analysis ===
+  Total flip-flops:                 4 (INTENTIONAL - 2-stage synchronizers)
+    u_sync_en0: 2 x $_DFF_PN0_ (clk0 domain, 2-stage sync chain, async rst_n)
+    u_sync_en1: 2 x $_DFF_PN0_ (clk1 domain, 2-stage sync chain, async rst_n)
+  Total latches:                    2 (INTENTIONAL - ICG cells)
+    u_icg0: 1 x $_DLATCH_P_ (negative-level transparent latch on clk0 domain)
+    u_icg1: 1 x $_DLATCH_P_ (negative-level transparent latch on clk1 domain)
 
 === Estimated Gate Equivalent (GE) ===
   Based on typical 28nm standard cell library:
-    $_NOT_     : 3  x 0.5 GE =  1.5 GE
-    $_AND_     : 4  x 1.0 GE =  4.0 GE
-    $_OR_      : 1  x 1.0 GE =  1.0 GE
-    $_DLATCH_P_: 2  x 3.0 GE =  6.0 GE
+    $_NOT_      : 5  x 0.5 GE =   2.5 GE
+    $_AND_      : 4  x 1.0 GE =   4.0 GE
+    $_OR_       : 3  x 1.0 GE =   3.0 GE
+    $_DFF_PN0_  : 4  x 3.5 GE =  14.0 GE
+    $_DLATCH_P_ : 2  x 3.0 GE =   6.0 GE
   ----------------------------------------
-  Total estimated GE:              ~12.5 GE
+  Total estimated GE:              ~29.5 GE
+
+=== Changes from v3.2 ===
+  v3.2 cells: 18 (4 AND, 4 DFF_PN0, 2 DLATCH, 5 NOT, 3 OR)
+  v3.3 cells: 18 (4 AND, 4 DFF_PN0, 2 DLATCH, 5 NOT, 3 OR)
+  Change: std_cell_clk_or replaces std_cell_or.
+  Net cell count unchanged (std_cell_clk_or maps to same $_OR_ primitive).
+  Structural improvement: clk_out driven by clock-domain-aware OR gate.
 
 === Notes ===
-- All 2 latches are INTENTIONAL and form the core of the glitch-free
-  clock switching mechanism. No unintended latches were inferred.
-- The latch structure ensures enable signals only change when the
-  respective clock is low, preventing runt pulses on clk_out.
+- All 4 DFFs are INTENTIONAL: they form the 2-stage synchronizer chains in
+  std_cell_sync instances (u_sync_en0, u_sync_en1), each with STAGES=2.
+  DFF type is $_DFF_PN0_ (positive-edge clock, negative-level async reset).
+- All 2 latches are INTENTIONAL: they form the core of the ICG cells
+  (u_icg0, u_icg1), ensuring enable signals only change when the respective
+  clock is low, preventing runt pulses on the gated clock outputs.
+- Yosys inferred $_DLATCH_P_ (positive-enable transparent latch) because
+  the RTL uses `if (!clk)` which becomes active when clk=0 (negative level).
+  The latch enable is the inverted clock, so the latch is transparent
+  during the low phase of each clock.
+- The feedback interlock (en0_raw = ~sel & ~en1_sync, en1_raw = sel & ~en0_sync)
+  ensures break-before-make switching even when sel changes asynchronously.

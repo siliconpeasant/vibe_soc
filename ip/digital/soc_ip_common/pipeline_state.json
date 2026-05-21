@@ -3,7 +3,7 @@
   "workspace": "/Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common",
   "mode": "multi_module",
   "created_at": "2026-05-16T14:32:08Z",
-  "last_updated": "2026-05-17T09:14:06Z",
+  "last_updated": "2026-05-21T15:40:25Z",
   "modules": {
     "clk_divider": {
       "pipeline": {
@@ -66,37 +66,47 @@
       },
       "next_actions": []
     },
-    "std_cell_clk_mux": {
+    "clk_glitch_free_mux": {
       "pipeline": {
         "doc": {
           "step_id": "doc",
           "name": "设计文档编写",
           "agent": "soc-doc-engineer",
           "status": "done",
-          "started_at": null,
-          "completed_at": "2026-05-17T08:45:00Z",
-          "artifacts": [],
+          "started_at": "2026-05-21T15:37:29Z",
+          "completed_at": "2026-05-21T15:13:48Z",
+          "artifacts": [
+            "docs/clk_glitch_free_mux/design_spec.md",
+            "docs/clk_glitch_free_mux/interface_spec.md",
+            "docs/clk_glitch_free_mux/regmap.md",
+            "docs/clk_glitch_free_mux/verification_plan.md"
+          ],
           "check_results": [
             {
               "tool": "doc_completeness",
               "passed": true,
-              "note": "std_cell: no design_spec needed"
+              "note": ""
+            },
+            {
+              "tool": "doc_completeness",
+              "passed": true,
+              "note": ""
             }
           ],
-          "notes": "std_cell: skip doc phase",
-          "last_updated": "2026-05-17T08:45:00Z"
+          "notes": "v3.3: updating docs for full standard-cell architecture",
+          "last_updated": "2026-05-21T15:40:25Z"
         },
         "rtl": {
           "step_id": "rtl",
           "name": "RTL设计与编码",
           "agent": "soc-rtl-designer",
           "status": "done",
-          "started_at": "2026-05-17T08:45:00Z",
-          "completed_at": "2026-05-17T09:08:45Z",
+          "started_at": "2026-05-21T15:34:44Z",
+          "completed_at": "2026-05-21T15:35:14Z",
           "artifacts": [
-            "de/rtl/std_cell/std_cell_clk_mux.v",
+            "de/rtl/clk_gen/clk_glitch_free_mux.v",
             "de/rtl/filelist.f",
-            "de/syn/std_cell_clk_mux.sdc"
+            "de/syn/clk_glitch_free_mux.sdc"
           ],
           "check_results": [
             {
@@ -105,8 +115,8 @@
               "note": ""
             }
           ],
-          "notes": "",
-          "last_updated": "2026-05-17T09:08:45Z"
+          "notes": "v3.3: std_cell_clk_or replaces std_cell_or",
+          "last_updated": "2026-05-21T15:35:14Z"
         },
         "verif": {
           "step_id": "verif",
@@ -114,10 +124,10 @@
           "agent": "soc-verification-engineer",
           "status": "done",
           "started_at": null,
-          "completed_at": "2026-05-17T09:14:06Z",
+          "completed_at": "2026-05-21T15:36:22Z",
           "artifacts": [
-            "dv/tb/tb_std_cell_clk_mux.v",
-            "dv/sim/tb_std_cell_clk_mux.log"
+            "dv/tb/tb_clk_glitch_free_mux.v",
+            "dv/sim/tb_clk_glitch_free_mux.log"
           ],
           "check_results": [
             {
@@ -126,33 +136,33 @@
               "note": "0 ERROR 0 MISMATCH"
             }
           ],
-          "notes": "",
-          "last_updated": "2026-05-17T09:14:06Z"
+          "notes": "v3.3: std_cell_clk_or replaces std_cell_or",
+          "last_updated": "2026-05-21T15:36:22Z"
         },
         "syn": {
           "step_id": "syn",
           "name": "逻辑综合与时序分析",
           "agent": "soc-synthesis-engineer",
           "status": "done",
-          "started_at": "2026-05-17T09:08:45Z",
-          "completed_at": "2026-05-17T09:08:45Z",
+          "started_at": null,
+          "completed_at": "2026-05-21T15:36:53Z",
           "artifacts": [
-            "de/syn/std_cell_clk_mux_netlist.v",
-            "de/syn/synth.log",
-            "de/syn/std_cell_clk_mux_synthesis_report.md",
+            "de/syn/clk_glitch_free_mux_netlist.v",
+            "de/syn/final.sdc",
             "de/syn/timing.rpt",
             "de/syn/area.rpt",
-            "de/syn/final.sdc"
+            "de/syn/synth.log",
+            "de/syn/clk_glitch_free_mux_synthesis_report.md"
           ],
           "check_results": [
             {
-              "tool": "syn",
+              "tool": "timing",
               "passed": true,
-              "note": "Yosys OK, 10 cells (2 intentional $_DLATCH_P_, 4 AND, 3 NOT, 1 OR), 0 unintended latch, WNS N/A"
+              "note": "WNS >= 0"
             }
           ],
-          "notes": "",
-          "last_updated": "2026-05-17T09:08:45Z"
+          "notes": "v3.3: std_cell_clk_or replaces std_cell_or",
+          "last_updated": "2026-05-21T15:36:53Z"
         },
         "release": {
           "step_id": "release",
@@ -164,7 +174,8 @@
           "completed_at": null,
           "artifacts": [],
           "check_results": [],
-          "notes": "release stage removed from workflow"
+          "notes": "release stage removed from workflow",
+          "last_updated": null
         }
       },
       "next_actions": []

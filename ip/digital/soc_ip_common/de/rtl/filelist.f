@@ -9,4 +9,6 @@ $SOC/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_or.v
 $SOC/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_inv.v
 $SOC/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_buf.v
 $SOC/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_nand.v
-$SOC/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_clk_mux.v
+$SOC/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_sync.v
+$SOC/ip/digital/soc_ip_common/de/rtl/std_cell/std_cell_clk_or.v
+$SOC/ip/digital/soc_ip_common/de/rtl/clk_gen/clk_glitch_free_mux.v
