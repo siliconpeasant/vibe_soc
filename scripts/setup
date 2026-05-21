@@ -1,0 +1,63 @@
+#!/bin/bash
+# vibe_soc 环境设置入口 — 自动检测 shell，提示正确的 source 命令
+# 用法: make setup
+#       或直接 source scripts/setup.sh / scripts/setup.csh
+
+_script_dir=$(cd "$(dirname "$0")" && pwd -P)
+
+# ---------------------------------------------------------------------------
+# 1. 检测用户交互 shell
+#    策略A: 进程树找 make，取 make 父进程
+#    策略B: 无 ps 命令（容器/精简系统），fallback 到 $SHELL
+# ---------------------------------------------------------------------------
+_shell="unknown"
+
+if command -v ps >/dev/null 2>&1 && command -v basename >/dev/null 2>&1; then
+    _pid=$$
+    for _depth in 1 2 3 4 5 6 7 8 9 10; do
+        _ppid=$(ps -p $_pid -o ppid= 2>/dev/null | tr -d ' ')
+        [ -z "$_ppid" ] && break
+        _comm=$(basename "$(ps -p $_ppid -o comm= 2>/dev/null | sed 's/^-//')" 2>/dev/null)
+
+        if [ "$_comm" = "make" ] || [ "$_comm" = "gmake" ]; then
+            _make_ppid=$(ps -p $_ppid -o ppid= 2>/dev/null | tr -d ' ')
+            if [ -n "$_make_ppid" ]; then
+                _shell=$(basename "$(ps -p $_make_ppid -o comm= 2>/dev/null | sed 's/^-//')" 2>/dev/null || echo "unknown")
+            fi
+            break
+        fi
+        _pid=$_ppid
+    done
+fi
+
+# 策略B fallback：直接 source 场景或没有 ps 命令
+if [ "$_shell" = "unknown" ]; then
+    if [ -n "$BASH_VERSION" ]; then
+        _shell="bash"
+    elif [ -n "$ZSH_VERSION" ]; then
+        _shell="zsh"
+    elif [ -n "$Tcsh_VERSION" ] || [ -n "$CSH_VERSION" ]; then
+        _shell="tcsh"
+    else
+        _shell=$(basename "$SHELL" 2>/dev/null || echo "unknown")
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# 2. 输出提示
+# ---------------------------------------------------------------------------
+case "$_shell" in
+    csh|tcsh)
+        echo "[SETUP] Shell: $_shell"
+        echo "[SETUP] Run: source $_script_dir/setup.csh"
+        ;;
+    bash|zsh|sh|fish)
+        echo "[SETUP] Shell: $_shell"
+        echo "[SETUP] Run: source $_script_dir/setup.sh"
+        ;;
+    *)
+        echo "[SETUP] Shell: $_shell (fallback)"
+        echo "[SETUP] bash/zsh  -> source $_script_dir/setup.sh"
+        echo "[SETUP] csh/tcsh  -> source $_script_dir/setup.csh"
+        ;;
+esac

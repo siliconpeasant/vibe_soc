@@ -11,3 +11,5 @@ csrc/
 simv*
 ucli.key
 vc_hdrs.h
+.claude/
+docs/silicon_crew_intro_article.md

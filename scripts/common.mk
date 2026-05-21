@@ -109,7 +109,11 @@ endif
 # 公共目标
 # =============================================================================
 
-.PHONY: comp sim run wave clean
+.PHONY: comp sim run wave clean setup
+
+setup:
+	@echo "[SETUP] vibe_soc environment setup"
+	@$(PROJECT_ROOT)/scripts/setup
 
 comp:
 	@echo "[COMP] Simulator: $(SIMULATOR) | Top: $(TOP_MODULE)"

@@ -62,7 +62,7 @@ include $(PROJECT_ROOT)/scripts/common.mk
 LINT_TOOL    ?= verilator
 
 # 综合配置
-SYN_DIR       = $(MODULE_PATH)/de/syn
+SYN_DIR       = $(IP_PATH)/de/syn
 SYN_NETLIST   = $(SYN_DIR)/$(RTL_TOP)_netlist.v
 SYN_REPORT    = $(SYN_DIR)/synth.log
 
