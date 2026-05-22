@@ -1,0 +1,4 @@
+run/
+*.vcd
+*.vpd
+*.log
