@@ -1,0 +1,86 @@
+{
+  "module": "spi",
+  "workspace": "D:\\kimi-workspace\\vibe_soc\\ip\\digital\\spi",
+  "mode": "single",
+  "created_at": "2026-05-22T09:47:15Z",
+  "last_updated": "2026-05-22T10:07:54Z",
+  "pipeline": {
+    "doc": {
+      "step_id": "doc",
+      "name": "设计文档编写",
+      "agent": "soc-doc-engineer",
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-05-22T09:47:21Z",
+      "artifacts": [
+        "docs/design_spec.md",
+        "docs/interface_spec.md",
+        "docs/regmap.md",
+        "docs/verification_plan.md"
+      ],
+      "check_results": [
+        {
+          "tool": "doc_completeness",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "notes": "",
+      "last_updated": "2026-05-22T09:47:21Z"
+    },
+    "rtl": {
+      "step_id": "rtl",
+      "name": "RTL设计与编码",
+      "agent": "soc-rtl-designer",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    },
+    "verif": {
+      "step_id": "verif",
+      "name": "验证环境搭建与仿真",
+      "agent": "soc-verification-engineer",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    },
+    "syn": {
+      "step_id": "syn",
+      "name": "逻辑综合与时序分析",
+      "agent": "soc-synthesis-engineer",
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-05-22T10:07:54Z",
+      "artifacts": [
+        "de/syn/spi_netlist.v",
+        "de/syn/final.sdc",
+        "de/syn/timing.rpt",
+        "de/syn/area.rpt",
+        "de/syn/synth.log",
+        "de/syn/spi_synthesis_report.md"
+      ],
+      "check_results": [
+        {
+          "tool": "timing",
+          "passed": true,
+          "note": "WNS >= 0"
+        }
+      ],
+      "notes": "",
+      "last_updated": "2026-05-22T10:07:54Z"
+    }
+  },
+  "next_actions": [
+    {
+      "stage": "rtl",
+      "action": "spawn soc-rtl-designer",
+      "reason": "dependencies ['doc'] satisfied, ready to start rtl"
+    }
+  ]
+}

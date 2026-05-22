@@ -1,0 +1,6 @@
+run/
+syn/
+de/syn/
+*.vcd
+*.vpd
+*.log
