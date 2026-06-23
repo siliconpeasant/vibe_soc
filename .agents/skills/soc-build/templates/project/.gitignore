@@ -15,7 +15,6 @@
 **/release/*/docs/synthesis_report.md
 __pycache__/
 *.pyc
-.pipeline_state.lock
 *.log
 *.out
 *.vcd
@@ -33,4 +32,3 @@ scripts/local.sh
 scripts/local.csh
 .claude/
 docs/silicon_crew_intro_article.md
-pd/openroad/work/

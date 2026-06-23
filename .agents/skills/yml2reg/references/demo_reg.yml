@@ -1,0 +1,868 @@
+name: AOSS_CRG
+bytes: 4
+offset: 0x000
+registers:
+  - name: rt32k_muxed0_clk_ctrl
+    description: "rt32k_muxed0_clk control register"
+    offset: 0x0
+    fields:
+      - { name: rt32k_muxed0_clk_sel, lsb: 8, bits: 1, access: rw, reset: 0x0, lock_lsb: 24, lock_bits: 1, lock_value: 0x1, description: "rt32k_muxed0_clk select, PRTC_24_24_1'h1"}
+  - name: rt32k_muxed0_clk_status
+    description: "rt32k_muxed0_clk status"
+    offset: 0x4
+    fields:
+      - { name: rt32k_muxed0_clk_sel_clk0_sel, lsb: 8, bits: 1, access: ro, reset: 0x1, description: "rt32k_muxed0_clk select clk1 status"}
+      - { name: rt32k_muxed0_clk_sel_clk1_sel, lsb: 9, bits: 1, access: ro, reset: 0x0, description: "rt32k_muxed0_clk select clk1 status"}
+      - { name: rt32k_muxed0_clk_sel_done, lsb: 10, bits: 1, access: ro, reset: 0x1, description: "rt32k_muxed0_clk select done status"}
+  - name: aoss_main_muxed_clk_ctrl
+    description: "aoss_main_muxed_clk control register"
+    offset: 0x8
+    fields:
+      - { name: aoss_main_muxed_clk_sel, lsb: 8, bits: 1, access: rw, reset: 0x0, lock_lsb: 24, lock_bits: 1, lock_value: 0x1, description: "aoss_main_muxed_clk select, PRTC_24_24_1'h1"}
+  - name: aoss_main_muxed_clk_status
+    description: "aoss_main_muxed_clk status"
+    offset: 0xc
+    fields:
+      - { name: aoss_main_muxed_clk_sel_clk0_sel, lsb: 8, bits: 1, access: ro, reset: 0x1, description: "aoss_main_muxed_clk select clk1 status"}
+      - { name: aoss_main_muxed_clk_sel_clk1_sel, lsb: 9, bits: 1, access: ro, reset: 0x0, description: "aoss_main_muxed_clk select clk1 status"}
+      - { name: aoss_main_muxed_clk_sel_done, lsb: 10, bits: 1, access: ro, reset: 0x1, description: "aoss_main_muxed_clk select done status"}
+  - name: aoss_lp_core_clk_ctrl
+    description: "aoss_lp_core_clk control register"
+    offset: 0x10
+    fields:
+      - { name: aoss_lp_core_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_lp_core_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_lp_core_clk_status
+    description: "aoss_lp_core_clk status"
+    offset: 0x14
+    fields:
+      - { name: aoss_lp_core_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_lp_core_clk icg enable status"}
+  - name: aoss_lp_mtime_clk_ctrl
+    description: "aoss_lp_mtime_clk control register"
+    offset: 0x18
+    fields:
+      - { name: aoss_lp_mtime_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_lp_mtime_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_lp_mtime_clk_status
+    description: "aoss_lp_mtime_clk status"
+    offset: 0x1c
+    fields:
+      - { name: aoss_lp_mtime_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_lp_mtime_clk icg enable status"}
+  - name: aoss_uart_apb_clk_ctrl
+    description: "aoss_uart_apb_clk control register"
+    offset: 0x20
+    fields:
+      - { name: aoss_uart_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_uart_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_uart_apb_clk_status
+    description: "aoss_uart_apb_clk status"
+    offset: 0x24
+    fields:
+      - { name: aoss_uart_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_uart_apb_clk icg enable status"}
+  - name: aoss_uart_core_clk_ctrl
+    description: "aoss_uart_core_clk control register"
+    offset: 0x28
+    fields:
+      - { name: aoss_uart_core_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_uart_core_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_uart_core_clk_status
+    description: "aoss_uart_core_clk status"
+    offset: 0x2c
+    fields:
+      - { name: aoss_uart_core_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_uart_core_clk icg enable status"}
+  - name: aoss_usim0_32k_clk_ctrl
+    description: "aoss_usim0_32k_clk control register"
+    offset: 0x30
+    fields:
+      - { name: aoss_usim0_32k_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_usim0_32k_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_usim0_32k_clk_status
+    description: "aoss_usim0_32k_clk status"
+    offset: 0x34
+    fields:
+      - { name: aoss_usim0_32k_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_usim0_32k_clk icg enable status"}
+  - name: aoss_usim0_apb_clk_ctrl
+    description: "aoss_usim0_apb_clk control register"
+    offset: 0x38
+    fields:
+      - { name: aoss_usim0_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_usim0_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_usim0_apb_clk_status
+    description: "aoss_usim0_apb_clk status"
+    offset: 0x3c
+    fields:
+      - { name: aoss_usim0_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_usim0_apb_clk icg enable status"}
+  - name: aoss_gpio_apb_clk_ctrl
+    description: "aoss_gpio_apb_clk control register"
+    offset: 0x40
+    fields:
+      - { name: aoss_gpio_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_gpio_apb_clk icg enable, PRTC_16_16_1'h1"}
+      - { name: aoss_gpio_apb_clk_sel, lsb: 8, bits: 1, access: rw, reset: 0x0, lock_lsb: 24, lock_bits: 1, lock_value: 0x1, description: "aoss_gpio_apb_clk select, PRTC_24_24_1'h1"}
+  - name: aoss_gpio_apb_clk_status
+    description: "aoss_gpio_apb_clk status"
+    offset: 0x44
+    fields:
+      - { name: aoss_gpio_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_gpio_apb_clk icg enable status"}
+      - { name: aoss_gpio_apb_clk_sel_clk0_sel, lsb: 8, bits: 1, access: ro, reset: 0x1, description: "aoss_gpio_apb_clk select clk1 status"}
+      - { name: aoss_gpio_apb_clk_sel_clk1_sel, lsb: 9, bits: 1, access: ro, reset: 0x0, description: "aoss_gpio_apb_clk select clk1 status"}
+      - { name: aoss_gpio_apb_clk_sel_done, lsb: 10, bits: 1, access: ro, reset: 0x1, description: "aoss_gpio_apb_clk select done status"}
+  - name: aoss_i2c_core_clk_ctrl
+    description: "aoss_i2c_core_clk control register"
+    offset: 0x48
+    fields:
+      - { name: aoss_i2c_core_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_i2c_core_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_i2c_core_clk_status
+    description: "aoss_i2c_core_clk status"
+    offset: 0x4c
+    fields:
+      - { name: aoss_i2c_core_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_i2c_core_clk icg enable status"}
+  - name: aoss_i2c_apb_clk_ctrl
+    description: "aoss_i2c_apb_clk control register"
+    offset: 0x50
+    fields:
+      - { name: aoss_i2c_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_i2c_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_i2c_apb_clk_status
+    description: "aoss_i2c_apb_clk status"
+    offset: 0x54
+    fields:
+      - { name: aoss_i2c_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_i2c_apb_clk icg enable status"}
+  - name: aoss_usim1_32k_clk_ctrl
+    description: "aoss_usim1_32k_clk control register"
+    offset: 0x58
+    fields:
+      - { name: aoss_usim1_32k_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_usim1_32k_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_usim1_32k_clk_status
+    description: "aoss_usim1_32k_clk status"
+    offset: 0x5c
+    fields:
+      - { name: aoss_usim1_32k_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_usim1_32k_clk icg enable status"}
+  - name: aoss_usim1_apb_clk_ctrl
+    description: "aoss_usim1_apb_clk control register"
+    offset: 0x60
+    fields:
+      - { name: aoss_usim1_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_usim1_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_usim1_apb_clk_status
+    description: "aoss_usim1_apb_clk status"
+    offset: 0x64
+    fields:
+      - { name: aoss_usim1_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_usim1_apb_clk icg enable status"}
+  - name: aoss_spi_core_clk_ctrl
+    description: "aoss_spi_core_clk control register"
+    offset: 0x68
+    fields:
+      - { name: aoss_spi_core_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_spi_core_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_spi_core_clk_status
+    description: "aoss_spi_core_clk status"
+    offset: 0x6c
+    fields:
+      - { name: aoss_spi_core_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_spi_core_clk icg enable status"}
+  - name: aoss_spi_apb_clk_ctrl
+    description: "aoss_spi_apb_clk control register"
+    offset: 0x70
+    fields:
+      - { name: aoss_spi_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_spi_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_spi_apb_clk_status
+    description: "aoss_spi_apb_clk status"
+    offset: 0x74
+    fields:
+      - { name: aoss_spi_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_spi_apb_clk icg enable status"}
+  - name: aoss_pmu_32k_clk_ctrl
+    description: "aoss_pmu_32k_clk control register"
+    offset: 0x78
+    fields:
+      - { name: aoss_pmu_32k_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_pmu_32k_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_pmu_32k_clk_status
+    description: "aoss_pmu_32k_clk status"
+    offset: 0x7c
+    fields:
+      - { name: aoss_pmu_32k_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_pmu_32k_clk icg enable status"}
+  - name: aoss_pmu_clk_ctrl
+    description: "aoss_pmu_clk control register"
+    offset: 0x80
+    fields:
+      - { name: aoss_pmu_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_pmu_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_pmu_clk_status
+    description: "aoss_pmu_clk status"
+    offset: 0x84
+    fields:
+      - { name: aoss_pmu_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_pmu_clk icg enable status"}
+  - name: aoss_pmu_apb_clk_ctrl
+    description: "aoss_pmu_apb_clk control register"
+    offset: 0x88
+    fields:
+      - { name: aoss_pmu_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_pmu_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_pmu_apb_clk_status
+    description: "aoss_pmu_apb_clk status"
+    offset: 0x8c
+    fields:
+      - { name: aoss_pmu_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_pmu_apb_clk icg enable status"}
+  - name: aoss_drx_timer_32k_clk_ctrl
+    description: "aoss_drx_timer_32k_clk control register"
+    offset: 0x90
+    fields:
+      - { name: aoss_drx_timer_32k_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_drx_timer_32k_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_drx_timer_32k_clk_status
+    description: "aoss_drx_timer_32k_clk status"
+    offset: 0x94
+    fields:
+      - { name: aoss_drx_timer_32k_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_drx_timer_32k_clk icg enable status"}
+  - name: aoss_drx_timer_apb_clk_ctrl
+    description: "aoss_drx_timer_apb_clk control register"
+    offset: 0x98
+    fields:
+      - { name: aoss_drx_timer_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_drx_timer_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_drx_timer_apb_clk_status
+    description: "aoss_drx_timer_apb_clk status"
+    offset: 0x9c
+    fields:
+      - { name: aoss_drx_timer_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_drx_timer_apb_clk icg enable status"}
+  - name: aoss_rtc_apb_clk_ctrl
+    description: "aoss_rtc_apb_clk control register"
+    offset: 0xa0
+    fields:
+      - { name: aoss_rtc_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rtc_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_rtc_apb_clk_status
+    description: "aoss_rtc_apb_clk status"
+    offset: 0xa4
+    fields:
+      - { name: aoss_rtc_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_rtc_apb_clk icg enable status"}
+  - name: aoss_rtc_core_clk_ctrl
+    description: "aoss_rtc_core_clk control register"
+    offset: 0xa8
+    fields:
+      - { name: aoss_rtc_core_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rtc_core_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_rtc_core_clk_status
+    description: "aoss_rtc_core_clk status"
+    offset: 0xac
+    fields:
+      - { name: aoss_rtc_core_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_rtc_core_clk icg enable status"}
+  - name: aoss_wdt_apb_clk_ctrl
+    description: "aoss_wdt_apb_clk control register"
+    offset: 0xb0
+    fields:
+      - { name: aoss_wdt_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_wdt_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_wdt_apb_clk_status
+    description: "aoss_wdt_apb_clk status"
+    offset: 0xb4
+    fields:
+      - { name: aoss_wdt_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_wdt_apb_clk icg enable status"}
+  - name: aoss_wdt_clk_ctrl
+    description: "aoss_wdt_clk control register"
+    offset: 0xb8
+    fields:
+      - { name: aoss_wdt_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_wdt_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_wdt_clk_status
+    description: "aoss_wdt_clk status"
+    offset: 0xbc
+    fields:
+      - { name: aoss_wdt_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_wdt_clk icg enable status"}
+  - name: aoss_timer_apb_clk_ctrl
+    description: "aoss_timer_apb_clk control register"
+    offset: 0xc0
+    fields:
+      - { name: aoss_timer_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_timer_apb_clk icg enable, PRTC_16_16_1'h1"}
+      - { name: aoss_timer_apb_clk_sel, lsb: 8, bits: 1, access: rw, reset: 0x0, lock_lsb: 24, lock_bits: 1, lock_value: 0x1, description: "aoss_timer_apb_clk select, PRTC_24_24_1'h1"}
+  - name: aoss_timer_apb_clk_status
+    description: "aoss_timer_apb_clk status"
+    offset: 0xc4
+    fields:
+      - { name: aoss_timer_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_timer_apb_clk icg enable status"}
+      - { name: aoss_timer_apb_clk_sel_clk0_sel, lsb: 8, bits: 1, access: ro, reset: 0x1, description: "aoss_timer_apb_clk select clk1 status"}
+      - { name: aoss_timer_apb_clk_sel_clk1_sel, lsb: 9, bits: 1, access: ro, reset: 0x0, description: "aoss_timer_apb_clk select clk1 status"}
+      - { name: aoss_timer_apb_clk_sel_done, lsb: 10, bits: 1, access: ro, reset: 0x1, description: "aoss_timer_apb_clk select done status"}
+  - name: aoss_timer_cnt_clk_ctrl
+    description: "aoss_timer_cnt_clk control register"
+    offset: 0xc8
+    fields:
+      - { name: aoss_timer_cnt_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_timer_cnt_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_timer_cnt_clk_status
+    description: "aoss_timer_cnt_clk status"
+    offset: 0xcc
+    fields:
+      - { name: aoss_timer_cnt_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_timer_cnt_clk icg enable status"}
+  - name: aoss_sc_apb_clk_ctrl
+    description: "aoss_sc_apb_clk control register"
+    offset: 0xd0
+    fields:
+      - { name: aoss_sc_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_sc_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_sc_apb_clk_status
+    description: "aoss_sc_apb_clk status"
+    offset: 0xd4
+    fields:
+      - { name: aoss_sc_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_sc_apb_clk icg enable status"}
+  - name: aoss_rom_ahb_clk_ctrl
+    description: "aoss_rom_ahb_clk control register"
+    offset: 0xd8
+    fields:
+      - { name: aoss_rom_ahb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rom_ahb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_rom_ahb_clk_status
+    description: "aoss_rom_ahb_clk status"
+    offset: 0xdc
+    fields:
+      - { name: aoss_rom_ahb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_rom_ahb_clk icg enable status"}
+  - name: aoss_rdc_ahb_clk_ctrl
+    description: "aoss_rdc_ahb_clk control register"
+    offset: 0xe0
+    fields:
+      - { name: aoss_rdc_ahb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rdc_ahb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_rdc_ahb_clk_status
+    description: "aoss_rdc_ahb_clk status"
+    offset: 0xe4
+    fields:
+      - { name: aoss_rdc_ahb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_rdc_ahb_clk icg enable status"}
+  - name: aoss_rdc_clk_ctrl
+    description: "aoss_rdc_clk control register"
+    offset: 0xe8
+    fields:
+      - { name: aoss_rdc_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rdc_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_rdc_clk_status
+    description: "aoss_rdc_clk status"
+    offset: 0xec
+    fields:
+      - { name: aoss_rdc_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_rdc_clk icg enable status"}
+  - name: aoss_cipher_sec_core_clk_ctrl
+    description: "aoss_cipher_sec_core_clk control register"
+    offset: 0xf0
+    fields:
+      - { name: aoss_cipher_sec_core_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_core_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_cipher_sec_core_clk_status
+    description: "aoss_cipher_sec_core_clk status"
+    offset: 0xf4
+    fields:
+      - { name: aoss_cipher_sec_core_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_core_clk icg enable status"}
+  - name: aoss_cipher_sec_aes_clk_ctrl
+    description: "aoss_cipher_sec_aes_clk control register"
+    offset: 0xf8
+    fields:
+      - { name: aoss_cipher_sec_aes_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_aes_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_cipher_sec_aes_clk_status
+    description: "aoss_cipher_sec_aes_clk status"
+    offset: 0xfc
+    fields:
+      - { name: aoss_cipher_sec_aes_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_aes_clk icg enable status"}
+  - name: aoss_cipher_sec_hash_clk_ctrl
+    description: "aoss_cipher_sec_hash_clk control register"
+    offset: 0x100
+    fields:
+      - { name: aoss_cipher_sec_hash_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_hash_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_cipher_sec_hash_clk_status
+    description: "aoss_cipher_sec_hash_clk status"
+    offset: 0x104
+    fields:
+      - { name: aoss_cipher_sec_hash_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_hash_clk icg enable status"}
+  - name: aoss_cipher_sec_sm4_clk_ctrl
+    description: "aoss_cipher_sec_sm4_clk control register"
+    offset: 0x108
+    fields:
+      - { name: aoss_cipher_sec_sm4_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_sm4_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_cipher_sec_sm4_clk_status
+    description: "aoss_cipher_sec_sm4_clk status"
+    offset: 0x10c
+    fields:
+      - { name: aoss_cipher_sec_sm4_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_sm4_clk icg enable status"}
+  - name: aoss_cipher_sec_pk_clk_ctrl
+    description: "aoss_cipher_sec_pk_clk control register"
+    offset: 0x110
+    fields:
+      - { name: aoss_cipher_sec_pk_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_pk_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_cipher_sec_pk_clk_status
+    description: "aoss_cipher_sec_pk_clk status"
+    offset: 0x114
+    fields:
+      - { name: aoss_cipher_sec_pk_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_pk_clk icg enable status"}
+  - name: aoss_cipher_sec_pkdiv2_clk_ctrl
+    description: "aoss_cipher_sec_pkdiv2_clk control register"
+    offset: 0x118
+    fields:
+      - { name: aoss_cipher_sec_pkdiv2_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_pkdiv2_clk icg enable, PRTC_16_16_1'h1"}
+      - { name: aoss_cipher_sec_pkdiv2_clk_divider_ea_req, lsb: 4, bits: 1, access: w1t, reset: 0x0, lock_lsb: 20, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_pkdiv2_clk divider enable request, PRTC_20_20_1'h1"}
+  - name: aoss_cipher_sec_pkdiv2_clk_divider
+    description: "aoss_cipher_sec_pkdiv2_clk divider"
+    offset: 0x11c
+    fields:
+      - { name: aoss_cipher_sec_pkdiv2_clk_divider, lsb: 0, bits: 3, access: rw, reset: 0x2, lock_lsb: 16, lock_bits: 3, lock_value: 0x7, description: "aoss_cipher_sec_pkdiv2_clk divider, PRTC_18_16_3'h7"}
+  - name: aoss_cipher_sec_pkdiv2_clk_status
+    description: "aoss_cipher_sec_pkdiv2_clk status"
+    offset: 0x120
+    fields:
+      - { name: aoss_cipher_sec_pkdiv2_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_pkdiv2_clk icg enable status"}
+      - { name: aoss_cipher_sec_pkdiv2_clk_divider_done, lsb: 12, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_pkdiv2_clk divider done status"}
+      - { name: aoss_cipher_sec_pkdiv2_clk_divider_status, lsb: 16, bits: 3, access: ro, reset: 0x2, description: "aoss_cipher_sec_pkdiv2_clk divider status"}
+  - name: aoss_efuse_ctrl_ahb_clk_ctrl
+    description: "aoss_efuse_ctrl_ahb_clk control register"
+    offset: 0x124
+    fields:
+      - { name: aoss_efuse_ctrl_ahb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_efuse_ctrl_ahb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_efuse_ctrl_ahb_clk_status
+    description: "aoss_efuse_ctrl_ahb_clk status"
+    offset: 0x128
+    fields:
+      - { name: aoss_efuse_ctrl_ahb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_efuse_ctrl_ahb_clk icg enable status"}
+  - name: aoss_sec_ctrl0_clk_ctrl
+    description: "aoss_sec_ctrl0_clk control register"
+    offset: 0x12c
+    fields:
+      - { name: aoss_sec_ctrl0_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_sec_ctrl0_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_sec_ctrl0_clk_status
+    description: "aoss_sec_ctrl0_clk status"
+    offset: 0x130
+    fields:
+      - { name: aoss_sec_ctrl0_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_sec_ctrl0_clk icg enable status"}
+  - name: aoss_sec_ctrl1_clk_ctrl
+    description: "aoss_sec_ctrl1_clk control register"
+    offset: 0x134
+    fields:
+      - { name: aoss_sec_ctrl1_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_sec_ctrl1_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_sec_ctrl1_clk_status
+    description: "aoss_sec_ctrl1_clk status"
+    offset: 0x138
+    fields:
+      - { name: aoss_sec_ctrl1_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_sec_ctrl1_clk icg enable status"}
+  - name: aoss_sec_ctrl2_clk_ctrl
+    description: "aoss_sec_ctrl2_clk control register"
+    offset: 0x13c
+    fields:
+      - { name: aoss_sec_ctrl2_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_sec_ctrl2_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_sec_ctrl2_clk_status
+    description: "aoss_sec_ctrl2_clk status"
+    offset: 0x140
+    fields:
+      - { name: aoss_sec_ctrl2_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_sec_ctrl2_clk icg enable status"}
+  - name: aoss_io_apb_clk_ctrl
+    description: "aoss_io_apb_clk control register"
+    offset: 0x144
+    fields:
+      - { name: aoss_io_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_io_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_io_apb_clk_status
+    description: "aoss_io_apb_clk status"
+    offset: 0x148
+    fields:
+      - { name: aoss_io_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_io_apb_clk icg enable status"}
+  - name: misc_ahb_clk_ctrl
+    description: "misc_ahb_clk control register"
+    offset: 0x14c
+    fields:
+      - { name: misc_ahb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "misc_ahb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: misc_ahb_clk_status
+    description: "misc_ahb_clk status"
+    offset: 0x150
+    fields:
+      - { name: misc_ahb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "misc_ahb_clk icg enable status"}
+  - name: dtss_dt_clk_ctrl
+    description: "dtss_dt_clk control register"
+    offset: 0x154
+    fields:
+      - { name: dtss_dt_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "dtss_dt_clk icg enable, PRTC_16_16_1'h1"}
+  - name: dtss_dt_clk_status
+    description: "dtss_dt_clk status"
+    offset: 0x158
+    fields:
+      - { name: dtss_dt_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "dtss_dt_clk icg enable status"}
+  - name: aoss_ocmem_ahb_clk_ctrl
+    description: "aoss_ocmem_ahb_clk control register"
+    offset: 0x15c
+    fields:
+      - { name: aoss_ocmem_ahb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_ocmem_ahb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_ocmem_ahb_clk_status
+    description: "aoss_ocmem_ahb_clk status"
+    offset: 0x160
+    fields:
+      - { name: aoss_ocmem_ahb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_ocmem_ahb_clk icg enable status"}
+  - name: aoss_timer64_ahb_clk_ctrl
+    description: "aoss_timer64_ahb_clk control register"
+    offset: 0x164
+    fields:
+      - { name: aoss_timer64_ahb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_timer64_ahb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_timer64_ahb_clk_status
+    description: "aoss_timer64_ahb_clk status"
+    offset: 0x168
+    fields:
+      - { name: aoss_timer64_ahb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_timer64_ahb_clk icg enable status"}
+  - name: aoss_timer64_clk_ctrl
+    description: "aoss_timer64_clk control register"
+    offset: 0x16c
+    fields:
+      - { name: aoss_timer64_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_timer64_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_timer64_clk_status
+    description: "aoss_timer64_clk status"
+    offset: 0x170
+    fields:
+      - { name: aoss_timer64_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_timer64_clk icg enable status"}
+  - name: aoss_pwm_apb_clk_ctrl
+    description: "aoss_pwm_apb_clk control register"
+    offset: 0x174
+    fields:
+      - { name: aoss_pwm_apb_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_pwm_apb_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_pwm_apb_clk_status
+    description: "aoss_pwm_apb_clk status"
+    offset: 0x178
+    fields:
+      - { name: aoss_pwm_apb_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_pwm_apb_clk icg enable status"}
+  - name: aoss_pwm_core_clk_ctrl
+    description: "aoss_pwm_core_clk control register"
+    offset: 0x17c
+    fields:
+      - { name: aoss_pwm_core_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_pwm_core_clk icg enable, PRTC_16_16_1'h1"}
+      - { name: aoss_pwm_core_clk_sel, lsb: 8, bits: 1, access: rw, reset: 0x0, lock_lsb: 24, lock_bits: 1, lock_value: 0x1, description: "aoss_pwm_core_clk select, PRTC_24_24_1'h1"}
+  - name: aoss_pwm_core_clk_status
+    description: "aoss_pwm_core_clk status"
+    offset: 0x180
+    fields:
+      - { name: aoss_pwm_core_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_pwm_core_clk icg enable status"}
+      - { name: aoss_pwm_core_clk_sel_clk0_sel, lsb: 8, bits: 1, access: ro, reset: 0x1, description: "aoss_pwm_core_clk select clk1 status"}
+      - { name: aoss_pwm_core_clk_sel_clk1_sel, lsb: 9, bits: 1, access: ro, reset: 0x0, description: "aoss_pwm_core_clk select clk1 status"}
+      - { name: aoss_pwm_core_clk_sel_done, lsb: 10, bits: 1, access: ro, reset: 0x1, description: "aoss_pwm_core_clk select done status"}
+  - name: aoss_sc_ref_clk_ctrl
+    description: "aoss_sc_ref_clk control register"
+    offset: 0x184
+    fields:
+      - { name: aoss_sc_ref_clk_ea, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_sc_ref_clk icg enable, PRTC_16_16_1'h1"}
+  - name: aoss_sc_ref_clk_status
+    description: "aoss_sc_ref_clk status"
+    offset: 0x188
+    fields:
+      - { name: aoss_sc_ref_clk_ea_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_sc_ref_clk icg enable status"}
+  - name: aoss_lp_core_rst_ctrl
+    description: "aoss_lp_core_rst_ctrl"
+    offset: 0x800
+    fields:
+      - { name: aoss_lp_core_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_lp_core_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_lp_core_por_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x1, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_lp_core_por_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_uart_rst_ctrl
+    description: "aoss_uart_rst_ctrl"
+    offset: 0x804
+    fields:
+      - { name: aoss_uart_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_uart_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_uart_core_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_uart_core_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_usim0_rst_ctrl
+    description: "aoss_usim0_rst_ctrl"
+    offset: 0x808
+    fields:
+      - { name: aoss_usim0_32k_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_usim0_32k_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_usim0_apb_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_usim0_apb_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_gpio_rst_ctrl
+    description: "aoss_gpio_rst_ctrl"
+    offset: 0x80c
+    fields:
+      - { name: aoss_gpio_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_gpio_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_i2c0_rst_ctrl
+    description: "aoss_i2c0_rst_ctrl"
+    offset: 0x810
+    fields:
+      - { name: aoss_i2c_core_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_i2c_core_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_i2c_apb_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_i2c_apb_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_usim1_rst_ctrl
+    description: "aoss_usim1_rst_ctrl"
+    offset: 0x814
+    fields:
+      - { name: aoss_usim1_32k_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_usim1_32k_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_usim1_apb_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_usim1_apb_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_spi_rst_ctrl
+    description: "aoss_spi_rst_ctrl"
+    offset: 0x818
+    fields:
+      - { name: aoss_spi_core_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_spi_core_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_spi_apb_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_spi_apb_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_drx_timer_rst_ctrl
+    description: "aoss_drx_timer_rst_ctrl"
+    offset: 0x81c
+    fields:
+      - { name: aoss_drx_timer_32k_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_drx_timer_32k_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_drx_timer_phy_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_drx_timer_phy_rst_n_sftrstn, PRTC_17_17_0x1"}
+      - { name: aoss_drx_timer_apb_rst_n_sftrstn, lsb: 2, bits: 1, access: rw, reset: 0x0, lock_lsb: 18, lock_bits: 1, lock_value: 0x1, description: "aoss_drx_timer_apb_rst_n_sftrstn, PRTC_18_18_0x1"}
+  - name: aoss_rtc_rst_ctrl
+    description: "aoss_rtc_rst_ctrl"
+    offset: 0x820
+    fields:
+      - { name: aoss_rtc_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rtc_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_rtc_core_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_rtc_core_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_wdt_rst_ctrl
+    description: "aoss_wdt_rst_ctrl"
+    offset: 0x824
+    fields:
+      - { name: aoss_wdt_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_wdt_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_wdt_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_wdt_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_timer0_rst_ctrl
+    description: "aoss_timer0_rst_ctrl"
+    offset: 0x828
+    fields:
+      - { name: aoss_timer_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_timer_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_sc_rst_ctrl
+    description: "aoss_sc_rst_ctrl"
+    offset: 0x82c
+    fields:
+      - { name: aoss_sc_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_sc_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_rom_ahb_rst_ctrl
+    description: "aoss_rom_ahb_rst_ctrl"
+    offset: 0x830
+    fields:
+      - { name: aoss_rom_ahb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rom_ahb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_rdc_ahb_rst_ctrl
+    description: "aoss_rdc_ahb_rst_ctrl"
+    offset: 0x834
+    fields:
+      - { name: aoss_rdc_ahb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rdc_ahb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_rdc_rst_ctrl
+    description: "aoss_rdc_rst_ctrl"
+    offset: 0x838
+    fields:
+      - { name: aoss_rdc_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_rdc_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_cipher_sec_core_rst_ctrl
+    description: "aoss_cipher_sec_core_rst_ctrl"
+    offset: 0x83c
+    fields:
+      - { name: aoss_cipher_sec_core_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_core_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_cipher_sec_pk_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_cipher_sec_pk_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_efuse_ctrl_rst_ctrl
+    description: "aoss_efuse_ctrl_rst_ctrl"
+    offset: 0x840
+    fields:
+      - { name: aoss_efuse_ctrl_logic_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_efuse_ctrl_logic_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_sec_ctrl0_rst_ctrl
+    description: "aoss_sec_ctrl0_rst_ctrl"
+    offset: 0x844
+    fields:
+      - { name: aoss_sec_ctrl0_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_sec_ctrl0_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_sec_ctrl2_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x1, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_sec_ctrl2_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_io_rst_ctrl
+    description: "aoss_io_rst_ctrl"
+    offset: 0x848
+    fields:
+      - { name: aoss_io_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_io_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: misc_ahb_rst_ctrl
+    description: "misc_ahb_rst_ctrl"
+    offset: 0x84c
+    fields:
+      - { name: misc_ahb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "misc_ahb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: dtss_dt_rst_ctrl
+    description: "dtss_dt_rst_ctrl"
+    offset: 0x850
+    fields:
+      - { name: dtss_dt_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "dtss_dt_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_ocmem_ahb_rst_ctrl
+    description: "aoss_ocmem_ahb_rst_ctrl"
+    offset: 0x854
+    fields:
+      - { name: aoss_ocmem_ahb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_ocmem_ahb_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_timer64_rst_ctrl
+    description: "aoss_timer64_rst_ctrl"
+    offset: 0x858
+    fields:
+      - { name: aoss_timer64_ahb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_timer64_ahb_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_timer64_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_timer64_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_pwm_rst_ctrl
+    description: "aoss_pwm_rst_ctrl"
+    offset: 0x85c
+    fields:
+      - { name: aoss_pwm_apb_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_pwm_apb_rst_n_sftrstn, PRTC_16_16_0x1"}
+      - { name: aoss_pwm_core_rst_n_sftrstn, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 17, lock_bits: 1, lock_value: 0x1, description: "aoss_pwm_core_rst_n_sftrstn, PRTC_17_17_0x1"}
+  - name: aoss_timer_cnt_rst_ctrl
+    description: "aoss_timer_cnt_rst_ctrl"
+    offset: 0x860
+    fields:
+      - { name: aoss_timer_cnt_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "aoss_timer_cnt_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_lp_bus_rst_ctrl
+    description: "aoss_lp_bus_rst_ctrl"
+    offset: 0x864
+    fields:
+      - { name: chiptop_lp_bus_rst_n_sftrstn, lsb: 0, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "chiptop_lp_bus_rst_n_sftrstn, PRTC_16_16_0x1"}
+  - name: aoss_lp_core_rst_ctrl_status
+    description: "aoss_lp_core_rst_ctrl_status"
+    offset: 0x1000
+    fields:
+      - { name: aoss_lp_core_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_lp_core_rst_n_status"}
+      - { name: aoss_lp_core_por_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x1, description: "aoss_lp_core_por_rst_n_status"}
+  - name: aoss_uart_rst_ctrl_status
+    description: "aoss_uart_rst_ctrl_status"
+    offset: 0x1004
+    fields:
+      - { name: aoss_uart_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_uart_apb_rst_n_status"}
+      - { name: aoss_uart_core_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_uart_core_rst_n_status"}
+  - name: aoss_usim0_rst_ctrl_status
+    description: "aoss_usim0_rst_ctrl_status"
+    offset: 0x1008
+    fields:
+      - { name: aoss_usim0_32k_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_usim0_32k_rst_n_status"}
+      - { name: aoss_usim0_apb_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_usim0_apb_rst_n_status"}
+  - name: aoss_gpio_rst_ctrl_status
+    description: "aoss_gpio_rst_ctrl_status"
+    offset: 0x100c
+    fields:
+      - { name: aoss_gpio_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_gpio_apb_rst_n_status"}
+  - name: aoss_i2c0_rst_ctrl_status
+    description: "aoss_i2c0_rst_ctrl_status"
+    offset: 0x1010
+    fields:
+      - { name: aoss_i2c_core_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_i2c_core_rst_n_status"}
+      - { name: aoss_i2c_apb_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_i2c_apb_rst_n_status"}
+  - name: aoss_usim1_rst_ctrl_status
+    description: "aoss_usim1_rst_ctrl_status"
+    offset: 0x1014
+    fields:
+      - { name: aoss_usim1_32k_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_usim1_32k_rst_n_status"}
+      - { name: aoss_usim1_apb_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_usim1_apb_rst_n_status"}
+  - name: aoss_spi_rst_ctrl_status
+    description: "aoss_spi_rst_ctrl_status"
+    offset: 0x1018
+    fields:
+      - { name: aoss_spi_core_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_spi_core_rst_n_status"}
+      - { name: aoss_spi_apb_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_spi_apb_rst_n_status"}
+  - name: aoss_drx_timer_rst_ctrl_status
+    description: "aoss_drx_timer_rst_ctrl_status"
+    offset: 0x101c
+    fields:
+      - { name: aoss_drx_timer_32k_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_drx_timer_32k_rst_n_status"}
+      - { name: aoss_drx_timer_phy_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_drx_timer_phy_rst_n_status"}
+      - { name: aoss_drx_timer_apb_rst_n_status, lsb: 2, bits: 1, access: ro, reset: 0x0, description: "aoss_drx_timer_apb_rst_n_status"}
+  - name: aoss_rtc_rst_ctrl_status
+    description: "aoss_rtc_rst_ctrl_status"
+    offset: 0x1020
+    fields:
+      - { name: aoss_rtc_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_rtc_apb_rst_n_status"}
+      - { name: aoss_rtc_core_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_rtc_core_rst_n_status"}
+  - name: aoss_wdt_rst_ctrl_status
+    description: "aoss_wdt_rst_ctrl_status"
+    offset: 0x1024
+    fields:
+      - { name: aoss_wdt_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_wdt_apb_rst_n_status"}
+      - { name: aoss_wdt_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_wdt_rst_n_status"}
+  - name: aoss_timer0_rst_ctrl_status
+    description: "aoss_timer0_rst_ctrl_status"
+    offset: 0x1028
+    fields:
+      - { name: aoss_timer_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_timer_apb_rst_n_status"}
+  - name: aoss_sc_rst_ctrl_status
+    description: "aoss_sc_rst_ctrl_status"
+    offset: 0x102c
+    fields:
+      - { name: aoss_sc_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_sc_apb_rst_n_status"}
+  - name: aoss_rom_ahb_rst_ctrl_status
+    description: "aoss_rom_ahb_rst_ctrl_status"
+    offset: 0x1030
+    fields:
+      - { name: aoss_rom_ahb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_rom_ahb_rst_n_status"}
+  - name: aoss_rdc_ahb_rst_ctrl_status
+    description: "aoss_rdc_ahb_rst_ctrl_status"
+    offset: 0x1034
+    fields:
+      - { name: aoss_rdc_ahb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_rdc_ahb_rst_n_status"}
+  - name: aoss_rdc_rst_ctrl_status
+    description: "aoss_rdc_rst_ctrl_status"
+    offset: 0x1038
+    fields:
+      - { name: aoss_rdc_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_rdc_rst_n_status"}
+  - name: aoss_cipher_sec_core_rst_ctrl_status
+    description: "aoss_cipher_sec_core_rst_ctrl_status"
+    offset: 0x103c
+    fields:
+      - { name: aoss_cipher_sec_core_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_core_rst_n_status"}
+      - { name: aoss_cipher_sec_pk_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_cipher_sec_pk_rst_n_status"}
+  - name: aoss_efuse_ctrl_rst_ctrl_status
+    description: "aoss_efuse_ctrl_rst_ctrl_status"
+    offset: 0x1040
+    fields:
+      - { name: aoss_efuse_ctrl_logic_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_efuse_ctrl_logic_rst_n_status"}
+  - name: aoss_sec_ctrl0_rst_ctrl_status
+    description: "aoss_sec_ctrl0_rst_ctrl_status"
+    offset: 0x1044
+    fields:
+      - { name: aoss_sec_ctrl0_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_sec_ctrl0_rst_n_status"}
+      - { name: aoss_sec_ctrl2_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x1, description: "aoss_sec_ctrl2_rst_n_status"}
+  - name: aoss_io_rst_ctrl_status
+    description: "aoss_io_rst_ctrl_status"
+    offset: 0x1048
+    fields:
+      - { name: aoss_io_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_io_apb_rst_n_status"}
+  - name: misc_ahb_rst_ctrl_status
+    description: "misc_ahb_rst_ctrl_status"
+    offset: 0x104c
+    fields:
+      - { name: misc_ahb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "misc_ahb_rst_n_status"}
+  - name: dtss_dt_rst_ctrl_status
+    description: "dtss_dt_rst_ctrl_status"
+    offset: 0x1050
+    fields:
+      - { name: dtss_dt_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "dtss_dt_rst_n_status"}
+  - name: aoss_ocmem_ahb_rst_ctrl_status
+    description: "aoss_ocmem_ahb_rst_ctrl_status"
+    offset: 0x1054
+    fields:
+      - { name: aoss_ocmem_ahb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "aoss_ocmem_ahb_rst_n_status"}
+  - name: aoss_timer64_rst_ctrl_status
+    description: "aoss_timer64_rst_ctrl_status"
+    offset: 0x1058
+    fields:
+      - { name: aoss_timer64_ahb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_timer64_ahb_rst_n_status"}
+      - { name: aoss_timer64_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_timer64_rst_n_status"}
+  - name: aoss_pwm_rst_ctrl_status
+    description: "aoss_pwm_rst_ctrl_status"
+    offset: 0x105c
+    fields:
+      - { name: aoss_pwm_apb_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_pwm_apb_rst_n_status"}
+      - { name: aoss_pwm_core_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "aoss_pwm_core_rst_n_status"}
+  - name: aoss_timer_cnt_rst_ctrl_status
+    description: "aoss_timer_cnt_rst_ctrl_status"
+    offset: 0x1060
+    fields:
+      - { name: aoss_timer_cnt_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "aoss_timer_cnt_rst_n_status"}
+  - name: aoss_lp_bus_rst_ctrl_status
+    description: "aoss_lp_bus_rst_ctrl_status"
+    offset: 0x1064
+    fields:
+      - { name: chiptop_lp_bus_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "chiptop_lp_bus_rst_n_status"}
+  - name: aoss_rst
+    description: "full_chip_level_rst"
+    offset: 0x1600
+    fields:
+      - { name: aoss_rst, lsb: 0, bits: 1, access: w1t, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "PRTC_16_16_1'h1"}
+  - name: soft_sw_soc_rst_n
+    description: "soc top level rst"
+    offset: 0x1604
+    fields:
+      - { name: soc_soft_rst_n, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "PRTC_16_16_1'h1"}
+  - name: mdm_rst_ctrl
+    description: "modem subsystem reset control"
+    offset: 0x1608
+    fields:
+      - { name: mdm_rst_n, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "modem reset include cipher, bb_phy,ps,l1c,wdt1,wdt2,usim0,usim1,PRTC_16_16_1'h1"}
+  - name: full_chip_rst_ctrl
+    description: "full_chip_level_rst"
+    offset: 0x160c
+    fields:
+      - { name: full_chip_sw_rst, lsb: 0, bits: 1, access: w1t, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "PRTC_16_16_1'h1"}
+  - name: soft_hw_rst_ctrl
+    description: "soft hw level rst"
+    offset: 0x1610
+    fields:
+      - { name: soft_hw_rst_n, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "PRTC_16_16_1'h1"}
+  - name: chiptop_soc_rst_ctrl
+    description: "chiptop_soft_rst_n"
+    offset: 0x1614
+    fields:
+      - { name: chiptop_soft_rst_n, lsb: 0, bits: 1, access: rw, reset: 0x1, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "PRTC_16_16_1'h1"}
+  - name: aoss_crg_rst_n_status
+    description: "chiptop_crg_rst_n_status"
+    offset: 0x1618
+    fields:
+      - { name: soc_async_rst_n_status, lsb: 0, bits: 1, access: ro, reset: 0x1, description: "soc_async_rst_n"}
+      - { name: aoss_lp_core_por_rst_n_status, lsb: 1, bits: 1, access: ro, reset: 0x1, description: "aoss_lp_core_por_rst_n"}
+      - { name: aoss_lp_bus_rst_n_status, lsb: 2, bits: 1, access: ro, reset: 0x1, description: "aoss_lp_bus_rst_n"}
+      - { name: aoss_efuse_ctrl_por_rst_n_status, lsb: 3, bits: 1, access: ro, reset: 0x1, description: "aoss_efuse_ctrl_por_rst_n"}
+      - { name: aoss_pmu_rst_n_status, lsb: 4, bits: 1, access: ro, reset: 0x1, description: "aoss_pmu_rst_n"}
+      - { name: aoss_pmu_apb_rst_n_status, lsb: 5, bits: 1, access: ro, reset: 0x1, description: "aoss_pmu_apb_rst_n"}
+      - { name: aoss_pmu_32k_rst_n_status, lsb: 6, bits: 1, access: ro, reset: 0x1, description: "aoss_pmu_32k_rst_n"}
+      - { name: aoss_pmu_por_rst_n_status, lsb: 7, bits: 1, access: ro, reset: 0x1, description: "aoss_pmu_por_rst_n"}
+      - { name: aoss_crg_apb_rst_n_status, lsb: 8, bits: 1, access: ro, reset: 0x1, description: "aoss_crg_apb_rst_n"}
+      - { name: aoss_sc_por_rst_n_status, lsb: 9, bits: 1, access: ro, reset: 0x1, description: "aoss_sc_por_rst_n"}
+      - { name: soc_soft_rst_n_out_status, lsb: 10, bits: 1, access: ro, reset: 0x1, description: "soc_soft_rst_n_out"}
+      - { name: mdm_sys_rst_n_status, lsb: 11, bits: 1, access: ro, reset: 0x1, description: "mdm_sys_rst_n"}
+  - name: aoss_lp_cpu_rst_ijtag_ctrl
+    description: "for ijtag rst_n"
+    offset: 0x162c
+    fields:
+      - { name: aoss_lp_cpu_rst_ijtag_ctrl, lsb: 0, bits: 1, access: rw, reset: 0x0, description: "for ijtag rst_n"}
+interrupts:
+  - name: cpuss_pll_lock_fail
+    description: "nan"
+    offset: 0x2000
+    fields:
+      - { name: cpuss_pll_lock_fail, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "cpuss_pll_lock_fail"}
+  - name: chiptop_pll_lock_fail
+    description: "nan"
+    offset: 0x201c
+    fields:
+      - { name: chiptop_pll_lock_fail, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "chiptop_pll_lock_fail"}

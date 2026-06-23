@@ -1,0 +1,4 @@
+interface:
+  display_name: "SoC Pipeline"
+  short_description: "Gated SoC RTL design and verification flow"
+  default_prompt: "Use $soc-pipeline to implement and verify this RTL module through the gated SoC workflow."

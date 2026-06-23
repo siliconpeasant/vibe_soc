@@ -1,0 +1,4 @@
+interface:
+  display_name: "SoC OpenROAD"
+  short_description: "Docker-first OpenROAD physical design handoff"
+  default_prompt: "Use $soc-openroad to prepare and run a Docker-first OpenROAD-flow-scripts stage for this SoC design."

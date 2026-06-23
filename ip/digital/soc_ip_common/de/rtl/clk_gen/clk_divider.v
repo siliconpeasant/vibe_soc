@@ -1,100 +1,134 @@
 module clk_divider #(
     parameter DIV_WIDTH = 8
 )(
-    input              clk,
-    input              rst_n,
-    input  [DIV_WIDTH-1:0] div_ratio,    // 同步输入分频系数
-    output reg         clk_out
+    input  wire                 clk,
+    input  wire                 rst_n,
+    input  wire [DIV_WIDTH-1:0] div_ratio,
+    output reg                  clk_out
 );
 
-    // -------------------------------------------------------------------------
-    // 分频系数变化检测：同步输入，直接采样，变化时清零计数器
-    // -------------------------------------------------------------------------
-    reg [DIV_WIDTH-1:0] div_ratio_sync;
-    reg [DIV_WIDTH-1:0] div_ratio_prev;
-    wire div_change;
+    localparam [DIV_WIDTH-1:0] RATIO_ZERO = {DIV_WIDTH{1'b0}};
 
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            div_ratio_sync <= 'd0;
-            div_ratio_prev <= 'd0;
-        end else begin
-            div_ratio_prev <= div_ratio_sync;
-            div_ratio_sync <= div_ratio;
-        end
-    end
-
-    assign div_change = (div_ratio_sync != div_ratio_prev);
-
-    // -------------------------------------------------------------------------
-    // 分频系数解析
-    // 0 : 输出常 0
-    // 1 : 输出直通 clk
-    // >= 2 : 分频输出
-    // -------------------------------------------------------------------------
-    wire [DIV_WIDTH-1:0] half_div = div_ratio_sync >> 1;
-    wire is_odd = div_ratio_sync[0];
-
-    // -------------------------------------------------------------------------
-    // 正沿计数器与翻转信号（奇偶分频共用）
-    // -------------------------------------------------------------------------
+    reg [DIV_WIDTH-1:0] div_ratio_q;
     reg [DIV_WIDTH-1:0] cnt_p;
-    reg clk_p;
+    reg [DIV_WIDTH-1:0] cnt_n;
+    reg                 clk_p;
+    reg                 clk_n;
+    reg                 restart_n;
 
+    function [DIV_WIDTH-1:0] make_ratio_one;
+        input unused;
+        begin
+            make_ratio_one    = {DIV_WIDTH{1'b0}};
+            make_ratio_one[0] = 1'b1;
+        end
+    endfunction
+
+    wire [DIV_WIDTH-1:0] ratio_one = make_ratio_one(1'b0);
+
+    wire ratio_change = (div_ratio != div_ratio_q);
+    wire ratio_zero   = (div_ratio_q == RATIO_ZERO);
+    wire ratio_is_one = (div_ratio_q == ratio_one);
+    wire ratio_active = (div_ratio_q >  ratio_one);
+    wire ratio_odd    = div_ratio_q[0];
+
+    wire [DIV_WIDTH-1:0] even_limit = div_ratio_q >> 1;
+    wire [DIV_WIDTH-1:0] odd_low_limit =
+        (div_ratio_q >> 1) + ratio_one;
+    wire [DIV_WIDTH-1:0] odd_high_limit = div_ratio_q >> 1;
+
+    // -------------------------------------------------------------------------
+    // Positive-edge ratio sampling and divider phase.  A sampled ratio change
+    // clears the phase state before the new ratio is used for division.
+    // -------------------------------------------------------------------------
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            cnt_p <= 'd0;
-            clk_p <= 1'b0;
-        end else if (div_change || div_ratio_sync <= 1) begin
-            cnt_p <= 'd0;
-            clk_p <= 1'b0;
+            div_ratio_q <= RATIO_ZERO;
+            cnt_p       <= RATIO_ZERO;
+            clk_p       <= 1'b0;
+            restart_n   <= 1'b1;
         end else begin
-            if (cnt_p >= div_ratio_sync - 1)
-                cnt_p <= 'd0;
-            else
-                cnt_p <= cnt_p + 1'b1;
+            div_ratio_q <= div_ratio;
+            restart_n   <= ratio_change || (div_ratio <= ratio_one);
 
-            if (cnt_p == half_div - 1 || cnt_p == div_ratio_sync - 1)
-                clk_p <= ~clk_p;
+            if (ratio_change || (div_ratio <= ratio_one)) begin
+                cnt_p <= RATIO_ZERO;
+                clk_p <= 1'b0;
+            end else if (!ratio_odd) begin
+                if (cnt_p == (even_limit - ratio_one)) begin
+                    cnt_p <= RATIO_ZERO;
+                    clk_p <= ~clk_p;
+                end else begin
+                    cnt_p <= cnt_p + ratio_one;
+                end
+            end else if (!clk_p) begin
+                if (cnt_p == (odd_low_limit - ratio_one)) begin
+                    cnt_p <= RATIO_ZERO;
+                    clk_p <= 1'b1;
+                end else begin
+                    cnt_p <= cnt_p + ratio_one;
+                end
+            end else begin
+                if (cnt_p == (odd_high_limit - ratio_one)) begin
+                    cnt_p <= RATIO_ZERO;
+                    clk_p <= 1'b0;
+                end else begin
+                    cnt_p <= cnt_p + ratio_one;
+                end
+            end
         end
     end
 
     // -------------------------------------------------------------------------
-    // 负沿计数器与翻转信号（仅奇数分频需要，用于构造 50% 占空比）
+    // Negative-edge phase for odd-ratio balancing.  restart_n is launched on
+    // posedge clk and is held long enough to clear this half-cycle phase.
     // -------------------------------------------------------------------------
-    reg [DIV_WIDTH-1:0] cnt_n;
-    reg clk_n;
-
     always @(negedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            cnt_n <= 'd0;
+            cnt_n <= RATIO_ZERO;
             clk_n <= 1'b0;
-        end else if (div_change || div_ratio_sync <= 1) begin
-            cnt_n <= 'd0;
+        end else if (restart_n || !ratio_active) begin
+            cnt_n <= RATIO_ZERO;
             clk_n <= 1'b0;
+        end else if (!ratio_odd) begin
+            cnt_n <= RATIO_ZERO;
+            clk_n <= 1'b0;
+        end else if (!clk_n) begin
+            if (cnt_n == (odd_low_limit - ratio_one)) begin
+                cnt_n <= RATIO_ZERO;
+                clk_n <= 1'b1;
+            end else begin
+                cnt_n <= cnt_n + ratio_one;
+            end
         end else begin
-            if (cnt_n >= div_ratio_sync - 1)
-                cnt_n <= 'd0;
-            else
-                cnt_n <= cnt_n + 1'b1;
-
-            if (cnt_n == half_div - 1 || cnt_n == div_ratio_sync - 1)
-                clk_n <= ~clk_n;
+            if (cnt_n == (odd_high_limit - ratio_one)) begin
+                cnt_n <= RATIO_ZERO;
+                clk_n <= 1'b0;
+            end else begin
+                cnt_n <= cnt_n + ratio_one;
+            end
         end
     end
 
     // -------------------------------------------------------------------------
-    // 输出选择
+    // Output mode selection:
+    //   0    : force low
+    //   1    : combinational clock bypass
+    //   even : positive-edge divided phase
+    //   odd  : OR-combined positive/negative phases for half-cycle balance
     // -------------------------------------------------------------------------
     always @(*) begin
-        if (div_ratio_sync == 0)
+        if (ratio_zero) begin
             clk_out = 1'b0;
-        else if (div_ratio_sync == 1)
+        end else if (ratio_is_one) begin
             clk_out = clk;
-        else if (!is_odd)
-            clk_out = clk_p;          // 偶数分频
-        else
-            clk_out = clk_p | clk_n;  // 奇数分频：正沿/负沿波形相或得到 50% 占空比
+        end else if (restart_n) begin
+            clk_out = 1'b0;
+        end else if (ratio_odd) begin
+            clk_out = clk_p | clk_n;
+        end else begin
+            clk_out = clk_p;
+        end
     end
 
 endmodule

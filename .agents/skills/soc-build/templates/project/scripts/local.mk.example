@@ -1,0 +1,9 @@
+# Copy this file to scripts/local.mk and replace placeholders locally.
+# scripts/local.mk is ignored by Git and must never be committed.
+
+SNPSLMD_LICENSE_FILE := <port>@<synopsys-license-host>
+LM_LICENSE_FILE      := <port>@<general-license-host>
+# CDS_LIC_FILE       := <port>@<cadence-license-host>
+
+# Optional DesignWare simulation model path:
+# VCS_DW_SIM_PATH    := /path/to/dw/sim_ver

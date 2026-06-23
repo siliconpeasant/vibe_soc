@@ -1,0 +1,57 @@
+[mcp_servers.soc-build]
+command = "/bin/sh"
+cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
+args = ["./scripts/run_mcp_python.sh", "./skills/soc-build/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.soc-integrate]
+command = "/bin/sh"
+cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
+args = ["./scripts/run_mcp_python.sh", "./skills/soc-integrate/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.yml2reg]
+command = "/bin/sh"
+cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
+args = ["./scripts/run_mcp_python.sh", "./skills/yml2reg/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.excel-yml-gen]
+command = "/bin/sh"
+cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
+args = ["./scripts/run_mcp_python.sh", "./skills/excel-yml-gen/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.crg-req-to-design]
+command = "/bin/sh"
+cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
+args = ["./scripts/run_mcp_python.sh", "./skills/crg-req-to-design/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.cr-tree-diag-gen]
+command = "/bin/sh"
+cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
+args = ["./scripts/run_mcp_python.sh", "./skills/cr-tree-diag-gen/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.soc-openroad]
+command = "/bin/sh"
+cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
+args = ["./scripts/run_mcp_python.sh", "./skills/soc-openroad/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 600
+
+[[hooks.SessionStart]]
+matcher = "startup|resume|clear|compact"
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = 'bash "$(git rev-parse --show-toplevel)/.codex/hooks/session-start.sh"'
+timeout = 30
+statusMessage = "Loading silicon-crew workflow"
