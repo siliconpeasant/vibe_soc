@@ -1,6 +1,6 @@
 {
   "ip": "uart",
-  "workspace": "/Users/ninghechuan/vibe_soc/ip/digital/uart",
+  "workspace": "ip/digital/uart",
   "mode": "multi_module",
   "created_at": "2026-05-17T09:22:00Z",
   "last_updated": "2026-05-17T09:51:08Z",

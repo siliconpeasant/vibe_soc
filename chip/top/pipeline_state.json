@@ -1,0 +1,94 @@
+{
+  "module": "vibe_soc_top",
+  "workspace": "chip/top",
+  "mode": "single",
+  "created_at": "2026-06-21T10:18:58Z",
+  "last_updated": "2026-06-21T14:01:57Z",
+  "pipeline": {
+    "doc": {
+      "step_id": "doc",
+      "name": "设计文档编写",
+      "agent": "soc-doc-engineer",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    },
+    "rtl": {
+      "step_id": "rtl",
+      "name": "RTL设计与编码",
+      "agent": "soc-rtl-designer",
+      "status": "done",
+      "started_at": "2026-06-21T10:20:16Z",
+      "completed_at": "2026-06-21T10:20:50Z",
+      "artifacts": [
+        "de/rtl/vibe_soc_top.v",
+        "de/rtl/vibe_soc_top.integrate.json",
+        "de/rtl/vibe_soc_top.integrate.csv",
+        "de/rtl/filelist.mk",
+        "README.md",
+        "Makefile"
+      ],
+      "check_results": [
+        {
+          "tool": "soc_integrate",
+          "passed": false,
+          "note": "MCP usage limit reached; retry after 2026-06-21 21:34 CST"
+        },
+        {
+          "tool": "soc_lint",
+          "passed": true,
+          "note": "verilator 0 error 0 warning; VCS soc_comp compile/elab passed"
+        },
+        {
+          "tool": "soc_comp",
+          "passed": true,
+          "note": "VCS compile/elaboration top=vibe_soc_top; 0 error 0 warning"
+        }
+      ],
+      "notes": "Default compile and RTL top both set to vibe_soc_top; testbench remains unchanged and is not used for RTL elaboration proof",
+      "last_updated": "2026-06-21T14:01:57Z"
+    },
+    "verif": {
+      "step_id": "verif",
+      "name": "验证环境搭建与仿真",
+      "agent": "soc-verification-engineer",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    },
+    "syn": {
+      "step_id": "syn",
+      "name": "逻辑综合与时序分析",
+      "agent": "soc-synthesis-engineer",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    }
+  },
+  "next_actions": [
+    {
+      "stage": "doc",
+      "action": "spawn soc-doc-engineer",
+      "reason": "dependencies [] satisfied, ready to start doc"
+    },
+    {
+      "stage": "verif",
+      "action": "spawn soc-verification-engineer",
+      "reason": "dependencies ['rtl'] satisfied, ready to start verif"
+    },
+    {
+      "stage": "syn",
+      "action": "spawn soc-synthesis-engineer",
+      "reason": "dependencies ['rtl'] satisfied, ready to start syn"
+    }
+  ]
+}
