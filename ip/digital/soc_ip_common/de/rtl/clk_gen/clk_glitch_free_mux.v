@@ -22,6 +22,9 @@ module clk_glitch_free_mux (
     // The combinational cross-coupled AND forms a break-before-make latch.
     // sel0/sel1 are used directly (no intermediate wires) to reduce area.
     // -------------------------------------------------------------------------
+    wire en0_sync;
+    wire en1_sync;
+
     wire en0_raw = ~sel & ~en1_sync;
     wire en1_raw =  sel & ~en0_sync;
 
@@ -29,8 +32,6 @@ module clk_glitch_free_mux (
     // Synchronize each enable to its target clock domain (2-stage)
     // std_cell_sync: active-low async reset, posedge clk sampling
     // -------------------------------------------------------------------------
-    wire en0_sync;
-    wire en1_sync;
 
     std_cell_sync #(.STAGES(2)) u_sync_en0 (
         .clk       (clk0),
