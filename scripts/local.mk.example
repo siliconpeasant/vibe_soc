@@ -7,3 +7,8 @@ LM_LICENSE_FILE      := <port>@<general-license-host>
 
 # Optional DesignWare simulation model path:
 # VCS_DW_SIM_PATH    := /path/to/dw/sim_ver
+
+# Optional OpenROAD-flow-scripts integration. Keep real local paths in scripts/local.mk.
+OPENROAD_FLOW_HOME ?= <path-to-OpenROAD-flow-scripts>/flow
+OPENROAD_EXE       ?= <path-to-openroad>
+YOSYS_EXE          ?= <path-to-yosys>
