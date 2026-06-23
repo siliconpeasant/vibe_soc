@@ -1,4 +1,4 @@
 interface:
   display_name: "SoC Pipeline"
-  short_description: "Gated SoC RTL design and verification flow"
-  default_prompt: "Use $soc-pipeline to implement and verify this RTL module through the gated SoC workflow."
+  short_description: "Architecture handoff plus gated SoC RTL design and verification flow"
+  default_prompt: "Use $soc-pipeline to plan architecture when needed, then implement and verify through the gated SoC workflow."
