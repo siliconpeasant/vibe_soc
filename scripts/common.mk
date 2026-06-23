@@ -13,6 +13,8 @@ ifndef PROJECT_ROOT
   $(error PROJECT_ROOT must be defined before including common.mk)
 endif
 
+PROJECT_ROOT := $(realpath $(PROJECT_ROOT))
+
 # =============================================================================
 # Module auto-detection
 # =============================================================================
@@ -43,8 +45,8 @@ ifndef MODULE_NAME
   MODULE_NAME := $(notdir $(MODULE_PATH))
 endif
 
-RTL_PATH      = $(MODULE_PATH)/de/rtl
-TB_PATH       = $(MODULE_PATH)/dv/tb
+include $(PROJECT_ROOT)/scripts/paths.mk
+include $(PROJECT_ROOT)/scripts/config.mk
 
 # Default top module: RTL module name in de/rtl, tb_ prefix otherwise
 ifeq ($(CURRENT_DIR),de)
@@ -56,101 +58,39 @@ else
 endif
 RTL_TOP      ?= $(MODULE_NAME)
 
-RUN_DIR       = $(MODULE_PATH)/de/run
-SIM_DIR       = $(MODULE_PATH)/dv/sim
-SIM_FLIST     = $(SIM_DIR)/dut.f
-FILELIST     ?= $(SIM_FLIST)
+FILELIST     ?= $(CANONICAL_FLIST)
 
-SIMULATOR    ?= iverilog
-SOC          ?= $(PROJECT_ROOT)
+# Dependency filelists must be loaded before the rules below are parsed.
+# This preserves the reference project's paths -> defs -> filelist -> rules order.
+-include $(RTL_PATH)/filelist.mk
+
+TB_FILES := $(shell find $(TB_PATH) -type f \( -name "*.v" -o -name "*.sv" \) 2>/dev/null | sort)
+ACTIVE_FILELISTS := $(if $(strip $(MODULE_FILELISTS)),$(sort $(MODULE_FILELISTS)),$(RTL_PATH)/filelist.f)
+FILELIST_MK_DEPS := $(sort $(filter %/filelist.mk,$(MAKEFILE_LIST)))
 
 # If FILELIST is defined, extract sources (strip comments/empty lines, expand $SOC)
 ifdef FILELIST
   FLIST_SRCS = $(shell sed '/^\#/d;/^\/\//d;/^$$/d' $(FILELIST) 2>/dev/null | sed 's|\$$SOC|$(SOC)|g')
 endif
 
-# =============================================================================
-# Simulator-specific commands
-# =============================================================================
+# Tool-specific commands are isolated like xuanwu9000's defs.<tool>.mk files.
+TOOLCHAIN_MK := $(PROJECT_ROOT)/scripts/toolchains/$(SIMULATOR).mk
+ifeq ($(wildcard $(TOOLCHAIN_MK)),)
+  $(error Missing toolchain configuration: $(TOOLCHAIN_MK))
+endif
+include $(TOOLCHAIN_MK)
 
-# --------------- VCS ---------------
-ifeq ($(SIMULATOR),vcs)
-ifdef FILELIST
-COMP_CMD = vcs -sverilog -full64 -timescale=1ns/1ps \
-           +v2k -debug_access+all -kdb \
-           -f $(FILELIST) \
-           -o $(SIM_DIR)/simv
-else
-COMP_CMD = vcs -sverilog -full64 -timescale=1ns/1ps \
-           +v2k -debug_access+all -kdb \
-           $(RTL_FILES) $(TB_FILES) \
-           -o $(SIM_DIR)/simv
-endif
-SIM_CMD  = $(SIM_DIR)/simv +vpdfile+$(SIM_DIR)/wave.vpd
-WAVE_CMD = dve -vpd $(SIM_DIR)/wave.vpd &
-endif
+BUILD_METADATA = simulator=$(SIMULATOR)|top=$(TOP_MODULE)|timescale=$(TIMESCALE)|fsdb=$(FSDB)|coverage=$(COVERAGE)|partcomp=$(PARTCOMP)|vlog=$(VLOG_FLAGS)|elab=$(VCS_ELAB_FLAGS)|includes=$(VCS_INCLUDE_FLAGS)|iverilog=$(IVERILOG_FLAGS)|verilator=$(VERILATOR_FLAGS)|user_compile=$(USER_COMPILE_FLAGS)
+BUILD_CONFIG_DEPS := $(PROJECT_ROOT)/scripts/common.mk $(PROJECT_ROOT)/scripts/config.mk $(TOOLCHAIN_MK) $(MODULE_PATH)/Makefile
+BUILD_EXTRA_DEPS := $(BUILD_CONFIG_DEPS) $(RTL_PATH) $(TB_PATH)
 
-# --------------- Verilator ----------
-ifeq ($(SIMULATOR),verilator)
-ifdef FILELIST
-COMP_CMD = verilator --cc --exe --build --trace \
-           -CFLAGS "-std=c++17" \
-           -Mdir $(SIM_DIR)/obj_dir \
-           --top-module $(TOP_MODULE) \
-           $(FLIST_SRCS) $(TB_FILES) \
-           2>&1 | tee $(SIM_DIR)/compile.log
-else
-COMP_CMD = verilator --cc --exe --build --trace \
-           -CFLAGS "-std=c++17" \
-           -Mdir $(SIM_DIR)/obj_dir \
-           --top-module $(TOP_MODULE) \
-           $(RTL_FILES) $(TB_FILES) \
-           2>&1 | tee $(SIM_DIR)/compile.log
-endif
-SIM_CMD  = $(SIM_DIR)/obj_dir/V$(TOP_MODULE) \
-           +trace +wavefile=$(SIM_DIR)/wave.vcd
-WAVE_CMD = gtkwave $(SIM_DIR)/wave.vcd &
-endif
-
-# --------------- Icarus -------------
-ifeq ($(SIMULATOR),iverilog)
-ifdef FILELIST
-COMP_CMD = iverilog -g2012 -s $(TOP_MODULE) -o $(SIM_DIR)/sim.out \
-           $(FLIST_SRCS) $(TB_FILES) \
-           2>&1 | tee $(SIM_DIR)/compile.log
-else
-COMP_CMD = iverilog -g2012 -s $(TOP_MODULE) -o $(SIM_DIR)/sim.out \
-           $(RTL_FILES) $(TB_FILES) \
-           2>&1 | tee $(SIM_DIR)/compile.log
-endif
-SIM_CMD  = vvp $(SIM_DIR)/sim.out +dumpfile=$(SIM_DIR)/wave.vcd
-WAVE_CMD = gtkwave $(SIM_DIR)/wave.vcd &
-endif
-
-# --------------- Xcelium ------------
-ifeq ($(SIMULATOR),xcelium)
-ifdef FILELIST
-COMP_CMD = xrun -sv -timescale 1ns/1ps -access +rwc \
-           -f $(FILELIST) \
-           -xmlibdirpath $(SIM_DIR)/work \
-           2>&1 | tee $(SIM_DIR)/compile.log
-else
-COMP_CMD = xrun -sv -timescale 1ns/1ps -access +rwc \
-           $(RTL_FILES) $(TB_FILES) \
-           -xmlibdirpath $(SIM_DIR)/work \
-           2>&1 | tee $(SIM_DIR)/compile.log
-endif
-SIM_CMD  = xrun -R -input $(SIM_DIR)/wave.tcl
-WAVE_CMD = simvisdbutil $(SIM_DIR)/wave.shm &
-endif
+# Verdi source browsing is simulator-independent; toolchains may override it.
+VERDI_CMD ?= verdi $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
 
 # =============================================================================
 # Lint & Synthesis configuration
 # =============================================================================
 
-LINT_TOOL    ?= verilator
-
-SYN_DIR       = $(MODULE_PATH)/de/syn
 SYN_NETLIST   = $(SYN_DIR)/$(RTL_TOP)_netlist.v
 SYN_REPORT    = $(SYN_DIR)/synth.log
 
@@ -158,19 +98,31 @@ SYN_REPORT    = $(SYN_DIR)/synth.log
 # Public targets
 # =============================================================================
 
-.PHONY: setup comp sim run wave clean flist lint syn
+.PHONY: setup comp sim run test regress report coverage coverage-regress \
+        coverage-report wave verdi debug-gui clean debugclean deepclean \
+        flist validate-flist lint syn
 
 setup:
 	@echo "[SETUP] vibe_soc environment setup"
 	@$(PROJECT_ROOT)/scripts/setup
 
-comp:
-	@echo "[COMP] Simulator: $(SIMULATOR) | Top: $(TOP_MODULE)"
+comp: $(CANONICAL_FLIST)
 	@mkdir -p $(SIM_DIR)
-ifndef RTL_FILES
-	@$(MAKE) $(SIM_FLIST)
-endif
-	$(COMP_CMD)
+	@set -e; \
+	new_fp="$$($(PYTHON_RUN) $(PROJECT_ROOT)/scripts/build_fingerprint.py \
+		--filelist $(CANONICAL_FLIST) --metadata "$(BUILD_METADATA)" \
+		$(foreach file,$(BUILD_EXTRA_DEPS),--extra $(file)))"; \
+	if [[ "$(FORCE)" != "1" && -f "$(BUILD_FINGERPRINT)" && \
+	      "$$new_fp" == "$$(cat $(BUILD_FINGERPRINT))" && -e "$(BUILD_OUTPUT)" ]]; then \
+		echo "[COMP] Up to date: $(TOP_MODULE) ($(SIMULATOR))"; \
+	else \
+		echo "[COMP] Building: $(TOP_MODULE) ($(SIMULATOR))"; \
+		$(COMP_CMD); \
+		$(if $(ELAB_CMD),echo "[ELAB] Building: $(TOP_MODULE) ($(SIMULATOR))"; $(ELAB_CMD);) \
+		printf '%s\n' "$$new_fp" > $(BUILD_FINGERPRINT).tmp; \
+		mv $(BUILD_FINGERPRINT).tmp $(BUILD_FINGERPRINT); \
+		echo "[COMP] Fingerprint: $$new_fp"; \
+	fi
 
 sim:
 	@echo "[SIM] Running $(TOP_MODULE) ..."
@@ -179,43 +131,100 @@ sim:
 
 run: sim
 
+test: comp
+	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/run_regression.py \
+		--sim-dir $(SIM_DIR) --output-dir $(REGRESS_DIR)/single \
+		--command "$(SIM_CMD)" --tests "$(TEST)" --seeds "$(SEED)" \
+		--jobs 1 --pass-regex "$(REGRESS_PASS_REGEX)" \
+		--matrix-args "$(REGRESS_MATRIX_ARGS)"
+
+regress: comp
+	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/run_regression.py \
+		--sim-dir $(SIM_DIR) --output-dir $(REGRESS_DIR) \
+		--command "$(SIM_CMD)" --tests-file $(REGRESS_TEST_FILE) \
+		--tests "$(REGRESS_TESTS)" --seeds "$(REGRESS_SEEDS)" \
+		--jobs $(REGRESS_JOBS) --pass-regex "$(REGRESS_PASS_REGEX)" \
+		--matrix-args "$(REGRESS_MATRIX_ARGS)"
+
+report:
+	@test -f $(REGRESS_DIR)/summary.txt || { echo "[REPORT] No regression summary"; exit 2; }
+	@cat $(REGRESS_DIR)/summary.txt
+
+coverage:
+	@test "$(COVERAGE_SUPPORTED)" = "1" || { echo "[COV] $(SIMULATOR) coverage is not configured"; exit 2; }
+	@$(MAKE) --no-print-directory comp COVERAGE=1 FORCE=$(FORCE)
+	@$(MAKE) --no-print-directory sim COVERAGE=1
+	@$(MAKE) --no-print-directory coverage-report COVERAGE=1
+
+coverage-regress:
+	@test "$(COVERAGE_SUPPORTED)" = "1" || { echo "[COV] $(SIMULATOR) coverage is not configured"; exit 2; }
+	@$(MAKE) --no-print-directory comp COVERAGE=1 FORCE=$(FORCE)
+	@$(MAKE) --no-print-directory regress COVERAGE=1
+	@$(MAKE) --no-print-directory coverage-report COVERAGE=1
+
+coverage-report:
+	@test "$(COVERAGE_SUPPORTED)" = "1" || { echo "[COV] $(SIMULATOR) coverage is not configured"; exit 2; }
+	@mkdir -p $(COV_REPORT_DIR)
+	$(COVERAGE_REPORT_CMD)
+	@echo "[COV] Report: $(COV_REPORT_DIR)"
+
 wave:
 	@echo "[WAVE] Opening waveform ..."
 	$(WAVE_CMD)
 
-clean:
-	@echo "[CLEAN] Removing run artifacts ..."
-	rm -rf $(RUN_DIR)/* $(RUN_DIR)/.vlogan* csrc simv* ucli.key vc_hdrs.h
-	rm -rf $(SIM_DIR)/* $(SIM_DIR)/.vlogan* csrc simv* ucli.key vc_hdrs.h
-	rm -rf obj_dir work *.log *.vpd *.vcd
+verdi: $(CANONICAL_FLIST)
+	@command -v verdi >/dev/null 2>&1 || { echo "[VERDI] verdi not found"; exit 127; }
+	@echo "[VERDI] Opening source database for $(TOP_MODULE) ..."
+	$(VERDI_CMD)
 
-# --- flist: generate RTL filelist ---
-flist:
-	@mkdir -p $(RTL_PATH) $(TB_PATH) $(RUN_DIR) $(SIM_DIR)
-	@if [ ! -f $(RTL_PATH)/filelist.f ]; then \
-		find $(RTL_PATH) -maxdepth 1 \( -name "*.v" -o -name "*.sv" \) | sed 's|^$(PROJECT_ROOT)/|\$$SOC/|' | sort > $(RTL_PATH)/filelist.f; \
-		echo "[FLIST] Generated $(RTL_PATH)/filelist.f"; \
-	else \
-		echo "[FLIST] $(RTL_PATH)/filelist.f already exists, skip"; \
-	fi
+debug-gui:
+	@test -n "$(DEBUG_GUI_CMD)" || { echo "[GUI] No compiled debug GUI for $(SIMULATOR)"; exit 2; }
+	$(DEBUG_GUI_CMD)
+
+clean:
+	@echo "[CLEAN] Removing runtime artifacts; preserving compile cache ..."
+	rm -rf $(SIM_DIR)/sim.log $(SIM_DIR)/wave.* $(SIM_DIR)/regress \
+		$(SIM_DIR)/*.fsdb $(SIM_DIR)/*.vpd $(SIM_DIR)/*.vcd \
+		$(SIM_DIR)/coverage.vdb $(MODULE_PATH)/dv/cov
+
+debugclean: clean
+	@echo "[DEBUGCLEAN] Removing reports and debug logs; preserving compiled image ..."
+	rm -rf $(RUN_DIR)/* $(SIM_DIR)/verdiLog $(SIM_DIR)/novas.* \
+		$(SIM_DIR)/urgReport $(SIM_DIR)/*.key
+
+deepclean:
+	@echo "[DEEPCLEAN] Removing all transient compile/simulation artifacts; preserving synthesis deliverables ..."
+	rm -rf $(RUN_DIR) $(SIM_DIR) $(MODULE_PATH)/dv/cov
+	rm -f $(SYN_DIR)/*.log
+
+# --- flist: generate and validate a canonical filelist ---
+flist: $(CANONICAL_FLIST)
+
+validate-flist: $(CANONICAL_FLIST)
+	@echo "[FLIST] Validation passed: $(CANONICAL_FLIST)"
+
+$(RTL_PATH)/filelist.f:
+	@mkdir -p $(RTL_PATH)
+	@find $(RTL_PATH) -type f \( -name "*.v" -o -name "*.sv" \) \
+		| sed 's|^$(PROJECT_ROOT)/|\$$SOC/|' | sort > $@
+	@echo "[FLIST] Generated $@"
 
 # --- Generate simulation filelist (RTL + TB) ---
-$(SIM_FLIST): flist
+$(SIM_FLIST): $(ACTIVE_FILELISTS) $(FILELIST_MK_DEPS) $(TB_FILES)
 	@mkdir -p $(SIM_DIR)
 	@> $@
-ifneq (,$(MODULE_FILELISTS))
-	@for fl in $(MODULE_FILELISTS); do \
+	@for fl in $(ACTIVE_FILELISTS); do \
 		if [ -f $$fl ]; then \
 			echo "// -f $$fl" >> $@; \
 			cat $$fl >> $@; \
 			echo "" >> $@; \
 		fi; \
 	done
-else
-	@cat $(RTL_PATH)/filelist.f >> $@
-endif
 	@find $(TB_PATH) \( -name "*.v" -o -name "*.sv" \) | sed 's|^$(PROJECT_ROOT)/|\$$SOC/|' | sort >> $@
 	@echo "[FLIST] Generated $@"
+
+$(CANONICAL_FLIST): $(SIM_FLIST) $(PROJECT_ROOT)/scripts/validate_filelist.py
+	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/validate_filelist.py $(SIM_FLIST) --output $@
 
 # --- lint: static check on RTL only ---
 lint: flist
@@ -234,11 +243,12 @@ else
 	@sed 's|\$$SOC|$(PROJECT_ROOT)|g' $(RTL_PATH)/filelist.f > $(RUN_DIR)/rtl.f
 endif
 ifeq ($(LINT_TOOL),verilator)
-	@verilator --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log || true
+	@verilator $(VERILATOR_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),iverilog)
-	@iverilog -g2012 -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log || true
+	@iverilog $(IVERILOG_FLAGS) -s $(RTL_TOP) -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
+	@exit 2
 endif
 	@echo "[LINT] Report: $(RUN_DIR)/lint.log"
 

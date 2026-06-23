@@ -1,22 +1,18 @@
 {
   "top_module": "vibe_soc_top",
-  "output_file": "/Users/ninghechuan/vibe_soc/chip/top/de/rtl/vibe_soc_top.v",
+  "output_file": "chip/top/de/rtl/vibe_soc_top.v",
   "modules": [
     {
-      "file": "/Users/ninghechuan/vibe_soc/chip/core/de/rtl/core.v",
+      "file": "chip/core/de/rtl/core.v",
       "module_name": "core"
     },
     {
-      "file": "/Users/ninghechuan/vibe_soc/chip/bus/de/rtl/bus.v",
+      "file": "chip/bus/de/rtl/bus.v",
       "module_name": "bus"
     },
     {
-      "file": "/Users/ninghechuan/vibe_soc/ip/third_party/uart/de/rtl/uart.v",
+      "file": "ip/digital/uart/de/rtl/uart.v",
       "module_name": "uart"
-    },
-    {
-      "file": "/Users/ninghechuan/vibe_soc/ip/digital/timer/de/rtl/timer.v",
-      "module_name": "timer"
     }
   ],
   "mappings": {
@@ -34,43 +30,29 @@
     "bus.valid_out": "bus_valid_out",
     "uart.clk": "clk",
     "uart.rst_n": "rst_n",
-    "uart.psel": "psel",
-    "uart.penable": "penable",
-    "uart.pwrite": "pwrite",
-    "uart.paddr": "paddr",
-    "uart.pwdata": "pwdata",
-    "uart.prdata": "uart_prdata",
-    "uart.pready": "uart_pready",
-    "uart.uart_rx": "uart_uart_rx",
-    "uart.uart_tx": "uart_uart_tx",
+    "uart.tx_data": "uart_tx_data",
+    "uart.tx_valid": "uart_tx_valid",
     "uart.tx_ready": "uart_tx_ready",
-    "uart.rx_valid": "uart_rx_valid",
+    "uart.tx_busy": "uart_tx_busy",
+    "uart.tx_done": "uart_tx_done",
+    "uart.tx_out": "uart_tx",
+    "uart.rx_in": "uart_rx",
     "uart.rx_data": "uart_rx_data",
-    "uart.irq": "uart_irq",
-    "timer.clk": "clk",
-    "timer.rst_n": "rst_n",
-    "timer.psel": "psel",
-    "timer.penable": "penable",
-    "timer.pwrite": "pwrite",
-    "timer.paddr": "paddr",
-    "timer.pwdata": "pwdata",
-    "timer.prdata": "timer_prdata",
-    "timer.pready": "timer_pready",
-    "timer.tick": "timer_tick",
-    "timer.timeout": "timer_timeout"
+    "uart.rx_valid": "uart_rx_valid",
+    "uart.rx_busy": "uart_rx_busy",
+    "uart.rx_frame_err": "uart_rx_frame_err",
+    "uart.baud_div": "uart_baud_div"
   },
   "shared_signals": {
     "clk": [
       "core.clk",
       "bus.clk",
-      "uart.clk",
-      "timer.clk"
+      "uart.clk"
     ],
     "rst_n": [
       "core.rst_n",
       "bus.rst_n",
-      "uart.rst_n",
-      "timer.rst_n"
+      "uart.rst_n"
     ],
     "core_data_out": [
       "core.data_out",
@@ -79,26 +61,6 @@
     "core_valid_out": [
       "core.valid_out",
       "bus.valid_in"
-    ],
-    "psel": [
-      "uart.psel",
-      "timer.psel"
-    ],
-    "penable": [
-      "uart.penable",
-      "timer.penable"
-    ],
-    "pwrite": [
-      "uart.pwrite",
-      "timer.pwrite"
-    ],
-    "paddr": [
-      "uart.paddr",
-      "timer.paddr"
-    ],
-    "pwdata": [
-      "uart.pwdata",
-      "timer.pwdata"
     ]
   },
   "port_snapshot": {
@@ -179,48 +141,13 @@
       },
       {
         "direction": "input",
-        "width": "",
-        "name": "psel"
-      },
-      {
-        "direction": "input",
-        "width": "",
-        "name": "penable"
-      },
-      {
-        "direction": "input",
-        "width": "",
-        "name": "pwrite"
-      },
-      {
-        "direction": "input",
         "width": "[7:0]",
-        "name": "paddr"
-      },
-      {
-        "direction": "input",
-        "width": "[31:0]",
-        "name": "pwdata"
-      },
-      {
-        "direction": "output",
-        "width": "[31:0]",
-        "name": "prdata"
-      },
-      {
-        "direction": "output",
-        "width": "",
-        "name": "pready"
+        "name": "tx_data"
       },
       {
         "direction": "input",
         "width": "",
-        "name": "uart_rx"
-      },
-      {
-        "direction": "output",
-        "width": "",
-        "name": "uart_tx"
+        "name": "tx_valid"
       },
       {
         "direction": "output",
@@ -230,7 +157,22 @@
       {
         "direction": "output",
         "width": "",
-        "name": "rx_valid"
+        "name": "tx_busy"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "tx_done"
+      },
+      {
+        "direction": "output",
+        "width": "",
+        "name": "tx_out"
+      },
+      {
+        "direction": "input",
+        "width": "",
+        "name": "rx_in"
       },
       {
         "direction": "output",
@@ -240,66 +182,24 @@
       {
         "direction": "output",
         "width": "",
-        "name": "irq"
-      }
-    ],
-    "timer": [
-      {
-        "direction": "input",
-        "width": "",
-        "name": "clk"
-      },
-      {
-        "direction": "input",
-        "width": "",
-        "name": "rst_n"
-      },
-      {
-        "direction": "input",
-        "width": "",
-        "name": "psel"
-      },
-      {
-        "direction": "input",
-        "width": "",
-        "name": "penable"
-      },
-      {
-        "direction": "input",
-        "width": "",
-        "name": "pwrite"
-      },
-      {
-        "direction": "input",
-        "width": "[7:0]",
-        "name": "paddr"
-      },
-      {
-        "direction": "input",
-        "width": "[31:0]",
-        "name": "pwdata"
-      },
-      {
-        "direction": "output",
-        "width": "[31:0]",
-        "name": "prdata"
+        "name": "rx_valid"
       },
       {
         "direction": "output",
         "width": "",
-        "name": "pready"
+        "name": "rx_busy"
       },
       {
         "direction": "output",
         "width": "",
-        "name": "tick"
+        "name": "rx_frame_err"
       },
       {
-        "direction": "output",
-        "width": "",
-        "name": "timeout"
+        "direction": "input",
+        "width": "[15:0]",
+        "name": "baud_div"
       }
     ]
   },
-  "generated_at": "2026-05-02T11:16:26.788950"
+  "generated_at": "2026-06-21T21:57:13.078748"
 }

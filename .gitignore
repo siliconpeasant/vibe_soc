@@ -1,15 +1,34 @@
 # Generated artifacts
 **/run/
 **/sim/
+**/cov/
+# Synthesis work products stay local; only timing constraints are versioned.
+**/de/syn/**
+!**/de/syn/**/
+!**/de/syn/*.sdc
+!**/de/syn/**/*.sdc
+**/release/*/syn/**
+!**/release/*/syn/**/
+!**/release/*/syn/*.sdc
+!**/release/*/syn/**/*.sdc
+**/docs/synthesis_report.md
+**/release/*/docs/synthesis_report.md
+__pycache__/
+*.pyc
 *.log
 *.out
 *.vcd
 *.vpd
 obj_dir/
 work/
+work.lib++/
+AN.DB/
 csrc/
 simv*
 ucli.key
 vc_hdrs.h
+scripts/local.mk
+scripts/local.sh
+scripts/local.csh
 .claude/
 docs/silicon_crew_intro_article.md

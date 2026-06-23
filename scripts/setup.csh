@@ -12,7 +12,7 @@ if ($?0) then
     if ("$0" =~ /*) then
         set _script_dir = `dirname "$0"`
     else if (-e "$0") then
-        set _script_dir = `dirname \`pwd\`/$0`
+        set _script_dir = `dirname "$0"`
     endif
 endif
 
@@ -58,20 +58,36 @@ setenv SOC "$PROJECT_ROOT"
 setenv CHIP_PATH "$PROJECT_ROOT/chip"
 setenv IP_PATH "$PROJECT_ROOT/ip"
 
+if (-f "$PROJECT_ROOT/scripts/local.csh") then
+    source "$PROJECT_ROOT/scripts/local.csh"
+endif
+
+if ($?VCS_HOME && -d "$VCS_HOME/bin") set path = ("$VCS_HOME/bin" $path)
+if ($?VERDI_HOME && -d "$VERDI_HOME/bin") set path = ("$VERDI_HOME/bin" $path)
+if ($?XCELIUM_HOME && -d "$XCELIUM_HOME/tools.lnx86/bin") set path = ("$XCELIUM_HOME/tools.lnx86/bin" $path)
+
 # ---------------------------------------------------------------------------
 # 5. 工具链检测
 # ---------------------------------------------------------------------------
+if (! $?SIMULATOR) setenv SIMULATOR "vcs"
+if (! $?LINT_TOOL) setenv LINT_TOOL "verilator"
+
 echo ""
 echo "[CHECK] 检测工具链 ..."
 set _missing = 0
 
-foreach _tool (make verilator iverilog vvp yosys)
+foreach _tool (make verilator iverilog vvp yosys vcs verdi xrun)
     (which $_tool) >& /dev/null
     if ($status == 0) then
         echo "  ✓ $_tool"
     else
-        echo "  ✗ $_tool (未安装)"
-        @_missing++
+        echo "  - $_tool (当前环境不可用)"
+        if ("$_tool" == "make") @_missing++
+        if ("$_tool" == "verilator" && "$LINT_TOOL" == "verilator") @_missing++
+        if ("$_tool" == "iverilog" && "$SIMULATOR" == "iverilog") @_missing++
+        if ("$_tool" == "vvp" && "$SIMULATOR" == "iverilog") @_missing++
+        if ("$_tool" == "vcs" && "$SIMULATOR" == "vcs") @_missing++
+        if ("$_tool" == "xrun" && "$SIMULATOR" == "xcelium") @_missing++
     endif
 end
 
@@ -84,10 +100,6 @@ endif
 # ---------------------------------------------------------------------------
 # 6. 设置默认仿真器
 # ---------------------------------------------------------------------------
-if (! $?SIMULATOR) then
-    setenv SIMULATOR "iverilog"
-endif
-
 # ---------------------------------------------------------------------------
 # 7. 输出
 # ---------------------------------------------------------------------------
@@ -102,7 +114,7 @@ echo "======================================"
 echo ""
 echo "可用命令:"
 echo "  make lint   RTL_TOP=<模块>    # Lint 检查"
-echo "  make comp   TOP_MODULE=<tb>   # 编译仿真"
+echo "  make comp   TOP_MODULE=<tb>   # HDL 编译 + elaboration"
 echo "  make sim    TOP_MODULE=<tb>   # 运行仿真"
 echo "  make syn    RTL_TOP=<模块>    # 逻辑综合"
 echo "======================================"

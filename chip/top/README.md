@@ -1,8 +1,18 @@
-# top Module
+# vibe_soc_top Integration
 
 ## 简介
 
-top 是芯片 vibe_soc 的子模块。
+`vibe_soc_top` 是当前可 lint/compile 的最小顶层集成，由 `soc-integrate` MCP 自动生成。
+
+当前集成范围：
+
+- `chip/core/de/rtl/core.v`
+- `chip/bus/de/rtl/bus.v`
+- `ip/digital/uart/de/rtl/uart.v`
+
+当前数据通路为 `core -> bus`，UART 以独立 TX/RX 顶层端口接出。时钟和低有效复位由三个实例共享。
+
+以下模块尚未纳入当前顶层：SPI、PCIe、periph、interconnect、lib。它们需要先完成接口定义和 lint，再通过 `soc-integrate` MCP 加入；不得将当前顶层描述为完整 full-chip 集成。
 
 ## 目录结构
 
@@ -34,3 +44,5 @@ make lint     # 语法检查
 make comp     # 编译仿真
 make sim      # 运行仿真
 ```
+
+`de/rtl/vibe_soc_top.v`、`.integrate.json` 和 `.integrate.csv` 均为自动生成文件。端口或子模块变化后应使用 `soc_update`/`soc_integrate` MCP 刷新，禁止直接编辑顶层 RTL。

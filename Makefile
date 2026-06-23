@@ -1,36 +1,60 @@
-# vibe_soc SoC Top-Level Makefile
+# vibe_soc unified build entry.
 
-PROJECT_ROOT = $(shell pwd -P)
+PROJECT_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+MODULE       ?= chip/top
+MODULE_DIR   := $(PROJECT_ROOT)/$(MODULE)
+TARGET       ?= help
+
 export PROJECT_ROOT
 
-.PHONY: help setup lint clean
+include $(PROJECT_ROOT)/scripts/config.mk
+
+.DEFAULT_GOAL := help
+
+.PHONY: help setup check-env check-repo list-modules print-config module \
+        flist validate-flist comp sim run test regress report coverage \
+        coverage-regress coverage-report wave verdi debug-gui lint syn \
+        clean debugclean deepclean
 
 help:
 	@echo "vibe_soc SoC Build System"
-	@echo "==========================="
-	@echo "  make setup   - 初始化开发环境"
-	@echo "  make lint    - 代码静态检查"
-	@echo "  make syn     - Yosys 综合（模块级）"
-	@echo "  make clean   - 清理所有生成文件"
+	@echo "=========================="
+	@echo "  make list-modules                 列出可构建模块"
+	@echo "  make check-env                    检查本机工具链"
+	@echo "  make check-repo                   检查隐私路径和 license 泄漏"
+	@echo "  make <target> [MODULE=<path>]     构建指定模块（默认 chip/top）"
+	@echo "  make module MODULE=<path> TARGET=<target>"
 	@echo ""
-	@echo "模块级命令 (cd chip/xxx 或 ip/xxx):"
-	@echo "  make flist   - 生成 RTL 文件列表"
-	@echo "  make comp    - 编译仿真"
-	@echo "  make run     - 运行仿真"
-	@echo "  make lint    - Lint 检查"
-	@echo "  make syn     - Yosys 综合"
-	@echo ""
-	@echo "环境变量:"
-	@echo "  SIMULATOR=vcs|verilator|iverilog|xcelium"
+	@echo "Targets: flist validate-flist comp sim test regress report coverage"
+	@echo "         coverage-regress wave verdi debug-gui lint syn"
+	@echo "         clean debugclean deepclean print-config"
+	@echo "Example: make lint MODULE=ip/digital/uart"
+	@echo "         make comp MODULE=chip/top SIMULATOR=iverilog"
 
-setup:
-	@echo "[SETUP] Sourcing environment ..."
-	@bash scripts/setup.sh
+setup check-env:
+	@bash $(PROJECT_ROOT)/scripts/setup.sh --check
 
-lint:
-	@echo "[LINT] Running static check ..."
-	@verilator --lint-only -Ichip $(shell find chip -name "*.v" -o -name "*.sv")
+check-repo:
+	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/check_repo_hygiene.py --root $(PROJECT_ROOT)
 
-clean:
-	@echo "[CLEAN] Cleaning generated files ..."
-	@find . -type d -name run -o -type d -name sim | xargs rm -rf
+list-modules:
+	@find $(PROJECT_ROOT)/chip $(PROJECT_ROOT)/ip -mindepth 2 -maxdepth 3 \
+		-name Makefile ! -path '*/de/Makefile' ! -path '*/dv/Makefile' \
+		-printf '%h\n' | sed 's|^$(PROJECT_ROOT)/||' | sort
+
+print-config:
+	@echo "PROJECT_ROOT=$(PROJECT_ROOT)"
+	@echo "MODULE=$(MODULE)"
+	@echo "SIMULATOR=$(or $(SIMULATOR),vcs)"
+	@echo "LINT_TOOL=$(or $(LINT_TOOL),verilator)"
+
+module:
+	@test -f "$(MODULE_DIR)/Makefile" || { \
+		echo "[ERROR] Invalid MODULE '$(MODULE)': module Makefile not found"; exit 2; \
+	}
+	@$(MAKE) --no-print-directory -C "$(MODULE_DIR)" "$(TARGET)"
+
+flist validate-flist comp sim run test regress report coverage \
+coverage-regress coverage-report wave verdi debug-gui lint syn \
+clean debugclean deepclean:
+	@$(MAKE) --no-print-directory module TARGET=$@

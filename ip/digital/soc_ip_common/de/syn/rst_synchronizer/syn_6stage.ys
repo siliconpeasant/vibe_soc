@@ -1,5 +1,0 @@
-read_verilog /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/rtl/rst_gen/rst_synchronizer.v
-chparam -set STAGES 6 rst_synchronizer
-synth -top rst_synchronizer
-write_verilog /Users/ninghechuan/vibe_soc/ip/digital/soc_ip_common/de/syn/rst_synchronizer/rst_synchronizer_6stage_netlist.v
-stat
