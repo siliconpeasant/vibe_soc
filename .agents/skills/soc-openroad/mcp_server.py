@@ -42,6 +42,9 @@ HDL_SUFFIXES = {".v", ".sv", ".vh", ".svh"}
 CONTAINER_PROJECT_DIR = "/work"
 CONTAINER_ORFS_DIR = "/OpenROAD-flow-scripts/flow"
 DEFAULT_ORFS_IMAGE = "openroad/orfs:latest"
+DEFAULT_BACKEND = "local"
+DEFAULT_LOCAL_ORFS_DIR = "/project/xuanwu9000/user/silicon/OpenROAD-flow-scripts-master/flow"
+LOCAL_ORFS_ENV = "SILICON_CREW_ORFS_DIR"
 
 
 mcp = FastMCP(
@@ -90,7 +93,7 @@ def _jobs(value: int) -> int:
 
 
 def _backend(value: str) -> str:
-    normalized = (value or "auto").strip().lower()
+    normalized = (value or DEFAULT_BACKEND).strip().lower()
     aliases = {"container": "auto"}
     normalized = aliases.get(normalized, normalized)
     if normalized not in {"auto", "docker", "podman", "local"}:
@@ -119,41 +122,10 @@ def _project_make_path(path: Path, project: Path) -> str:
 
 
 def _discover_filelists(module: Path, project: Path) -> list[Path]:
-    seen_mk: set[Path] = set()
-    seen_f: set[Path] = set()
-    ordered: list[Path] = []
-
-    def add_filelist(path: Path) -> None:
-        path = path.resolve()
-        if path.is_file() and path not in seen_f:
-            seen_f.add(path)
-            ordered.append(path)
-
-    def visit_mk(path: Path) -> None:
-        path = path.resolve()
-        if path in seen_mk or not path.is_file():
-            return
-        seen_mk.add(path)
-        add_filelist(path.with_name("filelist.f"))
-        for raw_line in path.read_text().splitlines():
-            line = raw_line.split("#", 1)[0].strip()
-            if not line.startswith("include "):
-                continue
-            include_path = line[len("include ") :].strip()
-            if not include_path:
-                continue
-            target = _resolve_token(include_path, path.parent, project)
-            if target.name == "filelist.mk":
-                visit_mk(target)
-
-    mk = module / "de/rtl/filelist.mk"
-    if mk.is_file():
-        visit_mk(mk)
-    else:
-        add_filelist(module / "de/rtl/filelist.f")
-    if not ordered:
-        raise ValueError(f"no RTL filelist found under {module / 'de/rtl'}")
-    return ordered
+    run_filelist = module / "de/run/rtl.f"
+    if not run_filelist.is_file():
+        raise ValueError(f"missing required PD RTL filelist: {run_filelist}")
+    return [run_filelist.resolve()]
 
 
 def _expand_filelist(filelist: Path, project: Path) -> tuple[list[Path], list[Path]]:
@@ -305,12 +277,22 @@ def _render_sdc(design_name: str, clock_port: str, reset_port: str, clock_period
     return "\n".join(lines) + "\n"
 
 
-def _default_design_config(project: Path, platform: str, design_name: str) -> Path:
-    return project / "pd/openroad" / platform / design_name / "config.mk"
+def _default_design_config(project: Path, platform: str, design_name: str, backend: str = DEFAULT_BACKEND) -> Path:
+    design_dir = project / "pd/openroad" / platform / design_name
+    local_config = design_dir / "config.local.mk"
+    if backend == "local" and local_config.is_file():
+        return local_config
+    return design_dir / "config.mk"
 
 
-def _default_work_home(project: Path) -> Path:
+def _default_work_home(project: Path, backend: str = DEFAULT_BACKEND) -> Path:
+    if backend == "local":
+        return project / "pd/openroad/work_local"
     return project / "pd/openroad/work"
+
+
+def _default_orfs_dir() -> str:
+    return os.environ.get(LOCAL_ORFS_ENV, DEFAULT_LOCAL_ORFS_DIR)
 
 
 def _orfs(orfs_dir: str) -> Path:
@@ -460,7 +442,7 @@ def soc_openroad_init(
         raise ValueError("core_utilization must be between 1 and 99")
 
     filelists, rtl_files, include_dirs = _rtl_inputs(project, module)
-    out_dir = Path(output_dir).expanduser() if output_dir else _default_design_config(project, platform, design).parent
+    out_dir = Path(output_dir).expanduser() if output_dir else _default_design_config(project, platform, design, "auto").parent
     if not out_dir.is_absolute():
         out_dir = project / out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -507,23 +489,23 @@ def soc_openroad_run(
     work_home: str = "",
     jobs: int = 1,
     timeout: int = 7200,
-    backend: str = "auto",
+    backend: str = DEFAULT_BACKEND,
     docker_image: str = DEFAULT_ORFS_IMAGE,
 ) -> str:
     """Run an OpenROAD-flow-scripts stage through the registered MCP process.
 
     Args:
         project_dir: SoC project root
-        orfs_dir: OpenROAD-flow-scripts/flow directory; required only for backend=local
+        orfs_dir: OpenROAD-flow-scripts/flow directory; defaults to SILICON_CREW_ORFS_DIR or /project/xuanwu9000/user/silicon/OpenROAD-flow-scripts-master/flow for backend=local
         design_config: config.mk path; defaults to pd/openroad/<platform>/<design>/config.mk
         stage: ORFS make target, e.g. synth/floorplan/place/cts/route/finish/all
         platform: used only for default design_config path
         design_name: used only for default design_config path
         flow_variant: ORFS FLOW_VARIANT
-        work_home: output root; defaults to <project>/pd/openroad/work
+        work_home: output root; defaults to <project>/pd/openroad/work_local for local backend and <project>/pd/openroad/work for container backends
         jobs: make -j value
         timeout: process timeout in seconds
-        backend: auto/docker/podman/local; auto prefers container execution and never silently falls back to local
+        backend: local/auto/docker/podman; default local uses the local ORFS directory, while auto/docker/podman use containers and never silently fall back to local
         docker_image: container image for docker/podman backend
     """
     _require_active()
@@ -531,13 +513,13 @@ def soc_openroad_run(
     target = _stage(stage)
     _jobs(jobs)
     selected_backend = _backend(backend)
-    config = Path(design_config).expanduser() if design_config else _default_design_config(project, platform, design_name)
+    config = Path(design_config).expanduser() if design_config else _default_design_config(project, platform, design_name, selected_backend)
     if not config.is_absolute():
         config = project / config
     config = config.resolve()
     if not config.is_file():
         raise ValueError(f"design_config not found: {config}")
-    work = Path(work_home).expanduser() if work_home else _default_work_home(project)
+    work = Path(work_home).expanduser() if work_home else _default_work_home(project, selected_backend)
     if not work.is_absolute():
         work = project / work
     work.mkdir(parents=True, exist_ok=True)
@@ -566,9 +548,7 @@ def soc_openroad_run(
         output = run_command(command, timeout=timeout)
         backend_label = engine_family
     else:
-        if not orfs_dir:
-            raise ValueError("orfs_dir is required when backend=local")
-        flow = _orfs(orfs_dir)
+        flow = _orfs(orfs_dir or _default_orfs_dir())
         command = [
             "make",
             f"-j{jobs}",
@@ -600,9 +580,9 @@ def soc_openroad_status(
     flow_variant: str = "base",
     work_home: str = "",
 ) -> str:
-    """Summarize ORFS outputs under <project>/pd/openroad/work."""
+    """Summarize ORFS outputs under <project>/pd/openroad/work_local by default."""
     project = _project(project_dir)
-    work = Path(work_home).expanduser() if work_home else _default_work_home(project)
+    work = Path(work_home).expanduser() if work_home else _default_work_home(project, DEFAULT_BACKEND)
     if not work.is_absolute():
         work = project / work
     root = work / "results" / platform / design_name / flow_variant

@@ -16,18 +16,20 @@ SPEC.loader.exec_module(SERVER)
 
 
 class SocOpenroadServerTest(unittest.TestCase):
-    def test_init_generates_portable_orfs_config(self) -> None:
+    def test_init_generates_portable_orfs_config_from_run_rtl_filelist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "demo"
             self._write_module(project, "chip/core", "core")
             self._write_module(project, "chip/bus", "bus")
             self._write_module(project, "chip/top", "demo_top")
-            top_mk = project / "chip/top/de/rtl/filelist.mk"
-            top_mk.write_text(
+            run_dir = project / "chip/top/de/run"
+            run_dir.mkdir(parents=True)
+            (run_dir / "rtl.f").write_text(
                 "\n".join(
                     [
-                        "include $(PROJECT_ROOT)/chip/core/de/rtl/filelist.mk",
-                        "include $(PROJECT_ROOT)/chip/bus/de/rtl/filelist.mk",
+                        f"{project}/chip/core/de/rtl/core.v",
+                        f"{project}/chip/bus/de/rtl/bus.v",
+                        f"{project}/chip/top/de/rtl/demo_top.v",
                     ]
                 )
                 + "\n"
@@ -43,6 +45,7 @@ class SocOpenroadServerTest(unittest.TestCase):
             )
 
             self.assertIn("[OK] OpenROAD config generated", result)
+            self.assertIn("[INFO] Filelists: chip/top/de/run/rtl.f", result)
             config = project / "pd/openroad/nangate45/demo_top/config.mk"
             sdc = project / "pd/openroad/nangate45/demo_top/constraint.sdc"
             self.assertTrue(config.is_file())
@@ -54,6 +57,21 @@ class SocOpenroadServerTest(unittest.TestCase):
             self.assertIn("$(PROJECT_ROOT)/chip/top/de/rtl/demo_top.v", text)
             self.assertNotIn(str(project), text)
             self.assertIn("set clk_period 5", sdc.read_text())
+
+    def test_init_requires_run_rtl_filelist(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "demo"
+            self._write_module(project, "ip/digital/uart", "uart")
+
+            with self.assertRaisesRegex(ValueError, "missing required PD RTL filelist"):
+                SERVER.soc_openroad_init(
+                    str(project),
+                    module_dir="ip/digital/uart",
+                    design_name="uart",
+                    top_module="uart",
+                    platform="nangate45",
+                    clock_period_ns=10.0,
+                )
 
     def test_status_reports_missing_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -111,6 +129,54 @@ class SocOpenroadServerTest(unittest.TestCase):
             self.assertIn("WORK_HOME=/work/pd/openroad/work", inner)
             self.assertIn("[INFO] BACKEND=docker", result)
             self.assertIn("container ok", result)
+
+    def test_run_defaults_to_local_backend(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "demo"
+            config_dir = project / "pd/openroad/nangate45/demo_top"
+            config_dir.mkdir(parents=True)
+            (config_dir / "config.mk").write_text("export DESIGN_NAME = demo_top\n")
+            local_config = config_dir / "config.local.mk"
+            local_config.write_text("include config.mk\n")
+            orfs = Path(tmp) / "OpenROAD-flow-scripts/flow"
+            (orfs / "scripts").mkdir(parents=True)
+            (orfs / "Makefile").write_text("# test ORFS\n")
+            (orfs / "scripts/variables.mk").write_text("# test variables\n")
+            captured: dict[str, object] = {}
+            original_run_command = SERVER.run_command
+            original_active = os.environ.get(SERVER.MCP_SERVER_ACTIVE_ENV)
+            original_orfs = os.environ.get(SERVER.LOCAL_ORFS_ENV)
+
+            def fake_run_command(command, *, cwd=None, timeout=120):
+                captured["command"] = command
+                captured["cwd"] = cwd
+                captured["timeout"] = timeout
+                return "local ok"
+
+            try:
+                os.environ[SERVER.MCP_SERVER_ACTIVE_ENV] = "1"
+                os.environ[SERVER.LOCAL_ORFS_ENV] = str(orfs)
+                SERVER.run_command = fake_run_command
+                result = SERVER.soc_openroad_run(str(project), stage="all", design_name="demo_top", timeout=44)
+            finally:
+                SERVER.run_command = original_run_command
+                if original_active is None:
+                    os.environ.pop(SERVER.MCP_SERVER_ACTIVE_ENV, None)
+                else:
+                    os.environ[SERVER.MCP_SERVER_ACTIVE_ENV] = original_active
+                if original_orfs is None:
+                    os.environ.pop(SERVER.LOCAL_ORFS_ENV, None)
+                else:
+                    os.environ[SERVER.LOCAL_ORFS_ENV] = original_orfs
+
+            self.assertEqual(captured["cwd"], orfs)
+            self.assertEqual(captured["timeout"], 44)
+            self.assertEqual(captured["command"][0:2], ["make", "-j1"])
+            self.assertIn("all", captured["command"])
+            self.assertIn(f"DESIGN_CONFIG={local_config.resolve()}", captured["command"])
+            self.assertIn(f"WORK_HOME={(project / 'pd/openroad/work_local').resolve()}", captured["command"])
+            self.assertIn("[INFO] BACKEND=local", result)
+            self.assertIn("local ok", result)
 
     def test_run_auto_requires_container_backend(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

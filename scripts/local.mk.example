@@ -12,3 +12,4 @@ LM_LICENSE_FILE      := <port>@<general-license-host>
 OPENROAD_FLOW_HOME ?= <path-to-OpenROAD-flow-scripts>/flow
 OPENROAD_EXE       ?= <path-to-openroad>
 YOSYS_EXE          ?= <path-to-yosys>
+OPENROAD_DOCKER_IMAGE ?= openroad/orfs:latest

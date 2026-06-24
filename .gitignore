@@ -34,3 +34,6 @@ scripts/local.csh
 .claude/
 docs/silicon_crew_intro_article.md
 pd/openroad/work/
+pd/openroad/work_local*/
+pd/openroad/local/
+pd/openroad/**/config.local.mk
