@@ -24,9 +24,9 @@ from pipeline_state import (
 ALLOWED_TRANSITIONS = {
     "pending": {"in_progress", "skipped"},
     "blocked": {"pending", "skipped"},
-    "in_progress": {"done", "fail"},
-    "fail": {"in_progress"},
-    "done": {"in_progress"},
+    "in_progress": {"done", "fail", "pending"},
+    "fail": {"in_progress", "pending"},
+    "done": {"in_progress", "pending"},
     "skipped": {"in_progress"},
 }
 
@@ -56,10 +56,32 @@ def _validate_transition(pipeline: dict, stage: str, target: str, note: str) -> 
         raise ValueError(f"invalid transition for {stage}: {current} -> {target}")
     if target == "in_progress" and not dependencies_satisfied(pipeline, stage):
         raise ValueError(f"dependencies not satisfied for {stage}: {list(DEPENDENCIES[stage])}")
+    if stage == "rtl" and target == "in_progress" and current in SUCCESS_STATES and not note:
+        raise ValueError("reopening rtl from a completed state requires --note")
     if target == "skipped" and not note:
         raise ValueError("skipped status requires --note with the applicable exception")
+    if target == "pending" and current in {"done", "fail", "in_progress"} and not note:
+        raise ValueError("pending invalidation from an active or completed stage requires --note")
     if target == "skipped" and stage != "doc":
         raise ValueError("only the doc stage may be skipped")
+
+
+def _invalidate_stage(pipeline: dict, stage: str, note: str) -> None:
+    info = pipeline.get(stage)
+    if not info:
+        return
+    info.update(
+        {
+            "status": "pending",
+            "started_at": None,
+            "completed_at": None,
+            "artifacts": [],
+            "check_results": [],
+            "notes": note,
+            "blocked_by": [],
+            "last_updated": now(),
+        }
+    )
 
 
 def _apply_transition(
@@ -73,6 +95,7 @@ def _apply_transition(
 ) -> None:
     _validate_transition(pipeline, stage, status, note)
     info = pipeline[stage]
+    current = info.get("status", "pending")
     parsed_checks = [parse_check(item) for item in checks]
 
     if status == "in_progress":
@@ -128,10 +151,23 @@ def _apply_transition(
             }
         )
     elif status == "pending":
-        info["status"] = "pending"
-        info["blocked_by"] = []
+        info.update(
+            {
+                "status": "pending",
+                "started_at": None,
+                "completed_at": None,
+                "artifacts": [],
+                "check_results": [],
+                "notes": note or info.get("notes", ""),
+                "blocked_by": [],
+            }
+        )
 
     info["last_updated"] = now()
+    if stage == "rtl" and status == "in_progress" and current in SUCCESS_STATES:
+        invalidation_note = note or "RTL reopened; downstream results invalidated"
+        _invalidate_stage(pipeline, "verif", invalidation_note)
+        _invalidate_stage(pipeline, "syn", invalidation_note)
     recompute_blocked(pipeline)
 
 

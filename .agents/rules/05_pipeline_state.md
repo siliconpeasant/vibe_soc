@@ -27,11 +27,17 @@ Initialization refuses to overwrite existing state unless `--force` is explicitl
 blocked -> pending -> in_progress -> done
                                 \-> fail -> in_progress
 pending -> skipped              (documented doc-stage exception only)
+done/in_progress/fail -> pending (explicit invalidation with --note)
+done -> in_progress            (RTL reopen with --note; downstream stages are invalidated)
 ```
 
-- Dependencies are `doc -> rtl -> {verif, syn}`; `done` and `skipped` satisfy dependencies.
+- Dependencies are `doc -> rtl -> {verif, syn}`; `done` and `skipped` satisfy dependencies. `verif` and `syn` may run independently after RTL, but each result is tied to the RTL snapshot used for that run.
 - Do not add ad hoc stages such as `architect`, `architecture`, `pd`, or `release` to satisfy this contract. Use role-specific artifacts and reports outside this module-stage state machine unless a rule explicitly defines a transition.
 - Agents mark their stage `in_progress` before work.
+- If the verification stage changes any RTL source or RTL filelist, it may do so multiple times while `verif` is `in_progress`. It must finish simulation on the final modified RTL, then the coordinator moves `syn` to `pending` once with a note such as `RTL changed during verif; synthesis rerun required`.
+- If the synthesis stage changes any RTL source or RTL filelist, it may do so multiple times while `syn` is `in_progress`. It must finish synthesis on the final modified RTL, then the coordinator moves `verif` to `pending` once with a note such as `RTL changed during syn; simulation rerun required`.
+- Within one RTL epoch, only one downstream stage may own RTL repair. If the other downstream stage also needs RTL edits after the first repair, reopen `rtl in_progress` with a note; do not continue alternating `verif` and `syn` RTL edits. Reopening completed RTL automatically invalidates `verif` and `syn`.
+- A stage moved from `done`, `fail`, or `in_progress` back to `pending` is an explicit invalidation and requires `--note`; stale artifacts and check results are cleared.
 - `done` requires existing, non-empty relative artifact paths and at least one passing check. Any failed check makes `done` invalid.
 - `fail` requires a failed check and remediation note.
 - `blocked` is dependency-derived and cannot be set manually.
