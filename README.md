@@ -12,7 +12,6 @@ vibe_soc/
 │   ├── core/                     # core 示例模块
 │   ├── bus/                      # bus 示例模块
 │   ├── periph/                   # 外设汇聚模块
-│   ├── interconnect/             # 互联模块
 │   ├── lib/                      # 通用库模块
 │   └── top/                      # SoC 顶层，含集成配置和 pipeline_state.json
 ├── ip/
@@ -141,6 +140,9 @@ architecture handoff，可选 -> doc -> rtl -> {verif, syn}
 | rtl | `soc-rtl-designer` 或特化角色 | `de/rtl/*.v`、`de/rtl/filelist.f`、`de/syn/*.sdc` |
 | verif | `soc-verification-engineer` | `dv/tb/tb_<module>.*`、`dv/sim/sim.log` |
 | syn | `soc-synthesis-engineer` | `de/syn/*_netlist.v`、`de/syn/synth.log` |
+| pd handoff (post-syn) | `soc-pd-engineer` | `pd/openroad/<platform>/<design>/config.mk`、`constraint.sdc`、真实 ORFS reports/results |
+
+PD handoff 使用 `soc-pd-engineer` 协调 OpenROAD，但它不是 `pipeline_state.json` 的正式 `doc/rtl/verif/syn` stage；只有真实 ORFS 报告和结果可作为完成依据。
 
 每个独立模块/IP 可用 `pipeline_state.json` 跟踪阶段状态。常用状态脚本：
 
@@ -167,7 +169,7 @@ python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 | 项目/IP/模块脚手架 | `soc-build` | `soc_init`、`soc_add_chip`、`soc_add_ip` |
 | 构建与验证 | `soc-build` | filelist、lint、compile、sim、regress、coverage、syn |
 | 顶层集成 | `soc-integrate` | 端口提取、实例化、wrapper、top 生成、快照、diff、刷新 |
-| OpenROAD handoff | `soc-openroad` | 生成 ORFS config/SDC，运行 synth/floorplan/place/cts/route/finish/all，汇总结果 |
+| OpenROAD handoff | `soc-pd-engineer` + `soc-openroad` | 物理设计 handoff agent 负责约束审查和流程调度；MCP 生成 ORFS config/SDC、运行 synth/floorplan/place/cts/route/finish/all 并汇总结果 |
 | 寄存器 YAML 生成 RTL | `yml2reg` | 从 YAML 生成 APB/AHB regfile RTL |
 | Excel 寄存器生成 | `excel-yml-gen` | 从 Excel 生成 YAML、regfile RTL、wrapper 等 |
 | CRG 需求转设计表 | `crg-req-to-design` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |

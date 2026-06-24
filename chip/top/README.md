@@ -12,7 +12,7 @@
 
 当前数据通路为 `core -> bus`，UART 以独立 TX/RX 顶层端口接出。时钟和低有效复位由三个实例共享。
 
-以下模块尚未纳入当前顶层：SPI、PCIe、periph、interconnect、lib。它们需要先完成接口定义和 lint，再通过 `soc-integrate` MCP 加入；不得将当前顶层描述为完整 full-chip 集成。
+以下模块尚未纳入当前顶层：SPI、PCIe、periph、lib。它们需要先完成接口定义和 lint，再通过 `soc-integrate` MCP 加入；不得将当前顶层描述为完整 full-chip 集成。
 
 ## 目录结构
 
