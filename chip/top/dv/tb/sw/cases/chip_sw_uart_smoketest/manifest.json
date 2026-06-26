@@ -1,0 +1,65 @@
+{
+  "case": "chip_sw_uart_smoketest",
+  "type": "case_sw_image",
+  "origin": "OpenTitan //sw/device/tests:uart_smoketest built for sim_dv and captured from the verified smoke bring-up",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_uart_smoketest",
+  "sw_image_base": "uart_smoketest",
+  "uvm_sequence": "chip_sw_uart_smoke_vseq",
+  "files": [
+    {
+      "file": "uart_smoketest_sim_dv.32.vmem",
+      "size_bytes": 31720,
+      "sha256": "ec4901af0d02bc15c8f2ec3805929c066f6744e2584662e20ae4ea8f7dd2d652"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.64.scr.vmem",
+      "size_bytes": 34179,
+      "sha256": "357f96af6218500b27e3c40f805923dae2e158f0b3130c554b433352c0dc6141"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.64.vmem",
+      "size_bytes": 29661,
+      "sha256": "453341aa07f8589018c0efb21d396477e6d3c527d23639b50d2279bd1c597d98"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.bin",
+      "size_bytes": 12152,
+      "sha256": "2985cd8d1232063a5832a5594f321d7e0e4d038197df85597171234f0e331781"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.dis",
+      "size_bytes": 455185,
+      "sha256": "b82c24edaf09606575ce4321a8a6eca78cf7b663acd69b187b55068e1bb86ff2"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.elf",
+      "size_bytes": 252816,
+      "sha256": "aa45f085f3669637b07f5d3c5464f9a65f4711fa7bbbd8443a127ddd51eaf439"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.logs.txt",
+      "size_bytes": 4012,
+      "sha256": "3b4f409eddf6cacb86c9310e35da7e517db3bb938504a9a5b93ce00e563166bf"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.map",
+      "size_bytes": 151786,
+      "sha256": "8c077ebbeb9ab8816afee74ac5cfc29109c4a1ad04bcd733e9a02ef5c0ca7cb8"
+    },
+    {
+      "file": "uart_smoketest_sim_dv.rodata.txt",
+      "size_bytes": 41073,
+      "sha256": "9e4b8b7dc6721bce7fb731ace422ded557586096e68f69851730bc83de4d5d51"
+    }
+  ],
+  "rebuild_required_when": [
+    "OpenTitan vendor version changes",
+    "uart_smoketest device software changes",
+    "flash memory layout or signing/scrambling rules change"
+  ]
+}

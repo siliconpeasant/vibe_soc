@@ -1,0 +1,59 @@
+{
+  "name": "opentitan_earlgrey_test_rom",
+  "type": "rom_image",
+  "origin": "OpenTitan //sw/device/lib/testing/test_rom:test_rom built for sim_dv and captured from the verified smoke bring-up",
+  "stable_input_root": "chip/top/dv/tb/sw/common/test_rom",
+  "sw_image_base": "test_rom",
+  "files": [
+    {
+      "file": "test_rom_sim_dv.32.vmem",
+      "size_bytes": 85175,
+      "sha256": "23aa8a140cb9a9efc05ec8d9e30923c835c5d87421eed82e287d74655d245479"
+    },
+    {
+      "file": "test_rom_sim_dv.39.scr.vmem",
+      "size_bytes": 103772,
+      "sha256": "1ea5daa407912aa087d14d716b4372538b1469b810a9927a55546799e606a9bb"
+    },
+    {
+      "file": "test_rom_sim_dv.39.scr.vmem.hash.c",
+      "size_bytes": 171,
+      "sha256": "1a3f09be54857bd79e1bdc21230df3649e9f45265251cf733d90f3d96e1444ef"
+    },
+    {
+      "file": "test_rom_sim_dv.bin",
+      "size_bytes": 32652,
+      "sha256": "3cb84aebdd920c8635e2ac93bab4ca655eb02d8fc5903a375731d97cc812f30e"
+    },
+    {
+      "file": "test_rom_sim_dv.dis",
+      "size_bytes": 432179,
+      "sha256": "4623342fbbdf70d319ae9cdfed301e02b7c972905615c11276e399e8f532cbb7"
+    },
+    {
+      "file": "test_rom_sim_dv.elf",
+      "size_bytes": 249416,
+      "sha256": "5ba7a01ad2f9dba41d37fbe84ca15822bb9bfe2e585c2046f0c0d2ed20df0065"
+    },
+    {
+      "file": "test_rom_sim_dv.logs.txt",
+      "size_bytes": 4316,
+      "sha256": "36a766483156ac94e5c414358b43e56b2387ed13dd52601111830193a68e1007"
+    },
+    {
+      "file": "test_rom_sim_dv.map",
+      "size_bytes": 143923,
+      "sha256": "a6f4f1286ef882b32a7a5610e84d7a328b569d1d585be37be322904dc9a0b418"
+    },
+    {
+      "file": "test_rom_sim_dv.rodata.txt",
+      "size_bytes": 27600,
+      "sha256": "c10b0de36fcf07c3f350c6783611f9669796babd05ceecc510b7416c413850ce"
+    }
+  ],
+  "rebuild_required_when": [
+    "OpenTitan vendor version changes",
+    "test ROM source changes",
+    "ROM memory layout or signing/scrambling rules change"
+  ]
+}

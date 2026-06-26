@@ -1,0 +1,19 @@
+name: chip_sw_uart_tx_rx_bootstrap
+status: pending_sw_collateral
+top_module: tb
+rtl_filelist: de/rtl/filelist.opentitan.f
+uvm_test: chip_base_test
+uvm_sequence: chip_sw_uart_tx_rx_vseq
+timeout_ns: 160000000
+waves: fsdb
+sw_collateral:
+  common_otp: dv/tb/sw/common/otp
+  test_rom:
+    base: dv/tb/sw/common/test_rom/test_rom
+    slot: 0
+  images:
+    - base: dv/tb/sw/cases/chip_sw_uart_tx_rx_bootstrap/uart_tx_rx_test
+      slot: 1
+      rule: new_rules
+notes:
+  - Populate dv/tb/sw/cases/chip_sw_uart_tx_rx_bootstrap before running this case.

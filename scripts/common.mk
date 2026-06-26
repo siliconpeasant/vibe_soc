@@ -48,17 +48,17 @@ endif
 include $(PROJECT_ROOT)/scripts/paths.mk
 include $(PROJECT_ROOT)/scripts/config.mk
 
-# Default top module: RTL module name in de/rtl, tb_ prefix otherwise
+# Default top module: DUT top in de/rtl, tb_ prefix otherwise
 ifeq ($(CURRENT_DIR),de)
-  TOP_MODULE ?= $(MODULE_NAME)
+  TOP_MODULE ?= $(RTL_TOP)
 else ifeq ($(CURRENT_DIR),rtl)
-  TOP_MODULE ?= $(MODULE_NAME)
+  TOP_MODULE ?= $(RTL_TOP)
 else
   TOP_MODULE ?= tb_$(MODULE_NAME)
 endif
 RTL_TOP      ?= $(MODULE_NAME)
 
-FILELIST     ?= $(CANONICAL_FLIST)
+FILELIST     ?= $(if $(filter de rtl,$(CURRENT_DIR)),$(RTL_FLIST),$(CANONICAL_FLIST))
 
 # Dependency filelists must be loaded before the rules below are parsed.
 # This preserves the reference project's paths -> defs -> filelist -> rules order.
@@ -82,7 +82,7 @@ include $(TOOLCHAIN_MK)
 
 BUILD_METADATA = simulator=$(SIMULATOR)|top=$(TOP_MODULE)|timescale=$(TIMESCALE)|fsdb=$(FSDB)|coverage=$(COVERAGE)|partcomp=$(PARTCOMP)|vlog=$(VLOG_FLAGS)|elab=$(VCS_ELAB_FLAGS)|includes=$(VCS_INCLUDE_FLAGS)|iverilog=$(IVERILOG_FLAGS)|verilator=$(VERILATOR_FLAGS)|user_compile=$(USER_COMPILE_FLAGS)
 BUILD_CONFIG_DEPS := $(PROJECT_ROOT)/scripts/common.mk $(PROJECT_ROOT)/scripts/config.mk $(TOOLCHAIN_MK) $(MODULE_PATH)/Makefile
-BUILD_EXTRA_DEPS := $(BUILD_CONFIG_DEPS) $(RTL_PATH) $(TB_PATH)
+BUILD_EXTRA_DEPS := $(BUILD_CONFIG_DEPS) $(RTL_PATH) $(if $(filter de rtl,$(CURRENT_DIR)),,$(TB_PATH))
 
 # Verdi source browsing is simulator-independent; toolchains may override it.
 VERDI_CMD ?= cd $(SIM_DIR) && verdi $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
@@ -106,11 +106,11 @@ setup:
 	@echo "[SETUP] vibe_soc environment setup"
 	@$(PROJECT_ROOT)/scripts/setup
 
-comp: $(CANONICAL_FLIST)
-	@mkdir -p $(SIM_DIR)
+comp: $(FILELIST)
+	@mkdir -p $(BUILD_DIR)
 	@set -e; \
 	new_fp="$$($(PYTHON_RUN) $(PROJECT_ROOT)/scripts/build_fingerprint.py \
-		--filelist $(CANONICAL_FLIST) --metadata "$(BUILD_METADATA)" \
+		--filelist $(FILELIST) --metadata "$(BUILD_METADATA)" \
 		$(foreach file,$(BUILD_EXTRA_DEPS),--extra $(file)))"; \
 	if [[ "$(FORCE)" != "1" && -f "$(BUILD_FINGERPRINT)" && \
 	      "$$new_fp" == "$$(cat $(BUILD_FINGERPRINT))" && -e "$(BUILD_OUTPUT)" ]]; then \
@@ -204,7 +204,7 @@ $(RTL_PATH)/filelist.f:
 	@echo "[FLIST] Generated $@"
 
 # --- Generate simulation filelist (RTL + TB) ---
-$(SIM_FLIST): $(ACTIVE_FILELISTS) $(FILELIST_MK_DEPS) $(TB_FILES)
+$(SIM_FLIST): $(ACTIVE_FILELISTS) $(FILELIST_MK_DEPS) $(TB_FILES) $(MODULE_PATH)/Makefile
 	@mkdir -p $(SIM_DIR)
 	@> $@
 	@for fl in $(ACTIVE_FILELISTS); do \
@@ -220,22 +220,34 @@ $(SIM_FLIST): $(ACTIVE_FILELISTS) $(FILELIST_MK_DEPS) $(TB_FILES)
 $(CANONICAL_FLIST): $(SIM_FLIST) $(PROJECT_ROOT)/scripts/validate_filelist.py
 	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/validate_filelist.py $(SIM_FLIST) --output $@
 
-# --- lint: static check on RTL only ---
-lint: flist
-	@echo "[LINT] Tool: $(LINT_TOOL) | Top: $(RTL_TOP)"
+# --- Generate DUT-only RTL filelist for de/lint/syn/PD flows ---
+$(RTL_RAW_FLIST): $(ACTIVE_FILELISTS) $(FILELIST_MK_DEPS) $(MODULE_PATH)/Makefile
 	@mkdir -p $(RUN_DIR)
-	@> $(RUN_DIR)/rtl.f
+	@> $@
 ifneq (,$(MODULE_FILELISTS))
 	@for fl in $(MODULE_FILELISTS); do \
 		if [ -f $$fl ]; then \
-			echo "// -f $$fl" >> $(RUN_DIR)/rtl.f; \
-			sed 's|\$$SOC|$(PROJECT_ROOT)|g' $$fl >> $(RUN_DIR)/rtl.f; \
-			echo "" >> $(RUN_DIR)/rtl.f; \
+			echo "// -f $$fl" >> $@; \
+			sed 's|\$$SOC|$(PROJECT_ROOT)|g' $$fl >> $@; \
+			echo "" >> $@; \
 		fi; \
 	done
 else
-	@sed 's|\$$SOC|$(PROJECT_ROOT)|g' $(RTL_PATH)/filelist.f > $(RUN_DIR)/rtl.f
+	@sed 's|\$$SOC|$(PROJECT_ROOT)|g' $(RTL_PATH)/filelist.f > $@
 endif
+	@if [ ! -s $@ ]; then \
+		echo "[FLIST] ERROR: No RTL files found in $(RTL_PATH)"; \
+		exit 1; \
+	fi
+	@echo "[FLIST] Generated $@"
+
+$(RTL_FLIST): $(RTL_RAW_FLIST) $(PROJECT_ROOT)/scripts/validate_filelist.py
+	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/validate_filelist.py $(RTL_RAW_FLIST) --output $@
+
+# --- lint: static check on RTL only ---
+lint: $(RTL_FLIST)
+	@echo "[LINT] Tool: $(LINT_TOOL) | Top: $(RTL_TOP)"
+	@mkdir -p $(RUN_DIR)
 ifeq ($(LINT_TOOL),verilator)
 	@verilator $(VERILATOR_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),iverilog)
@@ -247,19 +259,10 @@ endif
 	@echo "[LINT] Report: $(RUN_DIR)/lint.log"
 
 # --- syn: Yosys synthesis ---
-syn: flist
+syn: $(RTL_FLIST)
 	@echo "[SYN] Yosys | Top: $(RTL_TOP)"
 	@mkdir -p $(SYN_DIR)
-	@> $(SYN_DIR)/rtl.f
-ifneq (,$(MODULE_FILELISTS))
-	@for fl in $(MODULE_FILELISTS); do \
-		if [ -f $$fl ]; then \
-			sed 's|\$$SOC|$(PROJECT_ROOT)|g' $$fl >> $(SYN_DIR)/rtl.f; \
-		fi; \
-	done
-else
-	@sed 's|\$$SOC|$(PROJECT_ROOT)|g' $(RTL_PATH)/filelist.f > $(SYN_DIR)/rtl.f
-endif
+	@cp $(RTL_FLIST) $(SYN_DIR)/rtl.f
 	@if [ ! -s $(SYN_DIR)/rtl.f ]; then \
 		echo "[SYN] ERROR: No RTL files found in $(RTL_PATH)"; \
 		exit 1; \

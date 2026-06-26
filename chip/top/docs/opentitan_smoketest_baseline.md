@@ -18,51 +18,52 @@ The upstream log ended with `SW TEST PASSED`, `TEST PASSED CHECKS`, and zero UVM
 
 ## Imported Collateral
 
-Only reusable generated collateral was copied into canonical vibe_soc roots:
+Reusable generated inputs were promoted into canonical vibe_soc roots:
 
 ```text
-chip/top/de/run/opentitan_smoke/default/fusesoc-work/
-chip/top/de/run/opentitan_smoke/sw/
-chip/top/de/run/opentitan_smoke/run.log
+chip/top/de/rtl/filelist.opentitan.f
+chip/top/de/rtl/generated/opentitan_fusesoc/
+chip/top/dv/tb/sw/common/otp/
+chip/top/dv/tb/sw/common/test_rom/
+chip/top/dv/tb/sw/cases/chip_sw_uart_smoketest/
+chip/top/dv/tb/tests/chip_sw_uart_smoketest.yml
 ```
 
 The copied collateral includes:
 
-- FuseSoC-generated `lowrisc_dv_top_earlgrey_chip_sim_0.1.scr`
+- static OpenTitan compile order in `de/rtl/filelist.opentitan.f`
+- the small set of FuseSoC-generated SV sources needed outside the vendor tree
 - prebuilt `test_rom_sim_dv` ROM images
 - prebuilt `uart_smoketest_sim_dv` flash images
 - generated OTP images used by the OpenTitan DV environment
+- per-directory manifests with file hashes and rebuild triggers
 
-The original `simv`, `simv.daidir`, FSDB waveforms, and runtime database files were not imported.
+The original `simv`, `simv.daidir`, FSDB waveforms, and runtime database files were not imported as stable inputs.
 
 ## vibe_soc Integration
 
 `chip/top/Makefile` selects the OpenTitan vendor path when `TEST=chip_sw_uart_smoketest`.
 For this case it:
 
-- uses `chip/top/de/rtl/filelist.opentitan_smoke.f`
-- expands the captured FuseSoC `.scr` through the normal vibe_soc filelist validator
+- uses `chip/top/de/rtl/filelist.opentitan.f`
+- uses a static project-owned expansion of the verified FuseSoC dependency order
 - overrides VCS to the OpenTitan-style one-step build because the filelist includes C/C++ DPI files
 - runs `chip_base_test` with `chip_sw_uart_smoke_vseq`
-- points `+sw_images` at the copied prebuilt ROM and UART smoke images
-- copies OTP `.vmem` files into `dv/sim` before launching `simv`
+- points `+sw_images` at `dv/tb/sw/common/test_rom` and `dv/tb/sw/cases/chip_sw_uart_smoketest`
+- copies OTP images and SW logger databases from `dv/tb/sw` into the case run directory before launching `simv`
 
 Run through the registered project workflow:
 
 ```text
-soc_sim module_dir=/project/xuanwu9000/user/silicon/vibe_soc/chip/top simulator=vcs top_module=tb test=chip_sw_uart_smoketest seed=1
+soc_sim module_dir=/project/xuanwu9000/user/silicon/vibe_soc/chip/top/dv simulator=vcs top_module=tb test=chip_sw_uart_smoketest seed=1
 ```
 
 ## Local Result
 
 The baseline now compiles and runs inside `vibe_soc` with the registered MCP simulation flow.
-The passing local run used:
+The passing local run was launched through `soc-build.soc_sim`.
 
-```text
-make comp sim SIMULATOR=vcs SEED=1 TEST=chip_sw_uart_smoketest TOP_MODULE=tb
-```
-
-Observed result in `chip/top/dv/sim/sim.log`:
+Observed result in `chip/top/dv/sim/chip_sw_uart_smoketest/sim.log`:
 
 ```text
 ==== SW TEST PASSED ====
@@ -88,18 +89,18 @@ For OpenTitan vendor simulations, `FSDB` defaults to `1`, and `WAVES=fsdb` is pa
 OpenTitan runtime TCL. The expected waveform output is:
 
 ```text
-chip/top/dv/sim/waves.fsdb
+chip/top/dv/sim/chip_sw_uart_smoketest/waves.fsdb
 ```
 
 ## FSDB Run Result
 
 The FSDB-enabled smoke run was launched through `soc-build.soc_sim`. The MCP wrapper timed out after
-300 seconds, but the underlying VCS process completed and wrote the final result to `dv/sim/sim.log`.
+300 seconds, but the underlying VCS process completed and wrote the final result to `dv/sim/chip_sw_uart_smoketest/sim.log`.
 
 Observed artifacts and result:
 
 ```text
-chip/top/dv/sim/waves.fsdb
+chip/top/dv/sim/chip_sw_uart_smoketest/waves.fsdb
 ==== SW TEST PASSED ====
 TEST PASSED CHECKS
 UVM_ERROR :    0

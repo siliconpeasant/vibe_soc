@@ -1,0 +1,10 @@
+{
+  "case": "chip_sw_uart_tx_rx_bootstrap",
+  "type": "case_sw_image",
+  "status": "placeholder_missing_prebuilt_image",
+  "expected_sw_image_base": "uart_tx_rx_test",
+  "origin": "OpenTitan //sw/device/tests:uart_tx_rx_test for bootstrap-style UART TX/RX case",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_uart_tx_rx_bootstrap",
+  "files": [],
+  "note": "Populate this directory with uart_tx_rx_test_sim_dv artifacts before running this case."
+}

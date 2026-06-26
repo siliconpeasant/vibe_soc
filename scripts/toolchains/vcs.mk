@@ -48,25 +48,25 @@ ifneq ($(strip $(VCS_DW_SIM_PATH)),)
 endif
 
 VCS_WORK_LIB := $(subst -,_,$(subst /,_,$(patsubst $(PROJECT_ROOT)/%,%,$(MODULE_PATH))))_worklib
-VCS_WORK_DIR := $(SIM_DIR)/work/$(VCS_WORK_LIB)
+VCS_WORK_DIR := $(BUILD_DIR)/work/$(VCS_WORK_LIB)
 
 VCS_COV_ELAB_FLAGS = $(if $(filter 1,$(COVERAGE)),-cm_name build -cm $(COV_METRICS) -cm_dir $(COV_DIR),)
 VCS_COV_SIM_FLAGS = $(if $(filter 1,$(COVERAGE)),-cm $(COV_METRICS) -cm_dir $(COV_DIR) -cm_name $(TEST)_$(SEED),)
 REGRESS_MATRIX_ARGS = $(if $(filter 1,$(COVERAGE)),-cm_name {test}_{seed},)
 
-COMP_CMD = cd $(SIM_DIR) && \
+COMP_CMD = cd $(BUILD_DIR) && \
            mkdir -p $(VCS_WORK_DIR) && \
            printf 'WORK > $(VCS_WORK_LIB)\n$(VCS_WORK_LIB) : ./work/$(VCS_WORK_LIB)\n' > synopsys_sim.setup && \
            $(VLOG_EXE) $(VCS_DW_FLAGS) $(VLOG_FLAGS) \
            +define+HW=$(VCS_HW_ROOT) $(VCS_FSDB_COMPILE_FLAGS) \
            $(VCS_INCLUDE_FLAGS) -timescale=$(TIMESCALE) \
            -f $(FILELIST) $(USER_COMPILE_FLAGS) -l compile.log
-ELAB_CMD = cd $(SIM_DIR) && \
+ELAB_CMD = cd $(BUILD_DIR) && \
            $(VCS_EXE) $(TOP_MODULE) $(VCS_ELAB_FLAGS) \
            $(VCS_PARTCOMP_FLAGS) $(VCS_FSDB_ELAB_FLAGS) \
            $(VCS_COV_ELAB_FLAGS) -timescale=$(TIMESCALE) -o simv -l elab.log
 SIM_CMD  = ./simv $(VCS_SIM_FLAGS) $(VCS_COV_SIM_FLAGS) $(VCS_GUI_FLAGS) $(USER_SIM_FLAGS)
-BUILD_OUTPUT = $(SIM_DIR)/simv
+BUILD_OUTPUT = $(BUILD_DIR)/simv
 COVERAGE_SUPPORTED = 1
 COVERAGE_REPORT_CMD = env LD_LIBRARY_PATH=$(VCS_HOME)/amd64/lib \
                       VCS_DISABLE_POOL=1 DISABLE_GC_POOL=1 VCS_USE_MALLOC=1 MALLOC_CHECK_=0 \
@@ -74,12 +74,12 @@ COVERAGE_REPORT_CMD = env LD_LIBRARY_PATH=$(VCS_HOME)/amd64/lib \
 
 # Source view and compiled KDB view correspond to xuanwu9000's verdi/vcs_verdi.
 VERDI_SRC_ARGS  = -top $(TOP_MODULE) -f $(FILELIST)
-VERDI_DB_ARGS   = $(if $(wildcard $(SIM_DIR)/simv.daidir),-dbdir simv.daidir,$(VERDI_SRC_ARGS))
+VERDI_DB_ARGS   = $(if $(wildcard $(BUILD_DIR)/simv.daidir),-dbdir simv.daidir,$(VERDI_SRC_ARGS))
 VERDI_WAVE_FILE = $(if $(wildcard $(SIM_DIR)/waves.fsdb),waves.fsdb,$(if $(wildcard $(SIM_DIR)/wave.fsdb),wave.fsdb,))
 VERDI_WAVE_ARGS = $(if $(VERDI_WAVE_FILE),-ssf $(VERDI_WAVE_FILE),)
 ifeq ($(CURRENT_DIR),dv)
   VERDI_CMD     = cd $(SIM_DIR) && $(VERDI_EXE) $(VERDI_FLAGS) $(VERDI_DB_ARGS) $(VERDI_WAVE_ARGS) &
 else
-  VERDI_CMD     = cd $(SIM_DIR) && $(VERDI_EXE) $(VERDI_FLAGS) $(VERDI_SRC_ARGS) &
+  VERDI_CMD     = cd $(BUILD_DIR) && $(VERDI_EXE) $(VERDI_FLAGS) $(VERDI_SRC_ARGS) &
 endif
 

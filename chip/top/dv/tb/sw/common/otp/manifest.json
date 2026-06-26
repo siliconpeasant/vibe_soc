@@ -1,0 +1,58 @@
+{
+  "name": "opentitan_earlgrey_otp_images",
+  "type": "otp_images",
+  "origin": "OpenTitan top_earlgrey generated OTP VMEM collateral captured from the verified smoke bring-up",
+  "stable_input_root": "chip/top/dv/tb/sw/common/otp",
+  "files": [
+    {
+      "file": "otp_ctrl_img_dev.vmem",
+      "size_bytes": 66119,
+      "sha256": "c2a061c13d14b3bc3e8e5f3641dfd5e84b4a21028c0e4c2c58d52bc44b26263b"
+    },
+    {
+      "file": "otp_ctrl_img_prod.vmem",
+      "size_bytes": 66119,
+      "sha256": "ca167faf2cc10f375ce228834796bc21a6ab082153c31adf000394de6c1e8465"
+    },
+    {
+      "file": "otp_ctrl_img_raw.vmem",
+      "size_bytes": 66119,
+      "sha256": "6c2429a4947ec761cbc649a309d36bbcc3092bd24fdd7d73d6edbcb8dbba8d4b"
+    },
+    {
+      "file": "otp_ctrl_img_rma.vmem",
+      "size_bytes": 66119,
+      "sha256": "0675779905774855acbdf7427961abc48de56c7722100a48c0b9631d2082531a"
+    },
+    {
+      "file": "otp_ctrl_img_test_locked0.vmem",
+      "size_bytes": 66119,
+      "sha256": "d50446f3b15c0aae0b2dbf865e6e08e9173e23865c936cc22c3027e46f53aa51"
+    },
+    {
+      "file": "otp_ctrl_img_test_locked1.vmem",
+      "size_bytes": 66119,
+      "sha256": "94daf87d4677448a38546a5d1a8ae237450a55c6ac7fd5463168e3043c0d27b3"
+    },
+    {
+      "file": "otp_ctrl_img_test_unlocked0.vmem",
+      "size_bytes": 66119,
+      "sha256": "61429e81b9b3795d6a99e5073c0750229191757e1816c19c8671ee8da8deb48f"
+    },
+    {
+      "file": "otp_ctrl_img_test_unlocked1.vmem",
+      "size_bytes": 66119,
+      "sha256": "3970a3ff98d17718b724f77f59a761a01925298c9b32c01edcd4a351158d3d31"
+    },
+    {
+      "file": "otp_ctrl_img_test_unlocked2.vmem",
+      "size_bytes": 66119,
+      "sha256": "5e5092b35697dc2d46b83fc1c0abed3aa15a8ebcca70a67f720ea30d6961630c"
+    }
+  ],
+  "rebuild_required_when": [
+    "OpenTitan vendor version changes",
+    "OTP image configuration changes",
+    "life cycle or provisioning configuration changes"
+  ]
+}
