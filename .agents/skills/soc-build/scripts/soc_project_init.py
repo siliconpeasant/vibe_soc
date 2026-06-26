@@ -171,7 +171,6 @@ source scripts/setup.sh
 cd ip/digital/template_ip
 make comp    # 编译 IP 级 testbench
 make sim     # 运行 IP 级仿真
-make wave    # 查看波形
 ```
 
 ### 3. Chip 级仿真
@@ -369,7 +368,6 @@ COMP_CMD = vcs -sverilog -full64 -timescale=1ns/1ps \
            $(RTL_FILES) $(TB_FILES) \
            -o $(RUN_DIR)/simv
 SIM_CMD  = $(RUN_DIR)/simv +vpdfile+$(RUN_DIR)/wave.vpd
-WAVE_CMD = dve -vpd $(RUN_DIR)/wave.vpd &
 endif
 
 # --------------- Verilator ----------
@@ -382,7 +380,6 @@ COMP_CMD = verilator --cc --exe --build --trace \
            2>&1 | tee $(RUN_DIR)/compile.log
 SIM_CMD  = $(RUN_DIR)/obj_dir/V$(TOP_MODULE) \
            +trace +wavefile=$(RUN_DIR)/wave.vcd
-WAVE_CMD = gtkwave $(RUN_DIR)/wave.vcd &
 endif
 
 # --------------- Icarus -------------
@@ -391,7 +388,6 @@ COMP_CMD = iverilog -g2012 -o $(RUN_DIR)/sim.out \
            $(RTL_FILES) $(TB_FILES) \
            2>&1 | tee $(RUN_DIR)/compile.log
 SIM_CMD  = vvp $(RUN_DIR)/sim.out +dumpfile=$(RUN_DIR)/wave.vcd
-WAVE_CMD = gtkwave $(RUN_DIR)/wave.vcd &
 endif
 
 # --------------- Xcelium ------------
@@ -401,14 +397,13 @@ COMP_CMD = xrun -sv -timescale 1ns/1ps -access +rwc \
            -xmlibdirpath $(RUN_DIR)/work \
            2>&1 | tee $(RUN_DIR)/compile.log
 SIM_CMD  = xrun -R -input $(RUN_DIR)/wave.tcl
-WAVE_CMD = simvisdbutil $(RUN_DIR)/wave.shm &
 endif
 
 # =============================================================================
 # 公共目标
 # =============================================================================
 
-.PHONY: comp sim wave clean
+.PHONY: comp sim clean
 
 comp:
 	@echo "[COMP] Simulator: $(SIMULATOR) | Top: $(TOP_MODULE)"
@@ -420,9 +415,6 @@ sim: comp
 	@mkdir -p $(RUN_DIR)
 	$(SIM_CMD) | tee $(RUN_DIR)/sim.log
 
-wave:
-	@echo "[WAVE] Opening waveform ..."
-	$(WAVE_CMD)
 
 clean:
 	@echo "[CLEAN] Removing run artifacts ..."
@@ -1001,7 +993,6 @@ cd ip/digital/{ip_name}/de    # de 目录下也能执行
 cd ip/digital/{ip_name}/dv    # dv 目录下也能执行
 make comp    # 编译
 make sim     # 运行仿真
-make wave    # 查看波形
 make clean   # 清理
 ```
 
@@ -1275,9 +1266,9 @@ endmodule
 """
 
 SUBDIR_MAKEFILE = """# Wrapper Makefile: delegates to parent directory
-.PHONY: all flist lint comp sim wave clean
+.PHONY: all flist lint comp sim clean
 
-all flist lint comp sim wave clean:
+all flist lint comp sim clean:
 	@$(MAKE) -C .. SUBDIR=$(notdir $(CURDIR)) $@
 
 %:

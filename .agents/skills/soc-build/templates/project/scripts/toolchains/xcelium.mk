@@ -18,8 +18,6 @@ ELAB_CMD = $(XRUN_EXE) $(XCELIUM_FLAGS) -elaborate \
            -l $(SIM_DIR)/elab.log
 SIM_CMD  = $(XRUN_EXE) -R -xmlibdirname $(XCELIUM_WORK) \
            $(XCELIUM_SIM_FLAGS) $(XCELIUM_GUI_FLAGS) $(USER_SIM_FLAGS)
-WAVE_CMD = $(SIMVISION_EXE) $(SIM_DIR)/waves.shm &
 
 VERDI_CMD     = $(VERDI_EXE) $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
-DEBUG_GUI_CMD = $(SIMVISION_EXE) $(SIM_DIR)/waves.shm &
 BUILD_OUTPUT = $(XCELIUM_WORK)

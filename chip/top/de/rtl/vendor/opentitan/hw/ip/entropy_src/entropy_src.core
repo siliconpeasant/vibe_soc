@@ -1,0 +1,87 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:ip:entropy_src:0.1"
+description: "entropy_src"
+filesets:
+  files_rtl:
+    depend:
+      - lowrisc:virtual_constants:top_pkg
+      - lowrisc:prim:all
+      - lowrisc:prim:count
+      - lowrisc:prim:edge_detector
+      - lowrisc:prim:assert
+      - lowrisc:prim:lfsr
+      - lowrisc:prim:sparse_fsm
+      - lowrisc:prim:macros
+      - lowrisc:prim:max_tree
+      - lowrisc:prim:sum_tree
+      - lowrisc:prim:mubi
+      - lowrisc:ip:tlul
+      - lowrisc:ip:sha3
+      - lowrisc:ip:otp_ctrl_pkg
+      - lowrisc:ip:entropy_src_pkg
+      - lowrisc:ip:entropy_src_ack_sm_pkg
+      - lowrisc:ip:entropy_src_main_sm_pkg
+    files:
+      - rtl/entropy_src_reg_pkg.sv
+      - rtl/entropy_src_reg_top.sv
+      - rtl/entropy_src_watermark_reg.sv
+      - rtl/entropy_src_field_en.sv
+      - rtl/entropy_src_cntr_reg.sv
+      - rtl/entropy_src_ack_sm.sv
+      - rtl/entropy_src_main_sm.sv
+      - rtl/entropy_src_repcnt_ht.sv
+      - rtl/entropy_src_repcnts_ht.sv
+      - rtl/entropy_src_adaptp_ht.sv
+      - rtl/entropy_src_bucket_ht.sv
+      - rtl/entropy_src_markov_ht.sv
+      - rtl/entropy_src_enable_delay.sv
+      - rtl/entropy_src_core.sv
+      - rtl/entropy_src.sv
+    file_type: systemVerilogSource
+
+  files_verilator_waiver:
+    depend:
+      # common waivers
+      - lowrisc:lint:common
+      - lowrisc:lint:comportable
+    files:
+      - lint/entropy_src.vlt
+    file_type: vlt
+
+  files_ascentlint_waiver:
+    depend:
+      # common waivers
+      - lowrisc:lint:common
+      - lowrisc:lint:comportable
+    files:
+      - lint/entropy_src.waiver
+    file_type: waiver
+
+
+parameters:
+  SYNTHESIS:
+    datatype: bool
+    paramtype: vlogdefine
+
+
+targets:
+  default: &default_target
+    filesets:
+      - tool_verilator  ? (files_verilator_waiver)
+      - tool_ascentlint ? (files_ascentlint_waiver)
+      - files_rtl
+    toplevel: entropy_src
+
+  lint:
+    <<: *default_target
+    default_tool: verilator
+    parameters:
+      - SYNTHESIS=true
+    tools:
+      verilator:
+        mode: lint-only
+        verilator_options:
+          - "-Wall"

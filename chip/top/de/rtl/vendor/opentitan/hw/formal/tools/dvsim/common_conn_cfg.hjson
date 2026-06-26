@@ -1,0 +1,21 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  sub_flow:    conn
+  import_cfgs: ["{proj_root}/hw/formal/tools/dvsim/common_formal_cfg.hjson"]
+  dut:         "{name}"
+
+  // Vars that need to exported to the env
+  exports: [
+    {CONN_CSVS: "'{conn_csvs}'"}
+  ]
+
+  overrides: [
+    // Connectivity test won't run any assertions, so here we use default RTL target
+    {
+      name:  fusesoc_target
+      value: "default"
+    }
+  ]
+}

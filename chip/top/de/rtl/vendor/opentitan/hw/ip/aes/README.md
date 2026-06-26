@@ -1,0 +1,63 @@
+# AES HWIP Technical Specification
+<!-- BEGIN CMDGEN util/mdbook_regression_links.py --hjson hw/ip/aes/data/aes.hjson --top earlgrey -->
+| Regression | Version | [Stages](https://opentitan.org/book/doc/project_governance/development_stages.html) | Results |
+|-|-|-|-|
+ [`aes_masked`](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/dashboard.html) | 1.1.0 | D2S, V2S | ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_masked/test.svg) ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_masked/passing.svg) ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_masked/functional.svg) ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_masked/code.svg) |
+ [`aes_unmasked`](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/dashboard.html) | 1.1.0 | D2S, V2S | ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_unmasked/test.svg) ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_unmasked/passing.svg) ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_unmasked/functional.svg) ![](https://dashboard.reports.lowrisc.org/opentitan/earlgrey/badge/aes_unmasked/code.svg) |
+
+This IP has been taped out in Earl Grey 1.0.0. The corresponding documentation and regression results can be found [here](https://opentitan.org/earlgrey_1.0.0/book/hw/ip/aes/index.html).
+
+<!-- END CMDGEN -->
+
+# Overview
+
+This document specifies the AES hardware IP functionality.
+[Advanced Encryption Standard (AES)](https://www.nist.gov/publications/advanced-encryption-standard-aes) is the primary symmetric encryption and decryption mechanism used in OpenTitan protocols.
+The AES unit is a cryptographic accelerator that accepts requests from the processor to encrypt or decrypt 16 byte blocks of data.
+It is attached to the chip interconnect bus as a peripheral module and conforms to the [Comportable guideline for peripheral functionality.](../../../doc/contributing/hw/comportability/README.md)
+
+
+## Features
+
+The AES unit supports the following features:
+
+- Encryption/Decryption using AES-128/192/256 in the following cipher block modes:
+  - Electronic Codebook (ECB) mode,
+  - Cipher Block Chaining (CBC) mode,
+  - Cipher Feedback (CFB) mode (fixed data segment size of 128 bits, i.e., CFB-128),
+  - Output Feedback (OFB) mode,
+  - Counter (CTR) mode, and
+  - Galois/Counter Mode (GCM) (fixed IV length of 96 bits, fixed tag length of 128 bits) including support for context switching (via saving and restoring).
+- Support for GCM can be removed to save area, and is enabled/disabled using a compile-time Verilog parameter
+- Support for AES-192 can be removed to save area, and is enabled/disabled using a compile-time Verilog parameter
+- First-order masking of the cipher core using domain-oriented masking (DOM) to deter side-channel analysis (SCA), can optionally be disabled using compile-time Verilog parameters (for more details see [Security Hardening](./doc/theory_of_operation.md#side-channel-analysis))
+- First-order masking of the GHASH operation involved in GCM (for more details see [Security Hardening](./doc/theory_of_operation.md#side-channel-analysis))
+- Latency per 16 byte data block of 12/14/16 clock cycles (unmasked implementation) and 56/66/72 clock cycles (DOM) in AES-128/192/256 mode
+- Automatic as well as software-initiated reseeding of internal pseudo-random number generators (PRNGs) with configurable reseeding rate resulting in max entropy consumption rates ranging from 343 Mbit/s to 0.042 Mbit/s (at 100 MHz).
+- Countermeasures for deterring fault injection (FI) on the control path (for more details see [Security Hardening](./doc/theory_of_operation.md#fault-injection))
+- Register-based data and control interface
+- System key-manager interface for optional key sideload to not expose key material to the processor and other hosts attached to the system bus interconnect.
+- On-the-fly round-key generation in parallel to the actual encryption/decryption from a single initial 128/192/256-bit key provided through the register interface (for more details see [Theory of Operations](./doc/theory_of_operation.md))
+
+This AES unit targets medium performance (16 parallel S-Boxes, \~1 cycle per round for the unmasked implementation, \~5 cycles per round for the DOM implementation).
+High-speed, single-cycle operation for high-bandwidth data streaming is not required.
+
+Cipher modes other than ECB, CBC, CFB, OFB, CTR and GCM are beyond this version of the AES unit but might be supported in future versions.
+If hardware support for GCM is disabled, it can be implemented by leveraging [Ibex](../../top_earlgrey/ip_autogen/rv_core_ibex/README.md) for the GHASH operation as demonstrated in the [OpenTitan Cryptography Library](../../../doc/security/cryptolib/README.md).
+
+
+## Description
+
+The AES unit is a cryptographic accelerator that accepts requests from the processor to encrypt or decrypt 16B blocks of data.
+It supports AES-128/192/256 in Electronic Codebook (ECB) mode, Cipher Block Chaining (CBC) mode, Cipher Feedback (CFB) mode (fixed data segment size of 128 bits, i.e., CFB-128), Output Feedback (OFB) mode, Counter (CTR) mode and Galois/Counter Mode (GCM) (fixed IV length of 96 bits, fixed tag length of 128 bits).
+For more information on these cipher modes, refer to [Recommendation for Block Cipher Modes of Operation](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf).
+For details on GCM, refer to [Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf).
+If hardware support for GCM is disabled, it can be implemented using [Ibex](../../top_earlgrey/ip_autogen/rv_core_ibex/README.md) for the GHASH operation as demonstrated in the [OpenTitan Cryptography Library](../../../doc/security/cryptolib/README.md).
+To improve the performance of such an implementation, instructions of the [RISC-V Bit-Manipulation Extension of Ibex](https://ibex-core.readthedocs.io/en/latest/03_reference/instruction_decode_execute.html#arithmetic-logic-unit-alu) can be leveraged.
+In particular, carry-less multiply instructions can help to speed up the GHASH operation.
+Other cipher modes might be added in future versions.
+
+The AES unit is attached to the chip interconnect bus as a peripheral module.
+Communication with the processor happens through a set of control and status registers (CSRs).
+This includes input/output data and key, as well as status and control information.
+In addition, the AES unit includes a separate interface through which [Key Manager](../keymgr/README.md) can provide the key without exposing it to the processor or other hosts attached to the chip interconnect bus.

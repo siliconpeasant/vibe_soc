@@ -1,0 +1,29 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  import_cfgs: [// Project wide common synthesis config file
+                "{proj_root}/hw/syn/tools/dvsim/common_syn_cfg.hjson"]
+
+  overrides: [
+    // This forces the synthesis to run without the real ASIC libs and
+    // generic primitives. This is used for experiments with unmapped
+    // (GTECH) netlists that are written out after elab and before
+    // technology mapping and optimization.
+    {
+      name: foundry_root
+      value: ""
+    }
+    // The GTECH flow does not create any meaningful ATP reports, hence
+    // we terminate after compilation.
+    {
+      name: termination_stage
+      value: "compile"
+    }
+  ]
+
+  // Load common dont_touch wildcard constraints for the primitives. No other
+  // timing constraints are needed for this flow.
+  sdc_file: "{syn_root}/tools/dc/gtech-constraints.sdc"
+  foundry_sdc_file: ""
+}

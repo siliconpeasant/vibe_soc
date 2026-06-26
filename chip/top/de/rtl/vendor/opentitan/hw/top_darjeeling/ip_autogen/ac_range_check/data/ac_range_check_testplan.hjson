@@ -1,0 +1,114 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "ac_range_check"
+    import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                       "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                       "hw/dv/tools/dvsim/testplans/intr_test_testplan.hjson",
+                       "hw/dv/tools/dvsim/testplans/shadow_reg_errors_testplan.hjson",
+                       "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                       "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson"]
+    testpoints: [
+      {
+        name: ac_range_check_smoke
+        desc: '''
+              Smoke test in which we configure a randomized number of ranges to allow a transfer
+              and perform transfers.
+
+              Stimulus:
+                - Assert range_check_overwrite_i to MuBi8::False
+                - Configure a random number of ranges:
+                  * Randomize the RANGE_BASE and RANGE_LIMIT register (RANGE_LIMIT > RANGE_BASE)
+                  * Randomize the RANGE_ATTR register and set the RANGE_ATTR.enable bit to 1
+                  * Set RANGE_RACL_POLICY_SHADOWED.read_perm and
+                    RANGE_RACL_POLICY_SHADOWED.write_perm to 0xFFFF (disables RACL checks)
+                - Perform random TLUL requests on the unfiltered interface (ctn_tl_h2d_i) and
+                  provide random TLUL responses on the filtered interface (ctn_filtered_tl_d2h_i).
+
+              Checking:
+                - If a request falls outside of any enabled range:
+                  * The request should be denied and an error should be returned in the response on
+                    the unfiltered TLUL D channel (ctn_tl_d2h_o).
+                  * Read and Execute requests should return all zero as data on the unfiltered TLUL
+                    D channel (ctn_tl_d2h_o).
+                - If the request falls into the address space of at least one enabled range, the
+                  request is allowed if and only if the permissions of that range allow it (e.g., if
+                  the access is a data read, the range needs to allow reads for the access to be
+                  allowed) and it does not fall into the address space of any other enabled range
+                  with lower index whose permissions deny the request.
+                  Allowed requests should propagate without modifications on the A channel. And the
+                  corresponding responses should propagate unmodified on the D channel. One
+                  exception to this is the d_data field for AccessAck responses (i.e., responses to
+                  writes): the TL-UL spec defines that this field in this case can be any value, and
+                  the current implementation sets it to zero (for the reason described in PR #1236).
+              '''
+        stage: V1
+        tests: ["ac_range_check_smoke"]
+      }
+      {
+        name: ac_range_check_smoke_racl
+        desc: '''
+              TODO
+              '''
+        stage: V1
+        tests: ["ac_range_check_smoke_racl"]
+      }
+      {
+        name: ac_range_check_lock_range
+        desc: '''
+              Test the range lock functionality
+
+              Stimulus:
+              - Configure a range's RANGE_BASE, RANGE_LIMIT, RANGE_ATTR, RANGE_RACL_POLICY_SHADOWED
+                register
+              - Clear RANGE_REGWEN to MuBi4::False in a randomized way
+              - Try to reconfigure the range with different values
+
+              Checking:
+              - If RANGE_REGWEN was cleared to MuBi4::False, the reconfigured register values
+                The original configuration should remain in the registers. If RANGE_REGWEN was not
+                cleared, the reconfigured values should have replaced the original ones.
+              '''
+        stage: V2
+        tests: ["ac_range_check_lock_range"]
+      }
+      {
+        name: ac_range_bypass_enable
+        desc: '''
+              Test the bypass functionality for enabled ranges.
+
+              Stimulus:
+              - Assert range_check_overwrite_i to Mubi8::True
+              - Configure the AC range check to block certain address ranges
+                * Randomize type of denial (R/W/X, RACL policies)
+              - Perform random TLUL requests that fall within blocked ranges and outside with:
+                * Random request type (R/W/X) and random RACL role
+
+              Checking:
+              - Check if all transfers are allowed
+              - LOG_STATUS.deny_cnt must stay 0
+              '''
+        stage: V2
+        tests: ["ac_range_check_bypass"]
+      }
+      {
+        name: stress_all
+        desc: '''
+              Combine above sequences in one test and then randomly select for running (except CSR
+              tests).
+              '''
+        stage: V2
+        tests: ["ac_range_check_stress_all"]
+      }
+    ]
+    covergroups: [
+      {
+        name: ac_range_check_log_status_cg
+        desc: '''
+              Cover all status fields of the LOG_STATUS.
+              (deny_cnt and deny_range_index are not part of this).
+              '''
+      }
+    ]
+  }

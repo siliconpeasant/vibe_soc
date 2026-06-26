@@ -1,0 +1,1306 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+//! Useful modules for OpenTitanTool application development.
+pub mod command;
+pub mod config;
+
+mod gpio;
+mod i2c;
+mod spi;
+
+use crate::debug::openocd::OpenOcdJtagChain;
+use crate::io::emu::Emulator;
+use crate::io::gpio::{GpioBitbanging, GpioMonitoring, GpioPin, PinMode, PullMode};
+use crate::io::i2c::Bus;
+use crate::io::ioexpander::IoExpander;
+use crate::io::jtag::{JtagChain, JtagParams};
+use crate::io::spi::{Target, TransferMode};
+use crate::io::uart::Uart;
+use crate::io::usb::UsbContext;
+use crate::transport::{
+    Capability, FpgaOps, ProgressIndicator, ProxyOps, Transport, TransportError,
+    TransportInterfaceType, ioexpander,
+};
+
+use anyhow::{Result, bail, ensure};
+use indicatif::{ProgressBar, ProgressStyle};
+use serialport::Parity;
+use std::any::Any;
+use std::cell::{Cell, RefCell};
+use std::collections::hash_map::Entry;
+use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
+use std::rc::Rc;
+use std::time::Duration;
+use std::vec::Vec;
+
+pub struct NoProgressBar;
+
+impl ProgressIndicator for NoProgressBar {
+    fn new_stage(&self, _name: &str, _total: usize) {}
+    fn progress(&self, _absolute: usize) {}
+}
+
+/// Helper struct for displaying progress bars for operations which may have multiple stages
+/// (e.g. erasing then writing), or whose byte size may not be known until the operation is
+/// underway.
+pub struct StagedProgressBar {
+    pub current_progress_bar: Rc<RefCell<Option<indicatif::ProgressBar>>>,
+}
+
+impl Default for StagedProgressBar {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl StagedProgressBar {
+    const DEFAULT_TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar}] {bytes}/{total_bytes} ({eta})";
+    const STAGE_TEMPLATE: &str =
+        "{msg}: [{elapsed_precise}] [{wide_bar}] {bytes}/{total_bytes} ({eta})";
+
+    pub fn new() -> Self {
+        Self {
+            current_progress_bar: Rc::new(RefCell::new(None)),
+        }
+    }
+
+    pub fn enable_steady_tick(&self, duration: Duration) {
+        let bar = self.current_progress_bar.borrow();
+        let bar = bar.as_ref().unwrap();
+        bar.enable_steady_tick(duration);
+    }
+
+    /// Returns the overall bytes per second for the most recent stage (either completed or in
+    /// progress).
+    pub fn bytes_per_second(&self) -> f64 {
+        let bar = self.current_progress_bar.borrow();
+        let bar = bar.as_ref().unwrap();
+        bar.length().unwrap() as f64 / bar.elapsed().as_secs_f64()
+    }
+}
+
+impl ProgressIndicator for StagedProgressBar {
+    fn new_stage(&self, name: &str, total: usize) {
+        let progress = ProgressBar::new(total as u64);
+        if name.is_empty() {
+            progress.set_style(
+                ProgressStyle::default_bar()
+                    .template(Self::DEFAULT_TEMPLATE)
+                    .unwrap(),
+            );
+        } else {
+            progress.set_style(
+                ProgressStyle::default_bar()
+                    .template(Self::STAGE_TEMPLATE)
+                    .unwrap(),
+            );
+        }
+        self.current_progress_bar
+            .borrow_mut()
+            .replace(progress.with_message(name.to_string()));
+    }
+
+    fn progress(&self, pos: usize) {
+        let bar = self.current_progress_bar.borrow();
+        let bar = bar.as_ref().unwrap();
+        if pos as u64 == bar.length().unwrap() {
+            bar.finish();
+            return;
+        }
+        bar.set_position(pos as u64);
+    }
+}
+
+#[derive(Clone, Copy, Default, Debug)]
+pub struct PinConfiguration {
+    /// The input/output mode of the GPIO pin.
+    pub mode: Option<PinMode>,
+    /// The default/initial level of the pin (true means high), has effect only in `PushPull` or
+    /// `OpenDrain` modes.
+    pub level: Option<bool>,
+    /// Whether the pin has pullup/down resistor enabled.
+    pub pull_mode: Option<PullMode>,
+    /// The default/initial analog level of the pin in Volts, has effect only in `AnalogOutput`
+    /// mode.
+    pub volts: Option<f32>,
+    pub invert: Option<bool>,
+}
+
+fn merge_field<T>(f1: &mut Option<T>, f2: &Option<T>) -> Result<(), ()>
+where
+    T: PartialEq<T> + Clone,
+{
+    match (&*f1, f2) {
+        (Some(v1), Some(v2)) if *v1 != *v2 => return Err(()),
+        (None, _) => *f1 = f2.clone(),
+        _ => (),
+    }
+    Ok(())
+}
+
+impl PinConfiguration {
+    /// Sometimes one configuration file specifies OpenDrain while leaving out the level, and
+    /// another file specifies high level, while leaving out the mode.  This method will merge
+    /// declarations from multiple files, as long as they are not conflicting (e.g. both PushPull
+    /// and OpenDrain, or both high and low level.)
+    fn merge(&mut self, other: &PinConfiguration) -> Result<(), ()> {
+        merge_field(&mut self.mode, &other.mode)?;
+        merge_field(&mut self.level, &other.level)?;
+        merge_field(&mut self.pull_mode, &other.pull_mode)?;
+        merge_field(&mut self.volts, &other.volts)?;
+        merge_field(&mut self.invert, &other.invert)?;
+        Ok(())
+    }
+
+    /// Merges the specified configuration as an override to this configuration. Only the non-empty
+    /// configuration fields from the override are applied.
+    #[must_use]
+    fn override_with(&self, overrides: Option<&Self>) -> Self {
+        let Some(overrides) = overrides else {
+            return *self;
+        };
+        let mut result = *self;
+        overrides.mode.map(|v| result.mode.replace(v));
+        overrides.level.map(|v| result.level.replace(v));
+        overrides.pull_mode.map(|v| result.pull_mode.replace(v));
+        overrides.volts.map(|v| result.volts.replace(v));
+        overrides.invert.map(|v| result.invert.replace(v));
+        result
+    }
+}
+
+#[derive(Default, Debug)]
+pub struct UartConfiguration {
+    pub underlying_instance: String,
+    pub baud_rate: Option<u32>,
+    pub parity: Option<config::UartParity>,
+    pub stop_bits: Option<config::UartStopBits>,
+    pub alias_of: Option<String>,
+}
+
+#[derive(Default, Debug)]
+pub struct SpiConfiguration {
+    pub underlying_instance: String,
+    pub mode: Option<TransferMode>,
+    pub serial_clock: Option<String>,
+    pub host_out_device_in: Option<String>,
+    pub host_in_device_out: Option<String>,
+    pub chip_select: Option<String>,
+    pub gsc_ready: Option<String>,
+    pub bits_per_word: Option<u32>,
+    pub bits_per_sec: Option<u32>,
+}
+
+#[derive(Default, Debug)]
+pub struct I2cConfiguration {
+    pub underlying_instance: String,
+    pub default_addr: Option<u8>,
+    pub bits_per_sec: Option<u32>,
+}
+
+pub struct TransportWrapperBuilder {
+    interface: String,
+    disable_dft_on_reset: bool,
+    reset_delay: Duration,
+    openocd_adapter_config: Option<PathBuf>,
+    provides_list: Vec<(String, String)>,
+    requires_list: Vec<(String, String)>,
+    pin_alias_map: HashMap<String, String>,
+    pin_on_io_expander_map: HashMap<String, config::IoExpanderPin>,
+    pin_conf_list: Vec<(String, PinConfiguration)>,
+    uart_conf_map: HashMap<String, config::UartConfiguration>,
+    spi_conf_map: HashMap<String, config::SpiConfiguration>,
+    i2c_conf_map: HashMap<String, config::I2cConfiguration>,
+    strapping_conf_map: HashMap<String, Vec<(String, PinConfiguration)>>,
+    io_expander_conf_map: HashMap<String, config::IoExpander>,
+    gpio_conf: HashSet<String>,
+}
+
+// This is the structure to be passed to each Command implementation,
+// replacing the "bare" Transport argument.  The fields other than
+// transport will have been computed from a number ConfigurationFiles.
+pub struct TransportWrapper {
+    transport: Rc<dyn Transport>,
+    disable_dft_on_reset: Cell<bool>,
+    reset_delay: Cell<Duration>,
+    openocd_adapter_config: Option<PathBuf>,
+    provides_map: HashMap<String, String>,
+    pin_map: HashMap<String, String>,
+    artificial_pin_map: HashMap<String, Rc<dyn GpioPin>>,
+    pin_conf_map: HashMap<String, PinConfiguration>,
+    uart_conf_map: HashMap<String, UartConfiguration>,
+    spi_conf_map: HashMap<String, SpiConfiguration>,
+    i2c_conf_map: HashMap<String, I2cConfiguration>,
+    strapping_conf_map: HashMap<String, HashMap<String, PinConfiguration>>,
+    gpio_conf: HashSet<String>,
+    //
+    // Below fields are lazily populated, as instances are requested.
+    //
+    // Caching SPI and I2C wrapper instances is necessary to avoid repeatedly re-applying settings
+    // such as speed and chip select pin declared along with an alias of the physical port of the
+    // debugger.  This is both an optimization, as well as necessary to not "lose" the asserted
+    // state of the chip select.
+    //
+    pin_instance_map: RefCell<HashMap<String, Rc<gpio::GpioPinWrapper>>>,
+    spi_physical_map: RefCell<HashMap<String, Rc<spi::PhysicalSpiWrapper>>>,
+    spi_logical_map: RefCell<HashMap<String, Rc<spi::LogicalSpiWrapper>>>,
+    i2c_physical_map: RefCell<HashMap<String, Rc<i2c::PhysicalI2cWrapper>>>,
+    i2c_logical_map: RefCell<HashMap<String, Rc<i2c::LogicalI2cWrapper>>>,
+}
+
+impl TransportWrapperBuilder {
+    pub fn new(interface: String, disable_dft_on_reset: bool) -> Self {
+        Self {
+            interface,
+            disable_dft_on_reset,
+            reset_delay: Duration::from_millis(100),
+            openocd_adapter_config: None,
+            provides_list: Vec::new(),
+            requires_list: Vec::new(),
+            pin_alias_map: HashMap::new(),
+            pin_on_io_expander_map: HashMap::new(),
+            pin_conf_list: Vec::new(),
+            uart_conf_map: HashMap::new(),
+            spi_conf_map: HashMap::new(),
+            i2c_conf_map: HashMap::new(),
+            strapping_conf_map: HashMap::new(),
+            io_expander_conf_map: HashMap::new(),
+            gpio_conf: HashSet::new(),
+        }
+    }
+
+    fn record_pin_conf(
+        pin_conf_list: &mut Vec<(String, PinConfiguration)>,
+        pin_conf: &config::PinConfiguration,
+    ) {
+        if (None, None, None, None, None)
+            == (
+                pin_conf.mode,
+                pin_conf.pull_mode,
+                pin_conf.level,
+                pin_conf.volts,
+                pin_conf.invert,
+            )
+        {
+            return;
+        }
+        let mut conf_entry: PinConfiguration = PinConfiguration::default();
+        if let Some(pin_mode) = pin_conf.mode {
+            conf_entry.mode = Some(pin_mode);
+        }
+        if let Some(pull_mode) = pin_conf.pull_mode {
+            conf_entry.pull_mode = Some(pull_mode);
+        }
+        if let Some(level) = pin_conf.level {
+            conf_entry.level = Some(level);
+        }
+        if let Some(volts) = pin_conf.volts {
+            conf_entry.volts = Some(volts);
+        }
+        if let Some(invert) = pin_conf.invert {
+            conf_entry.invert = Some(invert);
+        }
+        pin_conf_list.push((pin_conf.name.to_string(), conf_entry))
+    }
+
+    fn record_uart_conf(
+        uart_conf_map: &mut HashMap<String, config::UartConfiguration>,
+        uart_conf: &config::UartConfiguration,
+    ) -> Result<(), ()> {
+        let entry = uart_conf_map
+            .entry(uart_conf.name.to_uppercase().to_string())
+            .or_insert_with(|| config::UartConfiguration {
+                name: uart_conf.name.clone(),
+                ..Default::default()
+            });
+        merge_field(&mut entry.baudrate, &uart_conf.baudrate)?;
+        merge_field(&mut entry.parity, &uart_conf.parity)?;
+        merge_field(&mut entry.stopbits, &uart_conf.stopbits)?;
+        merge_field(&mut entry.alias_of, &uart_conf.alias_of)?;
+        Ok(())
+    }
+
+    fn record_spi_conf(
+        spi_conf_map: &mut HashMap<String, config::SpiConfiguration>,
+        spi_conf: &config::SpiConfiguration,
+    ) -> Result<(), ()> {
+        let entry = spi_conf_map
+            .entry(spi_conf.name.to_string())
+            .or_insert_with(|| config::SpiConfiguration {
+                name: spi_conf.name.clone(),
+                ..Default::default()
+            });
+        merge_field(&mut entry.mode, &spi_conf.mode)?;
+        merge_field(&mut entry.bits_per_word, &spi_conf.bits_per_word)?;
+        merge_field(&mut entry.bits_per_sec, &spi_conf.bits_per_sec)?;
+        merge_field(&mut entry.serial_clock, &spi_conf.serial_clock)?;
+        merge_field(&mut entry.host_out_device_in, &spi_conf.host_out_device_in)?;
+        merge_field(&mut entry.host_in_device_out, &spi_conf.host_in_device_out)?;
+        merge_field(&mut entry.chip_select, &spi_conf.chip_select)?;
+        merge_field(&mut entry.alias_of, &spi_conf.alias_of)?;
+        Ok(())
+    }
+
+    fn record_i2c_conf(
+        i2c_conf_map: &mut HashMap<String, config::I2cConfiguration>,
+        i2c_conf: &config::I2cConfiguration,
+    ) -> Result<(), ()> {
+        let entry = i2c_conf_map
+            .entry(i2c_conf.name.to_string())
+            .or_insert_with(|| config::I2cConfiguration {
+                name: i2c_conf.name.clone(),
+                ..Default::default()
+            });
+        merge_field(&mut entry.address, &i2c_conf.address)?;
+        merge_field(&mut entry.bits_per_sec, &i2c_conf.bits_per_sec)?;
+        merge_field(&mut entry.alias_of, &i2c_conf.alias_of)?;
+        Ok(())
+    }
+
+    pub fn add_configuration_file(&mut self, file: config::ConfigurationFile) -> Result<()> {
+        if let Some(interface) = file.interface {
+            if self.interface.is_empty() {
+                self.interface = interface;
+            } else if self.interface == interface {
+                // Same value for interface between in command line and configuration file (or
+                // between multiple configuration files), nothing to update.
+            } else {
+                bail!(TransportError::InconsistentInterfaceConf(
+                    self.interface.to_string(),
+                    interface,
+                ))
+            }
+        }
+        for (key, value) in file.provides {
+            self.provides_list.push((key, value));
+        }
+        for (key, value) in file.requires {
+            self.requires_list.push((key, value));
+        }
+
+        if let Some(reset_delay) = file.reset_delay {
+            self.reset_delay = reset_delay;
+        }
+
+        // Merge content of configuration file into pin_map and other members.
+        for pin_conf in file.pins {
+            if let Some(alias_of) = &pin_conf.alias_of {
+                self.pin_alias_map
+                    .insert(pin_conf.name.to_uppercase(), alias_of.clone());
+            } else if let Some(on_io_expander) = &pin_conf.on_io_expander {
+                ensure!(
+                    &pin_conf.alias_of.is_none(),
+                    TransportError::InconsistentConf(
+                        TransportInterfaceType::Gpio,
+                        pin_conf.name.to_string()
+                    )
+                );
+                let uppercase_name = pin_conf.name.to_uppercase();
+                ensure!(
+                    !self.pin_on_io_expander_map.contains_key(&uppercase_name),
+                    TransportError::InconsistentConf(
+                        TransportInterfaceType::Gpio,
+                        pin_conf.name.to_string()
+                    )
+                );
+                self.pin_on_io_expander_map
+                    .insert(uppercase_name, on_io_expander.clone());
+            }
+            // Record default input / open drain / push pull configuration to the pin.
+            Self::record_pin_conf(&mut self.pin_conf_list, &pin_conf);
+        }
+        for strapping_conf in file.strappings {
+            let strapping_pin_map = self
+                .strapping_conf_map
+                .entry(strapping_conf.name.to_uppercase())
+                .or_default();
+            for pin_conf in strapping_conf.pins {
+                ensure!(
+                    pin_conf.invert.is_none(),
+                    TransportError::InvalidConfStrapInvert(
+                        strapping_conf.name.to_string(),
+                        pin_conf.name.to_string()
+                    )
+                );
+                ensure!(
+                    pin_conf.alias_of.is_none(),
+                    TransportError::InvalidConfStrapAlias(
+                        strapping_conf.name.to_string(),
+                        pin_conf.name.to_string()
+                    )
+                );
+                Self::record_pin_conf(strapping_pin_map, &pin_conf);
+            }
+        }
+        for spi_conf in file.spi {
+            Self::record_spi_conf(&mut self.spi_conf_map, &spi_conf).map_err(|_| {
+                TransportError::InconsistentConf(
+                    TransportInterfaceType::Spi,
+                    spi_conf.name.to_string(),
+                )
+            })?;
+        }
+        for i2c_conf in file.i2c {
+            Self::record_i2c_conf(&mut self.i2c_conf_map, &i2c_conf).map_err(|_| {
+                TransportError::InconsistentConf(
+                    TransportInterfaceType::I2c,
+                    i2c_conf.name.to_string(),
+                )
+            })?;
+        }
+        for uart_conf in file.uarts {
+            Self::record_uart_conf(&mut self.uart_conf_map, &uart_conf).map_err(|_| {
+                TransportError::InconsistentConf(
+                    TransportInterfaceType::Uart,
+                    uart_conf.name.to_string(),
+                )
+            })?;
+        }
+        for io_expander_conf in file.io_expanders {
+            match self
+                .io_expander_conf_map
+                .entry(io_expander_conf.name.to_string())
+            {
+                Entry::Vacant(v) => {
+                    v.insert(io_expander_conf);
+                }
+                Entry::Occupied(_) => bail!(TransportError::InconsistentConf(
+                    TransportInterfaceType::IoExpander,
+                    io_expander_conf.name
+                )),
+            }
+        }
+        for pin in file.gpios {
+            self.gpio_conf.insert(pin);
+        }
+        Ok(())
+    }
+
+    fn consolidate_provides_map(
+        result_provides_map: &mut HashMap<String, String>,
+        provides_list: Vec<(String, String)>,
+    ) -> Result<()> {
+        for (key, value) in provides_list {
+            match result_provides_map.entry(key.clone()) {
+                Entry::Vacant(v) => {
+                    v.insert(value);
+                }
+                Entry::Occupied(v) => {
+                    if v.get() != &value {
+                        bail!(TransportError::InconsistentConf(
+                            TransportInterfaceType::Provides,
+                            key
+                        ))
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn verify_requires_list(
+        provides_map: &HashMap<String, String>,
+        requires_list: &Vec<(String, String)>,
+    ) -> Result<()> {
+        for (key, required_value) in requires_list {
+            match provides_map.get(key) {
+                Some(actual_value) if actual_value == required_value => (),
+                Some(actual_value) => bail!(TransportError::RequiresUnequal(
+                    key.to_string(),
+                    required_value.to_string(),
+                    actual_value.to_string()
+                )),
+                None => bail!(TransportError::RequiresMissing(
+                    key.to_string(),
+                    required_value.to_string()
+                )),
+            }
+        }
+        Ok(())
+    }
+
+    fn consolidate_pin_conf_map(
+        pin_alias_map: &HashMap<String, String>,
+        pin_conf_list: &Vec<(String, PinConfiguration)>,
+    ) -> Result<HashMap<String, PinConfiguration>> {
+        let mut result_pin_conf_map: HashMap<String, PinConfiguration> = HashMap::new();
+        for (name, conf) in pin_conf_list {
+            result_pin_conf_map
+                .entry(map_name(pin_alias_map, name))
+                .or_default()
+                .merge(conf)
+                .map_err(|_| {
+                    TransportError::InconsistentConf(TransportInterfaceType::Gpio, name.to_string())
+                })?;
+        }
+        Ok(result_pin_conf_map)
+    }
+
+    fn resolve_uart_conf(
+        name: &str,
+        uart_conf_map: &HashMap<String, config::UartConfiguration>,
+    ) -> Result<UartConfiguration> {
+        if let Some(entry) = uart_conf_map.get(name.to_uppercase().as_str()) {
+            let mut conf = if let Some(ref alias_of) = entry.alias_of {
+                Self::resolve_uart_conf(alias_of.as_str(), uart_conf_map)?
+            } else {
+                UartConfiguration {
+                    underlying_instance: name.to_uppercase().to_string(),
+                    ..Default::default()
+                }
+            };
+            // Apply configuration from this level
+            if let Some(baud_rate) = entry.baudrate {
+                conf.baud_rate = Some(baud_rate);
+            }
+            if let Some(parity) = entry.parity {
+                conf.parity = Some(parity);
+            }
+            if let Some(stop_bits) = entry.stopbits {
+                conf.stop_bits = Some(stop_bits);
+            }
+            Ok(conf)
+        } else {
+            Ok(UartConfiguration {
+                underlying_instance: name.to_string(),
+                ..Default::default()
+            })
+        }
+    }
+
+    fn consolidate_uart_conf_map(
+        uart_conf_map: &HashMap<String, config::UartConfiguration>,
+    ) -> Result<HashMap<String, UartConfiguration>> {
+        let mut resolved_uart_conf_map = HashMap::new();
+        for name in uart_conf_map.keys() {
+            resolved_uart_conf_map
+                .insert(name.clone(), Self::resolve_uart_conf(name, uart_conf_map)?);
+        }
+        Ok(resolved_uart_conf_map)
+    }
+
+    fn resolve_spi_conf(
+        name: &str,
+        spi_conf_map: &HashMap<String, config::SpiConfiguration>,
+        pin_alias_map: &HashMap<String, String>,
+    ) -> SpiConfiguration {
+        if let Some(entry) = spi_conf_map.get(name) {
+            let mut conf = if let Some(ref alias_of) = entry.alias_of {
+                Self::resolve_spi_conf(alias_of.as_str(), spi_conf_map, pin_alias_map)
+            } else {
+                SpiConfiguration {
+                    underlying_instance: name.to_string(),
+                    ..Default::default()
+                }
+            };
+            // Apply configuration from this level
+            if let Some(serial_clock) = entry.serial_clock.as_ref() {
+                conf.serial_clock = Some(map_name(pin_alias_map, serial_clock));
+            }
+            if let Some(host_out_device_in) = entry.host_out_device_in.as_ref() {
+                conf.host_out_device_in = Some(map_name(pin_alias_map, host_out_device_in));
+            }
+            if let Some(host_in_device_out) = entry.host_in_device_out.as_ref() {
+                conf.host_in_device_out = Some(map_name(pin_alias_map, host_in_device_out));
+            }
+            if let Some(chip_select) = entry.chip_select.as_ref() {
+                conf.chip_select = Some(map_name(pin_alias_map, chip_select));
+            }
+            if let Some(mode) = entry.mode {
+                conf.mode = Some(mode);
+            }
+            if let Some(bits_per_sec) = entry.bits_per_sec {
+                conf.bits_per_sec = Some(bits_per_sec);
+            }
+            if let Some(bits_per_word) = entry.bits_per_word {
+                conf.bits_per_word = Some(bits_per_word);
+            }
+            conf
+        } else {
+            SpiConfiguration {
+                underlying_instance: name.to_string(),
+                ..Default::default()
+            }
+        }
+    }
+
+    fn consolidate_spi_conf_map(
+        spi_conf_map: &HashMap<String, config::SpiConfiguration>,
+        pin_alias_map: &HashMap<String, String>,
+    ) -> Result<HashMap<String, SpiConfiguration>> {
+        let mut resolved_spi_conf_map = HashMap::new();
+        for name in spi_conf_map.keys() {
+            resolved_spi_conf_map.insert(
+                name.clone(),
+                Self::resolve_spi_conf(name, spi_conf_map, pin_alias_map),
+            );
+        }
+        Ok(resolved_spi_conf_map)
+    }
+
+    fn resolve_i2c_conf(
+        name: &str,
+        i2c_conf_map: &HashMap<String, config::I2cConfiguration>,
+    ) -> I2cConfiguration {
+        if let Some(entry) = i2c_conf_map.get(name) {
+            let mut conf = if let Some(ref alias_of) = entry.alias_of {
+                Self::resolve_i2c_conf(alias_of.as_str(), i2c_conf_map)
+            } else {
+                I2cConfiguration {
+                    underlying_instance: name.to_string(),
+                    ..Default::default()
+                }
+            };
+            // Apply configuration from this level
+            if let Some(addr) = entry.address {
+                conf.default_addr = Some(addr);
+            }
+            if let Some(bits_per_sec) = entry.bits_per_sec {
+                conf.bits_per_sec = Some(bits_per_sec);
+            }
+            conf
+        } else {
+            I2cConfiguration {
+                underlying_instance: name.to_string(),
+                ..Default::default()
+            }
+        }
+    }
+
+    fn consolidate_i2c_conf_map(
+        i2c_conf_map: &HashMap<String, config::I2cConfiguration>,
+    ) -> Result<HashMap<String, I2cConfiguration>> {
+        let mut resolved_i2c_conf_map = HashMap::new();
+        for name in i2c_conf_map.keys() {
+            resolved_i2c_conf_map.insert(name.clone(), Self::resolve_i2c_conf(name, i2c_conf_map));
+        }
+        Ok(resolved_i2c_conf_map)
+    }
+
+    pub fn get_interface(&self) -> &str {
+        &self.interface
+    }
+
+    pub fn set_openocd_adapter_config(&mut self, openocd_adapter_config: &Option<PathBuf>) {
+        self.openocd_adapter_config = openocd_adapter_config.clone();
+    }
+
+    pub fn build(
+        self,
+        transport: Box<dyn crate::transport::Transport>,
+    ) -> Result<TransportWrapper> {
+        let mut provides_map = if transport
+            .capabilities()?
+            .request(Capability::PROXY)
+            .ok()
+            .is_ok()
+        {
+            transport.proxy_ops()?.provides_map()?
+        } else {
+            HashMap::new()
+        };
+        Self::consolidate_provides_map(&mut provides_map, self.provides_list)?;
+        Self::verify_requires_list(&provides_map, &self.requires_list)?;
+
+        let pin_conf_map =
+            Self::consolidate_pin_conf_map(&self.pin_alias_map, &self.pin_conf_list)?;
+        let mut strapping_conf_map: HashMap<String, HashMap<String, PinConfiguration>> =
+            HashMap::new();
+        for (strapping_name, pin_conf_map) in self.strapping_conf_map {
+            strapping_conf_map.insert(
+                strapping_name,
+                Self::consolidate_pin_conf_map(&self.pin_alias_map, &pin_conf_map)?,
+            );
+        }
+        let uart_conf_map = Self::consolidate_uart_conf_map(&self.uart_conf_map)?;
+        let spi_conf_map = Self::consolidate_spi_conf_map(&self.spi_conf_map, &self.pin_alias_map)?;
+        let i2c_conf_map = Self::consolidate_i2c_conf_map(&self.i2c_conf_map)?;
+        let mut transport_wrapper = TransportWrapper {
+            transport: Rc::from(transport),
+            disable_dft_on_reset: Cell::new(self.disable_dft_on_reset),
+            reset_delay: Cell::new(self.reset_delay),
+            openocd_adapter_config: self.openocd_adapter_config,
+            provides_map,
+            pin_map: self.pin_alias_map,
+            artificial_pin_map: HashMap::new(),
+            uart_conf_map,
+            pin_conf_map,
+            spi_conf_map,
+            i2c_conf_map,
+            strapping_conf_map,
+            gpio_conf: self.gpio_conf,
+            pin_instance_map: RefCell::new(HashMap::new()),
+            spi_physical_map: RefCell::new(HashMap::new()),
+            spi_logical_map: RefCell::new(HashMap::new()),
+            i2c_physical_map: RefCell::new(HashMap::new()),
+            i2c_logical_map: RefCell::new(HashMap::new()),
+        };
+        let mut io_expanders: HashMap<String, IoExpander> = HashMap::new();
+        for (name, conf) in self.io_expander_conf_map {
+            io_expanders.insert(
+                name.to_string(),
+                ioexpander::create(&conf, &transport_wrapper)?,
+            );
+        }
+        transport_wrapper
+            .artificial_pin_map
+            .insert("NULL".to_string(), Rc::new(NullPin::new()));
+        for (pinname, v) in self.pin_on_io_expander_map {
+            if let Some(io) = io_expanders.get(&v.io_expander) {
+                ensure!(
+                    (v.pin_no as usize) < io.pins.len(),
+                    TransportError::InvalidIoExpanderPinNo(v.io_expander.to_string(), v.pin_no)
+                );
+                transport_wrapper
+                    .artificial_pin_map
+                    .insert(pinname, io.pins[v.pin_no as usize].clone());
+            } else {
+                bail!(TransportError::InvalidIoExpanderName(
+                    v.io_expander.to_string()
+                ));
+            }
+        }
+        Ok(transport_wrapper)
+    }
+}
+
+impl TransportWrapper {
+    pub fn ignore_dft_straps_on_reset(&self) -> Result<()> {
+        self.disable_dft_on_reset.set(false);
+        Ok(())
+    }
+
+    /// Returns a `Capabilities` object to check the capabilities of this
+    /// transport object.
+    pub fn capabilities(&self) -> Result<crate::transport::Capabilities> {
+        let capabilities = self.transport.capabilities()?;
+        if self.openocd_adapter_config.is_some() {
+            Ok(capabilities.add(Capability::JTAG))
+        } else {
+            Ok(capabilities)
+        }
+    }
+
+    /// Returns a string->string map containing user-defined aspects "provided" by the testbed
+    /// setup.  For instance, whether a SPI flash chip is fitted in the socket, or whether pullup
+    /// resistors are suitable for high-speed I2C.
+    pub fn provides_map(&self) -> Result<&HashMap<String, String>> {
+        Ok(&self.provides_map)
+    }
+
+    pub fn query_provides(&self, key: &str) -> Result<&str> {
+        self.provides_map
+            .get(key)
+            .map(String::as_str)
+            .ok_or_else(|| {
+                TransportError::InvalidInstance(TransportInterfaceType::Provides, key.to_string())
+                    .into()
+            })
+    }
+
+    /// Returns a [`JtagChain`] implementation.
+    pub fn jtag(&self, opts: &JtagParams) -> Result<Box<dyn JtagChain + '_>> {
+        if let Some(ref path) = self.openocd_adapter_config {
+            // Use specified external JTAG dongle, instead of the transport driver itself.
+            return Ok(Box::new(OpenOcdJtagChain::new(
+                &std::fs::read_to_string(path)?,
+                opts,
+            )?));
+        }
+        // Use JTAG functionality of the transport driver itself.  (Currently, HyperDebug is the
+        // only transport which has such support.)
+        self.transport.jtag(opts)
+    }
+
+    /// Returns a SPI [`Target`] implementation.
+    pub fn spi(&self, name: &str) -> Result<Rc<dyn Target>> {
+        let name = name.to_uppercase();
+        let mut spi_logical_map = self.spi_logical_map.borrow_mut();
+        if let Some(instance) = spi_logical_map.get(&name) {
+            return Ok(instance.clone());
+        }
+        if let Some(spi_conf) = self.spi_conf_map.get(&name) {
+            let mut spi_physical_map = self.spi_physical_map.borrow_mut();
+            // Find if we already have a PhysicalSpiWrapper around the requested instance.  If
+            // not, create one.
+            let physical_wrapper =
+                if let Some(instance) = spi_physical_map.get(&spi_conf.underlying_instance) {
+                    instance.clone()
+                } else {
+                    let instance = Rc::new(spi::PhysicalSpiWrapper::new(
+                        self.transport.spi(spi_conf.underlying_instance.as_str())?,
+                    ));
+                    spi_physical_map.insert(spi_conf.underlying_instance.clone(), instance.clone());
+                    instance
+                };
+
+            // Create a LogicalSpiWrapper referring to the physical port, and carrying the
+            // particular speed and other settings.
+            let new_wrapper = Rc::new(spi::LogicalSpiWrapper::new(
+                &*self.transport,
+                spi_conf,
+                physical_wrapper,
+            )?);
+            spi_logical_map.insert(name, new_wrapper.clone());
+            Ok(new_wrapper)
+        } else {
+            self.transport.spi(name.as_str())
+        }
+    }
+
+    /// Returns a I2C [`Bus`] implementation.
+    pub fn i2c(&self, name: &str) -> Result<Rc<dyn Bus>> {
+        let name = name.to_uppercase();
+        let mut i2c_logical_map = self.i2c_logical_map.borrow_mut();
+        if let Some(instance) = i2c_logical_map.get(&name) {
+            return Ok(instance.clone());
+        }
+        if let Some(i2c_conf) = self.i2c_conf_map.get(&name) {
+            let mut i2c_physical_map = self.i2c_physical_map.borrow_mut();
+            // Find if we already have a PhysicalI2cWrapper around the requested instance.  If
+            // not, create one.
+            let physical_wrapper =
+                if let Some(instance) = i2c_physical_map.get(&i2c_conf.underlying_instance) {
+                    instance.clone()
+                } else {
+                    let instance = Rc::new(i2c::PhysicalI2cWrapper::new(
+                        self.transport.i2c(i2c_conf.underlying_instance.as_str())?,
+                    ));
+                    i2c_physical_map.insert(i2c_conf.underlying_instance.clone(), instance.clone());
+                    instance
+                };
+
+            // Create a LogicalI2cWrapper referring to the physical port, and carrying the
+            // particular speed and other settings.
+            let new_wrapper = Rc::new(i2c::LogicalI2cWrapper::new(
+                &*self.transport,
+                i2c_conf,
+                physical_wrapper,
+            )?);
+            i2c_logical_map.insert(name, new_wrapper.clone());
+            Ok(new_wrapper)
+        } else {
+            self.transport.i2c(name.as_str())
+        }
+    }
+
+    /// Returns a [`Uart`] implementation.
+    pub fn uart(&self, name: &str) -> Result<Rc<dyn Uart>> {
+        let uart_conf = self.uart_conf_map.get(name.to_uppercase().as_str());
+        let uart_name = uart_conf
+            .map(|uart_conf| uart_conf.underlying_instance.as_str())
+            .unwrap_or(name);
+        let uart = self.transport.uart(uart_name)?;
+        if let Some(conf) = uart_conf {
+            // Since current OT tests harnesses quite freely re-create the Uart
+            // when they expect it to continue receiving in the background, we
+            // try and read the values first and only set if there is a mismatch.
+            if let Some(baud_rate) = conf.baud_rate {
+                if let Ok(current_baud_rate) = uart.get_baudrate() {
+                    if current_baud_rate != baud_rate {
+                        uart.set_baudrate(baud_rate)?;
+                    }
+                } else {
+                    log::warn!("Could not read UART baud rate to check it is {}", baud_rate);
+                }
+            }
+            if let Some(parity) = conf.parity {
+                let new_parity = match parity {
+                    config::UartParity::None => Parity::None,
+                    config::UartParity::Even => Parity::Even,
+                    config::UartParity::Odd => Parity::Odd,
+                    config::UartParity::Mark | config::UartParity::Space => {
+                        log::warn!("Mark & Space parities not yet supported");
+                        Parity::None
+                    }
+                };
+                if let Ok(current_parity) = uart.get_parity() {
+                    if current_parity != new_parity {
+                        uart.set_parity(new_parity)?;
+                    }
+                } else {
+                    log::warn!("Could not read UART parity to check it is {}", new_parity);
+                }
+            }
+            // TODO: stop bits are not yet supported in the UART interface
+        }
+        Ok(uart)
+    }
+
+    /// Returns a [`UsbContext`] implementation.
+    pub fn usb(&self) -> Result<Rc<dyn UsbContext>> {
+        self.transport.usb()
+    }
+
+    /// Returns a [`GpioPin`] implementation.
+    pub fn gpio_pin(&self, name: &str) -> Result<Rc<dyn GpioPin>> {
+        let resolved_pin_name = map_name(&self.pin_map, name);
+        let mut pin_instance_map = self.pin_instance_map.borrow_mut();
+        // Find if we already have a GpioPinWrapper around the requested instance.  If
+        // not, create one.
+        if let Some(instance) = pin_instance_map.get(&resolved_pin_name) {
+            Ok(instance.clone())
+        } else {
+            let instance = if let Some(pin) = self.artificial_pin_map.get(&resolved_pin_name) {
+                pin.clone()
+            } else {
+                self.transport.gpio_pin(resolved_pin_name.as_str())?
+            };
+            let invert = self
+                .pin_conf_map
+                .get(&resolved_pin_name)
+                .and_then(|conf| conf.invert)
+                .unwrap_or(false);
+            let wrapper = Rc::new(gpio::GpioPinWrapper::new(instance, invert));
+            pin_instance_map.insert(resolved_pin_name, wrapper.clone());
+            Ok(wrapper)
+        }
+    }
+
+    /// Convenience method, returns a number of [`GpioPin`] implementations.
+    pub fn gpio_pins(&self, names: &[String]) -> Result<Vec<Rc<dyn GpioPin>>> {
+        let mut result = Vec::new();
+        for name in names {
+            result.push(self.gpio_pin(name)?);
+        }
+        Ok(result)
+    }
+
+    pub fn gpios(&self) -> &HashSet<String> {
+        &self.gpio_conf
+    }
+
+    /// Returns a [`GpioMonitoring`] implementation.
+    pub fn gpio_monitoring(&self) -> Result<Rc<dyn GpioMonitoring>> {
+        self.transport.gpio_monitoring()
+    }
+
+    /// Returns a [`GpioBitbanging`] implementation.
+    pub fn gpio_bitbanging(&self) -> Result<Rc<dyn GpioBitbanging>> {
+        self.transport.gpio_bitbanging()
+    }
+
+    pub fn pin_strapping(&self, name: &str) -> Result<PinStrapping> {
+        let proxy = if self.capabilities()?.request(Capability::PROXY).ok().is_ok() {
+            Some(self.transport.clone())
+        } else {
+            None
+        };
+        let mut pins = Vec::new();
+        if let Some(strapping_conf_map) = self.strapping_conf_map.get(name) {
+            for (pin_name, conf) in strapping_conf_map {
+                pins.push(StrappedPin {
+                    pin: self.gpio_pin(pin_name)?,
+                    strapped: *conf,
+                    original: self.pin_conf_map.get(pin_name).copied(),
+                });
+            }
+        } else if proxy.is_none() {
+            bail!(TransportError::InvalidStrappingName(name.to_string()));
+        }
+        Ok(PinStrapping {
+            proxy,
+            name: name.to_string(),
+            pins,
+        })
+    }
+
+    /// Returns a [`Emulator`] implementation.
+    pub fn emulator(&self) -> Result<&dyn Emulator> {
+        self.transport.emulator()
+    }
+
+    /// Methods available only on FPGA implementations.
+    pub fn fpga_ops(&self) -> Result<&dyn FpgaOps> {
+        self.transport.fpga_ops()
+    }
+
+    /// Methods available only on Proxy implementation.
+    pub fn proxy_ops(&self) -> Result<&dyn ProxyOps> {
+        self.transport.proxy_ops()
+    }
+
+    /// Invoke non-standard functionality of some Transport implementations.
+    pub fn dispatch(&self, action: &dyn Any) -> Result<Option<Box<dyn erased_serde::Serialize>>> {
+        self.transport.dispatch(action)
+    }
+
+    /// Apply given configuration to a single pins.
+    fn apply_pin_configuration(&self, name: &str, conf: &PinConfiguration) -> Result<()> {
+        let pin = self.gpio_pin(name)?;
+        pin.set(conf.mode, conf.level, conf.pull_mode, conf.volts)
+    }
+
+    /// Apply given configuration to a all the given pins.
+    fn apply_pin_configurations(
+        &self,
+        conf_map: &HashMap<String, PinConfiguration>,
+        overrides: Option<&HashMap<String, PinConfiguration>>,
+    ) -> Result<()> {
+        // If the overrides map specify a pin, then override the default configuration with it
+        let update_pin = |name, conf: &PinConfiguration| {
+            self.apply_pin_configuration(
+                name,
+                &conf.override_with(overrides.and_then(|o| o.get(name))),
+            )
+        };
+        // Pins on IO expanders will rely on some "direct" pins being configured for I2C and
+        // possibly MUX strappings.  To account for that, first apply the configuration to all
+        // "direct" (non-artificial) pins, and then to the rest.  (In theory, an IO expander could
+        // be cascaded behind other IO expanders, requiring more complicated management of a
+        // dependency graph, if that ever becomes an issue, a topological sort in
+        // `TransportWrapperBuilder.build()` would probably be appropriate.)
+        for (name, conf) in conf_map {
+            if !self.artificial_pin_map.contains_key(name) {
+                update_pin(name, conf)?;
+            }
+        }
+        for (name, conf) in conf_map {
+            if self.artificial_pin_map.contains_key(name) {
+                update_pin(name, conf)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Configure all pins as input/output, pullup, etc. as declared in configuration files.
+    /// Also configure SPI port mode/speed, and other similar settings.
+    pub fn apply_default_configuration(&self, strapping_name: Option<&str>) -> Result<()> {
+        if let Some(strapping_name) = strapping_name {
+            if self.capabilities()?.request(Capability::PROXY).ok().is_ok() {
+                self.proxy_ops()?
+                    .apply_default_configuration_with_strap(strapping_name)?;
+            } else if let Some(strapping_conf_map) = self.strapping_conf_map.get(strapping_name) {
+                // Apply the debugger's default pin configuration (e.g. hyperdebug pin set to HighZ)
+                self.transport.apply_default_configuration()?;
+                // Then apply all of the configuration specify pin configuration, these defaults are
+                // typically specific to a certain logical chip (not debugger/interface)
+                // configuration. Apply the named gpio strap as an override to the normal default
+                // configuration.
+                self.apply_pin_configurations(&self.pin_conf_map, Some(strapping_conf_map))?;
+            } else {
+                bail!(TransportError::InvalidStrappingName(
+                    strapping_name.to_string(),
+                ));
+            }
+        } else {
+            self.transport.apply_default_configuration()?;
+            self.apply_pin_configurations(&self.pin_conf_map, None)?;
+        }
+        // Clear cache, which could contain settings manually overriden to deviate from the
+        // defaults in configuration files.
+        self.pin_instance_map.borrow_mut().clear();
+        self.spi_physical_map.borrow_mut().clear();
+        self.spi_logical_map.borrow_mut().clear();
+        self.i2c_physical_map.borrow_mut().clear();
+        self.i2c_logical_map.borrow_mut().clear();
+        Ok(())
+    }
+
+    #[deprecated = "use [`reset`] or [`reset_with_delay`]"]
+    pub fn reset_target(&self, reset_delay: Duration, clear_uart_rx: bool) -> Result<()> {
+        let uart_rx = match clear_uart_rx {
+            true => UartRx::Clear,
+            false => UartRx::Keep,
+        };
+        self.reset_with_delay(uart_rx, reset_delay)
+    }
+
+    /// Reset the target, optionally clearing the console UART RX.
+    pub fn reset(&self, uart_rx: UartRx) -> Result<()> {
+        self.reset_with_delay(uart_rx, self.reset_delay.get())
+    }
+
+    /// Reset the target with some delay, optionally clearing the console UART RX.
+    pub fn reset_with_delay(&self, uart_rx: UartRx, delay: Duration) -> Result<()> {
+        log::info!("Asserting the reset signal");
+
+        if self.disable_dft_on_reset.get() {
+            self.pin_strapping("PRERESET_DFT_DISABLE")?.apply()?;
+        }
+
+        self.pin_strapping("RESET")?.apply()?;
+        std::thread::sleep(delay);
+
+        if uart_rx == UartRx::Clear {
+            log::info!("Clearing the UART RX buffer");
+            self.uart("console")?.clear_rx_buffer()?;
+        }
+
+        log::info!("Deasserting the reset signal");
+        self.pin_strapping("RESET")?.remove()?;
+
+        if self.disable_dft_on_reset.get() {
+            std::thread::sleep(Duration::from_millis(10));
+            // We remove the DFT strapping after waiting some time, as the DFT straps should have been
+            // sampled by then and we can resume our desired pin configuration.
+            self.pin_strapping("PRERESET_DFT_DISABLE")?.remove()?;
+        }
+
+        std::thread::sleep(delay);
+
+        Ok(())
+    }
+
+    /// Invoke the provided callback (preferably) without exclusive access.
+    ///
+    /// By default, ownership of `Transport` would imply exclusive access to the underlying device,
+    /// and optimisation can be made assuming no other process would be simultaneously accessing.
+    /// However for long running commands, such as `opentitantool console`, it may be desirable to
+    /// relinquish exclusive access during such comamnd and only re-take exclusive access later.
+    ///
+    /// Transport that does not support such scenario may ignore such request and perform a no-op.
+    pub fn relinquish_exclusive_access<T>(&self, callback: impl FnOnce() -> T) -> Result<T> {
+        let mut ret = None;
+        self.transport.relinquish_exclusive_access(Box::new(|| {
+            ret = Some(callback());
+        }))?;
+        Ok(ret.unwrap())
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum UartRx {
+    Clear,
+    Keep,
+}
+
+/// Given an pin/uart/spi/i2c port name, if the name is a known alias, return the underlying
+/// name/number, otherwise return the string as is.
+fn map_name(map: &HashMap<String, String>, name: &str) -> String {
+    let name = name.to_uppercase();
+    match map.get(&name) {
+        Some(v) => {
+            if v.eq(&name) {
+                name
+            } else {
+                map_name(map, v)
+            }
+        }
+        None => name,
+    }
+}
+
+/// Certain transports may want to declare that they do not support a particular pin and that it
+/// should be ignored, even though its name is mentioned in e.g. generic strapping configurations.
+/// (Absent any such declaration, it would result in an error to mention strappings of a pin that
+/// is not in fact supported.)
+struct NullPin {
+    has_warned: Cell<bool>,
+}
+
+impl NullPin {
+    fn new() -> Self {
+        Self {
+            has_warned: Cell::new(false),
+        }
+    }
+
+    /// Emit a warning the first this pin is accessed.
+    fn warn(&self) {
+        if !self.has_warned.get() {
+            log::warn!("Accessed NULL pin");
+            self.has_warned.set(true);
+        }
+    }
+}
+
+impl GpioPin for NullPin {
+    fn read(&self) -> Result<bool> {
+        self.warn();
+        Ok(false)
+    }
+
+    fn write(&self, _value: bool) -> Result<()> {
+        self.warn();
+        Ok(())
+    }
+
+    fn set_mode(&self, _mode: PinMode) -> Result<()> {
+        self.warn();
+        Ok(())
+    }
+
+    fn set_pull_mode(&self, _mode: PullMode) -> Result<()> {
+        self.warn();
+        Ok(())
+    }
+}
+
+/// Represents configuration of a set of pins as strong/weak pullup/pulldown as declared in
+/// configuration files under a given strapping name.
+pub struct PinStrapping {
+    name: String,
+    proxy: Option<Rc<dyn Transport>>,
+    pins: Vec<StrappedPin>,
+}
+
+struct StrappedPin {
+    pin: Rc<dyn GpioPin>,
+    strapped: PinConfiguration,
+    original: Option<PinConfiguration>,
+}
+
+impl PinStrapping {
+    /// Configure the set of pins as strong/weak pullup/pulldown as declared in configuration
+    /// files under a given strapping name.
+    pub fn apply(&self) -> Result<()> {
+        if let Some(ref transport) = self.proxy {
+            // The transport happens to be connected to a remote opentitan session.  First, pass
+            // the request to the remote server.
+            if let Err(e) = transport.proxy_ops()?.apply_pin_strapping(&self.name) {
+                match e.downcast_ref::<TransportError>() {
+                    Some(TransportError::InvalidStrappingName(_)) => {
+                        if self.pins.is_empty() {
+                            return Err(e);
+                        }
+                    }
+                    _ => return Err(e),
+                }
+            }
+        }
+        for StrappedPin {
+            pin,
+            strapped: conf,
+            original: _,
+        } in &self.pins
+        {
+            pin.set(conf.mode, conf.level, conf.pull_mode, conf.volts)?
+        }
+        Ok(())
+    }
+
+    /// Return the set of pins affected by the given strapping to their "default" (un-strapped)
+    /// configuration, that is, to the level declared in the "pins" section of configuration
+    /// files, outside of any "strappings" section.
+    pub fn remove(&self) -> Result<()> {
+        if let Some(ref transport) = self.proxy {
+            // The transport happens to be connection to a remote opentitan session.  Pass
+            // request to the remote server.
+            if let Err(e) = transport.proxy_ops()?.remove_pin_strapping(&self.name) {
+                match e.downcast_ref::<TransportError>() {
+                    Some(TransportError::InvalidStrappingName(_)) => {
+                        if self.pins.is_empty() {
+                            return Err(e);
+                        }
+                    }
+                    _ => return Err(e),
+                }
+            }
+        }
+        for StrappedPin {
+            pin,
+            strapped: _,
+            original,
+        } in &self.pins
+        {
+            if let Some(conf) = original {
+                pin.set(conf.mode, conf.level, conf.pull_mode, conf.volts)?
+            }
+        }
+        Ok(())
+    }
+}

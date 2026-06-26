@@ -1,0 +1,270 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#include "sw/device/lib/base/status.h"
+#include "sw/device/lib/crypto/drivers/entropy.h"
+#include "sw/device/lib/dif/dif_flash_ctrl.h"
+#include "sw/device/lib/dif/dif_otp_ctrl.h"
+#include "sw/device/lib/dif/dif_rstmgr.h"
+#include "sw/device/lib/runtime/hart.h"
+#include "sw/device/lib/runtime/log.h"
+#include "sw/device/lib/testing/flash_ctrl_testutils.h"
+#include "sw/device/lib/testing/otp_ctrl_testutils.h"
+#include "sw/device/lib/testing/rstmgr_testutils.h"
+#include "sw/device/lib/testing/test_framework/check.h"
+#include "sw/device/lib/testing/test_framework/ottf_main.h"
+#include "sw/device/silicon_creator/lib/drivers/hmac.h"
+#include "sw/device/silicon_creator/manuf/lib/flash_info_fields.h"
+#include "sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.h"
+
+#include "hw/top/otp_ctrl_regs.h"  // Generated.
+#include "hw/top_earlgrey/sw/autogen/top_earlgrey.h"
+
+OTTF_DEFINE_TEST_CONFIG();
+
+/**
+ * DIF Handles.
+ *
+ * Keep this list sorted in alphabetical order.
+ */
+static dif_otp_ctrl_t otp_ctrl;
+static dif_flash_ctrl_state_t flash_ctrl_state;
+static dif_rstmgr_t rstmgr;
+
+static dif_flash_ctrl_region_properties_t kFlashInfoPage0Permissions = {
+    .ecc_en = kMultiBitBool4True,
+    .high_endurance_en = kMultiBitBool4False,
+    .erase_en = kMultiBitBool4True,
+    .prog_en = kMultiBitBool4True,
+    .rd_en = kMultiBitBool4True,
+    .scramble_en = kMultiBitBool4False};
+
+/**
+ * Initializes all DIF handles used in this module.
+ */
+static status_t peripheral_handles_init(void) {
+  TRY(dif_flash_ctrl_init_state(
+      &flash_ctrl_state,
+      mmio_region_from_addr(TOP_EARLGREY_FLASH_CTRL_CORE_BASE_ADDR)));
+  TRY(dif_otp_ctrl_init(
+      mmio_region_from_addr(TOP_EARLGREY_OTP_CTRL_CORE_BASE_ADDR), &otp_ctrl));
+  TRY(dif_rstmgr_init(mmio_region_from_addr(TOP_EARLGREY_RSTMGR_AON_BASE_ADDR),
+                      &rstmgr));
+  return OK_STATUS();
+}
+
+/**
+ * Initializes flash info page 0 fields required to complete the
+ * individualization step, which include:
+ *   - making page 0 accessible
+ *   - AST configuration data (if requested)
+ */
+static status_t init_flash_info_page0(bool write_ast_data) {
+  uint32_t byte_address = 0;
+  TRY(flash_ctrl_testutils_info_region_setup_properties(
+      &flash_ctrl_state, kFlashInfoFieldAstCalibrationData.page,
+      kFlashInfoFieldAstCalibrationData.bank,
+      kFlashInfoFieldAstCalibrationData.partition, kFlashInfoPage0Permissions,
+      &byte_address));
+  if (!write_ast_data) {
+    return OK_STATUS();
+  }
+  TRY(flash_ctrl_testutils_erase_page(
+      &flash_ctrl_state, byte_address,
+      kFlashInfoFieldAstCalibrationData.partition,
+      kDifFlashCtrlPartitionTypeInfo));
+  // Set dummy AST values for testing.
+  uint32_t ast_cfg_data[kFlashInfoAstCalibrationDataSizeIn32BitWords] = {0};
+  for (size_t i = 0; i < ARRAYSIZE(ast_cfg_data); ++i) {
+    ast_cfg_data[i] = i;
+  }
+  TRY(flash_ctrl_testutils_write(
+      &flash_ctrl_state,
+      byte_address + kFlashInfoFieldAstCalibrationData.byte_offset,
+      kFlashInfoFieldAstCalibrationData.partition, ast_cfg_data,
+      kDifFlashCtrlPartitionTypeInfo,
+      kFlashInfoAstCalibrationDataSizeIn32BitWords));
+  return OK_STATUS();
+}
+
+/**
+ * Check the AST configuration data was programmed correctly.
+ */
+static status_t check_otp_ast_cfg(void) {
+  // Check OTP fields were programmed correctly.
+  uint32_t data;
+  uint32_t relative_addr;
+  for (size_t i = 0; i < kFlashInfoAstCalibrationDataSizeIn32BitWords; ++i) {
+    TRY(dif_otp_ctrl_relative_address(
+        kDifOtpCtrlPartitionCreatorSwCfg,
+        OTP_CTRL_PARAM_CREATOR_SW_CFG_AST_CFG_OFFSET + i * sizeof(uint32_t),
+        &relative_addr));
+    TRY(otp_ctrl_testutils_dai_read32(
+        &otp_ctrl, kDifOtpCtrlPartitionCreatorSwCfg, relative_addr, &data));
+    TRY_CHECK(data == i);
+  }
+
+  // Check that the AST configuration data was erased from flash info page 0.
+  TRY(init_flash_info_page0(false));
+  uint32_t ast_cfg_data[kFlashInfoAstCalibrationDataSizeIn32BitWords] = {0};
+  TRY(manuf_flash_info_field_read(
+      &flash_ctrl_state, kFlashInfoFieldAstCalibrationData, ast_cfg_data,
+      kFlashInfoAstCalibrationDataSizeIn32BitWords));
+  for (size_t i = 0; i < kFlashInfoAstCalibrationDataSizeIn32BitWords; ++i) {
+    TRY_CHECK(ast_cfg_data[i] == UINT32_MAX);
+  }
+
+  return OK_STATUS();
+}
+
+/**
+ * Check the *SW_CFG partition digests.
+ */
+static status_t check_otp_sw_cfg_digest(dif_otp_ctrl_partition_t partition) {
+  uint64_t expected_digest, actual_digest = 0;
+
+  // Get actual_digest.
+  CHECK_DIF_OK(dif_otp_ctrl_get_digest(&otp_ctrl, partition, &actual_digest));
+
+  // Compute expected_digest.
+  hmac_sha256_init();
+  const unsigned char *const kOtpSwCfgWindowBase =
+      (const unsigned char *)TOP_EARLGREY_OTP_CTRL_CORE_BASE_ADDR +
+      OTP_CTRL_SW_CFG_WINDOW_REG_OFFSET;
+  switch (partition) {
+    case kDifOtpCtrlPartitionCreatorSwCfg:
+      hmac_sha256_update(kOtpSwCfgWindowBase +
+                             OTP_CTRL_PARAM_CREATOR_SW_CFG_AST_INIT_EN_OFFSET,
+                         OTP_CTRL_PARAM_CREATOR_SW_CFG_SIZE -
+                             OTP_CTRL_PARAM_CREATOR_SW_CFG_DIGEST_SIZE -
+                             OTP_CTRL_PARAM_CREATOR_SW_CFG_AST_CFG_SIZE);
+      break;
+    case kDifOtpCtrlPartitionOwnerSwCfg:
+      hmac_sha256_update(
+          kOtpSwCfgWindowBase + OTP_CTRL_PARAM_OWNER_SW_CFG_OFFSET,
+          OTP_CTRL_PARAM_OWNER_SW_CFG_SIZE -
+              OTP_CTRL_PARAM_OWNER_SW_CFG_DIGEST_SIZE);
+      break;
+    case kDifOtpCtrlPartitionRotCreatorAuthCodesign:
+      hmac_sha256_update(
+          kOtpSwCfgWindowBase + OTP_CTRL_PARAM_ROT_CREATOR_AUTH_CODESIGN_OFFSET,
+          OTP_CTRL_PARAM_ROT_CREATOR_AUTH_CODESIGN_SIZE -
+              OTP_CTRL_PARAM_ROT_CREATOR_AUTH_CODESIGN_DIGEST_SIZE);
+      break;
+    case kDifOtpCtrlPartitionRotCreatorAuthState:
+      hmac_sha256_update(
+          kOtpSwCfgWindowBase + OTP_CTRL_PARAM_ROT_CREATOR_AUTH_STATE_OFFSET,
+          OTP_CTRL_PARAM_ROT_CREATOR_AUTH_STATE_SIZE -
+              OTP_CTRL_PARAM_ROT_CREATOR_AUTH_STATE_DIGEST_SIZE);
+      break;
+    default:
+      return INVALID_ARGUMENT();
+  }
+  hmac_sha256_process();
+  hmac_digest_t otp_measurement;
+  hmac_sha256_final(&otp_measurement);
+  expected_digest = otp_measurement.digest[1];
+  expected_digest = (expected_digest << 32) | otp_measurement.digest[0];
+
+  // Check actual digest matches the expect digest.
+  LOG_INFO("Actual Digest:   0x%08x%08x", (uint32_t)(actual_digest >> 32),
+           (uint32_t)actual_digest);
+  LOG_INFO("Expected Digest: 0x%08x%08x", (uint32_t)(expected_digest >> 32),
+           (uint32_t)expected_digest);
+  TRY_CHECK(actual_digest == expected_digest);
+
+  return OK_STATUS();
+}
+
+/**
+ * Perform software reset.
+ */
+static void sw_reset(void) {
+  rstmgr_testutils_reason_clear();
+  CHECK_DIF_OK(dif_rstmgr_software_device_reset(&rstmgr));
+  wait_for_interrupt();
+}
+
+bool test_main(void) {
+  CHECK_STATUS_OK(peripheral_handles_init());
+  CHECK_STATUS_OK(entropy_complex_init(kHardenedBoolFalse));
+
+  // Provision CREATOR_SW_CFG partition.
+  if (!status_ok(manuf_individualize_device_creator_sw_cfg_check(&otp_ctrl))) {
+    CHECK_STATUS_OK(init_flash_info_page0(true));
+    CHECK_STATUS_OK(manuf_individualize_device_creator_sw_cfg(
+        &otp_ctrl, &flash_ctrl_state));
+    CHECK_STATUS_OK(manuf_individualize_device_field_cfg(
+        &otp_ctrl,
+        OTP_CTRL_PARAM_CREATOR_SW_CFG_FLASH_DATA_DEFAULT_CFG_OFFSET));
+    CHECK_STATUS_OK(manuf_individualize_device_field_cfg(
+        &otp_ctrl, OTP_CTRL_PARAM_CREATOR_SW_CFG_MANUF_STATE_OFFSET));
+    CHECK_STATUS_OK(manuf_individualize_device_field_cfg(
+        &otp_ctrl, OTP_CTRL_PARAM_CREATOR_SW_CFG_IMMUTABLE_ROM_EXT_EN_OFFSET));
+    CHECK_STATUS_OK(manuf_individualize_device_creator_sw_cfg_lock(&otp_ctrl));
+    LOG_INFO("Provisioned and locked CREATOR_SW_CFG OTP partition.");
+    // Halt the CPU here to enable host to perform POR and bootstrap again since
+    // flash scrambling enablement has changed. Bootstrap resets the chip as
+    // well, which completes the locking of this partition.
+    abort();
+  }
+  bool perform_reset = false;
+
+  // Provision OWNER_SW_CFG partition.
+  if (!status_ok(manuf_individualize_device_owner_sw_cfg_check(&otp_ctrl))) {
+    CHECK_STATUS_OK(manuf_individualize_device_owner_sw_cfg(&otp_ctrl));
+    CHECK_STATUS_OK(manuf_individualize_device_field_cfg(
+        &otp_ctrl, OTP_CTRL_PARAM_OWNER_SW_CFG_ROM_BOOTSTRAP_DIS_OFFSET));
+    CHECK_STATUS_OK(manuf_individualize_device_owner_sw_cfg_lock(&otp_ctrl));
+    LOG_INFO("Provisioned and locked OWNER_SW_CFG OTP partition.");
+    perform_reset |= true;
+  }
+
+  // Provision ROT_CREATOR_AUTH_CODESIGN partition.
+  if (!status_ok(manuf_individualize_device_rot_creator_auth_codesign_check(
+          &otp_ctrl))) {
+    CHECK_STATUS_OK(
+        manuf_individualize_device_rot_creator_auth_codesign(&otp_ctrl));
+    LOG_INFO("Provisioned and locked ROT_CREATOR_AUTH_CODESIGN OTP partition.");
+    perform_reset |= true;
+  }
+
+  // Provision ROT_CREATOR_AUTH_STATE partition.
+  if (!status_ok(
+          manuf_individualize_device_rot_creator_auth_state_check(&otp_ctrl))) {
+    CHECK_STATUS_OK(
+        manuf_individualize_device_rot_creator_auth_state(&otp_ctrl));
+    LOG_INFO("Provisioned and locked ROT_CREATOR_AUTH_STATE OTP partition.");
+    perform_reset |= true;
+  }
+
+  if (perform_reset) {
+    // Perform SW reset to complete locking of the partitions.
+    sw_reset();
+  }
+
+  // Check all SW_CFG and ROT_CREATOR_AUTH partitions have been locked.
+  if (status_ok(manuf_individualize_device_creator_sw_cfg_check(&otp_ctrl)) &&
+      status_ok(manuf_individualize_device_owner_sw_cfg_check(&otp_ctrl)) &&
+      status_ok(manuf_individualize_device_rot_creator_auth_codesign_check(
+          &otp_ctrl)) &&
+      status_ok(
+          manuf_individualize_device_rot_creator_auth_state_check(&otp_ctrl))) {
+    // Check OTP AST and digest contents.
+    CHECK_STATUS_OK(check_otp_ast_cfg());
+    LOG_INFO("Checking CreatorSwCfg digest ...");
+    CHECK_STATUS_OK(check_otp_sw_cfg_digest(kDifOtpCtrlPartitionCreatorSwCfg));
+    LOG_INFO("Checking OwnerSwCfg digest ...");
+    CHECK_STATUS_OK(check_otp_sw_cfg_digest(kDifOtpCtrlPartitionOwnerSwCfg));
+    LOG_INFO("Checking RotCreatorAuthCodesign digest ...");
+    CHECK_STATUS_OK(
+        check_otp_sw_cfg_digest(kDifOtpCtrlPartitionRotCreatorAuthCodesign));
+    LOG_INFO("Checking RotCreatorAuthState digest ...");
+    CHECK_STATUS_OK(
+        check_otp_sw_cfg_digest(kDifOtpCtrlPartitionRotCreatorAuthState));
+    return true;
+  }
+
+  return false;
+}

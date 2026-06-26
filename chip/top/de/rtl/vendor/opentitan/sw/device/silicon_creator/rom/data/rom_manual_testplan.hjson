@@ -1,0 +1,134 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  name: "rom_manual"
+
+  testpoints: [
+    {
+      name: rom_manual_spi_device_constants
+      desc: '''Verify that spi_device constants in `spi_device.h` are up to date.
+
+            Certain spi_device hardware constants are currently hard-coded in `spi_device.h` since
+            they are not auto-generated yet. See #11740 for details.
+
+            - Verify that the following constants defined in `spi_device.h` are up to date:
+              - `kSpiDeviceSfdpAreaNumBytes`
+              - `kSpiDeviceSfdpAreaOffset`
+              - `kSpiDevicePayloadAreaOffset`
+              - `kSpiDevicePayloadAreaNumBytes`
+              - `kSpiDevicePayloadAreaNumWords`
+              - `kSpiDeviceWelBit`
+            '''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_cpuctrl_layout
+      desc: '''Verify that the mask for the `cpuctrl` CSR in `rom_init()` is up to date.
+
+            See [Ibex documentation][1] for details.
+
+            - Verify that the first six bits of the `CPUCTRL` CSR match what
+              `rom_init()` and `CREATOR_SW_CFG_CPUCTRL` OTP item expect:
+              - Bit 8: `ic_scr_key_valid`
+              - Bit 7: `double_fault_seen`
+              - Bit 6: `sync_exec_seen`
+              - Bits 5:3: `dummy_instr_mask`
+              - Bit 2: `dummy_instr_en`
+              - Bit 1: `data_ind_timing`
+              - Bit 0: `icache_enable`
+
+            [1]: https://ibex-core.readthedocs.io/en/latest/03_reference/cs_registers.html#cpu-control-and-status-register-cpuctrlsts
+            '''
+      tags: ["manual"]
+      stage: V2
+      tests: ["rom_e2e_c_init"]
+    }
+    {
+      name: rom_manual_sec_mmio_audit
+      desc: '''Verify that the registers accessed by `sec_mmio` functions are not modifiable by
+            hardware.
+
+            See https://github.com/lowRISC/opentitan/issues/18634 for additional context.
+
+            The following utility may be helpful in auditing the code:
+
+            bazel run //util/py/scripts:audit_sec_mmio_calls -- --log-level info
+            '''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_stack_utilization
+      desc: '''Verify stack utilization.
+
+            Ensure that the worst case utilization paths are below the space allocated for the
+            stack.
+            '''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_alert_handler_ping_disabled
+      desc: '''Ensure the alert handler ping mechanism is not enabled in the ROM.
+
+            The alert handler ping mechanism has not been qualified to work with the ROM. The
+            earliest stage in which it can be used is the ROM_EXT.
+            '''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_open_issues_tasks
+      desc: '''Verify that there are no blocking issues on GitHub or tasks in the tracker.'''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_e2e_fpga_cw310
+      desc: '''Verify that all ROM e2e tests pass on the FPGA_CW310 device.'''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_e2e_sim_dv
+      desc: '''Verify that all ROM e2e tests pass on the SIM_DV device.'''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_top_level_sim_dv
+      desc: '''Verify that all top-level SIM_DV tests that use the production ROM pass.'''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_hash_check
+      desc: '''Verify that the hash of the unscrambled ROM binary matches the expected value.
+
+            Run the ROM self hash test with:
+            `bazel test //sw/device/silicon_creator/rom/e2e:rom_e2e_self_hash_test_fpga_cw310_rom_with_real_keys --test_output=streamed`
+            '''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+    {
+      name: rom_manual_hash_reminder
+      desc: '''Confirm that the digest of ROM will be verified out-of-band with multiple parties before tapeout.'''
+      tags: ["manual"]
+      stage: V2
+      tests: []
+    }
+  ]
+}

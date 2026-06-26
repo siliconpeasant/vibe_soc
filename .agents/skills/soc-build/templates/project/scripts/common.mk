@@ -99,7 +99,7 @@ SYN_REPORT    = $(SYN_DIR)/synth.log
 # =============================================================================
 
 .PHONY: setup comp sim run test regress report coverage coverage-regress \
-        coverage-report wave verdi debug-gui clean debugclean deepclean \
+        coverage-report verdi clean debugclean deepclean \
         flist validate-flist lint syn
 
 setup:
@@ -168,18 +168,12 @@ coverage-report:
 	$(COVERAGE_REPORT_CMD)
 	@echo "[COV] Report: $(COV_REPORT_DIR)"
 
-wave:
-	@echo "[WAVE] Opening waveform ..."
-	$(WAVE_CMD)
 
 verdi: $(CANONICAL_FLIST)
 	@command -v verdi >/dev/null 2>&1 || { echo "[VERDI] verdi not found"; exit 127; }
 	@echo "[VERDI] Opening source database for $(TOP_MODULE) ..."
 	$(VERDI_CMD)
 
-debug-gui:
-	@test -n "$(DEBUG_GUI_CMD)" || { echo "[GUI] No compiled debug GUI for $(SIMULATOR)"; exit 2; }
-	$(DEBUG_GUI_CMD)
 
 clean:
 	@echo "[CLEAN] Removing runtime artifacts; preserving compile cache ..."

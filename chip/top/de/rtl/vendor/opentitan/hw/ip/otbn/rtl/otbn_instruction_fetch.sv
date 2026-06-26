@@ -1,0 +1,485 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+`include "prim_assert.sv"
+
+/**
+ * OTBN Instruction Fetch Unit
+ *
+ * Fetch an instruction from the instruction memory.
+ */
+module otbn_instruction_fetch
+  import otbn_pkg::*;
+#(
+  parameter int ImemSizeByte = 4096,
+
+  localparam int ImemAddrWidth = prim_util_pkg::vbits(ImemSizeByte)
+) (
+  input logic clk_i,
+  input logic rst_ni,
+
+  // Instruction memory (IMEM) interface. Read-only.
+  output logic                     imem_req_o,
+  output logic [ImemAddrWidth-1:0] imem_addr_o,
+  input  logic [38:0]              imem_rdata_i,
+  input  logic                     imem_rvalid_i,
+
+  // Next instruction selection (to instruction fetch)
+  input logic                     insn_fetch_req_valid_i,
+  input logic                     insn_fetch_req_valid_raw_i,
+  input logic [ImemAddrWidth-1:0] insn_fetch_req_addr_i,
+
+  // Decoded instruction
+  output logic                     insn_fetch_resp_valid_o,
+  output logic [ImemAddrWidth-1:0] insn_fetch_resp_addr_o,
+  output logic [31:0]              insn_fetch_resp_data_o,
+  input  logic                     insn_fetch_resp_clear_i,
+
+  output rf_bignum_predec_t        rf_bignum_predec_o,
+  output alu_bignum_predec_t       alu_bignum_predec_o,
+  output ctrl_flow_predec_t        ctrl_flow_predec_o,
+  output logic [ImemAddrWidth-1:0] ctrl_flow_target_predec_o,
+  output ispr_bignum_predec_t      ispr_bignum_predec_o,
+  output mac_bignum_predec_t       mac_bignum_predec_o,
+  output logic                     lsu_addr_en_predec_o,
+
+  input logic [NWdr-1:0] rf_bignum_rd_a_indirect_onehot_i,
+  input logic [NWdr-1:0] rf_bignum_rd_b_indirect_onehot_i,
+  input logic [NWdr-1:0] rf_bignum_wr_indirect_onehot_i,
+  input logic            rf_bignum_indirect_en_i,
+
+  output logic insn_fetch_err_o,  // ECC error seen in instruction fetch
+  output logic insn_addr_err_o,
+
+  input logic                     prefetch_en_i,
+  input logic                     prefetch_loop_active_i,
+  input logic [31:0]              prefetch_loop_iterations_i,
+  input logic [ImemAddrWidth:0]   prefetch_loop_end_addr_i,
+  input logic [ImemAddrWidth-1:0] prefetch_loop_jump_addr_i,
+  input logic                     prefetch_ignore_errs_i,
+
+  input logic                     sec_wipe_wdr_en_i,
+  input logic [4:0]               sec_wipe_wdr_addr_i,
+  input logic                     sec_wipe_mac_urnd_i,
+
+  input logic                     zero_flags_i
+);
+
+  function automatic logic insn_is_branch(logic [31:0] insn_data);
+    logic [31:7] unused_insn_data;
+
+    unused_insn_data = insn_data[31:7];
+
+    return insn_data[6:0] inside {InsnOpcodeBaseBranch, InsnOpcodeBaseJal, InsnOpcodeBaseJalr};
+  endfunction
+
+  logic [ImemAddrWidth-1:0] insn_prefetch_addr;
+  logic [38:0]              insn_fetch_resp_data_intg_q, insn_fetch_resp_data_intg_d;
+  logic [ImemAddrWidth-1:0] insn_fetch_resp_addr_q;
+  logic                     insn_fetch_resp_valid_q, insn_fetch_resp_valid_d;
+  logic [1:0]               insn_fetch_resp_intg_error_vec;
+  logic                     insn_fetch_en;
+
+  logic                     insn_prefetch;
+  logic                     insn_prefetch_fail;
+
+  logic                     imem_rvalid_final;
+  logic                     imem_rvalid_kill_q, imem_rvalid_kill_d;
+
+  rf_bignum_predec_t   rf_bignum_predec_indirect, rf_bignum_predec_sec_wipe;
+  rf_bignum_predec_t   rf_bignum_predec_q, rf_bignum_predec_d, rf_bignum_predec_insn;
+  alu_bignum_predec_t  alu_bignum_predec_zero_flags;
+  alu_bignum_predec_t  alu_bignum_predec_q, alu_bignum_predec_d, alu_bignum_predec_insn;
+  ispr_bignum_predec_t ispr_bignum_predec_q, ispr_bignum_predec_d;
+  ispr_bignum_predec_t ispr_bignum_predec;
+  mac_bignum_predec_t  mac_bignum_predec, mac_bignum_predec_raw, mac_bignum_predec_to_fsm;
+  mac_bignum_predec_t  mac_bignum_predec_q, mac_bignum_predec_d;
+  logic                mac_bignum_is_busy;
+  logic                lsu_addr_en_predec_q, lsu_addr_en_predec_d;
+  logic                lsu_addr_en_predec_insn;
+  logic                insn_addr_err_unbuf;
+
+  ctrl_flow_predec_t ctrl_flow_predec, ctrl_flow_predec_d, ctrl_flow_predec_q;
+
+  logic [ImemAddrWidth-1:0] ctrl_flow_target_predec, ctrl_flow_target_predec_d;
+  logic [ImemAddrWidth-1:0] ctrl_flow_target_predec_q;
+
+  logic [NWdr-1:0] rf_bignum_wr_sec_wipe_onehot;
+
+  assign imem_rvalid_final = imem_rvalid_i & ~imem_rvalid_kill_q;
+
+  // The prefetch has failed if a fetch is requested and either no prefetch has done or was done to
+  // the wrong address. The `insn_fetch_req_valid_raw_i` signal doesn't factor in errors which is
+  // important to avoid timing issues here as this signal factors into the muxing for the
+  // imem_addr_o output.
+  assign insn_prefetch_fail = insn_fetch_req_valid_raw_i &
+                              (~imem_rvalid_final || (insn_fetch_req_addr_i != insn_prefetch_addr));
+
+  // Fetch response is valid when prefetch has matched what was requested. Otherwise if no fetch is
+  // requested keep fetch response validity constant unless a clear is commanded.
+  assign insn_fetch_resp_valid_d =
+    insn_fetch_req_valid_i ? imem_rvalid_final & (insn_fetch_req_addr_i == insn_prefetch_addr) :
+                             insn_fetch_resp_valid_q & ~insn_fetch_resp_clear_i;
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      insn_fetch_resp_valid_q <= 1'b0;
+    end else begin
+      insn_fetch_resp_valid_q <= insn_fetch_resp_valid_d;
+    end
+  end
+
+  // SEC_CM: DATA_REG_SW.SCA
+  otbn_predecode #(
+    .ImemSizeByte(ImemSizeByte)
+  ) u_otbn_predecode (
+    .clk_i,
+    .rst_ni,
+
+    .imem_rdata_i (imem_rdata_i[31:0]),
+    .imem_raddr_i (insn_prefetch_addr),
+    .imem_rvalid_i(imem_rvalid_final),
+
+    .rf_bignum_predec_o       (rf_bignum_predec_insn),
+    .alu_bignum_predec_o      (alu_bignum_predec_insn),
+    .ctrl_flow_predec_o       (ctrl_flow_predec),
+    .ctrl_flow_target_predec_o(ctrl_flow_target_predec),
+    .ispr_bignum_predec_o     (ispr_bignum_predec),
+    .mac_bignum_predec_raw_o  (mac_bignum_predec_raw),
+    .lsu_addr_en_predec_o     (lsu_addr_en_predec_insn)
+  );
+
+  // We must use the predecoded raw signals to control the FSM from when the instruction started
+  // because when the pipeline stalls the predecoder already decodes the next instruction.
+  assign mac_bignum_predec_to_fsm = insn_fetch_en ? mac_bignum_predec_raw : mac_bignum_predec_q;
+
+  // SEC_CM: DATA_REG_SW.SCA
+  // This FSM controls the multi-cycle SIMD multiplication instructions. It works in tandem with
+  // a duplicate inside BN MAC. This one here generates the predecoded signals which are compared
+  // to the ones generated by the FSM in BN MAC. It operates using the raw predecoded signals from
+  // the predecoder. The one inside BN MAC operates on the decoded control signals. This gives
+  // redundancy similar to a lockstep configuration.
+  otbn_mac_bignum_fsm #(
+    // Any state error (e.g., faulted counter) of this FSM will be detected by the FSM in the
+    // BN MAC because if an attack changes this FSM's state, then either wrong signals are
+    // forwarded immediately or during a later state. Therefore, we can ignore the state error
+    // here. This ensures that all multi-cycle multiplications escalate at the earliest when they
+    // are executed.
+    .EnableAlertTriggerSVA(0)
+  ) u_mac_bignum_fsm (
+    .clk_i,
+    .rst_ni,
+
+    // Start as soon as the instruction is fetched the first time.
+    .start_i          (insn_fetch_en),
+    .mac_en_i         (mac_bignum_predec_to_fsm.mac_en),
+    .is_vec_i         (mac_bignum_predec_to_fsm.is_vec),
+    .is_mod_i         (mac_bignum_predec_to_fsm.is_mod),
+    .is_lane_i        (mac_bignum_predec_to_fsm.is_lane),
+    .lane_index_i     (mac_bignum_predec_to_fsm.lane_index),
+    .elen_i           (mac_bignum_predec_to_fsm.elen),
+    .adder_carry_sel_i(mac_bignum_predec_to_fsm.adder_carry_sel),
+    .acc_add_en_i     (mac_bignum_predec_to_fsm.acc_add_en),
+    .op_a_qw_sel_i    (mac_bignum_predec_to_fsm.op_a_qw_sel),
+    .op_b_elem0_sel_i (mac_bignum_predec_to_fsm.op_b_elem0_sel),
+    .op_b_elem1_sel_i (mac_bignum_predec_to_fsm.op_b_elem1_sel),
+
+    .contrl_o (/* unused here */),
+    .predec_o (mac_bignum_predec),
+    .is_busy_o(mac_bignum_is_busy),
+
+    .sec_wipe_i(sec_wipe_mac_urnd_i),
+
+    .state_err_o(/* Ignored, see comment above. */)
+  );
+
+  logic unused_mac_predec_to_fsm;
+
+  assign unused_mac_predec_to_fsm = ^{
+    mac_bignum_predec_to_fsm.mul_op_a_tmp_sel,
+    mac_bignum_predec_to_fsm.mul_op_b_sel,
+    mac_bignum_predec_to_fsm.mul_add_en,
+    mac_bignum_predec_to_fsm.c_add_en,
+    mac_bignum_predec_to_fsm.add_mod_en,
+    mac_bignum_predec_to_fsm.acc_qw_sel,
+    mac_bignum_predec_to_fsm.acc_merger_en,
+    mac_bignum_predec_to_fsm.mul_shift_en,
+    mac_bignum_predec_to_fsm.mul_merger_en,
+    mac_bignum_predec_to_fsm.add_res_en,
+    mac_bignum_predec_to_fsm.operation_valid_raw
+  };
+
+  prim_onehot_enc #(
+    .OneHotWidth(NWdr)
+  ) rf_we_bignum_sec_wipe_onehot_enc (
+    .in_i  (sec_wipe_wdr_addr_i),
+    .en_i  (sec_wipe_wdr_en_i),
+    .out_o (rf_bignum_wr_sec_wipe_onehot)
+  );
+
+  // Indirect register addressing
+  // For instructions using indirect addressing (BN.LID/BN.SID/BN.MOVR) the base register read to
+  // determine which bignum register is used occurs in the first cycle of the instruction
+  // execution. The onehot encoded version of the register index is passed back here (via the
+  // `rf_bignum_*_indirect_onehot_i` signals to set the enables for the following cycle.
+  assign rf_bignum_predec_indirect = '{rf_ren_a : rf_bignum_rd_a_indirect_onehot_i,
+                                       rf_ren_b : rf_bignum_rd_b_indirect_onehot_i,
+                                       rf_we    : rf_bignum_wr_indirect_onehot_i};
+
+  assign rf_bignum_predec_sec_wipe = '{rf_ren_a : '0,
+                                       rf_ren_b : '0,
+                                       rf_we    : rf_bignum_wr_sec_wipe_onehot};
+
+  // Register enables for bignum come from precode unless indirect register accesses are used
+  assign rf_bignum_predec_d = sec_wipe_wdr_en_i       ? rf_bignum_predec_sec_wipe :
+                              rf_bignum_indirect_en_i ? rf_bignum_predec_indirect :
+                              insn_fetch_en           ? rf_bignum_predec_insn     :
+                              insn_fetch_resp_clear_i ? '0                        :
+                                                        rf_bignum_predec_q;
+
+  assign ispr_bignum_predec_d = insn_fetch_en           ? ispr_bignum_predec :
+                                insn_fetch_resp_clear_i ? '0                 :
+                                                          ispr_bignum_predec_q;
+
+  assign lsu_addr_en_predec_d = insn_fetch_en           ? lsu_addr_en_predec_insn :
+                                insn_fetch_resp_clear_i ? 1'b0:
+                                                          lsu_addr_en_predec_q;
+
+  assign insn_fetch_en = imem_rvalid_final & insn_fetch_req_valid_i;
+
+  assign insn_fetch_resp_data_intg_d = insn_fetch_en ? imem_rdata_i :
+                                                       insn_fetch_resp_data_intg_q;
+
+  prim_flop #(
+    .Width(39),
+    .ResetValue('0)
+  ) u_insn_fetch_resp_data_intg_flop (
+    .clk_i,
+    .rst_ni,
+
+    .d_i(insn_fetch_resp_data_intg_d),
+    .q_o(insn_fetch_resp_data_intg_q)
+  );
+
+  always_ff @(posedge clk_i) begin
+    if (insn_fetch_en) begin
+      insn_fetch_resp_addr_q      <= insn_prefetch_addr;
+    end
+  end
+
+  // Flag zeroing
+  // For secure wipe and ISPR initialization, flags need to be set to 0. This is achieved
+  // by setting all selector inputs for the corresponding one-hot mux in the ALU to zero.
+  always_comb begin
+    alu_bignum_predec_zero_flags = alu_bignum_predec_insn;
+
+    alu_bignum_predec_zero_flags.flags_keep         = '0;
+    alu_bignum_predec_zero_flags.flags_adder_update = '0;
+    alu_bignum_predec_zero_flags.flags_logic_update = '0;
+    alu_bignum_predec_zero_flags.flags_mac_update   = '0;
+    alu_bignum_predec_zero_flags.flags_ispr_wr      = '0;
+  end
+
+  assign alu_bignum_predec_d = zero_flags_i  ? alu_bignum_predec_zero_flags :
+                               insn_fetch_en ? alu_bignum_predec_insn       :
+                                               alu_bignum_predec_q;
+
+  // Forward the signals from the FSM only when an instruction starts or is ongoing.
+  assign mac_bignum_predec_d = (insn_fetch_en || mac_bignum_is_busy) ? mac_bignum_predec :
+                                                                       mac_bignum_predec_q;
+
+  assign ctrl_flow_predec_d = insn_fetch_en           ? ctrl_flow_predec   :
+                              insn_fetch_resp_clear_i ? '0                 :
+                                                        ctrl_flow_predec_q;
+
+  assign ctrl_flow_target_predec_d = insn_fetch_en ? ctrl_flow_target_predec   :
+                                                     ctrl_flow_target_predec_q;
+
+
+  prim_flop #(
+    .Width($bits(alu_bignum_predec_t)),
+    .ResetValue('0)
+  ) u_alu_bignum_predec_flop(
+    .clk_i,
+    .rst_ni,
+
+    .d_i(alu_bignum_predec_d),
+    .q_o(alu_bignum_predec_q)
+  );
+
+  prim_flop #(
+    .Width($bits(mac_bignum_predec_t)),
+    .ResetValue('0)
+  ) u_mac_bignum_predec_flop (
+    .clk_i,
+    .rst_ni,
+
+    .d_i(mac_bignum_predec_d),
+    .q_o(mac_bignum_predec_q)
+  );
+
+  prim_flop #(
+    .Width($bits(ctrl_flow_predec_t)),
+    .ResetValue('0)
+  ) u_ctrl_flow_predec_flop (
+    .clk_i,
+    .rst_ni,
+
+    .d_i(ctrl_flow_predec_d),
+    .q_o(ctrl_flow_predec_q)
+  );
+
+  prim_flop #(
+    .Width(ImemAddrWidth),
+    .ResetValue('0)
+  ) u_ctrl_flow_target_predec_flop (
+    .clk_i,
+    .rst_ni,
+
+    .d_i(ctrl_flow_target_predec_d),
+    .q_o(ctrl_flow_target_predec_q)
+  );
+
+  prim_flop #(
+    .Width($bits(rf_bignum_predec_t)),
+    .ResetValue('0)
+  ) u_rf_bignum_predec_flop (
+    .clk_i,
+    .rst_ni,
+
+    .d_i(rf_bignum_predec_d),
+    .q_o(rf_bignum_predec_q)
+  );
+
+  prim_flop #(
+    .Width($bits(ispr_bignum_predec_t)),
+    .ResetValue('0)
+  ) u_ispr_bignum_predec_flop (
+    .clk_i,
+    .rst_ni,
+
+    .d_i(ispr_bignum_predec_d),
+    .q_o(ispr_bignum_predec_q)
+  );
+
+  prim_flop #(
+    .Width(1),
+    .ResetValue(1'b0)
+  ) u_lsu_addr_en_predec_flop (
+    .clk_i,
+    .rst_ni,
+
+    .d_i(lsu_addr_en_predec_d),
+    .q_o(lsu_addr_en_predec_q)
+  );
+
+  always_ff @(posedge clk_i) begin
+    if (insn_prefetch) begin
+      insn_prefetch_addr <= imem_addr_o;
+    end
+  end
+
+  // Prefetch control
+  always_comb begin
+    // By default prefetch the next instruction
+    imem_addr_o = insn_prefetch_addr + 'd4;
+    // The kill is flopped and applied to imem_rvalid the following cycle. It's used for branching.
+    imem_rvalid_kill_d = 1'b0;
+    // Only prefetch if controller tells us to
+    insn_prefetch = prefetch_en_i;
+
+    // Use the `insn_fetch_req_valid_raw_i` signal here as it doesn't factor in errors. This is
+    // important for timing reasons so errors don't factor into the `imem_addr_o` signal.
+    if (!insn_fetch_req_valid_raw_i) begin
+      // Keep prefetching the same instruction when a new one isn't being requested. In this
+      // scenario OTBN is stalled and will eventually want the prefetched instruction.
+      imem_addr_o = insn_prefetch_addr;
+    end else if (insn_prefetch_fail) begin
+      // When prefetching has failed prefetch the requested address
+      imem_addr_o = insn_fetch_req_addr_i;
+    end else begin
+      if ({1'b0, insn_prefetch_addr} == prefetch_loop_end_addr_i &&
+          prefetch_loop_active_i &&
+          prefetch_loop_iterations_i > 32'd1) begin
+        // When in a loop prefetch the loop beginning when execution reaches the end.
+        imem_addr_o = prefetch_loop_jump_addr_i;
+      end
+
+      // It is important this if doesn't take priority over others in this block. If it does then
+      // when `imem_rdata_i` is unknown `imem_addr_o` becomes unknown when running a simulation that
+      // propagates X through if. In hardware terms this means there isn't a combinational path from
+      // `imem_rdata_i` and `imem_addr_o`. This may be useful for timing purposes as well.
+      if (insn_is_branch(imem_rdata_i[31:0])) begin
+        // For a branch we do not know if it will be taken or untaken. So never prefetch to keep
+        // timing consistent regardless of taken/not-taken. This also applies to jumps, this avoids
+        // the need to calculate the jump address here.
+        //
+        // For x-prop reasons we do not suppress the imem_req_o here. When OTBN executes an
+        // instruction that produces a software error it comes to an immediate halt. However only
+        // the raw fetch request is considered here for timing reasons. So if the instruction
+        // following the error causing instruction is X in simulation the `insn_is_branch` sees an
+        // X here which would result in imem_req_o going X (using simulator options that enable
+        // X prop for if statements). This is turn causes an assertion failure.
+        //
+        // The imem_rvalid_kill signal is used to avoid the X prop issue. This suppresses the
+        // imem_rvalid signal the following cycle. Whilst imem_rvalid_kill itself will go X if
+        // imem_rdata_i is X, as OTBN has halted following the error this doesn't cause a problem.
+        imem_rvalid_kill_d = 1'b1;
+        insn_prefetch      = 1'b0;
+      end
+    end
+  end
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      imem_rvalid_kill_q <= 1'b0;
+    end else begin
+      imem_rvalid_kill_q <= imem_rvalid_kill_d;
+    end
+  end
+
+  // SEC_CM: INSTRUCTION.MEM.INTEGRITY
+  // Check integrity on prefetched instruction
+  prim_secded_inv_39_32_dec u_insn_intg_check (
+    .data_i    (insn_fetch_resp_data_intg_q),
+    .data_o    (),
+    .syndrome_o(),
+    .err_o     (insn_fetch_resp_intg_error_vec)
+  );
+
+  // Read from imem when prefetching is enabled
+  assign imem_req_o = prefetch_en_i;
+
+  assign insn_fetch_resp_valid_o = insn_fetch_resp_valid_q;
+  assign insn_fetch_resp_addr_o  = insn_fetch_resp_addr_q;
+  // Strip integrity bits before passing instruction to decoder
+  assign insn_fetch_resp_data_o  = insn_fetch_resp_data_intg_q[31:0];
+
+  assign insn_fetch_err_o = |insn_fetch_resp_intg_error_vec & insn_fetch_resp_valid_q;
+
+  // SEC_CM: PC.CTRL_FLOW.REDUN
+  // Signal an `insn_addr_err` if the instruction the execute stage requests is not the one that was
+  // prefetched. By design the prefetcher is either correct or doesn't prefetch, so a mismatch
+  // here indicates a fault.  `insn_fetch_req_valid_raw_i` is used as it doesn't factor in errors,
+  // which is required here otherwise we get a combinational loop.
+  assign insn_addr_err_unbuf =
+    imem_rvalid_final & insn_fetch_req_valid_raw_i & ~prefetch_ignore_errs_i &
+    (insn_fetch_req_addr_i != insn_prefetch_addr);
+
+  prim_buf #(.Width(1)) u_insn_addr_buf (
+    .in_i(insn_addr_err_unbuf),
+    .out_o(insn_addr_err_o)
+  );
+
+  assign rf_bignum_predec_o        = rf_bignum_predec_q;
+  assign alu_bignum_predec_o       = alu_bignum_predec_q;
+  assign ctrl_flow_predec_o        = ctrl_flow_predec_q;
+  assign ctrl_flow_target_predec_o = ctrl_flow_target_predec_q;
+  assign ispr_bignum_predec_o      = ispr_bignum_predec_q;
+  assign mac_bignum_predec_o       = mac_bignum_predec_q;
+  assign lsu_addr_en_predec_o      = lsu_addr_en_predec_q;
+
+  `ASSERT(FetchEnOnlyIfValidIMem, insn_fetch_en |-> imem_rvalid_i)
+  `ASSERT(NoFetchEnAndIndirectEn, !(insn_fetch_en && rf_bignum_indirect_en_i))
+endmodule

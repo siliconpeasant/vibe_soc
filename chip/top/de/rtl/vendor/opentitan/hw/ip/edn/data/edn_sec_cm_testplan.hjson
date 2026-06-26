@@ -1,0 +1,101 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Security countermeasures testplan extracted from the IP Hjson using reggen.
+//
+// This testplan is auto-generated only the first time it is created. This is
+// because this testplan needs to be hand-editable. It is possible that these
+// testpoints can go out of date if the spec is updated with new
+// countermeasures. When `reggen` is invoked when this testplan already exists,
+// It checks if the list of testpoints is up-to-date and enforces the user to
+// make further manual updates.
+//
+// These countermeasures and their descriptions can be found here:
+// .../edn/data/edn.hjson
+//
+// It is possible that the testing of some of these countermeasures may already
+// be covered as a testpoint in a different testplan. This duplication is ok -
+// the test would have likely already been developed. We simply map those tests
+// to the testpoints below using the `tests` key.
+//
+// Please ensure that this testplan is imported in:
+// .../edn/data/edn_testplan.hjson
+{
+  testpoints: [
+    {
+      name: sec_cm_config_regwen
+      desc: "Verify the countermeasure(s) CONFIG.REGWEN."
+      stage: V2S
+      tests: ["edn_regwen"]
+    }
+    {
+      name: sec_cm_config_mubi
+      desc: '''Verify the countermeasure(s) CONFIG.MUBI.
+
+            Write non-Mubi4True or Mubi4False value to the ctrl register's mubi fields.
+            Verify that design triggers the corresponding recoverable alerts and error status.
+            Verify that design categorizes the value as Mubi4False.
+            '''
+      stage: V2S
+      tests: ["edn_alert"]
+    }
+    {
+      name: sec_cm_main_sm_fsm_sparse
+      desc: "Verify the countermeasure(s) MAIN_SM.FSM.SPARSE."
+      stage: V2S
+      tests: ["edn_sec_cm"]
+    }
+    {
+      name: sec_cm_ack_sm_fsm_sparse
+      desc: "Verify the countermeasure(s) ACK_SM.FSM.SPARSE."
+      stage: V2S
+      tests: ["edn_sec_cm"]
+    }
+    {
+      name: sec_cm_fifo_ctr_redun
+      desc: '''
+            Verify the countermeasure(s) FIFO.CTR.REDUN.
+            The auto-generated edn_sec_cm test verifies that if there is any mismatch in the redundant pointers inside the FIFOs, a fatal alert is triggered and that the DUT enters a terminal error state.
+            '''
+      stage: V2S
+      tests: ["edn_sec_cm"]
+    }
+    {
+      name: sec_cm_ctr_redun
+      desc: "Verify the countermeasure(s) CTR.REDUN."
+      stage: V2S
+      tests: ["edn_sec_cm"]
+    }
+    {
+      name: sec_cm_main_sm_ctr_local_esc
+      desc: '''Verify the countermeasure(s) MAIN_SM.CTR.LOCAL_ESC.
+
+            Verify that after the local escalation:
+            - The fatal alert fires continuously.
+            - Register `main_sm_state` goes to error state.
+            - No valid EDN responses.
+            '''
+      stage: V2S
+      tests: ["edn_sec_cm", "edn_alert"]
+    }
+    {
+      name: sec_cm_cs_rdata_bus_consistency
+      desc: '''Verify the countermeasure(s) CS_RDATA.BUS.CONSISTENCY.
+
+            Load randomly generated but constant fips and genbits data from the CSRNG host driver
+            to create the consistency error.
+            Check the corresponding recoverable alert is fired and check the recov_alert_sts
+            register.
+            '''
+      stage: V2S
+      tests: ["edn_alert"]
+    }
+    {
+      name: sec_cm_tile_link_bus_integrity
+      desc: "Verify the countermeasure(s) TILE_LINK.BUS.INTEGRITY."
+      stage: V2S
+      tests: ["edn_tl_intg_err"]
+    }
+  ]
+}

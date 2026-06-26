@@ -1,0 +1,19 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  sub_flow: fpv
+  import_cfgs: ["{proj_root}/hw/formal/tools/dvsim/common_formal_cfg.hjson"]
+  stopats: []
+  task: ""
+  after_load: []
+  params: ""
+
+  // Optional vars that need to exported to the env
+  exports: [
+    {STOPATS:    "'{stopats}'"},
+    {TASK:       '{task}'},
+    {AFTER_LOAD: '{after_load}'},
+    {PARAMS:     '{params}'},
+  ]
+}

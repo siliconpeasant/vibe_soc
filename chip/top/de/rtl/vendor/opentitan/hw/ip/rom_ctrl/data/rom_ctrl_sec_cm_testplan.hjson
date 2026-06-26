@@ -1,0 +1,162 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Security countermeasures testplan extracted from the IP Hjson using reggen.
+//
+// This testplan is auto-generated only the first time it is created. This is
+// because this testplan needs to be hand-editable. It is possible that these
+// testpoints can go out of date if the spec is updated with new
+// countermeasures. When `reggen` is invoked when this testplan already exists,
+// It checks if the list of testpoints is up-to-date and enforces the user to
+// make further manual updates.
+//
+// These countermeasures and their descriptions can be found here:
+// .../rom_ctrl/data/rom_ctrl.hjson
+//
+// It is possible that the testing of some of these countermeasures may already
+// be covered as a testpoint in a different testplan. This duplication is ok -
+// the test would have likely already been developed. We simply map those tests
+// to the testpoints below using the `tests` key.
+//
+// Please ensure that this testplan is imported in:
+// .../rom_ctrl/data/rom_ctrl_testplan.hjson
+{
+  testpoints: [
+    {
+      name: sec_cm_checker_ctr_consistency
+      desc: '''Verify the countermeasure(s) CHECKER.CTR.CONSISTENCY.
+             Once rom_ctrl has handed control of the mux to the bus, the internal FSM counter should
+             point at the top of ROM. The unexpected_counter_change signal in rom_ctrl_fsm goes high
+             and generates a fatal alert if that counter is perturbed in any way. To test this,
+             addr_q in the counter is corrupted with any value other than the ROM's top address.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_checker_ctrl_flow_consistency
+      desc: '''Verify the countermeasure(s) CHECKER.CTRL_FLOW.CONSISTENCY.
+             The main checker FSM steps on internal 'done' signals, coming from its address counter,
+             the KMAC response and its comparison counter. If any of these are asserted at times we
+             don't expect, the FSM jumps to an invalid state. This triggers an alert and will not
+             set the external 'done' signal for pwrmgr to continue boot.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_checker_fsm_local_esc
+      desc: '''Verify the countermeasure(s) CHECKER.FSM.LOCAL_ESC.
+             Check that fsm_state reaches invalid state whenever a fatal alert is signalled.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_compare_ctrl_flow_consistency
+      desc: '''Verify the countermeasure(s) COMPARE.CTRL_FLOW.CONSISTENCY.
+             The main checker FSM steps on internal 'done' signals, coming from its address counter,
+             the KMAC response and its comparison counter. If any of these are asserted at times
+             we don't expect, the FSM jumps to an invalid state. This triggers an alert and will not
+             set the external 'done' signal for pwrmgr to continue boot. To test this start_checker
+             signal from rom_ctrl_fsm is asserted randomly.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_compare_ctr_consistency
+      desc: '''Verify the countermeasure(s) COMPARE.CTR.CONSISTENCY.
+             The hash comparison module has an internal count. If this glitches to a nonzero value
+             before the comparison starts or to a value other than the last index after the
+             comparison ends then a fatal alert is generated.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_compare_ctr_redun
+      desc: '''Verify the countermeasure(s) COMPARE.CTR.REDUN.'''
+      stage: V2S
+      tests: ['''rom_ctrl_sec_cm''']
+    },
+    {
+      name: sec_cm_fsm_sparse
+      desc: '''Verify the countermeasure(s) FSM.SPARSE.'''
+      stage: V2S
+      tests: ['''rom_ctrl_sec_cm''']
+    }
+    {
+      name: sec_cm_mem_scramble
+      desc: '''Verify the countermeasure(s) MEM.SCRAMBLE.
+             Check that The ROM is scrambled.'''
+      stage: V2S
+      tests: ['''rom_ctrl_smoke''']
+    }
+    {
+      name: sec_cm_mem_digest
+      desc: '''Verify the countermeasure(s) MEM.DIGEST.
+             Check that a cSHAKE digest is computed of the ROM contents.'''
+      stage: V2S
+      tests: ['''rom_ctrl_smoke''']
+    }
+    {
+      name: sec_cm_intersig_mubi
+      desc: '''Verify the countermeasure(s) INTERSIG.MUBI.'''
+      stage: V2S
+      tests: ['''rom_ctrl_smoke''']
+    }
+    {
+      name: sec_cm_bus_integrity
+      desc: '''Verify the countermeasure(s) BUS.INTEGRITY.'''
+      stage: V2S
+      tests: ['''rom_ctrl_tl_intg_err''']
+    }
+    {
+      name: sec_cm_bus_local_esc
+      desc: '''Verify the countermeasure(s) BUS.LOCAL_ESC.
+             Check that in invalid state, rvalid is not asserted.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''', '''rom_ctrl_kmac_err_chk''']
+    }
+    {
+      name: sec_cm_mux_mubi
+      desc: '''Verify the countermeasure(s) MUX.MUBI.
+             The mux that arbitrates between the checker and the bus is multi-bit encoded.
+             An invalid value generates a fatal alert with the sel_invalid signal in rom_ctrl_mux
+             module. To test this rom_select_bus_o is forced with any value other than MuBi4True and
+             MuBi4False.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_mux_consistency
+      desc: '''Verify the countermeasure(s) MUX.CONSISTENCY.
+             The mux that arbitrates between the checker and the bus gives access to the checker at
+             the start of time and then switches to the bus, never going back. If a glitch does
+             cause it to switch back, a fatal alert is generated with the sel_reverted or
+             sel_q_reverted_q signals in the rom_ctrl_mux module. To test this rom_select_bus_o is
+             forced to MuBi4False after rom check is completed.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_ctrl_redun
+      desc: '''Verify the countermeasure(s) CTRL.REDUN.
+             Inject errors into bus_rom_rom_index (which is how an attacker would get a different
+             memory word) and then check that the data that gets read doesn't match the data stored
+             at the glitched address.'''
+      stage: V2S
+      tests: ['''rom_ctrl_corrupt_sig_fatal_chk''']
+    }
+    {
+      name: sec_cm_ctrl_mem_integrity
+      desc: '''Verify the countermeasure(s) MEM.INTEGRITY.'''
+      stage: V2S
+      tests: ['''rom_ctrl_passthru_mem_tl_intg_err''']
+    }
+    {
+      name: sec_cm_tlul_fifo_ctr_redun
+      desc: '''Verify the countermeasure(s) TLUL_FIFO.CTR.REDUN.
+            '''
+      stage: V2S
+      tests: ["{name}_sec_cm"]
+    }
+  ]
+}

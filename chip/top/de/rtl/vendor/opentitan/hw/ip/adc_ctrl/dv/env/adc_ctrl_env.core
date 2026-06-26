@@ -1,0 +1,51 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:adc_ctrl_env:0.1"
+description: "DCD DV UVM environment"
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:dv:ralgen
+      - lowrisc:dv:cip_lib
+    files:
+      - adc_ctrl_env_pkg.sv
+      - adc_ctrl_filter_cfg.sv: {is_include_file: true}
+      - adc_ctrl_env_cfg.sv: {is_include_file: true}
+      - adc_ctrl_env_var_filter_cfg.sv : {is_include_file: true}
+      - adc_ctrl_env_cov.sv: {is_include_file: true}
+      - adc_ctrl_virtual_sequencer.sv: {is_include_file: true}
+      - adc_ctrl_scoreboard.sv: {is_include_file: true}
+      - adc_ctrl_env.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_vseq_list.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_base_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_common_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_smoke_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_channel_ramp_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_filters_polled_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_filters_interrupt_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_filters_wakeup_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_fsm_reset_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_counter_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_poweron_counter_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_lowpower_counter_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_filters_both_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_clock_gating_vseq.sv: {is_include_file: true}
+      - seq_lib/adc_ctrl_stress_all_vseq.sv: {is_include_file: true}
+    file_type: systemVerilogSource
+
+generate:
+  ral:
+    generator: ralgen
+    parameters:
+      name: adc_ctrl
+      ip_hjson: ../../data/adc_ctrl.hjson
+    position: prepend
+
+targets:
+  default:
+    filesets:
+      - files_dv
+    generate:
+      - "!chip_level ? (ral)"

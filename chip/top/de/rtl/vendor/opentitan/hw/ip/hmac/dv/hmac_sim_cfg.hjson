@@ -1,0 +1,179 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  // Name of the sim cfg - typically same as the name of the DUT.
+  name: hmac
+
+  // Top level dut name (sv module).
+  dut: hmac
+
+  // Top level testbench name (sv module).
+  tb: tb
+
+  // Simulator used to sign off this block
+  tool: vcs
+
+  // Fusesoc core file used for building the file list.
+  fusesoc_core: lowrisc:dv:hmac_sim:0.1
+
+  // Testplan hjson file.
+  testplan: "{proj_root}/hw/ip/hmac/data/hmac_testplan.hjson"
+
+  // RAL spec - used to generate the RAL model.
+  ral_spec: "{proj_root}/hw/ip/hmac/data/hmac.hjson"
+
+  // Import additional common sim cfg files.
+  import_cfgs: [// Project wide common sim cfg file
+                "{proj_root}/hw/dv/tools/dvsim/common_sim_cfg.hjson",
+                // Common CIP test lists
+                "{proj_root}/hw/dv/tools/dvsim/tests/csr_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/alert_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/intr_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/tl_access_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/sec_cm_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/stress_tests.hjson"]
+
+  // Add additional tops for simulation.
+  sim_tops: ["hmac_bind", "sec_cm_prim_onehot_check_bind"]
+
+  // Default iterations for all tests - each test entry can override this.
+  reseed: 10
+
+  // Add HMAC specific exclusion files.
+  vcs_cov_excl_files: ["{proj_root}/hw/ip/hmac/dv/cov/hmac_unr_excl.el",
+                       "{proj_root}/hw/ip/hmac/dv/cov/hmac_cov_excl.el"]
+
+  // Default UVM test and seq class name.
+  uvm_test: hmac_base_test
+  uvm_test_seq: hmac_base_vseq
+
+  // Enable cdc instrumentation.
+  run_opts: ["+cdc_instrumentation_enabled=1"]
+
+  // List of test specifications.
+  tests: [
+    {
+      name: hmac_smoke
+      uvm_test_seq: hmac_smoke_vseq
+    }
+
+    {
+      name: hmac_long_msg
+      uvm_test_seq: hmac_long_msg_vseq
+    }
+
+    {
+      name: hmac_stress_reset
+      uvm_test_seq: hmac_stress_reset_vseq
+      reseed: 25
+    }
+
+    {
+      name: hmac_back_pressure
+      uvm_test_seq: hmac_back_pressure_vseq
+      run_opts: ["+zero_delays=1"]
+      reseed: 25
+    }
+
+    {
+      name: hmac_datapath_stress
+      uvm_test_seq: hmac_datapath_stress_vseq
+      run_opts: ["+zero_delays=1"]
+    }
+
+    {
+      name: hmac_burst_wr
+      uvm_test_seq: hmac_burst_wr_vseq
+      reseed: 50
+    }
+
+    {
+      name: hmac_error
+      uvm_test_seq: hmac_error_vseq
+      run_opts: ["+test_timeout_ns=500_000_000"]
+    }
+
+    {
+      name: hmac_wipe_secret
+      uvm_test_seq: hmac_wipe_secret_vseq
+    }
+
+    {
+      name: hmac_test_sha256_vectors
+      uvm_test_seq: hmac_test_vectors_sha_vseq
+      run_opts: ["+is_nist_test=1 +test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0 +test_timeout_ns=500_000_000 +sha2_digest_size=SHA2_256"]
+      reseed: 30
+    }
+
+    {
+      name: hmac_test_sha384_vectors
+      uvm_test_seq: hmac_test_vectors_sha_vseq
+      run_opts: ["+is_nist_test=1 +test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0 +test_timeout_ns=750_000_000 +sha2_digest_size=SHA2_384"]
+      reseed: 75
+    }
+
+    {
+      name: hmac_test_sha512_vectors
+      uvm_test_seq: hmac_test_vectors_sha_vseq
+      run_opts: ["+is_nist_test=1 +test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0 +test_timeout_ns=750_000_000 +sha2_digest_size=SHA2_512"]
+      reseed: 75
+    }
+
+    {
+      name: hmac_test_hmac256_vectors
+      uvm_test_seq: hmac_test_vectors_hmac_vseq
+      run_opts: ["+is_nist_test=1 +test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0 +test_timeout_ns=500_000_000 +sha2_digest_size=SHA2_256"]
+      reseed: 50
+    }
+
+    {
+      name: hmac_test_hmac384_vectors
+      uvm_test_seq: hmac_test_vectors_hmac_vseq
+      run_opts: ["+is_nist_test=1 +test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0 +test_timeout_ns=750_000_000 +sha2_digest_size=SHA2_384"]
+      reseed: 60
+    }
+
+    {
+      name: hmac_test_hmac512_vectors
+      uvm_test_seq: hmac_test_vectors_hmac_vseq
+      run_opts: ["+is_nist_test=1 +test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0 +test_timeout_ns=750_000_000 +sha2_digest_size=SHA2_512"]
+      reseed: 75
+    }
+
+    {
+      // Append the common stress_tests.hjson entry for more run_opts.
+      name: hmac_stress_all
+      reseed: 50
+    }
+
+    {
+      // Append the common stress_tests.hjson entry for more run_opts.
+      name: hmac_stress_all_with_rand_reset
+      reseed: 35
+    }
+
+    {
+      name: hmac_directed
+      uvm_test_seq: hmac_directed_vseq
+      reseed: 1
+    }
+  ]
+
+  // List of regressions.
+  regressions: [
+    {
+      name: smoke
+      tests: ["hmac_smoke", "hmac_test_sha256_vectors",
+              "hmac_test_sha384_vectors", "hmac_test_sha512_vectors"]
+    }
+     {
+      name: sha_test_vectors
+      tests: ["hmac_test_sha256_vectors", "hmac_test_sha384_vectors", "hmac_test_sha512_vectors"]
+    }
+    {
+      name: hmac_test_vectors
+      tests: ["hmac_test_hmac256_vectors", "hmac_test_hmac384_vectors", "hmac_test_hmac512_vectors"]
+    }
+  ]
+}

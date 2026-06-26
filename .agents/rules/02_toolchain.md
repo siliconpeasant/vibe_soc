@@ -10,6 +10,7 @@ Use the registered MCP server/tool by logical name. The host may prefix the expo
 | compile/single simulation | `soc-build` | `soc_comp`, `soc_sim` |
 | regression/coverage | `soc-build` | `soc_regress`, `soc_coverage` |
 | synthesis | `soc-build` | `soc_syn` |
+| debug GUI / waveform browse | `soc-build` | `soc_verdi` |
 | physical design | `soc-openroad` | `soc_openroad_init`, `soc_openroad_run`, `soc_openroad_status` |
 | ports/top/wrapper/snapshots | `soc-integrate` | corresponding `soc_*` tool |
 | YAML registers | `yml2reg` | `yml2reg` |

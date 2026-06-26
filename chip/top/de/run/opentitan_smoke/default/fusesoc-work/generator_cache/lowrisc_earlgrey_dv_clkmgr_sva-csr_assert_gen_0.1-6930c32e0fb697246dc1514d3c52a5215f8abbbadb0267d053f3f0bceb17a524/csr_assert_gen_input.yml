@@ -1,0 +1,5 @@
+files_root: /project/hw/top_earlgrey/ip_autogen/clkmgr/dv/sva
+gapi: '1.0'
+parameters:
+  spec: ../../data/clkmgr.hjson
+vlnv: lowrisc:earlgrey_dv:clkmgr_sva-csr_assert_gen:0.1

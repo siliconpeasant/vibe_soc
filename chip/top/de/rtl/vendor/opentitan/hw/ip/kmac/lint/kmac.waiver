@@ -1,0 +1,28 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+#
+# waiver file for KMAC
+
+waive -rules {HIER_NET_NOT_READ NOT_READ INPUT_NOT_READ} -location {kmac.sv} -regexp {'reg_state_valid' in module .* is not read} \
+      -comment "state values are guarded by the FSM, so kmac_staterd does not use the valid signal"
+
+waive -rules {HIER_NET_NOT_READ NOT_READ INPUT_NOT_READ} -location {kmac.sv} \
+    -regexp {'tlram_addr' is not read} \
+    -comment "MSG_FIFO ignores the exact memory address but use strobe for alignment"
+
+waive -rules {HIER_NET_NOT_READ NOT_READ INPUT_NOT_READ} \
+    -location {kmac_msgfifo.sv} -regexp {'packer_wmask.* is not read} \
+    -comment "MSG_FIFO uses only the first bit in a byte"
+
+waive -rules {TWO_STATE_TYPE} -location {kmac.sv} \
+    -regexp {'tl_window_e' is of two state type} \
+    -comment "Window enum is used to select, not synthesized"
+
+waive -rules {TAG_OVERLAP} -location {kmac_app.sv} \
+    -regexp {Case tag expression '2'b1.* overlaps with previous tag} \
+    -comment "priority casez makes the condition check explicitly"
+
+waive -rules {INTEGER} -location {kmac_entropy.sv} \
+    -regexp {'i' of type int used as a non-constant value} \
+    -comment "int i is compared with the storage_idx"

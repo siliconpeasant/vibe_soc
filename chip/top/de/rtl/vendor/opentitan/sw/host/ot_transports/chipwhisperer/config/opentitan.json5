@@ -1,0 +1,152 @@
+{
+  "pins": [
+    {
+      "name": "RESET",
+      "level": true
+    },
+    {
+      "name": "SW_STRAP0",
+      "mode": "PushPull",
+      "level": false,
+      "pull_mode": "None",
+      "alias_of": "IOC0"
+    },
+    {
+      "name": "SW_STRAP1",
+      "mode": "PushPull",
+      "level": false,
+      "pull_mode": "None",
+      "alias_of": "IOC1"
+    },
+    {
+      "name": "SW_STRAP2",
+      "mode": "PushPull",
+      "level": false,
+      "pull_mode": "None",
+      "alias_of": "IOC2"
+    },
+    {
+      "name": "TAP_STRAP0",
+      "mode": "PushPull",
+      "level": false,
+      "pull_mode": "None",
+      "alias_of": "IOC8"
+    },
+    {
+      "name": "TAP_STRAP1",
+      "mode": "PushPull",
+      "level": false,
+      "pull_mode": "None",
+      "alias_of": "IOC5"
+    },
+    {
+      "name": "SYSRST_CTRL_EC_RST_L",
+      "alias_of": "IOR8"
+    },
+    {
+      "name": "SYSRST_CTRL_FLASH_WP_L",
+      "alias_of": "IOR9"
+    }
+  ],
+  "strappings": [
+    {
+      "name": "ROM_BOOTSTRAP",
+      "pins": [
+        {
+          "name": "SW_STRAP0",
+          "level": true
+        },
+        {
+          "name": "SW_STRAP1",
+          "level": true
+        },
+        {
+          "name": "SW_STRAP2",
+          "level": true
+        }
+      ]
+    },
+    {
+      "name": "RMA_BOOTSTRAP",
+      "pins": [
+        {
+          "name": "SW_STRAP0",
+          "level": false
+        },
+        {
+          "name": "SW_STRAP1",
+          "level": true
+        },
+        {
+          "name": "SW_STRAP2",
+          "level": true
+        }
+      ]
+    },
+    {
+      "name": "PINMUX_TAP_LC",
+      "pins": [
+        {
+          "name": "TAP_STRAP0",
+          "mode": "PushPull",
+          "level": true
+        },
+        {
+          "name": "TAP_STRAP1",
+          "mode": "PushPull",
+          "level": false
+        }
+      ]
+    },
+    {
+      "name": "PINMUX_TAP_RISCV",
+      "pins": [
+        {
+          "name": "TAP_STRAP0",
+          "mode": "PushPull",
+          "level": false
+        },
+        {
+          "name": "TAP_STRAP1",
+          "mode": "PushPull",
+          "level": true
+        }
+      ]
+    },
+    {
+      "name": "PINMUX_TAP_DFT",
+      "pins": [
+        {
+          "name": "TAP_STRAP0",
+          "mode": "PushPull",
+          "level": true
+        },
+        {
+          "name": "TAP_STRAP1",
+          "mode": "PushPull",
+          "level": true
+        }
+      ]
+    },
+    {
+      "name": "RESET",
+      "pins": [
+        {
+          "name": "RESET",
+          "level": false
+        }
+      ]
+    }
+  ],
+  "uarts": [
+    {
+      "name": "console",
+      "baudrate": 115200,
+      "parity": "None",
+      "stopbits": "Stop1"
+    }
+  ],
+  "provides": {
+    "chip": "opentitan"
+  }
+}

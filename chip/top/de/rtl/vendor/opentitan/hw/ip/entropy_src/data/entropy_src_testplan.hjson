@@ -1,0 +1,415 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "entropy_src"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/intr_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "entropy_src_sec_cm_testplan.hjson"]
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            Enable entropy_src, wait for interrupt, verify entropy.
+            '''
+      stage: V1
+      tests: ["entropy_src_smoke"]
+    }
+    {
+      name: firmware
+      desc: '''
+            Verify ability to access entropy register based on value of efuse input
+            Verify sw_regupd, me_regwen bits enables/disables write access to control registers
+            Verify control registers are read-only while DUT is enabled
+            Verify registers at End-Of-Test
+            '''
+      stage: V2
+      tests: ["entropy_src_smoke", "entropy_src_fw_ov", "entropy_src_rng"]
+    }
+    {
+      name: firmware_mode
+      desc: '''
+            Verify health_checks aren't active
+            Verify bypass active
+            Verify read FIFO
+            - Random FIFO depths
+            '''
+      stage: V2
+      tests: ["entropy_src_fw_ov"]
+    }
+    {
+      name: rng_mode
+      desc: '''
+            Verify rng entropy
+            - Random FIFO depths
+            - Random rates
+            - Verify single_bit_mode for all bit_selector values
+            Verify FIPS bits match predicted
+            '''
+      stage: V2
+      tests: ["entropy_src_rng"]
+    }
+    {
+      name: rng_max_rate
+      desc: '''
+            Verify RNG entropy at maximum production rate
+            '''
+      stage: V2
+      tests: ["entropy_src_rng_max_rate"]
+    }
+    {
+      name: health_checks
+      desc: '''
+            Verify AdaptProp, RepCnt, RepCntSym, Bucket, Markov health check results
+            match predicted.
+            - Generate passing and failing raw entropy streams
+            - Random window sizes
+            - Default and random hi/lo bypass/fips thresholds
+            - Enables/fail counts/clears
+            - Verify hi/lo bypass/fips watermarks
+            - Verify External health check behaves as predicted
+            - Verify outputs match internal reg values/entropy bus
+            - Pulse inputs and verify captured
+            - Verify health testing stops when no demand for entropy
+            '''
+      stage: V2
+      tests: ["entropy_src_rng"]
+    }
+    {
+      name: conditioning
+      desc: '''
+            Verify genbits seeds in bypass mode as predicted.
+            Verify genbits seeds after sha3 conditioning as predicted.
+            '''
+      stage: V2
+      tests: ["entropy_src_rng"]
+    }
+    {
+      name: interrupts
+      desc: '''
+            Verify es_entropy_valid interrupt asserts as predicted.
+            Verify es_observe_fifo_ready interrupt asserts as predicted.
+            Verify es_health_test_failed interrupt asserts as predicted.
+            '''
+      stage: V2
+      tests: ["entropy_src_intr", "entropy_src_rng"]
+    }
+    {
+      name: alerts
+      desc: '''
+            Verify that all recoverable alerts are asserted as expected.
+            Any alerts not encountered as part of the usual entropy_src_rng test will be generated
+            by the `entropy_src_functional_alerts` test.
+            '''
+      stage: V2
+      tests: ["entropy_src_functional_alerts", "entropy_src_rng"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            Combine the individual test points while injecting TL errors and
+            running CSR tests in parallel.
+            '''
+      stage: V2
+      tests: ["entropy_src_stress_all"]
+    }
+    {
+      name: functional_errors
+      desc: '''
+            Verify that all possible classes of fatal errors (FIFOs, Counters, state machine
+            exceptions, etc.) have been generated.  These errors typically violate assumptions
+            made by the scoreboard, and thus cannot be managed by other tests.
+            '''
+      stage: V2
+      tests: ["entropy_src_functional_errors"]
+    }
+    {
+      name: firmware_ov_read_contiguous_data
+      desc: '''
+            Verify that firmware can read 1024 unaltered, contiguous symbols from the noise source.
+            '''
+      stage: V2
+      tests: ["entropy_src_fw_ov_contiguous"]
+    }
+    {
+      name: external_health_tests
+      desc: '''
+            Verify the external health test (XHT) interface and functionality, including continuous
+            and windowed functionality and different high/low thresholds and watermarks.
+            '''
+      stage: V3
+      tests: ["entropy_src_rng_with_xht_rsps"], // TODO(#16276): Complete XHT verification
+    }
+  ]
+  covergroups: [
+    {
+      name: err_test_cg
+      desc: '''
+            Covers that the ERR_CODE_TEST register has been tested for all 9 valid test values:
+            - 0: SFIFO_ESRNG_ERR
+            - 1: SFIFO_OBSERVE_ERR
+            - 2: SFIFO_ESFINAL_ERR
+            - 20: ES_ACK_SM_ERR
+            - 21: ES_MAIN_SM_ERR
+            - 22: ES_CNTR_ERR
+            - 28: FIFO_WRITE_ERR
+            - 29: FIFO_READ_ERR
+            - 30: FIFO_STATE_ERR
+            Each test bit should then trigger the corresponding alerts and error status bits.
+            '''
+    }
+    {
+      name: mubi_err_cg
+      desc: '''
+            Covers that all 11 register fields with built in redundancy (All multi-bit encoded
+            except for ALERT_THRESHOLD) have been programmed with at least one one invalid mubi
+            value, and that the corresponding recoverable alert has been registered.  This
+            includes the 10 boolean register fields which are MultiBit encoded as well as the
+            ALERT_THRESHOLD register, which is a pair of numeric values which must be inverses
+            of each other.
+            '''
+    }
+    {
+       name: sm_err_cg
+       desc: '''
+             Covers that both the MAIN_SM and ACK_SM have been forced into an invalid state,
+             and this state error has been successfully detected, the appropriate alerts have
+             been signalled, and the error has been successfully reported in the error CSRs.
+             '''
+    }
+    {
+       name: fifo_err_cg
+       desc: '''
+             Covers that all three fifos (the esrng fifo, the observe fifo, and the esfinal fifo)
+             have all been forced into the three error states (write overflow, read underflow,
+             and invalid state), and the error has successfully generated an alert and that
+             the alert is successfully reported in the ERR_CODE register.
+             '''
+    }
+    {
+      name: cntr_err_cg
+      desc: '''
+            Covers that all counter-related fatal errors have been tested by forcing the
+            respective redundant counters to be mismatched from each other.
+            - which_cntr (0 to 5), 6 possible counter errors, window counter, repcnt ht counter,
+              repcnts ht counter, adaptive proportion ht counter, bucket ht counter and
+              markov ht counter
+            - which_cntr_replicate (0 to RNG_BUS_WIDTH-1), reptcnt, adaptp, markov health tests
+              have RNG_BUS_WIDTH copies of counters
+            - which_bin (0 to 2<sup>RNG_BUS_WIDTH</sup>-1), bucket health test has
+              2<sup>RNG_BUS_WIDTH</sup> copies of counters
+            '''
+    }
+    {
+      name: csrng_hw_cg
+      desc: '''
+            Covers that data output is observed at the CSRNG HW interface for
+            all possible modes of operation, including:
+            - CONF.FIPS_ENABLE (True and False)
+            - CONF.ENTROPY_DATA_REG_ENABLE (True and False)
+            - CONF.THRESHOLD_SCOPE (True and False)
+            - CONF.RNG_BIT_ENABLE (True and False)
+            - CONF.RNG_BIT_SEL (0 to 3)
+            - ENTROPY_CONTROL.ES_TYPE (True and False)
+            - FW_OV_MODE (True or False)
+            - FW_OV_ENTROPY_INSERT (True or False)
+            In addition to the above, the following settings are illegal when sampling on
+            this covergroup, and merit the creation of illegal_bins
+            - ENTROPY_CONTROL.ES_ROUTE = True
+
+            Since the scoreboard permits data to be dropped or rejected by the entropy source we
+            must explicitly confirm that the data is observed at the outputs for all possible
+            configurations.
+            '''
+    }
+    {
+      name: seed_output_csr_cg
+      desc: '''
+            Covers that data output is observed at the entropy_data CSR interfaces for
+            all possible modes of operation, including:
+            - CONF.FIPS_ENABLE (True and False)
+            - CONF.THRESHOLD_SCOPE (True and False)
+            - CONF.RNG_BIT_ENABLE (True and False)
+            - CONF.RNG_BIT_SEL (0 to 3)
+            - ENTROPY_CONTROL.ES_TYPE (True and False)
+            - FW_OV_MODE (True or False)
+            - FW_OV_ENTROPY_INSERT (True or False)
+            In addition to the above, the following settings are illegal when sampling on the
+            this covergroup, and merit the creation of illegal_bins
+            - ENTROPY_CONTROL.ES_ROUTE = False
+            - CONF.ENTROPY_DATA_REG_ENABLE = False
+
+            Since the scoreboard permits data to be dropped or rejected by the entropy source we
+            must explicitly confirm that the data is observed at the outputs for all possible
+            configurations.
+            '''
+    }
+    {
+      name: observe_fifo_event_cg
+      desc: '''
+            Covers that data output is observed at the fw_ov_rd_data CSE interface for
+            all possible modes of operation, including:
+            - CONF.FIPS_ENABLE (True and False)
+            - CONF.ENTROPY_DATA_REG_ENABLE (True and False)
+            - CONF.THRESHOLD_SCOPE (True and False)
+            - CONF.RNG_BIT_ENABLE (True and False)
+            - CONF.RNG_BIT_SEL (0 to 3)
+            - ENTROPY_CONTROL.ES_ROUTE (True and False), If True, data must be observed at the
+              ENTROPY_DATA CSR.  If False, data must be observed at the CSRNG port.
+            - ENTROPY_CONTROL.ES_TYPE (True and False)
+            - FW_OV_MODE (True or False)
+            - FW_OV_ENTROPY_INSERT (True or False)
+            Since the scoreboard permits data to be dropped by the entropy source we
+            must explicitly confirm that the data is observed at this output for all possible
+            configurations.
+            '''
+    }
+    {
+      name: sw_update_cg
+      desc: '''
+            Covers that the TB has attempted to update DUT configurations while the module is
+            enabled, to ensure that the sw_regupd CSR is working
+            '''
+    }
+    {
+      name: sw_disable_cg
+      desc: '''
+            Covers SW attempting to disable entropy_src in different states of the module.
+            '''
+    }
+    {
+      name: enable_delay_cg
+      desc: '''
+            Covers the enable and disable delay mechanism in different states of the module.  This
+            covergroup only gets sampled when the enable input of `entropy_src_enable_delay`
+            changes.
+            '''
+    }
+    {
+      name: win_ht_cg
+      desc: '''
+            Covers a range of window sizes for each windowed health test.  For each test we need:
+            - Test: ADAPTB, BUCKET, MARKOV.
+              No cross between tests. EXT HT, though windowed, is not used or covered at this time
+            - window_size: {384, 512, 1024, 2048, 4096, plus other non-powers of two}
+            - Result: HT Pass and Failure
+            - Hi or Low: Was the current sample a pass or a fail for the high threshold or the
+              low threshold?
+            Note: This covergroup covers a wide range of window sizes but does not cover a range
+            of threshold values. See win_ht_deep_threshold_cg for threshold coverpoints.
+            '''
+    }
+    {
+      name: win_ht_deep_threshold_cg
+      desc: '''
+            Covers a range of thresholds values for a focused set of window sizes.  For each test we
+            need:
+            - Test: ADAPTB, BUCKET, MARKOV, REPCNT, and REPTCNTS.
+              No cross between tests. EXT HT, though it is a windowed test, is not covered at this
+              time.
+            - Window Size: Covers only the most common window sizes of 384, 1024 and 2048
+            - Result: HT Pass and Failure.
+            - Hi or Low: Was the current sample a pass or a fail for the high threshold or the
+              low threshold?
+            - By-line: Was the test applied on a by-line basis or across all lines?
+            - Threshold Significance Buckets.  There is some subtlety in choosing the range of
+              thresholds bins as the choice of thresholds depends heavily choice of window size.
+              The output of each health test will be tightly clustered near some average
+              value, and the health test threshold serves to tag outliers from this average.
+                - For instance, when averaging over all lines, the output of the ADAPTP test should
+                  on average be close to WINSIZE/2, and the high and low thresholds will be placed
+                  on either side of this midpoint.  This means however that the thresholds used for
+                  a window size of 2048 should both be somewhere close to 1024.  Such thresholds
+                  would be meaningless for a window size of 384, as there is no way the test can
+                  ever output values near 1024 for such a small window.
+                - Rather than choosing fixed threshold bins we choose bins based on <it>threshold
+                  significance</it>, or how stringent the given threshold would be in detecting
+                  deviations from the average value.  Tighter thresholds will more quickly detect
+                  statistical defects in the incoming noise stream, but will also more frequently
+                  indicate false positives for health test defects.
+                - We use the following bins for threshold significance:
+                    - 0 to 1 sigma: Greater than 1 in 3 chance of false positive. With frequent
+                      failures, this range is very good for testing the alert subsystem.
+                    - 1 to 2 sigma: 2.5% chance of a false positive.
+                    - 2 to 4.5 sigma: False positives are more frequent than 1 in 2<sup>20</sup>
+                    - 4.5 to 7 sigma: Covers the NIST recommended range for keeping the rate of
+                      false positives within the range of 1 in 2<sup>20</sup> to 1 in 2<sup>40<sup>.
+                    - Above 7 sigma: If using idealized noise sources these thresholds would yield
+                      false positive rates less than 1 part in 2<sup>40</sup> making these
+                      thresholds too relaxed for the recommendations in NIST SP 80-900B.  However
+                      for imperfect noise sources with realistic statistical defects, which are to
+                      be expected and must be compensated for, thresholds in these ranges may be
+                      needed for practical operation, and so there should be at least one bin for
+                      these threshold significance values.
+            '''
+    }
+    {
+      name: cont_ht_cg
+      desc: '''
+            Covers a range of thresholds and configurations for the continuous health tests: REPCNT
+            (the Repetition Count Test), and REPCNTS (the Repetition Count Symbol Test).
+            The primary cover points are the test_type (REPCNT vs. REPCNTS), the pass or fail value
+            of the test, and the "score". The score is a generalization of the numerical value of
+            the test output, which accounts for the fact it is far more likely to see high values
+            from the REPCNT test than the REPCNTS test, and is computed by multiplying the numerical
+            values of the REPCNTS test by RNG_BUS_WIDTH.  Much like the windowed health tests which
+            generalize the test thresholds in terms of "sigma" values, the "score" places the REPCNT
+            and REPCNTS values on equal footing when generating cross bins. For an ideal noise
+            distribution on each RNG bus line, the probability of a given "score" should be the same
+            for the two tests, under the observation that a coincidental repetition of all bus lines
+            is as likely as RNG_BUS_WIDTH repetitions of a single line.
+
+            The `cp_score` coverpoint covers a range of values for the test output score (1-5, 6-10,
+            11-20, 21-40, and above 41).  For an idealized noise source the coincidental probability
+            of a given score, n, is roughly 2<sup>-n</sup>, and thus it is envisioned that typically
+            thresholds will be set to detect failures somewhere in the score range of 20-40, to fall
+            in line with the guidance in SP 800-90B that the false positive rate for these tests
+            should lie in the range of 2<sup>-40</sup> to 2<sup>-20</sup>.
+
+            In addition to the score, pass-fail status and the test type, this covergroup also has
+            coverpoints for other configurations such as the RNG bit select mode and the fips-mode
+            selection status (True or False), as well as a large number of crosspoints.
+            '''
+    }
+    {
+      name: alert_cnt_cg
+      desc: '''
+            Covers a range of values (1, 2, 3-6, 6-10, plus &gt; 10) for ALERT_THRESHOLD.
+            To be sampled when a HT alert fires.
+            '''
+    }
+    {
+      name: observe_fifo_threshold_cg
+      desc: '''
+            Covers a range of values (1-63) for OBSERVE_FIFO_THRESH. Coverage bins
+            include the lowest value (1), the highest value (63) and four bins in between.
+            Interrupts and data must be observed for all bins.  Thus this covergroup
+            should be sampled after an interrupt has fired and OBSERVE_FIFO_THRESH
+            words have been read from the FIFO.
+            Note: The value of 0 should never generate an interrupt, a constraint that
+            must be checked in the scoreboard.
+            '''
+    }
+    {
+      name: one_way_ht_threshold_reg_cg
+      desc: '''
+            Checks that all of the health test registers have been exercised and that the one-way
+            update feature (which prohibits thresholds being relaxed after reset) works for both
+            the FIPS and Bypass thresholds.
+            '''
+    }
+    {
+      name: recov_alert_cg
+      desc: '''
+            This covergroup has a single coverpoint that ensures that every active bit in the
+            "recov_alert_sts" register has been triggered. This coverpoint is thus complementary to
+            the mubi_err_cg, fifo_err_cg, and sm_err_cg covergroups though it also covers a number
+            of other recoverable errors, such as violations of the FW_OV usage model, or errors
+            internal to the SHA conditioning unit.
+            '''
+    }
+  ]
+}

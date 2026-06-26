@@ -1,0 +1,170 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+use std::time::Duration;
+
+use anyhow::{Context, Result, bail};
+use clap::Parser;
+
+use bindgen::sram_program::{SRAM_MAGIC_SP_CRC_SKIPPED, SRAM_MAGIC_SP_EXECUTION_DONE};
+use opentitanlib::app::{TransportWrapper, UartRx};
+use opentitanlib::execute_test;
+use opentitanlib::io::jtag::JtagTap;
+use opentitanlib::test_utils::init::InitializeTest;
+use opentitanlib::test_utils::load_sram_program::{
+    ExecutionError, ExecutionMode, ExecutionResult, SramProgramParams, execute_sram_program,
+};
+use opentitanlib::uart::console::UartConsole;
+
+// use ot_hal::top::earlgrey as top_earlgrey;
+
+#[derive(Debug, Parser)]
+struct Opts {
+    #[command(flatten)]
+    init: InitializeTest,
+
+    #[command(flatten)]
+    sram_program: SramProgramParams,
+}
+
+fn test_sram_load(
+    opts: &Opts,
+    transport: &TransportWrapper,
+    corrupt: bool,
+    skip_crc: bool,
+) -> Result<()> {
+    let uart = transport.uart("console")?;
+    //
+    // Connect to the RISC-V TAP
+    //
+    transport.pin_strapping("PINMUX_TAP_RISCV")?.apply()?;
+    transport.reset(UartRx::Clear)?;
+
+    log::info!("Connecting to RISC-V TAP");
+    let mut jtag = opts
+        .init
+        .jtag_params
+        .create(transport)?
+        .connect(JtagTap::RiscvTap)?;
+    log::info!("Halting core");
+    jtag.halt()?;
+
+    // Load program on the device.
+    let sram_prog_info = opts.sram_program.load(&mut *jtag)?;
+
+    // Corrupt program if asked to: mModify a random word in the code, not too close to the
+    // starting point so that the CRT can still verify the CRC.
+    if corrupt {
+        let mut sram_content = [0u8];
+        let tweak_addr = sram_prog_info.entry_point + 1000;
+        log::info!("Corrupt SRAM program at address {:x}", tweak_addr);
+        jtag.read_memory(tweak_addr, &mut sram_content)?;
+        sram_content[0] ^= 0xff;
+        jtag.write_memory(tweak_addr, &sram_content)?;
+    }
+
+    // Execute and check execution status.
+    let exec_res = execute_sram_program(
+        &mut *jtag,
+        &sram_prog_info,
+        ExecutionMode::JumpAndWait(Duration::from_secs(5)),
+        skip_crc,
+    )?;
+    match exec_res {
+        ExecutionResult::ExecutionDone(sp_val) => match sp_val {
+            SRAM_MAGIC_SP_CRC_SKIPPED => {
+                if skip_crc {
+                    log::info!("SRAM program finished successfully")
+                } else {
+                    bail!(
+                        "SRAM program finished successfully but did not expect a SKIPPED_CRC result"
+                    )
+                }
+            }
+            SRAM_MAGIC_SP_EXECUTION_DONE => {
+                if !corrupt && !skip_crc {
+                    log::info!("SRAM program finished successfully")
+                } else if corrupt {
+                    bail!("SRAM program finished successfully but expected a CRC failure")
+                } else if skip_crc {
+                    bail!(
+                        "SRAM program finished successfully but did not expect a SKIPPED_CRC result"
+                    )
+                } else {
+                    bail!(
+                        "SRAM program execution failed with unexpected result {:?}",
+                        exec_res
+                    )
+                }
+            }
+            _ => {
+                bail!(
+                    "SRAM program execution failed with unexpected result {:?}",
+                    exec_res
+                )
+            }
+        },
+        ExecutionResult::ExecutionError(err) => match err {
+            ExecutionError::CrcMismatch if corrupt => {
+                log::info!("SRAM program correctly reported a CRC mismatch")
+            }
+            _ => bail!("SRAM program execution failed with {:?}", err),
+        },
+        _ => {
+            bail!(
+                "SRAM program execution failed with unexpected result {:?}",
+                exec_res
+            )
+        }
+    }
+
+    jtag.halt()?;
+    jtag.disconnect()?;
+
+    // If the program was not corrupted, make sure that it printed the expected message.
+    if !corrupt {
+        const CONSOLE_TIMEOUT: Duration = Duration::from_secs(1);
+        let _ = UartConsole::wait_for(
+            &*uart,
+            r"Hello OpenTitan! We are executing from SRAM.",
+            CONSOLE_TIMEOUT,
+        )
+        .context("SRAM program did not print 'hello' in time")?;
+    }
+
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    let opts = Opts::parse();
+    opts.init.init_logging();
+    let transport = opts.init.init_target()?;
+
+    // First test is normal.
+    execute_test!(
+        test_sram_load,
+        &opts,
+        &transport,
+        /*corrupt=*/ false,
+        /*skip_crc=*/ false
+    );
+    // Second test we try to corrupt the data.
+    execute_test!(
+        test_sram_load,
+        &opts,
+        &transport,
+        /*corrupt=*/ true,
+        /*skip_crc=*/ false
+    );
+    // Third test we skip the CRC check.
+    execute_test!(
+        test_sram_load,
+        &opts,
+        &transport,
+        /*corrupt=*/ false,
+        /*skip_crc=*/ true
+    );
+
+    Ok(())
+}

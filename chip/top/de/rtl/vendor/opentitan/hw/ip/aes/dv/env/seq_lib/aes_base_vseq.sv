@@ -1,0 +1,1539 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+class aes_base_vseq extends cip_base_vseq #(
+  .CFG_T               (aes_env_cfg),
+  .RAL_T               (aes_reg_block),
+  .COV_T               (aes_env_cov),
+  .VIRTUAL_SEQUENCER_T (aes_virtual_sequencer)
+  );
+
+  `uvm_object_utils(aes_base_vseq)
+
+  aes_reg2hw_t       aes_reg;
+  aes_seq_item       aes_item;
+  aes_seq_item       aes_item_queue[$];
+  aes_message_item   aes_message;
+  aes_message_item   message_queue[$];
+
+  // various knobs to enable certain routines
+  bit                do_aes_init   = 1'b1;
+  bit                global_reset  = 1'b0;
+
+
+  // handshake with key manager
+  bit                key_used      = 0;
+  bit                key_rdy       = 0;
+  bit                new_key       = 0;
+
+  // A flag used by start_sideload_seq / stop_sideload_seq to track whether a sideload sequence is
+  // currently running. If true, there is currently a process running the sideload_sequences task.
+  local bit          m_sideload_seq_running;
+
+  // An event to control a sideload_sequences task if one is running. When the event is triggered,
+  // the task will tell the currently running sequence to stop, then will clear
+  // m_sideload_seq_running and exit.
+  local uvm_event    m_stop_sideload_seqs_event;
+
+  function new (string name="");
+    super.new(name);
+    m_stop_sideload_seqs_event = new();
+  endfunction
+
+  virtual task dut_init(string reset_kind = "HARD");
+    super.dut_init();
+
+    if (do_aes_init) aes_init();
+    aes_item = new();
+    aes_message_init();
+    `uvm_info(`gfn, $sformatf("\n TL delay: [%d:%d] \n zero delay %d",
+              cfg.m_tl_agent_cfg.d_ready_delay_min,cfg.m_tl_agent_cfg.d_ready_delay_max,
+              cfg.zero_delays  ), UVM_MEDIUM)
+  endtask
+
+
+  virtual task aes_reset(string kind = "HARD");
+    global_reset = 1;
+    wait(global_reset == 0); // make seq is ready for rest
+    apply_reset(kind);
+    #1ps; // workaround for race condition in dv_lib
+    wait(!cfg.clk_rst_vif.rst_n); // under reset will not work here..
+    wait(cfg.clk_rst_vif.rst_n);
+  endtask // aes_reset
+
+
+  // setup basic aes features
+  virtual task aes_init();
+    bit [31:0] aes_ctrl = '0;
+    bit [31:0] aes_ctrl_aux = '0;
+    bit [31:0] aes_trigger = '0;
+    // Lock and check locking of auxiliary control register (1) or not (0).
+    bit lock_ctrl_aux = $urandom_range(0, 1);
+    `uvm_info(`gfn, $sformatf("\n\t ----| CHECKING FOR IDLE"), UVM_HIGH)
+    csr_spinwait(.ptr(ral.status.idle) , .exp_data(1'b1));
+    // initialize control register
+    aes_ctrl[1:0]  = aes_pkg::AES_ENC;   // 2'b01
+    aes_ctrl[7:2]  = aes_pkg::AES_ECB;   // 6'b00_0001
+    aes_ctrl[10:8] = aes_pkg::AES_128;   // 3'b001
+    csr_wr(.ptr(ral.ctrl_shadowed), .value(aes_ctrl), .en_shadow_wr(1'b1), .blocking(1));
+    csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+    csr_rd(.ptr(ral.ctrl_shadowed), .value(aes_ctrl), .blocking(1));
+    // Write auxiliary control register and make sure the update went through, i.e., the register
+    // isn't locked already.
+    csr_wr(.ptr(ral.ctrl_aux_shadowed.key_touch_forces_reseed), .value(cfg.do_reseed),
+        .en_shadow_wr(1'b1), .blocking(1));
+    csr_rd(.ptr(ral.ctrl_aux_shadowed), .value(aes_ctrl_aux), .blocking(1));
+    `DV_CHECK_FATAL(aes_ctrl_aux[0] == cfg.do_reseed);
+    // Lock auxiliary control register and try overwriting it afterwards.
+    if (lock_ctrl_aux) begin
+      `uvm_info(`gfn, "Locking auxiliary control register", UVM_MEDIUM)
+      set_regwen(0);
+      `uvm_info(`gfn, "Try overwriting locked auxiliary control register", UVM_MEDIUM)
+      csr_wr(.ptr(ral.ctrl_aux_shadowed.key_touch_forces_reseed), .value(!cfg.do_reseed),
+          .en_shadow_wr(1'b1), .blocking(1));
+      // Read the current value back to ensure the contents of the register didn't change.
+      csr_rd(.ptr(ral.ctrl_aux_shadowed), .value(aes_ctrl_aux), .blocking(1));
+      `DV_CHECK_FATAL(aes_ctrl_aux[0] == cfg.do_reseed);
+      // Try unlocking the auxiliary control register and overwriting it afterwards. This is not
+      // possible either as the lock persists until the next reset.
+      set_regwen(1);
+      csr_wr(.ptr(ral.ctrl_aux_shadowed.key_touch_forces_reseed), .value(!cfg.do_reseed),
+          .en_shadow_wr(1'b1), .blocking(1));
+      csr_rd(.ptr(ral.ctrl_aux_shadowed), .value(aes_ctrl_aux), .blocking(1));
+      `DV_CHECK_FATAL(aes_ctrl_aux[0] == cfg.do_reseed);
+    end else begin
+      // Don't lock it. This is the default value after reset. The write is mostly for coverage.
+      set_regwen(1);
+    end
+  endtask // aes_init
+
+
+  virtual task trigger();
+      csr_wr(.ptr(ral.trigger), .value(32'h00000001));
+  endtask // trigger
+
+
+  virtual task clear_regs(clear_t clr_vector);
+    string txt="";
+    bit [TL_DW:0] reg_val = '0;
+    txt = {txt, $sformatf("\n data_out: \t %0b", clr_vector.dataout)};
+    txt = {txt, $sformatf("\n key_iv_data_in: \t %0b", clr_vector.key_iv_data_in)};
+    txt = {txt, $sformatf("\n vector: \t %0b", clr_vector)};
+    `uvm_info(`gfn, $sformatf("%s",txt), UVM_MEDIUM)
+
+    ral.trigger.set(0);
+    ral.trigger.key_iv_data_in_clear.set(clr_vector.key_iv_data_in);
+    ral.trigger.data_out_clear.set(clr_vector.dataout);
+    csr_update(ral.trigger);
+  endtask // clear_registers
+
+
+  virtual task prng_reseed();
+    bit [TL_DW:0] reg_val = '0;
+    reg_val[3] = 1'b1;
+    csr_wr(.ptr(ral.trigger), .value(reg_val));
+  endtask // prng_reseed
+
+
+  virtual task set_regwen(bit val);
+    ral.ctrl_aux_regwen.set(val);
+    csr_wr(.ptr(ral.ctrl_aux_regwen), .value(val), .blocking(1));
+  endtask // set_regwen
+
+
+  virtual task set_operation(bit [1:0] operation);
+    if (ral.ctrl_shadowed.operation.get_mirrored_value() != operation) begin
+      ral.ctrl_shadowed.operation.set(operation);
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+      void'(ral.ctrl_shadowed.operation.predict(operation));
+    end
+  endtask // set_operation
+
+
+  virtual task set_mode(bit [5:0] mode);
+    if (ral.ctrl_shadowed.mode.get_mirrored_value() != mode) begin
+      ral.ctrl_shadowed.mode.set(mode);
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+      void'(ral.ctrl_shadowed.mode.predict(mode));
+    end
+  endtask
+
+
+  virtual task set_key_len(bit [2:0] key_len);
+    if (ral.ctrl_shadowed.key_len.get_mirrored_value() != key_len) begin
+      ral.ctrl_shadowed.key_len.set(key_len);
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+      void'(ral.ctrl_shadowed.key_len.predict(key_len));
+    end
+  endtask // set_key_len
+
+
+  virtual task set_sideload(bit sideload);
+    if (ral.ctrl_shadowed.sideload.get_mirrored_value() != sideload) begin
+      ral.ctrl_shadowed.sideload.set(sideload);
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+      void'(ral.ctrl_shadowed.sideload.predict(sideload));
+    end
+  endtask
+
+
+  virtual task set_prng_reseed_rate(prs_rate_e reseed_rate);
+    if (ral.ctrl_shadowed.prng_reseed_rate.get_mirrored_value() != reseed_rate) begin
+      ral.ctrl_shadowed.prng_reseed_rate.set(reseed_rate);
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+      void'(ral.ctrl_shadowed.prng_reseed_rate.predict(reseed_rate));
+    end
+  endtask
+
+
+  virtual task set_manual_operation(bit manual_operation);
+    if (ral.ctrl_shadowed.manual_operation.get_mirrored_value() != manual_operation) begin
+      ral.ctrl_shadowed.manual_operation.set(manual_operation);
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+      void'(ral.ctrl_shadowed.manual_operation.predict(manual_operation));
+    end
+  endtask
+
+
+  virtual task write_key(bit [7:0][31:0] key [2], bit do_b2b);
+    `uvm_info(`gfn, $sformatf("\n\t --- back to back transactions : %b", do_b2b), UVM_MEDIUM)
+    // Share 0/1 (the masked key share = key ^ mask)
+    foreach (key[0][i]) csr_wr(.ptr(ral.key_share0[i]), .value(key[0][i]), .blocking(~do_b2b));
+    foreach (key[1][i]) csr_wr(.ptr(ral.key_share1[i]), .value(key[1][i]), .blocking(~do_b2b));
+  endtask // write_key
+
+
+  virtual task write_iv(bit  [3:0][31:0] iv, bit do_b2b);
+    foreach (iv[i]) csr_wr(.ptr(ral.iv[i]), .value(iv[i]), .blocking(~do_b2b));
+  endtask // write_iv
+
+
+  virtual task read_iv(ref bit [3:0] [31:0] iv, bit do_b2b);
+    int read_order[4] = {0,1,2,3};
+    // randomize read order
+    read_order.shuffle();
+
+    foreach (read_order[i]) begin
+      int idx = read_order[i];
+      csr_rd(.ptr(ral.iv[idx]), .value(iv[idx]), .blocking(~do_b2b));
+      `uvm_info(`gfn, $sformatf("\n\t ----| IV_%0d: %h ",idx,  iv[idx]), UVM_HIGH)
+    end
+  endtask
+
+  virtual task set_gcm_phase(gcm_phase_e phase, int num_bytes, bit wait_idle, bit config_err_en);
+    ctrl_gcm_reg_t ctrl_gcm;
+    gcm_phase_e phase_prev, phase_wr;
+    int num_bytes_wr;
+
+    if (wait_idle) begin
+      csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+      if (cfg.under_reset) return;
+    end
+
+    // In case configuration error injection is enabled, we inject an error with a probability of
+    // 33% as we want to hit the GCM_AAD, GCM_TEXT and GCM_TAG phases. Note that there are
+    // actually two kinds of errors possible:
+    // - Requesting illegal phase changes such as switching from GCM_TEXT back to GCM_AAD. The DUT
+    //   needs to remain in the current phase in this case. This is what this task can test.
+    //   However, there are some exceptions:
+    //   1) testing that the DUT cannot move out of GCM_INIT without completing the initialization
+    //      first,
+    //   2) testing that the DUT does not enter GCM_SAVE after GCM_INIT (as this will clear the
+    //      initialization status), and
+    //   3) testing that the DUT does not enter the GCM_SAVE phase without having processed at
+    //      least one block first.
+    //   These special cases are verified using a directed test.
+    // - Configuring invalid phase values such as the all-zero value or values with multiple bits
+    //   set. The DUT switches back to GCM_INIT in this case (which also includes clearing the
+    //   initialization status). This is however hard to handle which is why it is tested using a
+    //   directed test.
+    phase_prev = gcm_phase_e'(`gmv(ral.ctrl_gcm_shadowed.phase));
+    if (config_err_en && ($urandom_range(0, 2) == 0)) begin
+      case (phase_prev)
+        GCM_AAD: begin
+          phase_wr = GCM_RESTORE;
+        end
+        GCM_TEXT: begin
+          if (!std::randomize(phase_wr)
+              with { phase_wr inside {GCM_AAD,
+                                      GCM_RESTORE};}) begin
+            `uvm_fatal(`gfn, $sformatf("Randomization failed"))
+          end
+        end
+        GCM_SAVE: begin
+          if (!std::randomize(phase_wr)
+              with { phase_wr inside {GCM_RESTORE,
+                                      GCM_AAD,
+                                      GCM_TEXT,
+                                      GCM_TAG};}) begin
+            `uvm_fatal(`gfn, $sformatf("Randomization failed"))
+          end
+        end
+        GCM_TAG: begin
+          if (!std::randomize(phase_wr)
+              with { phase_wr inside {GCM_RESTORE,
+                                      GCM_AAD,
+                                      GCM_TEXT,
+                                      GCM_SAVE};}) begin
+            `uvm_fatal(`gfn, $sformatf("Randomization failed"))
+          end
+        end
+        default: begin
+          phase_wr = phase;
+        end
+      endcase
+    end else begin
+      phase_wr = phase;
+    end
+    // Invalid values such as values in the range of [17, 31] and 0 for the number of valid bytes
+    // are resolved to 16 in hardware. We inject such values with a 25% chance when writing 16.
+    if (num_bytes == 16) begin
+      num_bytes_wr = ($urandom_range(0, 3) != 0) ? num_bytes              :
+                     ($urandom_range(0, 1) == 0) ? $urandom_range(17, 31) : 0;
+    end else begin
+      num_bytes_wr = num_bytes;
+    end
+    // Update the desired values in the abstraction class.
+    ral.ctrl_gcm_shadowed.phase.set(phase_wr);
+    ral.ctrl_gcm_shadowed.num_valid_bytes.set(num_bytes_wr);
+    // Update the DUT if the desired and mirrored values mismatch. The DUT resolves potentially
+    // invalid values internally.
+    `uvm_info(`gfn,
+        $sformatf("Current GCM phase %s, writing %s, actually requested %s",
+        phase_prev.name(), phase_wr.name(), phase.name()), UVM_MEDIUM)
+    `uvm_info(`gfn, $sformatf("Writing num_bytes_valid %0d", num_bytes_wr), UVM_MEDIUM)
+    csr_update(.csr(ral.ctrl_gcm_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+    if (cfg.under_reset) return;
+
+    if (phase != phase_wr) begin
+      // Reflect the resolution of invalid values in the abstraction class.
+      ral.ctrl_gcm_shadowed.phase.set(phase_prev);
+      ral.ctrl_gcm_shadowed.num_valid_bytes.set(num_bytes);
+      // Update the mirrored values.
+      void'(ral.ctrl_gcm_shadowed.phase.predict(phase_prev));
+      void'(ral.ctrl_gcm_shadowed.num_valid_bytes.predict(num_bytes));
+      // Perform a readback to check that the DUT resolved potentially illegal phase value changes
+      // correctly.
+      csr_rd(.ptr(ral.ctrl_gcm_shadowed), .value(ctrl_gcm), .blocking(1));
+      if (cfg.under_reset) return;
+      if (ctrl_gcm.phase != phase_prev) begin
+        `uvm_fatal(`gfn, $sformatf("Expected GCM phase %s, got %s",
+            phase_prev.name(), ctrl_gcm.phase.name()))
+      end
+      // Repeat the update but now with the correct values.
+      ral.ctrl_gcm_shadowed.phase.set(phase);
+      ral.ctrl_gcm_shadowed.num_valid_bytes.set(num_bytes);
+      ctrl_gcm.phase = phase;
+      ctrl_gcm.num_valid_bytes = num_bytes;
+      `uvm_info(`gfn,
+          $sformatf("Current GCM phase %s, writing %s",
+          phase_prev.name(), phase.name()), UVM_MEDIUM)
+      `uvm_info(`gfn, $sformatf("Writing num_bytes_valid %0d", num_bytes), UVM_MEDIUM)
+      csr_wr(.ptr(ral.ctrl_gcm_shadowed), .value(ctrl_gcm), .en_shadow_wr(1'b1), .blocking(1));
+    end else if (num_bytes != num_bytes_wr) begin
+      // Reflect the resolution of invalid values in the abstraction class and update the mirrored
+      // values.
+      ral.ctrl_gcm_shadowed.num_valid_bytes.set(num_bytes);
+      void'(ral.ctrl_gcm_shadowed.phase.predict(phase));
+      void'(ral.ctrl_gcm_shadowed.num_valid_bytes.predict(num_bytes));
+    end else begin
+      // Just update the mirrored values.
+      void'(ral.ctrl_gcm_shadowed.phase.predict(phase));
+      void'(ral.ctrl_gcm_shadowed.num_valid_bytes.predict(num_bytes));
+    end
+  endtask
+
+  virtual task add_data(ref bit [3:0] [31:0] data, bit do_b2b);
+    int write_order[4] = {0,1,2,3};
+
+    `uvm_info(`gfn, $sformatf("\n\t ----| ADDING DATA TO DUT %h ", data),  UVM_MEDIUM)
+
+    write_order.shuffle();
+    foreach (write_order[i]) begin
+      int idx = write_order[i];
+
+      `uvm_info(`gfn, $sformatf("\n\t ----| DATA_IN_%0d: %h ",idx,  data[idx]), UVM_HIGH)
+      csr_wr(.ptr(ral.data_in[idx]), .value(data[idx][31:0]), .blocking(~do_b2b));
+    end
+  endtask
+
+
+  virtual task read_data(ref bit [3:0] [31:0] cypher_txt, bit do_b2b);
+    int read_order[4] = {0,1,2,3};
+    // randomize read order
+    read_order.shuffle();
+
+    foreach (read_order[i]) begin
+      int idx = read_order[i];
+      csr_rd(.ptr(ral.data_out[idx]), .value(cypher_txt[idx]), .blocking(~do_b2b));
+      `uvm_info(`gfn, $sformatf("\n\t ----| DATA_OUT_%0d: %h ",idx,  cypher_txt[idx]), UVM_HIGH)
+    end
+  endtask // read_data
+
+
+  ///////////////////////////////////////
+  // ADVANCED TASKS                    //
+  ///////////////////////////////////////
+
+
+  virtual task setup_dut(aes_seq_item item);
+    // Write the shadwoed CTRL register.
+    status_t status;
+    // Setup fields one by one (0) or all fields together (1).
+    bit setup_mode = 0;
+    // Trigger a control update error (1) or not (0). Only applicable if setup_mode = 1.
+    bit control_update_error = 0;
+    // Index of the field which shall trigger the control update error.
+    int idx_error_field = 0;
+    `DV_CHECK_STD_RANDOMIZE_FATAL(setup_mode)
+    if ($urandom_range(1, 100) > 95) control_update_error = 1;
+    idx_error_field = $urandom_range(0, 5);
+    csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+    // Any successful update to the shadowed control register marks the start of a new message. If
+    // sideload is enabled and a valid sideload key is available, it may be latched upon the second
+    // write and - depending on KEY_TOUCH_FORCES_RESEED - trigger a reseed operation which prevents
+    // further updates to the control register until AES becomes idle again. For simplicity, we
+    // just disable sideload here and then update the sideload bit last.
+    ral.ctrl_shadowed.sideload.set(0);
+    if (!setup_mode) begin
+      set_operation(item.operation);
+      set_mode(item.aes_mode);
+      set_key_len(item.key_len);
+      set_manual_operation(item.manual_op);
+      set_prng_reseed_rate(prs_rate_e'(item.reseed_rate));
+      set_sideload(item.sideload_en);
+    end else begin
+      // Assemble the intended value.
+      ral.ctrl_shadowed.operation.set(item.operation);
+      ral.ctrl_shadowed.mode.set(item.mode);
+      ral.ctrl_shadowed.key_len.set(item.key_len);
+      ral.ctrl_shadowed.sideload.set(item.sideload_en);
+      ral.ctrl_shadowed.manual_operation.set(item.manual_op);
+      ral.ctrl_shadowed.prng_reseed_rate.set(item.reseed_rate);
+      // Trigger a control update error.
+      if (control_update_error) begin
+        `uvm_info(`gfn, $sformatf("Triggering control update error in field %0d", idx_error_field),
+            UVM_MEDIUM)
+        // Perform the first write using the correct data.
+        csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b0), .blocking(1));
+        // Make sure at least one field is flipped.
+        begin
+          unique case (idx_error_field)
+            0: ral.ctrl_shadowed.operation.set(item.operation == AES_DEC ? AES_ENC : AES_DEC);
+            1: ral.ctrl_shadowed.mode.set(item.mode == AES_ECB ? AES_NONE : AES_ECB);
+            2: ral.ctrl_shadowed.key_len.set(item.key_len == AES_128 ? AES_256 : AES_128);
+            3: ral.ctrl_shadowed.sideload.set(item.sideload_en ? 1'b0 : 1'b1);
+            4: ral.ctrl_shadowed.manual_operation.set(item.manual_op ? 1'b0 : 1'b1);
+            5: ral.ctrl_shadowed.prng_reseed_rate.set(item.reseed_rate == PER_64 ? PER_8K : PER_64);
+            default:;
+          endcase
+        end
+        // Perform the second write.
+        csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b0), .blocking(1));
+        // Check that we get the recoverable alert. It's possible that DV inserted a fatal error
+        // condition before the second write could go through. The recovery from the fatal alert
+        // is handled separately.
+        csr_rd(.ptr(ral.status), .value(status), .blocking(1));
+        `DV_CHECK_FATAL(status.alert_recov_ctrl_update_err == 1'b1 ||
+                        status.alert_fatal_fault == 1'b1);
+        // Re-assemble the intended value.
+        ral.ctrl_shadowed.operation.set(item.operation);
+        ral.ctrl_shadowed.mode.set(item.mode);
+        ral.ctrl_shadowed.key_len.set(item.key_len);
+        ral.ctrl_shadowed.sideload.set(item.sideload_en);
+        ral.ctrl_shadowed.manual_operation.set(item.manual_op);
+        ral.ctrl_shadowed.prng_reseed_rate.set(item.reseed_rate);
+      end
+      // Perform the register update without control update error. This will resolve potential
+      // previous update errors.
+      csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(1));
+      // Make sure the update went through and there wasn't an update error. It's possible that DV
+      // inserted a fatal error condition before the second write could go through. In this case,
+      // the recoverable alert condition may still be visible together with the fatal alert. The
+      // fatal alert is handled separately.
+      csr_rd(.ptr(ral.status), .value(status), .blocking(1));
+      `DV_CHECK_FATAL(status.alert_recov_ctrl_update_err == 1'b0 ||
+                      status.alert_fatal_fault == 1'b1);
+    end
+  endtask
+
+  function void generate_aes_item_queue(aes_message_item msg_item);
+    // init aes item
+    aes_item_init(msg_item);
+    // generate DUT cfg
+    generate_ctrl_item();
+    if (msg_item.aes_mode == AES_GCM) begin
+      // Generate AAD message items if in AES-GCM mode.
+      generate_data_stream(msg_item, 1, 0);
+    end
+    generate_data_stream(msg_item, 0, 0);
+    if (msg_item.aes_mode == AES_GCM) begin
+      // Generate TAG message item if in AES-GCM mode.
+      generate_data_stream(msg_item, 0, 1);
+    end
+    aes_print_item_queue(aes_item_queue);
+  endfunction
+
+  // Generate the data for a single message based
+  // on the configuration in the message Item
+  virtual function void generate_data_stream(aes_message_item msg_item, bit aad, bit tag);
+    aes_seq_item item_clone;
+    bit [3:0][31:0] len_aad_data_conc;
+    bit [3:0][31:0] len_aad_data;
+    aes_item_type_e  item_type = AES_DATA;
+    int msg_length = msg_item.message_length;
+    bit fixed_data_en = msg_item.fixed_data_en;
+    aes_item.item_type = AES_DATA;
+    if (aad) begin
+      item_type = AES_GCM_AAD;
+      aes_item.item_type = AES_GCM_AAD;
+      msg_length = msg_item.aad_length;
+      fixed_data_en = msg_item.fixed_aad_en;
+    end else if (tag) begin
+      item_type = AES_GCM_TAG;
+      aes_item.item_type = AES_GCM_TAG;
+      // len(aad) || len(data)
+      len_aad_data_conc = ((msg_item.aad_length * 8 << 64) | msg_item.message_length * 8);
+      len_aad_data = {<<8{len_aad_data_conc}};
+      msg_length = 16;
+    end
+
+    // generate an item for each 128b message block
+    `uvm_info(`gfn, $sformatf("\n\t ----| FIXED DATA ENABLED? : %0b", msg_item.fixed_data_en),
+              UVM_MEDIUM)
+    for (int n = 0; n < msg_length - 15; n += 16) begin
+      aes_item.data_len = 0;
+      if (fixed_data_en) begin
+        `DV_CHECK_RANDOMIZE_WITH_FATAL(aes_item, data_in == (aad ? msg_item.fixed_aad :
+                                                             msg_item.fixed_data);)
+      end else begin
+        `DV_CHECK_RANDOMIZE_FATAL(aes_item)
+      end
+      if (tag) begin
+        // set // len(aad) || len(data).
+        aes_item.data_in = len_aad_data;
+      end
+
+      `uvm_info(`gfn, $sformatf("\n ----| DATA AES ITEM %s", aes_item.convert2string()), UVM_HIGH)
+      `downcast(item_clone, aes_item.clone());
+      aes_item_queue.push_front(item_clone);
+    end
+
+    // check if message length is not divisible by 16bytes
+    if (msg_length[3:0] != 4'd0) begin
+      `uvm_info(`gfn, $sformatf("\n ----| generating runt "), UVM_MEDIUM)
+      aes_item.data_len = msg_length[3:0];
+      if (fixed_data_en) begin
+        `DV_CHECK_RANDOMIZE_WITH_FATAL(aes_item, data_in == fixed_data;)
+      end else begin
+        `DV_CHECK_RANDOMIZE_FATAL(aes_item)
+      end
+      aes_item.item_type = item_type;
+      `downcast(item_clone, aes_item.clone());
+      aes_item_queue.push_front(item_clone);
+    end
+  endfunction // generate_data_stream
+
+
+  virtual task write_data_key_iv(
+    aes_seq_item item,         // sequence item with configuration
+    aes_seq_item data_item,        // sequence item with data to process
+    bit          new_msg,          // is this a new msg -> do dut config
+    bit          manual_operation, // use manual operation
+    bit          sideload_en,      // we are currently using sideload key
+    bit          read_output,      // read output or leave untouched
+    ref  bit     rst_set           // reset was forced - restart message
+    );
+
+    status_t status;
+    bit      return_on_idle   = 1;
+    bit [3:0] [7:0] data      = data_item.data_in;
+    string   txt              ="";
+    bit      is_blocking      = ~item.do_b2b;
+    int      wait_on_reseed   = 16;
+    string interleave_queue[$] = '{ "key_share0_0", "key_share0_1", "key_share0_2", "key_share0_3",
+                                   "key_share0_4", "key_share0_5", "key_share0_6", "key_share0_7",
+                                   "key_share1_0", "key_share1_1", "key_share1_2", "key_share1_3",
+                                   "key_share1_4", "key_share1_5", "key_share1_6", "key_share1_7",
+                                   "data_in_0", "data_in_1", "data_in_2", "data_in_3"};
+
+    // if non ECB mode add IV to queue
+    if (item.mode != AES_ECB) begin
+      interleave_queue = {"iv_0", "iv_1", "iv_2", "iv_3", interleave_queue};
+    end
+
+
+    if (item.mode == AES_GCM) begin
+      // if GCM mode, only write key and IV as we need to trigger the IP before
+      // sending the first block.
+      interleave_queue = '{ "key_share0_0", "key_share0_1", "key_share0_2", "key_share0_3",
+                            "key_share0_4", "key_share0_5", "key_share0_6", "key_share0_7",
+                            "key_share1_0", "key_share1_1", "key_share1_2", "key_share1_3",
+                            "key_share1_4", "key_share1_5", "key_share1_6", "key_share1_7",
+                            "iv_0", "iv_1", "iv_2", "iv_3"};
+      // if GCM mode, put AES into GCM_INIT before configuring the IP.
+      set_gcm_phase(GCM_INIT, 16, 0, 0);
+    end
+
+    if (|item.clear_reg) begin
+      interleave_queue = { interleave_queue, "clear_reg"};
+      `uvm_info(`gfn, $sformatf("\n\t ----| Clear reg enabled adding register clear to Queue"),
+                 UVM_MEDIUM)
+    end
+
+
+    if (cfg.random_data_key_iv_order) begin
+      int q_size = interleave_queue.size();
+      interleave_queue.shuffle();
+    end
+
+    txt = {txt, $sformatf("\n\t IS blocking %b", is_blocking) };
+
+    for (int i = 0;  i < interleave_queue.size(); i++) begin
+      string csr_name = interleave_queue[i];
+      txt = {txt, $sformatf("\n\t ----| \t %s",csr_name )};
+
+      case (1)
+        (!uvm_re_match("key_share0_*", csr_name)): begin
+          int idx = get_multireg_idx(csr_name);
+          csr_wr(.ptr(ral.key_share0[idx]), .value(item.key[0][idx]), .blocking(is_blocking));
+          wait_on_reseed -= 1;
+        end
+        (!uvm_re_match("key_share1_*", csr_name)): begin
+          int idx = get_multireg_idx(csr_name);
+          csr_wr(.ptr(ral.key_share1[idx]), .value(item.key[1][idx]), .blocking(is_blocking));
+          wait_on_reseed -= 1;
+        end
+        (!uvm_re_match("iv_*", csr_name)): begin
+          int idx = get_multireg_idx(csr_name);
+          csr_wr(.ptr(ral.iv[idx]), .value(item.iv[idx]), .blocking(is_blocking));
+        end
+        (!uvm_re_match("data_in_*", csr_name)): begin
+          int idx = get_multireg_idx(csr_name);
+          csr_wr(.ptr(ral.data_in[idx]), .value(data[idx]), .blocking(is_blocking));
+        end
+        (csr_name == "clear_reg"): begin
+          clear_regs(item.clear_reg);
+          csr_spinwait(.ptr(ral.status.idle) , .exp_data(1'b1));
+          // manual mode requires all to be written again
+          if (manual_operation) begin
+            //remove clear from queue
+            interleave_queue.delete(i);
+            i = -1;
+            wait_on_reseed = 16;
+          end
+        end
+      endcase // case interleave_queue[i]
+
+      if (wait_on_reseed == 0) begin
+        // inject write to reg if enabled 25% of the time
+        if (cfg.error_types.mal_inject && $urandom(3)==0 && !manual_operation) begin
+          int wr_reg = $urandom_range(3,1);
+          case (wr_reg)
+            1: csr_wr(.ptr(ral.key_share0[$urandom(7)]), .value($urandom()),
+                      .blocking(is_blocking));
+            2: csr_wr(.ptr(ral.iv[$urandom(3)]), .value($urandom()), .blocking(is_blocking));
+            3: csr_wr(.ptr(ral.data_in[$urandom(3)]), .value($urandom()), .blocking(is_blocking));
+            default: `uvm_fatal(`gfn, $sformatf("UNREACHABLE BUT NEEDED DUE TO SYNTAX CHECK"))
+          endcase
+        end
+        status_fsm(item, data_item, new_msg,
+                   manual_operation, sideload_en, return_on_idle, read_output, status, rst_set);
+        wait_on_reseed = 16;
+      end
+      if (rst_set) break;
+    end
+
+    `uvm_info(`gfn,
+              $sformatf("\n\t  Configuring the DUT in the following order:  %s, \n\t data 0x%0h",
+                        txt, data), UVM_MEDIUM)
+  endtask // write_data_key_iv
+
+  // Repeatedly run the sideload sequence, which generates new keys at random times.
+  //
+  // This task runs until there is a reset or stop_sideload_seq() is called. The sequences that pass
+  // the new keys are run with priority 100: to pass a different key, send a sequence with a higher
+  // priority.
+  task start_sideload_seq();
+    typedef key_sideload_set_seq#(keymgr_pkg::hw_key_req_t) sideload_seq_t;
+
+    bit end_loop = 0;
+
+    if (m_sideload_seq_running) begin
+      `uvm_fatal(get_name(), "Cannot start multiple sideload sequences.")
+    end
+    m_sideload_seq_running = 1;
+
+    while (!cfg.under_reset && !end_loop) begin
+      sideload_seq_t sideload_seq = sideload_seq_t::type_id::create("sideload_seq");
+
+      if (!sideload_seq.randomize()) begin
+        `uvm_fatal(get_name(), "Failed to randomize sideload_seq.")
+      end
+
+      fork : isolation_fork begin
+        fork
+          sideload_seq.start(p_sequencer.key_sideload_sequencer_h, this, 100);
+          begin
+            m_stop_sideload_seqs_event.wait_ptrigger();
+            end_loop = 1;
+            sideload_seq.request_stop();
+            wait(0);
+          end
+        join_any
+        disable fork;
+      end join
+    end
+
+    m_sideload_seq_running = 0;
+  endtask
+
+  // Stop a sideload sequence if there is one running. Returns when the sequence has finished.
+  task stop_sideload_seq();
+    m_stop_sideload_seqs_event.trigger();
+    wait (!m_sideload_seq_running);
+  endtask
+
+  // Repeatedly send a sideload key sequence, setting key_rdy each time, until key_used is set. The
+  // first sequence is randomised. When new_key is set, a later sequence will be randomised before
+  // it is sent, then new_key will be cleared.
+  //
+  // The sequences used send their items with a higher priority than the ones generated by
+  // start_sideload_seq.
+  //
+  // Exit immediately on reset.
+  task req_sideload_key();
+    typedef key_sideload_set_seq#(keymgr_pkg::hw_key_req_t) sideload_seq_t;
+
+    sideload_seq_t req_key_seq = sideload_seq_t::type_id::create("req_key_seq");
+
+    if (cfg.under_reset) return;
+
+    new_key = 1;
+    do begin
+      if (new_key) begin
+        if (!std::randomize(req_key_seq) with { req_key_seq.sideload_key.valid == 1; }) begin
+          `uvm_fatal(get_name(), "Failed to randomize req_key_seq.")
+        end
+        new_key = 0;
+      end
+
+      req_key_seq.start(p_sequencer.key_sideload_sequencer_h, this, 400);
+      if (cfg.under_reset) return;
+
+      key_rdy = 1;
+    end while (!key_used);
+
+    key_used = 0;
+  endtask // req_sideload_key
+
+
+  // the index of multi-reg is at the last char of the name
+  virtual function int get_multireg_idx(string name);
+    string s = string'(name.getc(name.len - 1));
+    return s.atoi();
+  endfunction
+
+  virtual task send_msg (
+     bit manual_operation,                   // use manual operation
+     bit sideload_en,                        // use sideload key
+     bit unbalanced,                         // randomize if we read or write
+     int read_prob,                          // chance of reading an available output
+     int write_prob,                         // chance of writing input data to a ready DUT
+     ref bit rst_set                         // reset was forced - restart message
+     );
+
+    status_t     status;                     // AES status
+    aes_seq_item cfg_item   = new();         // the configuration for this message
+    aes_seq_item data_item  = new();         // the next data to transmit
+    aes_seq_item read_item;                  // the read item to store output in
+    aes_seq_item clone_item;
+    bit  new_msg            = 1;             // set when starting a new msg
+    aes_seq_item read_queue[$];              // queue to hold items waiting for output
+
+    bit read;
+    bit write;
+    bit return_on_idle = 1;
+    bit first_aad_block = 1;
+    bit first_data_block = 1;
+    rst_set = 0;
+    cfg_item = aes_item_queue.pop_back();
+
+    // Make sure the DUT is idle before setting it up. Writes to the main control register are only
+    // accepted when idle.
+    status_fsm(cfg_item, data_item, new_msg, manual_operation, sideload_en, 1, 0, status, rst_set);
+    // Configure the main control register.
+    setup_dut(cfg_item);
+    // For some reason DV just waits for the DUT to be idle but not necessarily for it to accept
+    // new input data before providing the first block. But at the beginning of a message, the DUT
+    // is always ready to accept new input data anyway. Waiting for the DUT to be idle is required
+    // to provide IV and initial key.
+    return_on_idle = 1;
+    if (unbalanced == 0 || manual_operation) begin
+       data_item = new();
+      while ((aes_item_queue.size() > 0) && !rst_set) begin
+        status_fsm(cfg_item, data_item, new_msg, manual_operation,
+                   sideload_en, return_on_idle, 0, status, rst_set);
+        // From now on, DV always waits for the DUT to be idle and to accept new input data.
+        return_on_idle = 0;
+        if (status.input_ready && status.idle) begin
+          // The DUT is ready to accept new input data, as well as updates to IV and initial key
+          // registers (only allowed when idle). The first config_and_transmit() call configures
+          // key and IV.
+          bit read_output = 1;
+          data_item = aes_item_queue.pop_back();
+          if (data_item.mode == AES_GCM) begin
+            // In AES-GCM mode, we only want to read when we are either processing
+            // the AES_DATA or the AES_TAG.
+            // When processing AES_AAD, no output is generated that we want to
+            // read, so skip it. Also the the first message AES_CFG (i.e., new_msg
+            // == true), does not contain any data input as we first need to configure
+            // the GCM, so do not read.
+            read_output = data_item.item_type == AES_GCM_AAD ? 0 : ~new_msg;
+          end
+          config_and_transmit(cfg_item, data_item, new_msg, first_data_block,
+                              first_aad_block, manual_operation, sideload_en,
+                              read_output, rst_set);
+          if (data_item.mode == AES_GCM && new_msg == 1) begin
+            // In comparison to other modes, in AES-GCM, the config_and_transmit()
+            // function only configures key and IV as we need to first put the
+            // AES into the AES_GCM_AAD or AES_TEXT phase before writing to the data_in
+            // registers.
+            aes_item_queue.push_back(data_item);
+          end
+
+          if (data_item.item_type == AES_GCM_AAD && new_msg == 0) begin
+            first_aad_block = 0;
+          end
+
+          if (data_item.item_type == AES_DATA && new_msg == 0) begin
+            first_data_block = 0;
+          end
+
+          new_msg = 0;
+
+        end else if (cfg_item.mode == AES_NONE) begin
+          // The DUT won't produce any output when this mode is configured. Just write the new
+          // input data.
+          data_item = aes_item_queue.pop_back();
+          config_and_transmit(cfg_item, data_item, new_msg, 0, 0,
+                              manual_operation, sideload_en, 0, rst_set);
+        end
+      end
+
+    end else begin
+      while (((aes_item_queue.size() > 0) || (read_queue.size() > 0)) && !rst_set) begin
+        bit wait_for_idle = 0;
+        if (aes_item_queue.size() > 0 ) data_item = new();
+        // When processing an AES-GCM message, setting the GCM phase requires us
+        // waiting for the IDLE.
+        if (cfg_item.mode == AES_GCM && aes_item_queue.size() > 0) begin
+          if (new_msg) begin
+            // When starting a new message, we need to put GCM into the GCM_INIT
+            // phase. Hence, wait for the IDLE status.
+            wait_for_idle = 1;
+          end else begin
+            // Pop the data item such that we can get the item type and the item
+            // length.
+            data_item = aes_item_queue.pop_back();
+            if (data_item.data_len != 0) begin
+              // If we have a partial block (i.e., data length is not 0 (=16 bytes))
+              // we neet to put the GCM into the GCM_TEXT or GCM_AAD phase.
+              wait_for_idle = 1;
+            end else if (data_item.item_type == AES_DATA && first_data_block) begin
+              // When processing the first block, we need to put the GCM first
+              // into the GCM_TEXT phase.
+              wait_for_idle = 1;
+            end else if (data_item.item_type == AES_GCM_AAD && first_aad_block) begin
+              // When processing the first block, we need to put the GCM first
+              // into the GCM_AAD phase.
+              wait_for_idle = 1;
+            end else if (data_item.item_type == AES_GCM_TAG) begin
+              // As we only have a single tag block, always wait to configure
+              // the GCM_TAG phase.
+              wait_for_idle = 1;
+            end
+            // Push the item back to the queue as we haven't processed it yet.
+            aes_item_queue.push_back(data_item);
+          end
+        end
+        // get the status to make sure we can provide data - but don't wait for output //
+        status_fsm(cfg_item, data_item, new_msg,
+                   manual_operation, sideload_en, return_on_idle, 0, status, rst_set);
+        return_on_idle = 0;
+        read  = ($urandom_range(0, 100) <= read_prob);
+        write = ($urandom_range(0, 100) <= write_prob);
+
+        if ( (($countones(cfg_item.mode) != 1) || cfg_item.mode == AES_NONE)
+            && (aes_item_queue.size() > 0)) begin
+          // just write the data - don't expect and output
+          data_item = aes_item_queue.pop_back();
+          config_and_transmit(cfg_item, data_item, new_msg, 0, 0,
+                               manual_operation, sideload_en, 0, rst_set);
+        end else if (status.input_ready && (aes_item_queue.size() > 0) && write &&
+                     (~wait_for_idle || status.idle)) begin
+          data_item = aes_item_queue.pop_back();
+          config_and_transmit(cfg_item, data_item, new_msg, first_data_block,
+                              first_aad_block, manual_operation, sideload_en, 0, rst_set);
+          if (data_item.mode == AES_GCM && new_msg == 1) begin
+            // In comparison to other modes, in AES-GCM, the config_and_transmit()
+            // function only configures key and IV when processing the AES_CFG
+            // item. However, as we already popped the next aes_item_queue once,
+            // push it again to the queue such that it gets processed in the next
+            // iteration.
+            aes_item_queue.push_back(data_item);
+          end
+          `downcast(clone_item, data_item.clone());
+          if (data_item.mode == AES_GCM) begin
+            if (new_msg == 0 && (data_item.item_type == AES_DATA ||
+                                 data_item.item_type == AES_GCM_TAG)) begin
+              // Only read the output for AES_DATA (ptx or ctx) and AES_GCM_TAG
+              // items. AES_AAD and AES_CFG items do not produce an output.
+              read_queue.push_back(clone_item);
+            end
+          end else begin
+            read_queue.push_back(clone_item);
+          end
+
+          if (write) begin
+            if (data_item.item_type == AES_GCM_AAD && new_msg == 0) begin
+              first_aad_block = 0;
+            end
+
+            if (data_item.item_type == AES_DATA && new_msg == 0) begin
+              first_data_block = 0;
+            end
+          end
+        end
+        if (write) new_msg = 0;
+        if (status.output_valid && read) begin
+          if (read_queue.size() > 0)  begin
+            read_item = read_queue.pop_front();
+            read_data(read_item.data_out, cfg_item.do_b2b);
+          end else begin
+            `uvm_fatal(`gfn, $sformatf("\n\t ----| DATA READY but no ITEM to add it to! |----"))
+          end
+        end
+      end
+    end // else: !if(unbalanced == 0 || manual_operation)
+  endtask // send_msg
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // this task will handle setup and transmission
+  // of a message on a block level.
+  // it will send one block then return to the caller for the next item.
+  // if read output is enabled it will call the status fsm for get the
+  // output of the processed block
+  // NOTE IT IS UP TO THE CALLER OF THIS TASK
+  // TO ENSURE THE DUT IS READY/IDLE
+  // this opens up for calling this task in random times
+  // to provoke weird behavior
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  virtual task config_and_transmit (
+      aes_seq_item cfg_item,         // sequence item with configuration
+      aes_seq_item data_item,        // sequence item with data to process
+      bit          new_msg,          // is this a new msg -> do dut config
+      bit          new_data,         // first data block -> set GCM_TEXT phase in GCM mode
+      bit          new_aad,          // first aad block -> set GCM_AAD phase in GCM mode
+      bit          manual_operation, // use manual operation
+      bit          sideload_en,      // we are currently using sideload key
+      bit          read_output,      // read output or leave untouched
+      ref  bit     rst_set           // reset was forced - restart message
+      );
+
+    bit                   is_blocking = ~cfg_item.do_b2b;
+    status_t              status;
+    rst_set = 0;
+    if (new_msg) begin
+      write_data_key_iv(cfg_item, data_item, new_msg,
+                   manual_operation, sideload_en, 0, rst_set);
+    end else begin
+      if (data_item.mode == AES_GCM) begin
+        int valid_bytes;
+        if (data_item.item_type == AES_GCM_AAD) begin
+          read_output = 0;
+          if (new_aad || data_item.data_len[3:0] != 4'd0) begin
+            // Configure AAD phase as this is either the first AAD block or a
+            // partial block.
+            valid_bytes = data_item.data_len == 0 ? 16 : data_item.data_len;
+            set_gcm_phase(GCM_AAD, valid_bytes, 0,
+                cfg.error_types.cfg && cfg.config_error_type_en.gcm_phase);
+          end
+        end else if (data_item.item_type == AES_DATA) begin
+          if (new_data || data_item.data_len[3:0] != 4'd0) begin
+            // Configure TEXT phase as this is either the first plaintext block or a
+            // partial block.
+            valid_bytes = data_item.data_len == 0 ? 16 : data_item.data_len;
+            set_gcm_phase(GCM_TEXT, valid_bytes, 0,
+                cfg.error_types.cfg && cfg.config_error_type_en.gcm_phase);
+          end
+        end else if (data_item.item_type == AES_GCM_TAG) begin
+          set_gcm_phase(GCM_TAG, 16, 0,
+              cfg.error_types.cfg && cfg.config_error_type_en.gcm_phase);
+        end
+      end
+      add_data(data_item.data_in, cfg_item.do_b2b);
+      // sometimes randomly write a reg while busy
+      if (!manual_operation && cfg.error_types.mal_inject && ($urandom(3) == 1)) begin
+        int wr_reg = $urandom_range(3,1);
+        case (wr_reg)
+          1: csr_wr(.ptr(ral.key_share0[$urandom(7)]), .value($urandom()), .blocking(is_blocking));
+          2: csr_wr(.ptr(ral.iv[$urandom(3)]), .value($urandom()), .blocking(is_blocking));
+          3: csr_wr(.ptr(ral.data_in[$urandom(3)]), .value($urandom()), .blocking(is_blocking));
+          default: `uvm_fatal(`gfn, $sformatf("UNREACHABLE BUT NEEDED DUE TO SYNTAX CHECK"))
+        endcase
+      end
+    end
+    if (manual_operation && !rst_set) trigger();
+    // When in AES-GCM mode, trigger twice to encrypt the all-zero block and afterwards the
+    // initial counter block and load them into the GHASH block.
+    if (cfg_item.mode == AES_GCM && manual_operation && new_msg && !rst_set) trigger();
+    if (read_output && !rst_set) begin
+       status_fsm(cfg_item, data_item, new_msg,
+                   manual_operation, sideload_en, 0, read_output, status, rst_set);
+    end
+    // After having read the tag in GCM, move the DUT back into the GCM_INIT phase with a 25%
+    // chance. This is not really needed but it allows checking that the DUT can't be moved
+    // to other phases if the injection of conifg errors is turned on at the same time.
+    if ((data_item.item_type == AES_GCM_TAG) && ($urandom_range(0, 3) == 0)) begin
+      set_gcm_phase(GCM_INIT, 16, 0,
+          cfg.error_types.cfg && cfg.config_error_type_en.gcm_phase);
+    end
+  endtask // config_and_transmit
+
+
+  virtual task wait_for_fatal_alert_and_reset ();
+    // According to spec, check period will append an 'hFF from the LSF. Add 10 cycle buffers for
+    // register updates
+    int check_wait_cycles = 6 << 8 + 10;
+
+    // Check for the fatal alert on the alert interface.
+    `DV_SPINWAIT_EXIT(
+        wait(cfg.m_alert_agent_cfgs["fatal_fault"].vif.alert_tx_final.alert_p);,
+        cfg.clk_rst_vif.wait_clks(check_wait_cycles);,
+        $sformatf("Timeout waiting for alert %0s", "fatal_check_error"))
+    check_fatal_alert_nonblocking("fatal_fault");
+    // Reset and re-initialize the DUT.
+    // To avoid assertions firing erroneously due to resetting AES prior to the EDN
+    // interface, pull all resets concurrently. See
+    // https://github.com/lowRISC/opentitan/issues/13573 for details.
+    apply_resets_concurrently();
+    dut_init("HARD");
+  endtask
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // the status fsm has two tasks
+  // 1 determine the status of the DUT
+  //   it will recover from any configurational deadlock
+  //   i.e update error / clear error / misconfiguration or missing configuration
+  // 2. if wanted it will read output data when ready and return it to the caller
+  //
+  // the task operates on block level
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  virtual task status_fsm (
+      aes_seq_item        cfg_item,         // sequence item with configuration
+      aes_seq_item        data_item,        // sequence item with data to process
+      bit                 new_msg,          // is this a new msg -> do dut config
+      bit                 manual_operation, // use manual operation
+      bit                 sideload_en,      // currently using sideload key
+      bit                 return_on_idle,   // return if DUT status is idle
+      bit                 read_output,      // read output or leave untouched
+      ref  status_t       status,           // the current AES status
+      ref  bit            rst_set           // we forced a reset - abort current message and restart
+      );
+
+    ctrl_reg_t ctrl;
+    bit                   is_blocking       = ~cfg_item.do_b2b;
+    bit                   done              = 0;
+    string                txt               = "";
+    int                   not_idle_cnt      = 0;
+
+    txt     = "\n Entering FSM";
+    rst_set = 0;
+
+
+    // enable get status when provided with an empty Item.
+    if (data_item.mode === 'X) begin
+      csr_rd(.ptr(ral.status), .value(status), .blocking(1));
+    end
+
+    while(!done && !global_reset) begin
+      //read the status register to see that we have triggered the operation
+      wait(!cfg.under_reset)
+      csr_rd(.ptr(ral.status), .value(status), .blocking(1));
+      txt = {txt, "\n ----|reading STATUS", status2string(status)};
+      // check status and act accordingly //
+      if (status.alert_fatal_fault) begin
+        // stuck pull reset //
+        if (cfg.error_types.mal_inject || cfg.error_types.lc_esc) begin
+          `uvm_info(`gfn,
+                  $sformatf("\n\t ----| Saw expected Fatal alert - trying to recover \n\t ----| %s",
+                              status2string(status)), UVM_MEDIUM)
+          try_recover(cfg_item, data_item, manual_operation, sideload_en, new_msg);
+          csr_rd(.ptr(ral.status), .value(status), .blocking(1));
+          if ( !status.alert_fatal_fault) begin
+            `uvm_fatal(`gfn, $sformatf("\n\t Was able to clear FATAL ALERT without reset \n\t %s",
+                       status2string(status)))
+          end else begin
+            wait_for_fatal_alert_and_reset();
+            rst_set = 1;
+            done    = 1;
+          end
+        end else begin
+          `uvm_fatal(`gfn, $sformatf("\n\t Unexpected Fatal alert in AES FSM \n\t %s",
+             status2string(status)))
+        end
+      end else if (cfg_item.mode == AES_NONE) begin
+        // In this mode, the DUT is not ever supposed to accept input data or provide output data.
+        // But it can for example trigger a reseed operation upon loading a new initial key. Here,
+        // we just need to wait for the DUT to be idle.
+        if (status.idle) begin
+          done = 1;
+        end
+      end else begin
+        // state 0
+        if (status.idle && status.input_ready) begin
+          if (status.output_valid && read_output) begin
+            read_data(data_item.data_out, is_blocking);
+            txt = {txt, $sformatf("\n\t ----| status state 0 ")};
+            done = 1;
+          end else if (!read_output) begin
+            done = 1; // get more data
+          end else begin
+            try_recover(cfg_item, data_item, manual_operation, sideload_en, new_msg);
+          end
+        end else if (status.idle && !status.input_ready) begin
+          // state 1 //
+          // if data ready just read and return
+          if (status.output_valid && read_output) begin
+            read_data(data_item.data_out, is_blocking);
+            done = 1;
+          end else if (return_on_idle) begin
+            // We expect dut to be IDLE
+            done = 1;
+          end else begin
+            // if data is not ready the DUT is missing
+            // KEY and IV - or the configuration
+            try_recover(cfg_item, data_item, manual_operation, sideload_en, new_msg);
+            txt = {txt, $sformatf("\n\t ----| status state 1 ")};
+          end
+        end else if (status.output_valid) begin
+          // state 2 //
+          // data ready to be read out
+          // read or return
+          done = 1;
+          if (read_output) begin
+            read_data(data_item.data_out, is_blocking);
+            txt = {txt, $sformatf("\n\t ----| status state 2 ")};
+          end
+
+
+        end else if (!(status.idle || status.stall || status.output_valid)) begin
+          // state 3 //
+          // Not idle, not stalling, not ready for input and no valid output should only occur when
+          // requesting entropy for reseeding the PRNGs which for example happens directly after
+          // reset.
+          if (!(status.input_ready || aes_requesting_entropy())) begin
+            not_idle_cnt++;
+            if (not_idle_cnt == 1000) begin
+              txt = "\nFor 1000 consecutive reads, AES";
+              txt = {txt, $sformatf("\n- neither reported IDLE, STALL, OUTPUT_VALID, INPUT_READY")};
+              txt = {txt, $sformatf("\n- nor did it fetch entropy")};
+              `uvm_fatal(`gfn, $sformatf("%s", txt))
+            end
+          end else begin
+            not_idle_cnt = 0;
+          end
+          if (!read_output && !return_on_idle) done = 1;
+          // else DUT is in operation wait for new output
+          txt = {txt, $sformatf("\n\t ----| status state 3 ")};
+
+
+        end else begin
+          txt = {txt, $sformatf("\n ----| STATUS RETURNED ILLEGAL STATE |---- ")};
+          txt = {txt, $sformatf("\n ----| IDLE %0b",status.idle)};
+          txt = {txt, $sformatf("\n ----| STALL %0b",status.stall)};
+          txt = {txt, $sformatf("\n ----| INPUT_READY %0b",status.input_ready)};
+          txt = {txt, $sformatf("\n ----| OUTPUT_VALID %0b",status.output_valid)};
+          `uvm_fatal(`gfn, $sformatf("\n\t %s",txt))
+        end
+      end // else: !if(status.alert_fatal_fault)
+    end // while (!done)
+
+
+    if (global_reset) begin
+      rst_set = 1;
+    end
+    `uvm_info(`gfn, $sformatf("\n\t %s",txt), UVM_MEDIUM)
+  endtask
+
+
+  virtual task try_recover(
+    aes_seq_item        cfg_item,         // sequence item with configuration
+    aes_seq_item        data_item,        // sequence item with data to process
+    bit                 manual_operation,
+    bit                 sideload_en,
+    bit                 new_msg
+    );
+    // if data is not ready the DUT is missing
+    // KEY and IV - or the configuration
+    ctrl_reg_t            ctrl;
+    status_t              status;         // the current AES status
+    bit                   is_blocking = ~cfg_item.do_b2b;
+    csr_rd(.ptr(ral.ctrl_shadowed), .value(ctrl), .blocking(1));
+    ral.ctrl_shadowed.operation.set(cfg_item.operation);
+    ral.ctrl_shadowed.mode.set(cfg_item.mode);
+    ral.ctrl_shadowed.key_len.set(cfg_item.key_len);
+    ral.ctrl_shadowed.manual_operation.set(cfg_item.manual_op);
+    ral.ctrl_shadowed.sideload.set(cfg_item.sideload_en);
+    // key and IV missing clear all and rewrite (a soon to come update will merge
+    // the clear options into a single bit)
+    clear_regs(2'b11);
+    // when using sideload we need to generate
+    // new key for agent to send new key item
+    if (sideload_en) begin
+      new_key = 1;
+      key_rdy = 0;
+      wait(key_rdy);
+    end
+
+    // check for fatal
+    csr_rd(.ptr(ral.status), .value(status), .blocking(1));
+    if (!status.alert_fatal_fault) begin
+      // wait for idle
+      if (!status.idle)  csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(is_blocking));
+      csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+    end else begin
+      // if alert just try to update ctrl and everything else
+      csr_update(.csr(ral.ctrl_shadowed), .en_shadow_wr(1'b1), .blocking(is_blocking));
+    end
+
+    // Read the main control register. This will update the mirrored values thereby getting them
+    // back in sync with the DUT (updated via csr_update() above) and the predicted values (updated
+    // via set() above).
+    csr_rd(.ptr(ral.ctrl_shadowed), .value(ctrl), .backdoor(1));
+
+    if (cfg_item.mode == AES_GCM && !status.alert_fatal_fault) begin
+      // As we are splitting the message, we also need to recalculate the length
+      // of the AAD and PTX -> len(aad) || len(data) that is stored in a AES_GCM_TAG
+      // block. Image we split the message after the first AAD block:
+      // |AAD|AAD|PTX|PTX|TAG|
+      // we will land up having:
+      // |AAD|PTX|PTX|TAG
+      // Hence, recalculate here the new len(aad) || len(data).
+      aes_seq_item    aes_item_queue_clone[$];
+      aes_seq_item    data_item_tmp;
+      bit [3:0][31:0] len_aad_data_conc;
+      bit [3:0][31:0] len_aad_data;
+      int aad_len = 0;
+      int ptx_len = 0;
+      // Get AAD or PTX length of the current data_item.
+      if (data_item.item_type == AES_DATA) begin
+        ptx_len = data_item.data_len == 0 ? 16 : data_item.data_len;
+      end else if (data_item.item_type == AES_GCM_AAD) begin
+        aad_len = data_item.data_len == 0 ? 16 : data_item.data_len;
+      end
+      // Fetch all remaining data items and accumulate the AAD/PTX length.
+      while (aes_item_queue.size() > 0) begin
+        int data_len;
+        data_item_tmp = aes_item_queue.pop_back();
+        aes_item_queue_clone.push_front(data_item_tmp);
+        data_len = data_item_tmp.data_len == 0 ? 16 : data_item_tmp.data_len;
+        if (data_item_tmp.item_type == AES_GCM_AAD) begin
+          aad_len += data_len;
+        end else if (data_item_tmp.item_type == AES_DATA) begin
+          ptx_len += data_len;
+        end
+      end
+      // Resemble len(aad) || len(data).
+      len_aad_data_conc = ((aad_len * 8 << 64) | ptx_len * 8);
+      len_aad_data = {<<8{len_aad_data_conc}};
+      // Put all items back to the aes_item_queue in the correct order.
+      while (aes_item_queue_clone.size() > 0) begin
+        data_item_tmp = aes_item_queue_clone.pop_back();
+        if (data_item_tmp.item_type == AES_GCM_TAG) begin
+          // Once we reached the AES_GCM_TAG block, put in the new
+          // len(aad) || len(data)
+          data_item_tmp.data_in = len_aad_data;
+        end
+        aes_item_queue.push_front(data_item_tmp);
+      end
+      aes_item_queue_clone.delete();
+
+      // After re-calculating len(aad) || len(data) start the AES-GCM operation
+      // by putting the block into the GCM_INIT phase.
+      set_gcm_phase(GCM_INIT, 16, 1, 0);
+    end
+
+    write_key(cfg_item.key, is_blocking);
+    // wait for reseed but check for fatal
+    // if fatal idle will never come
+    csr_rd(.ptr(ral.status), .value(status), .blocking(1));
+    if (!status.alert_fatal_fault && !status.idle) begin
+      if (cfg.reseed_en) csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+    end
+    write_iv(cfg_item.iv, is_blocking);
+
+    // When in AES-GCM mode & manual operation is enabled, we need to trigger
+    // twice to process IV/key and calculate the hash subkey.
+    if (cfg_item.mode == AES_GCM && manual_operation && !status.alert_fatal_fault) trigger();
+    if (cfg_item.mode == AES_GCM && manual_operation && !status.alert_fatal_fault) trigger();
+
+    if (cfg_item.mode == AES_GCM) begin
+      int valid_bytes = data_item.data_len == 0 ? 16 : data_item.data_len;
+      if (new_msg == 0 && !status.alert_fatal_fault) begin
+        if (data_item.item_type == AES_GCM_AAD) begin
+          set_gcm_phase(GCM_AAD, valid_bytes, 1, 0);
+          add_data(data_item.data_in, cfg_item.do_b2b);
+          if (manual_operation) trigger();
+        end else if (data_item.item_type == AES_DATA) begin
+          set_gcm_phase(GCM_TEXT, valid_bytes, 1, 0);
+          add_data(data_item.data_in, cfg_item.do_b2b);
+          if (manual_operation) trigger();
+        end else if (data_item.item_type == AES_GCM_TAG) begin
+          set_gcm_phase(GCM_TAG, 16, 1, 0);
+          add_data(data_item.data_in, cfg_item.do_b2b);
+          if (manual_operation) trigger();
+        end
+      end
+    end else begin
+      add_data(data_item.data_in, cfg_item.do_b2b);
+      if (manual_operation) trigger();
+    end
+
+  endtask // try_recover
+
+  // Send the messages in message_queue, removing them as we go.
+  //
+  // The unbalanced, read_prob and write_prob arguments are passed to send_msg, controlling whether
+  // to read or write each message.
+  //
+  // If reset is asserted, exit immediately.
+  virtual task send_msg_queue (bit unbalanced, int read_prob, int write_prob);
+    bit  rst_set = 0;
+
+    while (message_queue.size() > 0 && !cfg.under_reset) begin
+      aes_message_item my_message;
+
+      `uvm_info(`gfn, $sformatf("Starting New Message - messages left %d",
+                                 message_queue.size() ), UVM_MEDIUM)
+      my_message = message_queue.pop_back();
+      generate_aes_item_queue(my_message);
+
+      fork
+        // This process supplies sideload keys, then setting key_rdy. It will exit when key_used is
+        // set. If sideload_en is false, key_rdy is set immediately.
+        begin
+          if (my_message.sideload_en) begin
+            req_sideload_key();
+          end else begin
+            key_rdy = 1;
+          end
+        end
+
+        begin
+          // Send the message. This will consume the key (waiting for key_rdy)
+          send_msg(my_message.manual_operation, my_message.sideload_en,
+                   unbalanced, read_prob, write_prob, rst_set);
+
+          if (my_message.sideload_en && !cfg.under_reset) begin
+            // If we sent a sideload message, set key_used. This tells req_sideload_key that we are
+            // done, causing that task to clear key_used again and exit.
+            key_used = 1;
+
+            if (!cfg.under_reset) csr_spinwait(.ptr(ral.status.idle) , .exp_data(1'b1));
+            if (!cfg.under_reset) clear_regs(2'b11);
+            if (!cfg.under_reset) csr_spinwait(.ptr(ral.status.idle) , .exp_data(1'b1));
+          end
+        end
+      join
+
+      // Clear key_rdy again for the next loop
+      key_rdy = 0;
+    end
+
+    // If we are in reset (which means that either rst_set or cfg.under_reset will be true) then we
+    // want to clean up the contents of the message queue.
+    if (rst_set || cfg.under_reset) begin
+      aes_item_queue.delete();
+      message_queue.delete();
+      // send a few msg to make sure
+      // everything still works
+      cfg.num_messages = 2;
+      generate_message_queue();
+      // if process was halted from the outside //
+      if (global_reset) begin
+        global_reset = 0;
+        // wait for resset to get set
+        wait(cfg.under_reset);
+        `uvm_info(`gfn, $sformatf("WAITING FOR RESET RELEASE"), UVM_MEDIUM)
+        wait(cfg.clk_rst_vif.rst_n);
+        #1ps;
+        dut_init("HARD");
+      end
+    end
+  endtask // send_msg_queue
+
+  virtual task post_body();
+
+    if (cfg.en_scb) begin
+      // AES indicates when it's done with processing individual blocks but not when it's done
+      // with processing an entire message. To detect the end of a message, the DV environment
+      // does the following:
+      // - It tracks writes to the main control register. If two successful writes to this
+      //   shadowed register are observed, this marks the start of a new message.
+      // - DV then knows that the last output data retrieved marks the end of the previous
+      //   message.
+      // This works fine except for the very last message before the sequence ends. To mark the
+      // end of the last message, and trigger its scoring, the `finish_message` variable is set.
+      // It gets read by the `rebuild_message()` task in the scoreboard.
+      //
+      // Before doing this, wait for the DUT to become idle and final output to be read.
+      `uvm_info(`gfn, "waiting for DUT to become idle and final output to be read", UVM_MEDIUM)
+      csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
+      csr_spinwait(.ptr(ral.status.output_valid), .exp_data(1'b0));
+      `uvm_info(`gfn, "sending finish_message", UVM_MEDIUM)
+      cfg.finish_message = 1;
+    end
+
+    super.post_body();
+
+  endtask
+
+
+  ///////////////////////////////////////////////////////////
+  ///////////////        FUNCTIONS       ////////////////////
+  ///////////////////////////////////////////////////////////
+
+  // initialize the global sequence item
+  // with values from the message item (happens once per message item
+  function void aes_item_init(aes_message_item message_item);
+    aes_item = new();
+    aes_item.operation        = message_item.aes_operation;
+    aes_item.mode             = message_item.aes_mode;
+    aes_item.key_len          = message_item.aes_keylen;
+    aes_item.key              = message_item.aes_key;
+    aes_item.iv               = message_item.aes_iv;
+    aes_item.manual_op        = message_item.manual_operation;
+    aes_item.key_mask         = message_item.keymask;
+    aes_item.sideload_en      = message_item.sideload_en;
+    aes_item.reseed_rate      = message_item.reseed_rate;
+    aes_item.clear_reg_pct    = cfg.clear_reg_pct;
+    aes_item.clear_reg_w_rand = cfg.clear_reg_w_rand;
+  endfunction // aes_item_init
+
+
+  function void generate_ctrl_item();
+    aes_seq_item item_clone;
+
+    aes_item.item_type = AES_CFG;
+
+    `DV_CHECK_RANDOMIZE_FATAL(aes_item)
+    `uvm_info(`gfn, $sformatf("\n\t ----| CONFIG  AES ITEM %s",
+                                aes_item.convert2string()), UVM_HIGH)
+
+    `downcast(item_clone, aes_item.clone());
+    aes_item_queue.push_front(item_clone);
+  endfunction
+
+
+  // init the first message - following will rerandomize with the same constraints
+  function void aes_message_init();
+    aes_message = new();
+    aes_message.ecb_weight           = cfg.ecb_weight;
+    aes_message.cbc_weight           = cfg.cbc_weight;
+    aes_message.ofb_weight           = cfg.ofb_weight;
+    aes_message.cfb_weight           = cfg.cfb_weight;
+    aes_message.ctr_weight           = cfg.ctr_weight;
+    aes_message.gcm_weight           = cfg.gcm_weight;
+    aes_message.key_128b_weight      = cfg.key_128b_weight;
+    aes_message.key_192b_weight      = cfg.key_192b_weight;
+    aes_message.key_256b_weight      = cfg.key_256b_weight;
+    aes_message.message_len_max      = cfg.message_len_max;
+    aes_message.message_len_min      = cfg.message_len_min;
+    aes_message.aad_len_max          = cfg.aad_len_max;
+    aes_message.aad_len_min          = cfg.aad_len_min;
+    aes_message.config_error_pct     = cfg.config_error_pct;
+    aes_message.error_types          = cfg.error_types;
+    aes_message.config_error_type_en = cfg.config_error_type_en;
+    aes_message.manual_operation_pct = cfg.manual_operation_pct;
+    aes_message.keymask              = cfg.key_mask;
+    aes_message.fixed_key_en         = cfg.fixed_key_en;
+    aes_message.fixed_data_en        = cfg.fixed_data_en;
+    aes_message.fixed_operation_en   = cfg.fixed_operation_en;
+    aes_message.fixed_operation      = cfg.fixed_operation;
+    aes_message.fixed_keylen_en      = cfg.fixed_keylen_en;
+    aes_message.fixed_keylen         = cfg.fixed_keylen;
+    aes_message.fixed_iv_en          = cfg.fixed_iv_en;
+    aes_message.fixed_aad_en         = cfg.fixed_aad_en;
+    aes_message.sideload_pct         = cfg.sideload_pct;
+    aes_message.per1_weight          = cfg.per1_weight;
+    aes_message.per64_weight         = cfg.per64_weight;
+    aes_message.per8k_weight         = cfg.per8k_weight;
+  endfunction
+
+
+  function void generate_message_queue();
+    aes_message_item cloned_message;
+    for (int i=0; i < cfg.num_messages; i++) begin
+      `DV_CHECK_RANDOMIZE_FATAL(aes_message)
+      // For errors in the mode field, the DUT will not produce any output. Such messages are
+      // counted as corrupt messages.
+      if (aes_message.cfg_error_type.mode == 1'b1) begin
+        cfg.num_corrupt_messages += 1;
+      end
+      `downcast(cloned_message, aes_message.clone());
+      message_queue.push_front(cloned_message);
+      `uvm_info(`gfn, $sformatf("\n\t ----| MESSAGE #%0d\n %s",
+          i, cloned_message.convert2string()), UVM_MEDIUM)
+      `uvm_info(`gfn, $sformatf("\n\t ----| \n %s",
+          cloned_message.cfg_error_string()), UVM_MEDIUM)
+      `uvm_info(`gfn, $sformatf("\n\t ----| \n %s",
+          cloned_message.field_distribution_string()), UVM_MEDIUM)
+    end
+  endfunction // generate_message_queue
+
+
+  function void aes_print_item_queue(aes_seq_item item_queue[$]);
+    aes_seq_item print_item;
+    `uvm_info(`gfn, $sformatf("----| Item queue size: %d", item_queue.size()), UVM_MEDIUM)
+    for (int n = 0; n < item_queue.size(); n++) begin
+      print_item = item_queue[n];
+      `uvm_info(`gfn, $sformatf("----|  ITEM #%d", n ), UVM_MEDIUM)
+      `uvm_info(`gfn, $sformatf("%s", print_item.convert2string()), UVM_MEDIUM)
+    end
+  endfunction // aes_print_item_queue
+
+
+  function string status2string(status_t status);
+    string txt="";
+    txt ={txt, $sformatf("\n\t ---| Idle:          %0b", status.idle)};
+    txt ={txt, $sformatf("\n\t ---| Stall:         %0b", status.stall)};
+    txt ={txt, $sformatf("\n\t ---| Output Lost:   %0b", status.output_lost)};
+    txt ={txt, $sformatf("\n\t ---| Output Valid:  %0b", status.output_valid)};
+    txt ={txt, $sformatf("\n\t ---| Input Ready:   %0b", status.input_ready)};
+    txt ={txt, $sformatf("\n\t ---| Alert - Recov: %0b", status.alert_recov_ctrl_update_err)};
+    txt ={txt, $sformatf("\n\t ---| Alert - Fatal: %0b", status.alert_fatal_fault)};
+    return txt;
+  endfunction // status2string
+
+
+  function automatic bit aes_requesting_entropy();
+    bit requesting_entropy;
+    if ((cfg.aes_reseed_vif.entropy_clearing_req == 1'b1) ||
+        (cfg.aes_reseed_vif.entropy_masking_req == 1'b1)) begin
+      requesting_entropy = 1'b1;
+    end else begin
+      requesting_entropy = 1'b0;
+    end
+    return requesting_entropy;
+  endfunction
+
+endclass : aes_base_vseq

@@ -1,0 +1,66 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+load("//rules:signing.bzl", "keyset")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "owner_key",
+    srcs = ["owner_ecdsa_p256.der"],
+)
+
+filegroup(
+    name = "owner_key_pub",
+    srcs = ["owner_ecdsa_p256.pub.der"],
+)
+
+filegroup(
+    name = "activate_key",
+    srcs = ["activate_ecdsa_p256.der"],
+)
+
+filegroup(
+    name = "unlock_key",
+    srcs = ["unlock_ecdsa_p256.der"],
+)
+
+filegroup(
+    name = "all_zero_sig",
+    srcs = ["all_zero_sig.bin"],
+)
+
+filegroup(
+    name = "owner_key_spx",
+    srcs = ["owner_spx.pem"],
+)
+
+filegroup(
+    name = "owner_key_spx_pub",
+    srcs = ["owner_spx.pub.pem"],
+)
+
+filegroup(
+    name = "activate_key_spx",
+    srcs = ["activate_spx.pem"],
+)
+
+filegroup(
+    name = "unlock_key_spx",
+    srcs = ["unlock_spx.pem"],
+)
+
+filegroup(
+    name = "app_prod_ecdsa_pub",
+    srcs = ["app_prod_ecdsa_p256.pub.der"],
+)
+
+keyset(
+    name = "ecdsa_keyset",
+    build_setting_default = "",
+    keys = {
+        "app_prod_ecdsa_p256.der": "app_prod_0",
+    },
+    profile = "local",
+    tool = "//signing/tokens:local",
+)

@@ -1,0 +1,48 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  /**
+   * @param[in]  dmem[msg]: Message digest (256 bits)
+   * @param[in]   dmem[d0]: First share of private key d (320 bits)
+   * @param[in]   dmem[d1]: Second share of private key d (320 bits)
+   * @param[out]   dmem[r]: Buffer for r component of signature (256 bits)
+   * @param[out]   dmem[s]: Buffer for s component of signature (256 bits)
+   */
+
+  "input": {
+    "dmem": {
+      "mode": "0x000005e8"  # MODE_ATTESTATION_ENDORSE
+
+      "msg": "0xbb5a52f42f9c9261ed4361f59422a1e30036e7c32b270c8807a419feca605023"
+      "d0":
+        '''
+          0x000000000000000000000000000000000000000000000000001cc542001cc542
+            001cc542001cc542001cc542001cc542001cc542001cc542001cc542001cc542
+        '''
+      "d1":
+        '''
+          0x000000000000000000000000000000000000000000000000baadf00dbaadf00d
+            baadf00dbaadf00dbaadf00dbaadf00dbaadf00dbaadf00dbaadf00dbaadf00d
+        '''
+    }
+  }
+  "output": {
+    "dmem": {
+      # Verified with:
+      # >>> import ecdsa
+      # >>> import hashlib
+      # >>> r = 0xce67c70778326428b553dd7e204be2ee11a5b273f1e925a744933a913223f42a
+      # >>> s = 0x1bd7e4d97c5a0c82a8053ee68a76d4a6c4a1172efb3ef68e1c00ef13d777f897
+      # >>> msg = b"123400"
+      # >>> x = "5868cc1d58a1ea20ee1cf22393d92a695e69ea89e85cbce80e94f900015ac2c4"
+      # >>> y = "17749c44e6401eda1e71722402d940dceeeee6b7277dac6cbc9a02a44f66aa6f"
+      # >>> p = ecdsa.VerifyingKey.from_string(bytes.fromhex(x + y), curve=ecdsa.NIST256p)
+      # >>> sig = r.to_bytes(32, 'big') + s.to_bytes(32, 'big')
+      # >>> p.verify(sig, msg, hashfunc=hashlib.sha256)
+
+      "r": "0xce67c70778326428b553dd7e204be2ee11a5b273f1e925a744933a913223f42a"
+      "s": "0x1bd7e4d97c5a0c82a8053ee68a76d4a6c4a1172efb3ef68e1c00ef13d777f897"
+    }
+  }
+}

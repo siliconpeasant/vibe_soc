@@ -13,7 +13,7 @@ include $(PROJECT_ROOT)/scripts/config.mk
 
 .PHONY: help setup check-env check-repo list-modules print-config module \
         flist validate-flist comp sim run test regress report coverage \
-        coverage-regress coverage-report wave verdi debug-gui lint syn \
+        coverage-regress coverage-report verdi lint syn \
         clean debugclean deepclean
 
 help:
@@ -26,7 +26,7 @@ help:
 	@echo "  make module MODULE=<path> TARGET=<target>"
 	@echo ""
 	@echo "Targets: flist validate-flist comp sim test regress report coverage"
-	@echo "         coverage-regress wave verdi debug-gui lint syn"
+	@echo "         coverage-regress verdi lint syn"
 	@echo "         clean debugclean deepclean print-config"
 	@echo "Example: make lint MODULE=ip/digital/uart"
 	@echo "         make comp MODULE=chip/top SIMULATOR=iverilog"
@@ -55,6 +55,6 @@ module:
 	@$(MAKE) --no-print-directory -C "$(MODULE_DIR)" "$(TARGET)"
 
 flist validate-flist comp sim run test regress report coverage \
-coverage-regress coverage-report wave verdi debug-gui lint syn \
+coverage-regress coverage-report verdi lint syn \
 clean debugclean deepclean:
 	@$(MAKE) --no-print-directory module TARGET=$@

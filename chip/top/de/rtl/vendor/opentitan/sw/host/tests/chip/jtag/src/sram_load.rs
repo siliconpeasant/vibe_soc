@@ -1,0 +1,73 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+use std::time::Duration;
+
+use anyhow::Result;
+use clap::Parser;
+use regex::Regex;
+
+use opentitanlib::app::{TransportWrapper, UartRx};
+use opentitanlib::execute_test;
+use opentitanlib::io::jtag::JtagTap;
+use opentitanlib::test_utils::init::InitializeTest;
+use opentitanlib::test_utils::load_sram_program::{ExecutionMode, SramProgramParams};
+use opentitanlib::uart::console::UartConsole;
+
+// use ot_hal::top::earlgrey as top_earlgrey;
+
+#[derive(Debug, Parser)]
+struct Opts {
+    #[command(flatten)]
+    init: InitializeTest,
+
+    #[command(flatten)]
+    sram_program: SramProgramParams,
+}
+
+fn test_sram_load(opts: &Opts, transport: &TransportWrapper) -> Result<()> {
+    let uart = transport.uart("console")?;
+    //
+    // Connect to the RISC-V TAP
+    //
+    transport.pin_strapping("PINMUX_TAP_RISCV")?.apply()?;
+    transport.reset(UartRx::Clear)?;
+
+    log::info!("Connecting to RISC-V TAP");
+    let mut jtag = opts
+        .init
+        .jtag_params
+        .create(transport)?
+        .connect(JtagTap::RiscvTap)?;
+    log::info!("Halting core");
+    jtag.halt()?;
+
+    opts.sram_program
+        .load_and_execute(&mut *jtag, ExecutionMode::Jump)?;
+
+    const CONSOLE_TIMEOUT: Duration = Duration::from_secs(5);
+    let mut console = UartConsole::new(
+        Some(CONSOLE_TIMEOUT),
+        Some(Regex::new(
+            r"sram_program\.c:\d+\] PC: 0x1000[0-2][0-9a-f]{3}, SRAM: \[0x10000000, 0x10020000\)",
+        )?),
+        None,
+    );
+    let result = console.interact(&*uart, false)?;
+    log::info!("result: {:?}", result);
+    jtag.halt()?;
+    jtag.disconnect()?;
+
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    let opts = Opts::parse();
+    opts.init.init_logging();
+    let transport = opts.init.init_target()?;
+
+    execute_test!(test_sram_load, &opts, &transport);
+
+    Ok(())
+}

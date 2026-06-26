@@ -1,0 +1,139 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  template_param_list: [
+    {
+      name: "topname"
+      desc: "Name of top-level design, e.g., 'darjeeling' or 'earlgrey'"
+      type: "string"
+      default: ""
+    }
+    {
+      name: "uniquified_modules"
+      desc: "A dictionary mapping template_names to uniquified_names"
+      type: "object"
+      default: {"clkmgr": "clkmgr1"}
+    }
+    {
+      name: "clk_freqs"
+      desc: '''A dictionary accessed by source clock containing its clock
+            frequency in Hz, for example {'io': 96000000}}
+	    '''
+      type: "object"
+      default: {"aon": 200000, "io": 96000000}
+    }
+    {
+      name: "reqs"
+      desc: '''A dictionary of reset requests indexed by type, as in
+            'peripheral', 'int', 'debug'.
+            '''
+      type: "object"
+      default: {
+        peripheral: [
+          {
+            name: "rst_req"
+            width: "1"
+            module: "sysrst_ctrl_aon"
+            desc: "reset request running on AON clock"
+          }
+        ]
+        int: []
+        debug: []
+      }
+    }
+    {
+      name: "power_domains"
+      desc: "A list of power domains, as in ['Aon', '0']"
+      type: "object"
+      default: ["Aon", "0"]
+    }
+    {
+      name: "num_rstreqs"
+      desc: "The number of peripheral requests"
+      type: "int"
+      default: "2"
+    }
+    {
+      name: "sw_rsts"
+      desc: '''A list of (device, clk) pairs for software reset targets.
+            The device is the target of the software reset and clk is the
+	    corresponding clock. The clock is needed since clocks and resets
+	    are paired.
+            '''
+      type: "object"
+      default: {"spi_device": "io_div4", "spi_host0": "io"}
+    }
+    {
+      name: "output_rsts"
+      desc: "A list of reset outputs"
+      type: "object"
+      default: [
+        {
+          name: "por_io_div2"
+          gen: True
+          rst_type: "top"
+          path: "rstmgr_aon_resets.rst_por_io_div2_n"
+          lpg_path: "rstmgr_aon_rst_en.por_io_div2"
+          shadowed: False
+          shadow_path: "rstmgr_aon_resets.rst_por_io_div2_shadowed_n"
+          shadow_lpg_path: "rstmgr_aon_rst_en.por_io_div2_shadowed"
+          domains: ["Aon"]
+          parent: "por_aon"
+          clock: "io_div2"
+        }
+      ]
+    }
+    {
+      name: "leaf_rsts"
+      desc: "A list of generated reset outputs"
+      type: "object"
+      default: [
+        {
+          name: "por_io_div2"
+          gen: True
+          rst_type: "top"
+          path: "rstmgr_aon_resets.rst_por_io_div2_n"
+          lpg_path: "rstmgr_aon_rst_en.por_io_div2"
+          shadowed: False
+          shadow_path: "rstmgr_aon_resets.rst_por_io_div2_shadowed_n"
+          shadow_lpg_path: "rstmgr_aon_rst_en.por_io_div2_shadowed"
+          domains: ["Aon"]
+          parent: "por_aon"
+          clock: "io_div2"
+        }
+      ]
+    }
+    {
+      name: "rst_ni"
+      desc: "A list of input resets"
+      type: "object"
+      default: [
+        {
+          "rst_ni": {
+            name: "lc_io_div4"
+            domain: "Aon"
+          }
+        }
+      ]
+    }
+    {
+      name: "export_rsts"
+      desc: "A dictionary of exported resets"
+      type: "object"
+      default: {}
+    }
+    {
+      name: "with_alert_handler"
+      desc: "Generate outputs for a rstmgr that would connect to an alert handler"
+      type: "bool"
+      default: "1"
+    }
+    {
+      name: "module_instance_name"
+      desc: "instance name in case there are multiple rstmgr instances. Not yet implemented."
+      type: "string"
+      default: "rstmgr"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:aes_model_dpi"
+description: "AES model DPI"
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:ip:aes
+      - lowrisc:model:aes
+
+    files:
+      - aes_model_dpi.c: { file_type: cSource }
+      - aes_model_dpi.h: { file_type: cSource, is_include_file: true }
+      - aes_model_dpi_pkg.sv: { file_type: systemVerilogSource }
+
+targets:
+  default:
+    filesets:
+      - files_dv

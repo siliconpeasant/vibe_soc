@@ -1,0 +1,359 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name:               "rom_ctrl",
+  human_name:         "ROM Controller",
+  one_line_desc:      "Interfaces scrambled boot ROM with system bus and KMAC for initial health check after reset",
+  one_paragraph_desc: '''
+  ROM Controller interfaces between the system bus and the scrambled ROM.
+  It is responsible for descrambling on memory fetches.
+  It also has a checker block that interfaces KMAC Accelerator to perform a cryptographic hash of the ROM contents at boot to detect any malicious changes to the ROM itself while in reset.
+  ROM Controller also has status registers for ROM integrity errors or checker block FSM glitches.
+  '''
+  // Unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool.
+  cip_id:             "21",
+  design_spec:        "../doc",
+  dv_doc:             "../doc/dv",
+  hw_checklist:       "../doc/checklist",
+  sw_checklist:       "/sw/device/lib/dif/dif_rom_ctrl",
+  revisions: [
+      {
+          version:            "1.0.1",
+          life_stage:         "L1",
+          design_stage:       "D3",
+          verification_stage: "V2S",
+          dif_stage:          "S2",
+          commit_id:          "5967df933a814f72d5212bd43d13a0041a3aaf9d",
+      },
+      {
+          version:            "1.1.0",
+          life_stage:         "L1",
+          design_stage:       "D3",
+          verification_stage: "V2S",
+          dif_stage:          "S2",
+      }
+  ]
+  clocking: [{clock: "clk_i", reset: "rst_ni"}],
+  regwidth: "32"
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device", name: "regs" }
+    { protocol: "tlul", direction: "device", name: "rom" },
+  ],
+  param_list: [
+    { name:    "BootRomInitFile",
+      type:    "",
+      default: '""',
+      desc:    "Contents of ROM"
+      local:   "false",
+      expose:  "true"
+    }
+
+    { name:      "FlopToKmac",
+      type:      "bit",
+      desc:      '''
+        Add a flop stage between the output of the ROM and the data that gets
+        sent to KMAC. This may break long paths in a target chip, at the cost of
+        adding chip area.
+      '''
+      local:     "true",
+      expose:    "true",
+      default:   "1'b0"
+    }
+
+    { name:      "RndCnstScrNonce",
+      type:      "bit [63:0]",
+      desc:      "Fixed nonce used for address / data scrambling"
+      randcount: "64",
+      randtype:  "data"
+    }
+
+    { name:      "RndCnstScrKey",
+      type:      "bit [127:0]",
+      desc:      "Randomised constant used as a scrambling key for ROM data"
+      randcount: "128",
+      randtype:  "data"
+    }
+
+    { name:      "SecDisableScrambling",
+      type:      "bit",
+      desc:      '''
+        Disable scrambling and checking in rom_ctrl, turning the block into a
+        simple ROM wrapper. This isn't intended for real chips, but is useful
+        for small FPGA targets where there's not space for the PRINCE
+        primitives.
+      '''
+      local:     "false",
+      expose:    "true",
+      default:   "1'b0"
+    }
+    // This parameter is overridden by topgen to set the actual ROM size.
+    // NOTE: This number is replicated in ../util/scramble_image.py: keep the
+    // two in sync.
+    { name:      "MemSizeRom",
+      desc:      "Memory size of the ROM (in bytes).",
+      type:      "int",
+      default:   "0x8000"
+    },
+  ]
+  alert_list: [
+    { name: "fatal"
+      desc: "A fatal error. Fatal alerts are non-recoverable and will be asserted until a hard reset."
+    }
+  ],
+
+  features: [
+    { name: "ROM_CTRL.SCRAMBLED",
+      desc: '''
+        ROM data is scrambled.
+      '''
+    },
+    { name: "ROM_CTRL.DIGESTS",
+      desc: '''
+        A signature of the ROM contents is computed at startup.
+        This is available in the DIGEST_<i> CSRs.
+      '''
+    },
+    { name: "ROM_CTRL.EXP_DIGESTS",
+      desc: '''
+        The chip has an expected ROM signature.
+        This is available in the EXP_DIGEST_<i> CSRs.
+      '''
+    },
+  ]
+
+  inter_signal_list: [
+    // Interface to memory configuration
+    { name:    "rom_cfg",
+      package: "prim_rom_pkg",
+      struct:  "rom_cfg",
+      act:     "rcv"
+      type:    "uni",
+    },
+
+    // Power manager interface
+    { name:    "pwrmgr_data"
+      package: "rom_ctrl_pkg"
+      struct:  "pwrmgr_data"
+      act:     "req"
+      type:    "uni"
+    },
+
+    // Keymgr interface
+    { name:    "keymgr_data"
+      package: "rom_ctrl_pkg"
+      struct:  "keymgr_data"
+      act:     "req"
+      type:    "uni"
+    },
+
+    // KMAC interface
+    { name:    "kmac_data"
+      package: "kmac_pkg"
+      struct:  "app"
+      act:     "req"
+      type:    "req_rsp"
+    },
+  ],
+  countermeasures: [
+    {
+      name: "CHECKER.CTR.CONSISTENCY",
+      desc: '''
+        Once rom_ctrl has handed control of the mux to the bus, the internal
+        FSM counter should point at the top of ROM (where we ensure the word
+        has invalid ECC bits). The unexpected_counter_change signal in
+        rom_ctrl_fsm goes high and generates a fatal alert if that counter is
+        perturbed in any way.
+      '''
+    },
+    {
+      name: "CHECKER.CTRL_FLOW.CONSISTENCY",
+      desc: '''
+        The main checker FSM steps on internal 'done' signals, coming
+        from its address counter, the KMAC response and its comparison
+        counter. If any of these are asserted at times we don't
+        expect, the FSM jumps to an invalid state. This triggers an
+        alert and will not set the external 'done' signal for pwrmgr
+        to continue boot.
+      '''
+    },
+    {
+      name: "CHECKER.FSM.LOCAL_ESC",
+      desc: '''
+        The main checker FSM moves to an invalid state on local escalation.
+      '''
+    },
+    {
+      name: "COMPARE.CTRL_FLOW.CONSISTENCY",
+      desc: '''
+        The hash comparison module triggers a fatal error if the checker FSM
+        triggers a second comparison after a reset. This is handled by the
+        start_alert signal in the rom_ctrl_compare module and could be
+        triggered if the checker FSM was somehow glitched to jump backwards.
+      '''
+    },
+    {
+      name: "COMPARE.CTR.CONSISTENCY",
+      desc: '''
+        The hash comparison module has an internal count (indexing 32-bit words
+        in the 256-bit digests). If this glitches to a nonzero value before the
+        comparison starts or to a value other than the last index after the
+        comparison ends then an fatal alert is generated. This is handled by
+        the wait_addr_alert and done_addr_alert signals in rom_ctrl_compare.
+      '''
+    },
+    {
+      name: "COMPARE.CTR.REDUN",
+      desc: '''
+        The hash comparison module has an internal count (indexing 32-bit words
+        in the 256-bit digests) implemented using a redundant counter module.
+        In case a mismatch is detected between the redundant counters a fatal
+        alert is generated.
+      '''
+    },
+    {
+      name: "FSM.SPARSE",
+      desc: '''
+        FSMs are sparsely encoded. There are two FSMs. The first is in
+        rom_ctrl_fsm. The second, simpler FSM is in rom_ctrl_compare.
+      '''
+    },
+    {
+      name: "MEM.SCRAMBLE",
+      desc: "The ROM is scrambled."
+    },
+    {
+      name: "MEM.DIGEST",
+      desc: "A cSHAKE digest is computed of the ROM contents."
+    },
+    {
+      name: "INTERSIG.MUBI",
+      desc: '''
+        Checker FSM 'done' signal is multi-bit encoded when passed to pwrmgr.
+        This signal is derived from the (multi-bit) sparse FSM state in the
+        rom_ctrl_fsm module.
+      '''
+    },
+    {
+      name: "BUS.INTEGRITY",
+      desc: '''
+        TL bus control and data signals are integrity protected (using the system-wide end-to-end
+        integrity scheme).
+      '''
+    },
+    { name: "BUS.LOCAL_ESC",
+      desc: '''
+        To avoid responding to a request with erroneous data, even though an
+        alert went out, the bus_rom_rvalid signal used to signal a response to
+        the ROM-side TL bus can only be high if no internal consistency error
+        has been spotted.
+      '''
+    }
+    {
+      name: "MUX.MUBI",
+      desc: '''
+        The mux that arbitrates between the checker and the bus is multi-bit
+        encoded. An invalid value generates a fatal alert with the sel_invalid
+        signal in the rom_ctrl_mux module.
+      '''
+    },
+    {
+      name: "MUX.CONSISTENCY",
+      desc: '''
+        The mux that arbitrates between the checker and the bus gives access to
+        the checker at the start of time and then switches to the bus, never
+        going back. If a glitch does cause it to switch back, a fatal alert is
+        generated with the sel_reverted or sel_q_reverted signals in the
+        rom_ctrl_mux module.
+      '''
+    },
+    {
+      name: "CTRL.REDUN",
+      desc: '''
+        Addresses from TL accesses are passed redundantly to the scrambled ROM
+        module, to ensure the address lines are not independently faultable
+        downstream of the bus integrity ECC check. See the bus_rom_prince_index
+        and bus_rom_rom_index signals in the rom_ctrl module.
+      '''
+    },
+    {
+      name: "CTRL.MEM.INTEGRITY"
+      desc: "End-to-end data/memory integrity scheme."
+    },
+    { name: "TLUL_FIFO.CTR.REDUN",
+      desc: "The TL-UL response FIFO pointers are implemented with duplicate counters."
+    }
+  ]
+  regwidth: "32"
+  registers: {
+    regs: [
+      { name: "FATAL_ALERT_CAUSE",
+        desc: '''
+          The cause of a fatal alert.
+
+          The bits of this register correspond to errors that can cause a fatal
+          alert. Software can read these bits to see what went wrong. Once set,
+          these bits cannot be cleared.
+        '''
+        swaccess: "ro",
+        hwaccess: "hwo",
+        fields: [
+          { bits: "0",
+            name: "checker_error",
+            resval: 0,
+            desc: "Set on a fatal error detected by the ROM checker."
+          }
+          { bits: "1",
+            name: "integrity_error",
+            resval: 0,
+            desc: "Set on an integrity error from the register interface."
+          }
+        ]
+      }
+
+      {
+        multireg: {
+          cname: "ROM_CTRL",
+          name: "DIGEST",
+          desc: "The digest computed from the contents of ROM"
+          count: "8"
+          swaccess: "ro"
+          hwaccess: "hrw"
+          fields: [
+            {
+              bits: "31:0"
+              name: "DIGEST"
+              desc: "32 bits of the digest"
+            }
+          ]
+          // Disable CSR checks for digest registers, since their values will
+          // change under the feet of the CSR package as the ROM checker computes
+          // a digest. These values are checked instead by the rom_ctrl TB.
+          tags: ["excl:CsrAllTests:CsrExclCheck"]
+        }
+      }
+      {
+        multireg: {
+          cname: "ROM_CTRL",
+          name: "EXP_DIGEST",
+          desc: "The expected digest, stored in the top words of ROM"
+          count: "8"
+          swaccess: "ro"
+          hwaccess: "hrw"
+          fields: [
+            {
+              bits: "31:0"
+              name: "DIGEST"
+              desc: "32 bits of the digest"
+            }
+          ]
+          // As with DIGEST, these values are checked by the rom_ctrl TB.
+          tags: ["excl:CsrAllTests:CsrExclCheck"]
+        }
+      }
+    ],
+  }
+  memory: {
+    rom: {}
+  }
+}

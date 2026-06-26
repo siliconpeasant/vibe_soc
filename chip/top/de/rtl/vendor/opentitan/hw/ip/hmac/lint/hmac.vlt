@@ -1,0 +1,10 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+//
+// waiver file for hmac
+
+`verilator_config
+
+// 1 bit adder to optimize the count ones logic
+lint_off -rule WIDTH -file "*/rtl/hmac.sv" -match "*RHS's SEL generates 1 bits*"

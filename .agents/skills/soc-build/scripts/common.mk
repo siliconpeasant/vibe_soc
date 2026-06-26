@@ -51,7 +51,6 @@ COMP_CMD = vcs -sverilog -full64 -timescale=1ns/1ps \
            -o $(SIM_DIR)/simv
 endif
 SIM_CMD  = $(SIM_DIR)/simv +vpdfile+$(SIM_DIR)/wave.vpd
-WAVE_CMD = dve -vpd $(SIM_DIR)/wave.vpd &
 endif
 
 # --------------- Verilator ----------
@@ -73,7 +72,6 @@ COMP_CMD = verilator --cc --exe --build --trace \
 endif
 SIM_CMD  = $(SIM_DIR)/obj_dir/V$(TOP_MODULE) \
            +trace +wavefile=$(SIM_DIR)/wave.vcd
-WAVE_CMD = gtkwave $(SIM_DIR)/wave.vcd &
 endif
 
 # --------------- Icarus -------------
@@ -88,7 +86,6 @@ COMP_CMD = iverilog -g2012 -o $(SIM_DIR)/sim.out \
            2>&1 | tee $(SIM_DIR)/compile.log
 endif
 SIM_CMD  = vvp $(SIM_DIR)/sim.out +dumpfile=$(SIM_DIR)/wave.vcd
-WAVE_CMD = gtkwave $(SIM_DIR)/wave.vcd &
 endif
 
 # --------------- Xcelium ------------
@@ -105,14 +102,13 @@ COMP_CMD = xrun -sv -timescale 1ns/1ps -access +rwc \
            2>&1 | tee $(SIM_DIR)/compile.log
 endif
 SIM_CMD  = xrun -R -input $(SIM_DIR)/wave.tcl
-WAVE_CMD = simvisdbutil $(SIM_DIR)/wave.shm &
 endif
 
 # =============================================================================
 # 公共目标
 # =============================================================================
 
-.PHONY: comp sim wave clean
+.PHONY: comp sim clean
 
 comp:
 	@echo "[COMP] Simulator: $(SIMULATOR) | Top: $(TOP_MODULE)"
@@ -124,9 +120,6 @@ sim: comp
 	@mkdir -p $(SIM_DIR)
 	$(SIM_CMD) | tee $(SIM_DIR)/sim.log
 
-wave:
-	@echo "[WAVE] Opening waveform ..."
-	$(WAVE_CMD)
 
 clean:
 	@echo "[CLEAN] Removing run artifacts ..."

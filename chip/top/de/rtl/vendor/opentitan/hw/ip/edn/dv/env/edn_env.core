@@ -1,0 +1,48 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:edn_env:0.1"
+description: "EDN DV UVM environment"
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:dv:ralgen
+      - lowrisc:dv:cip_lib
+      - lowrisc:dv:push_pull_agent
+      - lowrisc:dv:csrng_agent
+    files:
+      - edn_env_pkg.sv
+      - edn_if.sv
+      - edn_env_cfg.sv: {is_include_file: true}
+      - edn_env_cov.sv: {is_include_file: true}
+      - edn_virtual_sequencer.sv: {is_include_file: true}
+      - edn_scoreboard.sv: {is_include_file: true}
+      - edn_env.sv: {is_include_file: true}
+      - seq_lib/edn_vseq_list.sv: {is_include_file: true}
+      - seq_lib/edn_base_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_common_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_smoke_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_genbits_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_stress_all_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_intr_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_alert_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_err_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_disable_vseq.sv: {is_include_file: true}
+      - seq_lib/edn_disable_auto_req_mode_vseq.sv: {is_include_file: true}
+    file_type: systemVerilogSource
+
+generate:
+  ral:
+    generator: ralgen
+    parameters:
+      name: edn
+      ip_hjson: ../../data/edn.hjson
+    position: prepend
+
+targets:
+  default:
+    filesets:
+      - files_dv
+    generate:
+      - "!chip_level ? (ral)"

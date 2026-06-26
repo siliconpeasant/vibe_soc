@@ -1,0 +1,208 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  name:               "soc_proxy"
+  human_name:         "SoC Proxy"
+  one_line_desc:      "Facilitates the breakout of signals and buses internal to OpenTitan"
+  cip_id:             "38" // unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool
+  design_spec:        "../doc"
+  dv_doc:             "../doc/dv"
+  hw_checklist:       "../doc/checklist"
+  sw_checklist:       "/sw/ip/soc_proxy/dif/dif_soc_proxy"
+
+  revisions: [
+    {
+      version:            "1.0.0"
+      life_stage:         "L1"
+      design_stage:       "D0"
+      verification_stage: "N/A" // block-level verification not planned
+      notes:              "Verified at the top-level."
+    }
+  ]
+
+  clocking: [
+    { clock: "clk_i", reset: "rst_ni", primary: true }
+    { clock: "clk_aon_i", reset: "rst_por_ni" }
+  ]
+
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device", name: "core" }
+    { protocol: "tlul", direction: "device", name: "ctn" }
+  ]
+
+  available_input_list: [
+    { name: "soc_gpi", width: 16, desc: "soc general purpose input" }
+  ],
+  available_output_list: [
+    { name: "soc_gpo", width: 16, desc: "soc general purpose output" }
+  ],
+
+  alert_list: [
+    { name: "fatal_alert_intg"
+      desc: "Fatal bus integrity alert"
+    }
+  ]
+
+  wakeup_list: [
+    { name: "wkup_external_req"
+      desc: "External wakeup request"
+    }
+  ]
+
+  reset_request_list: [
+    { name: "rst_req_external"
+      desc: "External reset request"
+      enabled_after_reset: true
+    }
+  ]
+
+  inter_signal_list: [
+    { struct:  "tl_h2d"
+      package: "tlul_pkg"
+      type:    "uni"
+      name:    "dma_tl_h2d"
+      act:     "rcv"
+      desc:    "TL-UL host port for the DMA to egress into CTN (request part), synchronous"
+    }
+    { struct:  "tl_d2h"
+      package: "tlul_pkg"
+      type:    "uni"
+      name:    "dma_tl_d2h"
+      act:     "req"
+      desc:    "TL-UL host port for the DMA to egress into CTN (response part), synchronous"
+    }
+    { struct:  "tl_h2d"
+      package: "tlul_pkg"
+      type:    "uni"
+      name:    "misc_tl_h2d"
+      act:     "rcv"
+      desc:    "TL-UL host port for the MISC to egress into CTN (request part), synchronous"
+    }
+    { struct:  "tl_d2h"
+      package: "tlul_pkg"
+      type:    "uni"
+      name:    "misc_tl_d2h"
+      act:     "req"
+      desc:    "TL-UL host port for the MISC to egress into CTN (response part), synchronous"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "wkup_external_req"
+      act:     "req"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "rst_req_external"
+      act:     "req"
+    }
+    { struct:  "tl_h2d"
+      package: "tlul_pkg"
+      type:    "uni"
+      name:    "ctn_tl_h2d"
+      act:     "req"
+      desc:    "TL-UL host port for egress into CTN (request part), synchronous"
+    }
+    { struct:  "tl_d2h"
+      package: "tlul_pkg"
+      type:    "uni"
+      name:    "ctn_tl_d2h"
+      act:     "rcv"
+      desc:    "TL-UL host port for egress into CTN (response part), synchronous"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "i2c_lsio_trigger"
+      act:     "rcv"
+      desc:    "LSIO trigger signal from I2C"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "spi_host_lsio_trigger"
+      act:     "rcv"
+      desc:    "LSIO trigger signal from SPI Host"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "uart_lsio_trigger"
+      act:     "rcv"
+      desc:    "LSIO trigger signal from UART"
+    }
+    { struct:  "logic"
+      width:   8
+      type:    "uni"
+      name:    "soc_lsio_trigger"
+      act:     "rcv"
+      desc:    "LSIO trigger signal from SoC, synchronous"
+    }
+    { struct:  "lsio_trigger"
+      package: "dma_pkg"
+      type:    "uni"
+      name:    "dma_lsio_trigger"
+      act:     "req"
+      desc:    "Collated synchronous LSIO trigger signals for DMA"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "soc_wkup_async"
+      act:     "rcv"
+      desc:    "Wakeup request from SoC, asynchronous, level-encoded"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "soc_rst_req_async"
+      act:     "rcv"
+      desc:    "Reset request from SoC, asynchronous, level-encoded"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "soc_gpi_async"
+      act:     "req"
+      width:   16 // keep equal to `NumSocGpio`
+      desc:    "GPI from SoC, async"
+    }
+    { struct:  "logic"
+      type:    "uni"
+      name:    "soc_gpo_async"
+      act:     "rcv"
+      width:   16 // keep equal to `NumSocGpio`
+      desc:    "GPO from SoC, async"
+    }
+    { struct:  "logic"
+      width:   4
+      type:    "uni"
+      name:    "integrator_id"
+      act:     "rcv"
+      desc:    "Integrator ID signal used in BAT"
+    }
+  ]
+
+  regwidth: "32"
+
+  registers: {
+    core: [
+      {
+        name: "DUMMY"
+        desc: '''
+              Dummy register to keep the device port.
+              Always returns 0.
+              '''
+        swaccess: "ro"
+        hwaccess: "none"
+        fields: [
+          {
+            name: "dummy"
+            desc: "Dummy field"
+            bits: "0"
+            resval: 0
+          }
+        ]
+      }
+    ]
+  }
+
+  memory: {
+    ctn: {}
+  }
+}

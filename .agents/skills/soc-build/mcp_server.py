@@ -33,6 +33,7 @@ TEST_NAME_RE = re.compile(r"[A-Za-z0-9_.-]+")
 HDL_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_$]*")
 SEED_MATRIX_RE = re.compile(r"\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*")
 MCP_SERVER_ACTIVE_ENV = "SILICON_CREW_SOC_BUILD_MCP_ACTIVE"
+VERDI_SCOPE_CHOICES = {"de", "dv"}
 
 
 # ---------------------------------------------------------------------------
@@ -348,6 +349,35 @@ def soc_syn(module_dir: str, rtl_top: str = "") -> str:
     if rtl_top:
         variables["RTL_TOP"] = _hdl_identifier(rtl_top, "rtl_top")
     return _make(module_dir, ["syn"], variables, timeout=1200)
+
+
+@mcp.tool()
+def soc_verdi(
+    module_dir: str,
+    scope: str = "dv",
+    simulator: str = "vcs",
+    top_module: str = "",
+    test: str = "default",
+) -> str:
+    """打开模块的 Verdi GUI。
+
+    Args:
+        module_dir: 包含 Makefile 的模块目录
+        scope: de 只加载 RTL/source；dv 加载仿真数据库和波形
+        simulator: 仿真器，可选 iverilog / vcs / verilator / xcelium
+        top_module: 可选顶层模块名
+        test: 安全的测试名；用于选择模块 Makefile 中的测试配置
+    """
+    if scope not in VERDI_SCOPE_CHOICES:
+        raise ValueError("scope must be de or dv")
+    variables: dict[str, str | int] = {
+        "SUBDIR": scope,
+        "SIMULATOR": _simulator(simulator),
+        "TEST": _tests(test, "test"),
+    }
+    if top_module:
+        variables["TOP_MODULE"] = _hdl_identifier(top_module, "top_module")
+    return _make(module_dir, ["verdi"], variables, timeout=120)
 
 
 # ---------------------------------------------------------------------------

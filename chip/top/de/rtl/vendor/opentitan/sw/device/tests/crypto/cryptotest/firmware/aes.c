@@ -1,0 +1,179 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#include "sw/device/lib/crypto/include/aes.h"
+
+#include "sw/device/lib/base/memory.h"
+#include "sw/device/lib/crypto/include/datatypes.h"
+#include "sw/device/lib/crypto/include/integrity.h"
+#include "sw/device/lib/crypto/include/key_transport.h"
+#include "sw/device/lib/runtime/log.h"
+#include "sw/device/lib/testing/test_framework/ujson_ottf.h"
+#include "sw/device/lib/ujson/ujson.h"
+#include "sw/device/tests/crypto/cryptotest/json/aes_commands.h"
+#include "sw/device/tests/crypto/lib/crypto_test_lib.h"
+
+enum {
+  kAesBlockBytes = 128 / 8,
+  kAesBlockWords = kAesBlockBytes / sizeof(uint32_t),
+  kAesMaxKeyBytes = 256 / 8,
+  kAesMaxKeyWords = kAesMaxKeyBytes / 4,
+};
+
+// Arbitrary mask for testing (borrowed from aes_functest.c).
+static const uint32_t kKeyMask[8] = {
+    0x1b81540c, 0x220733c9, 0x8bf85383, 0x05ab50b4,
+    0x8acdcb7e, 0x15e76440, 0x8459b2ce, 0xdc2110cc,
+};
+
+status_t handle_aes_block(ujson_t *uj) {
+  cryptotest_aes_mode_t uj_mode;
+  cryptotest_aes_operation_t uj_op;
+  cryptotest_aes_padding_t uj_padding;
+  cryptotest_aes_data_t uj_data;
+  TRY(ujson_deserialize_cryptotest_aes_mode_t(uj, &uj_mode));
+  TRY(ujson_deserialize_cryptotest_aes_operation_t(uj, &uj_op));
+  TRY(ujson_deserialize_cryptotest_aes_padding_t(uj, &uj_padding));
+  TRY(ujson_deserialize_cryptotest_aes_data_t(uj, &uj_data));
+
+  otcrypto_aes_mode_t mode;
+  otcrypto_key_mode_t key_mode;
+  switch (uj_mode) {
+    case kCryptotestAesModeEcb:
+      mode = kOtcryptoAesModeEcb;
+      key_mode = kOtcryptoKeyModeAesEcb;
+      break;
+    case kCryptotestAesModeCbc:
+      mode = kOtcryptoAesModeCbc;
+      key_mode = kOtcryptoKeyModeAesCbc;
+      break;
+    case kCryptotestAesModeCfb:
+      mode = kOtcryptoAesModeCfb;
+      key_mode = kOtcryptoKeyModeAesCfb;
+      break;
+    case kCryptotestAesModeOfb:
+      mode = kOtcryptoAesModeOfb;
+      key_mode = kOtcryptoKeyModeAesOfb;
+      break;
+    case kCryptotestAesModeCtr:
+      mode = kOtcryptoAesModeCtr;
+      key_mode = kOtcryptoKeyModeAesCtr;
+      break;
+    default:
+      LOG_ERROR("Unrecognized AES block cipher mode: %d", uj_mode);
+      return INVALID_ARGUMENT();
+  }
+
+  otcrypto_aes_operation_t op;
+  switch (uj_op) {
+    case kCryptotestAesOperationEncrypt:
+      op = kOtcryptoAesOperationEncrypt;
+      break;
+    case kCryptotestAesOperationDecrypt:
+      op = kOtcryptoAesOperationDecrypt;
+      break;
+    default:
+      LOG_ERROR("Unrecognized AES operation: %d", uj_op);
+      return INVALID_ARGUMENT();
+  }
+
+  otcrypto_aes_padding_t padding;
+  switch (uj_padding) {
+    case kCryptotestAesPaddingPkcs7:
+      padding = kOtcryptoAesPaddingPkcs7;
+      break;
+    case kCryptotestAesPaddingIso9797M2:
+      padding = kOtcryptoAesPaddingIso9797M2;
+      break;
+    case kCryptotestAesPaddingNull:
+      padding = kOtcryptoAesPaddingNull;
+      break;
+    default:
+      LOG_ERROR("Unrecognized AES padding scheme: %d", uj_op);
+      return INVALID_ARGUMENT();
+  }
+
+  // Convert the data struct into cryptolib types
+  const size_t AES_IV_SIZE = 4;
+  uint32_t iv_buf[AES_IV_SIZE];
+  memcpy(iv_buf, uj_data.iv, AES_IV_SIZE * 4);
+  otcrypto_word32_buf_t iv =
+      OTCRYPTO_MAKE_BUF(otcrypto_word32_buf_t, iv_buf, kAesBlockWords);
+
+  otcrypto_const_byte_buf_t input = OTCRYPTO_MAKE_BUF(
+      otcrypto_const_byte_buf_t, uj_data.input, (size_t)uj_data.input_len);
+
+  // Select a random security level.
+  otcrypto_key_security_level_t sec_level;
+  TRY(determine_security_level(&sec_level));
+
+  // Build the key configuration
+  otcrypto_key_config_t config = {
+      .version = kOtcryptoLibVersion1,
+      .key_mode = key_mode,
+      .key_length = uj_data.key_length,
+      .hw_backed = kHardenedBoolFalse,
+      .security_level = sec_level,
+  };
+
+  size_t key_words = uj_data.key_length / sizeof(uint32_t);
+
+  uint32_t key_buf[kAesMaxKeyWords];
+  memcpy(key_buf, uj_data.key, uj_data.key_length);
+
+  uint32_t share0_data[kAesMaxKeyWords];
+  uint32_t share1_data[kAesMaxKeyWords];
+
+  for (size_t i = 0; i < key_words; ++i) {
+    share0_data[i] = key_buf[i] ^ kKeyMask[i];
+    share1_data[i] = kKeyMask[i];
+  }
+
+  otcrypto_const_word32_buf_t key_share0 =
+      OTCRYPTO_MAKE_BUF(otcrypto_const_word32_buf_t, share0_data, key_words);
+  otcrypto_const_word32_buf_t key_share1 =
+      OTCRYPTO_MAKE_BUF(otcrypto_const_word32_buf_t, share1_data, key_words);
+
+  uint32_t keyblob[2 * kAesMaxKeyWords];
+  otcrypto_blinded_key_t key = {
+      .config = config,
+      .keyblob_length = key_words * 2 * sizeof(uint32_t),
+      .keyblob = keyblob,
+  };
+
+  TRY(otcrypto_import_blinded_key(&key_share0, &key_share1, &key));
+
+  size_t padded_len_bytes;
+  otcrypto_aes_padded_plaintext_length((size_t)uj_data.input_len, padding,
+                                       &padded_len_bytes);
+  if (padded_len_bytes > AES_CMD_MAX_MSG_BYTES) {
+    return OUT_OF_RANGE();
+  }
+  uint32_t output_buf[padded_len_bytes / sizeof(uint32_t)];
+  otcrypto_byte_buf_t output = OTCRYPTO_MAKE_BUF(
+      otcrypto_byte_buf_t, (unsigned char *)output_buf, sizeof(output_buf));
+
+  otcrypto_aes(&key, &iv, mode, op, &input, padding, &output);
+
+  cryptotest_aes_output_t uj_output;
+  uj_output.output_len = padded_len_bytes;
+  memset(uj_output.output, 0, AES_CMD_MAX_MSG_BYTES);
+  memcpy(uj_output.output, output_buf, uj_output.output_len);
+  RESP_OK(ujson_serialize_cryptotest_aes_output_t, uj, &uj_output);
+  return OK_STATUS(0);
+}
+
+status_t handle_aes(ujson_t *uj) {
+  aes_subcommand_t cmd;
+  TRY(ujson_deserialize_aes_subcommand_t(uj, &cmd));
+  switch (cmd) {
+    case kAesSubcommandAesBlock:
+      return handle_aes_block(uj);
+      break;
+    default:
+      LOG_ERROR("Unrecognized AES subcommand: %d", cmd);
+      return INVALID_ARGUMENT();
+  }
+  return OK_STATUS(0);
+}

@@ -1,0 +1,178 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Security countermeasures testplan extracted from the IP Hjson using reggen.
+//
+// This testplan is auto-generated only the first time it is created. This is
+// because this testplan needs to be hand-editable. It is possible that these
+// testpoints can go out of date if the spec is updated with new
+// countermeasures. When `reggen` is invoked when this testplan already exists,
+// It checks if the list of testpoints is up-to-date and enforces the user to
+// make further manual updates.
+//
+// These countermeasures and their descriptions can be found here:
+// .../rv_dm/data/rv_dm.hjson
+//
+// It is possible that the testing of some of these countermeasures may already
+// be covered as a testpoint in a different testplan. This duplication is ok -
+// the test would have likely already been developed. We simply map those tests
+// to the testpoints below using the `tests` key.
+//
+// Please ensure that this testplan is imported in:
+// .../rv_dm/data/rv_dm_testplan.hjson
+{
+  testpoints: [
+    {
+      name: sec_cm_bus_integrity
+      desc: "Verify the countermeasure(s) BUS.INTEGRITY."
+      stage: V2S
+      tests: ["rv_dm_tl_intg_err"]
+    }
+    {
+      name: sec_cm_lc_hw_debug_en_intersig_mubi
+      desc: '''
+        Verify the countermeasure(s) LC_HW_DEBUG_EN.INTERSIG.MUBI.
+
+        The lc_hw_debug_en_i signal is encoded as lc_tx_t and is used through the
+        lc_hw_debug_en_gated signal when late debug enable is enabled (through the late_debug_enable
+        register or the otp_dis_rv_dm_late_debug_i pin). Bad values of this signal should be
+        interpreted as "Off", disabling debug and also memory/sba TL access.
+
+        When late debug is enabled, set this to a value other than On and check:
+
+        - No ndmreset is possible (true because the ndmreset_ack signal is gated)
+        - No debug request can be sent to the core through debug_req_o
+        - Instruction fetch requests through the memory window are not successful.
+        - The "mem" and "sba" TL interfaces are both disabled.
+
+      Note that both of the tests that implement this testpoint do so with either late debug enable
+      active (so using lc_hw_debug_en_i) or with it inactive (so using otp_dis_rv_dm_late_debug_i),
+      with a 50% chance of each.
+      '''
+      stage: V2S
+      tests: ["rv_dm_debug_disabled", "rv_dm_sba_debug_disabled"]
+    }
+    {
+      name: sec_cm_lc_hw_debug_clr_intersig_mubi
+      desc: '''
+        Verify the countermeasure(s) LC_HW_DEBUG_CLR.INTERSIG.MUBI.
+
+        The lc_hw_debug_clr_i signal is encoded as lc_tx_t. Bad values of this signal should be
+        interpreted as "On", disabling debug access.
+        '''
+      stage: V2S
+      tests: [] # TODO(#27435)
+    }
+    {
+      name: sec_cm_lc_dft_en_intersig_mubi
+      desc: '''
+        Verify the countermeasure(s) LC_DFT_EN.INTERSIG.MUBI.
+
+        This is analogous to the sec_cm_lc_dft_en_intersig_mubi testpoint. This time, we check when
+        late debug enable is not active, so the corrupted signal is lc_dft_en_i. Otherwise, the
+        description is identical and is tested by the same tests (when late debug enable is
+        randomised to be Off).
+
+      '''
+      stage: V2S
+      tests: ["rv_dm_debug_disabled", "rv_dm_sba_debug_disabled"]
+    }
+    {
+      name: sec_cm_otp_dis_rv_dm_late_debug_intersig_mubi
+      desc: '''
+        Verify the countermeasure(s) OTP_DIS_RV_DM_LATE_DEBUG.INTERSIG.MUBI.
+
+        Control of whether to use late debug is governed by both the otp_dis_rv_dm_late_debug_i port
+        and the late_debug_enable register. In both cases, bad values of the signal are interpreted
+        as "Off", causing debug enable to be controlled by the lc_dft_en_i port instead of the
+        lc_hw_debug_en_i port.
+
+        To test that this mubi encoding is interpreted as expected, disable late debug enablement by
+        setting both the otp_dis_rv_dm_late_debug_i port and the late_debug_enable register to
+        values that are not strict mubi true values. Then check that whether debug is enabled is
+        caused by lc_dft_en_i.
+
+        This is actually handled by rv_dm_base_vseq, which controls half of its runs with an invalid
+        late_debug_enable signal. As such, most tests will verify this testpoint.
+
+      '''
+      stage: V2S
+      tests: ["rv_dm_smoke"]
+    }
+    {
+      name: sec_cm_dm_en_ctrl_lc_gated
+      desc: '''
+        Verify the countermeasure(s) DM_EN.CTRL.LC_GATED.
+
+        The multibit nature of the debug enable signal is covered in
+        sec_cm_lc_hw_debug_en_intersig_mubi. However, this testpoint doesn't address the way there
+        are separate buffered copies of the enable signal. This testpoint addresses that.
+
+        There are five copies of the lifecycle enable signal:
+
+        - LcEnFetch controls whether hart fetch requests the debug module's memory, which are made
+          over TL, is relayed to the debug module. (This is implemented with the en_ifetch_i signal
+          in tlul_adapter_reg).
+
+        - LcEnRom controls whether hart access to debug module's memory is possible at all, gating
+          TL transactions.
+
+        - LcEnSba controls whether SBA (system bus access) transactions are relayed from the debug
+          module to the TL bus.
+
+        - LcEnDebugReq controls whether a debug request from the debug module (which ultimately will
+          have come from a DMI command) gets relayed to the hart.
+
+        - LcEnResetReq controls whether a request for ndmreset from the debug module is relayed to
+          the rest of the system.
+
+        These are buffered from each other to make sure that corrupting one won't affect the other
+        copies. With debug disabled, force one of the copies. Verify that, while this feature is now
+        active, none of the other features become active.
+
+      '''
+      stage: V2S
+      tests: ["rv_dm_buffered_enable"]
+    }
+    {
+      name: sec_cm_sba_tl_lc_gate_fsm_sparse
+      desc: '''
+        Verify the countermeasure SBA_TL_LC_GATE.FSM.SPARSE.
+
+        The gate at u_tlul_lc_gate_sba has a sparse FSM, so a fault injection of only a couple of
+        bits cannot change between valid values. Inject a 1- or 2-bit error and check that the
+        fatal_fault alert is triggered.
+
+      '''
+      stage: V2S
+      tests: ["rv_dm_sparse_lc_gate_fsm"]
+    }
+    {
+      name: sec_cm_mem_tl_lc_gate_fsm_sparse
+      desc: '''
+        Verify the countermeasure MEM_TL_LC_GATE.FSM.SPARSE.
+
+        The gate at u_tlul_lc_gate_rom has a sparse FSM, so a fault injection of only a couple of
+        bits cannot change between valid values. Inject a 1- or 2-bit error and check that the
+        fatal_fault alert is triggered.
+
+      '''
+      stage: V2S
+      tests: ["rv_dm_sparse_lc_gate_fsm"]
+    }
+    {
+      name: sec_cm_exec_ctrl_mubi
+      desc: '''
+        Verify the countermeasure EXEC.CTRL.MUBI.
+
+        The multi-bit nature of the signal is checked by all tests that disable debug (since they do
+        so by choosing an arbitrary value other than On). An even tighter check for this
+        countermeasure comes from the rv_dm_buffered_enable test, which ensures fetch requests are
+        more tightly controlled than arbitrary TL requests.
+      '''
+      stage: V2S
+      tests: ["rv_dm_buffered_enable"]
+    }
+  ]
+}

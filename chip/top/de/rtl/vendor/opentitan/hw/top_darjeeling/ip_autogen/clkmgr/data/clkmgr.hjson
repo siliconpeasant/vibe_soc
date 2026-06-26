@@ -1,0 +1,571 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+# CLKMGR register template
+#
+{
+  name:               "clkmgr",
+  human_name:         "Clock Manager",
+  one_line_desc:      "Derives and monitors on-chip clock signals, handles clock gating requests from power manager and software",
+  one_paragraph_desc: '''
+  Clock Manager derives on-chip clocks from root clock signals provided by Analog Sensor Top (AST).
+  Input and output clocks may be asynchronous to each other.
+  During clock derivation, Clock Manager can divide clocks to lower frequencies and gate clocks based on control signals from the power manager and to a limited extent from software.
+  For example, the idle status of relevant hardware blocks is tracked and clock gating requests from software are ignored as long as these blocks are active.
+  Further security features include switchable clock jitter, continuous monitoring of clock frequencies, and various countermeasures to deter fault injection (FI) attacks.
+  '''
+  // Unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool.
+  cip_id:             "4",
+  design_spec:        "../doc",
+  dv_doc:             "../doc/dv",
+  hw_checklist:       "../doc/checklist",
+  sw_checklist:       "/sw/device/lib/dif/dif_clkmgr",
+  revisions: [
+    {
+      version:            "1.0.1",
+      life_stage:         "L1",
+      design_stage:       "D3",
+      verification_stage: "V2S",
+      dif_stage:          "S2",
+    }
+  ]
+  scan: "true",
+  clocking: [
+    {clock: "clk_i", reset: "rst_ni", primary: true},
+    {reset: "rst_root_ni"},
+    {clock: "clk_main_i", reset: "rst_main_ni"},
+    {clock: "clk_io_i", reset: "rst_io_ni"},
+    {clock: "clk_aon_i", reset: "rst_aon_ni"},
+    {reset: "rst_root_main_ni"},
+    {reset: "rst_root_io_ni"},
+  ]
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device" }
+  ],
+  alert_list: [
+    { name: "recov_fault",
+      desc: '''
+      This recoverable alert is triggered when there are measurement errors.
+      '''
+    }
+    { name: "fatal_fault",
+      desc: '''
+      This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected.
+      '''
+    }
+  ],
+  regwidth: "32",
+  param_list: [
+    { name: "NumGroups",
+      desc: "Number of clock groups",
+      type: "int",
+      default: "7",
+      local: "true"
+    },
+    { name: "NumSwGateableClocks",
+      desc: "Number of SW gateable clocks",
+      type: "int",
+      default: "1",
+      local: "true"
+    },
+    { name: "NumHintableClocks",
+      desc: "Number of hintable clocks",
+      type: "int",
+      default: "4",
+      local: "true"
+    },
+  ],
+
+  features: [
+    { name: "CLKMGR.ENABLE.IO",
+      desc: "Gating of IO peripheral clock."
+    }
+    { name: "CLKMGR.HINT.AES",
+      desc: "Gating of AES transactional clock."
+    }
+    { name: "CLKMGR.HINT.HMAC",
+      desc: "Gating of HMAC transactional clock."
+    }
+    { name: "CLKMGR.HINT.KMAC",
+      desc: "Gating of KMAC transactional clock."
+    }
+    { name: "CLKMGR.HINT.OTBN",
+      desc: "Gating of OTBN transactional clock."
+    }
+    { name: "CLKMGR.MEAS_CTRL.REGWEN",
+      desc: '''Control modification of all clock frequency and timeout
+            measurements.
+            '''
+    }
+    { name: "CLKMGR.MEAS_CTRL.IO",
+      desc: "Frequency and timeout measurements of IO clock."
+    }
+    { name: "CLKMGR.MEAS_CTRL.MAIN",
+      desc: "Frequency and timeout measurements of MAIN clock."
+    }
+    { name: "CLKMGR.MEAS_CTRL.RECOV_ERR",
+      desc: "Frequency and timeout measurements can flag recoverable errors."
+    }
+    { name: "CLKMGR.JITTER.REGWEN",
+      desc: "Control modification of clock jitter enable."
+    }
+    { name: "CLKMGR.JITTER.ENABLE",
+      desc: "Enable clock jitter."
+    }
+    { name: "CLKMGR.ALERT_HANDLER.CLOCK_STATUS",
+      desc: "Inform alert handler about clock enable status for each clock."
+    }
+]
+
+  inter_signal_list: [
+    { struct:  "clkmgr_out",
+      type:    "uni",
+      name:    "clocks",
+      act:     "req",
+      package: "clkmgr_pkg",
+    },
+
+    { struct:  "clkmgr_cg_en",
+      type:    "uni",
+      name:    "cg_en",
+      act:     "req",
+      package: "clkmgr_pkg",
+    },
+
+    { struct:  "mubi4",
+      type:    "uni",
+      name:    "jitter_en",
+      act:     "req",
+      package: "prim_mubi_pkg"
+    },
+
+  // Exported clocks
+
+    { struct:  "pwr_clk",
+      type:    "req_rsp",
+      name:    "pwr",
+      act:     "rsp",
+    },
+
+    { struct:  "mubi4",
+      type:    "uni",
+      name:    "idle",
+      act:     "rcv",
+      package: "prim_mubi_pkg",
+      width:   "4"
+    },
+  ],
+
+  countermeasures: [
+    { name: "BUS.INTEGRITY",
+      desc: "End-to-end bus integrity scheme."
+    },
+    { name: "TIMEOUT.CLK.BKGN_CHK",
+      desc: "Background check for clock timeout."
+    },
+    { name: "MEAS.CLK.BKGN_CHK",
+      desc: "Background check for clock frequency."
+    },
+    { name: "MEAS.CONFIG.SHADOW",
+      desc: "Measurement configurations are shadowed."
+    }
+    { name: "IDLE.INTERSIG.MUBI",
+      desc: "Idle inputs are multibit encoded."
+    }
+    { name: "JITTER.CONFIG.MUBI",
+      desc: "The jitter enable configuration is multibit encoded."
+    }
+    { name: "IDLE.CTR.REDUN",
+      desc: "Idle counter is duplicated."
+    }
+    { name: "MEAS.CONFIG.REGWEN",
+      desc: "The measurement controls protected with regwen."
+    }
+    { name: "CLK_CTRL.CONFIG.REGWEN",
+      desc: "Software controlled clock requests are proteced with regwen."
+    }
+
+  ]
+
+  registers: [
+    // Skip 3 registers for SW compatibility on the register layout if no derived clocks are in use
+    { reserved: "3" }
+
+    { name: "JITTER_REGWEN",
+      desc: "Jitter write enable",
+      swaccess: "rw0c",
+      hwaccess: "none",
+      fields: [
+        { bits: "0",
+          name: "EN",
+          resval: "1"
+          desc: '''
+            When 1, the value of !!JITTER_ENABLE can be changed.  When 0, writes have no
+            effect.
+          '''
+        },
+      ]
+    },
+
+    { name: "JITTER_ENABLE",
+      desc: '''
+        Enable jittery clock
+      ''',
+      swaccess: "rw",
+      hwaccess: "hro",
+      regwen: "JITTER_REGWEN"
+      fields: [
+        {
+          mubi: true,
+          bits: "3:0",
+          name: "VAL",
+          desc: '''
+            Enable jittery clock.
+            A value of kMultiBitBool4False disables the jittery clock,
+            while all other values enable jittery clock.
+          ''',
+          resval: false
+          // avoid writing random values to this register as it could trigger transient checks
+          // in mubi sync
+          tags: ["excl:CsrAllTests:CsrExclWrite"]
+        }
+      ]
+    },
+
+    { name: "CLK_ENABLES",
+      desc: '''
+        Clock enable for software gateable clocks.
+        These clocks are directly controlled by software.
+      ''',
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        {
+          bits: "0",
+          name: "CLK_IO_PERI_EN",
+          resval: 1,
+          desc: '''
+            0 CLK_IO_PERI is disabled.
+            1 CLK_IO_PERI is enabled.
+          '''
+        }
+      ]
+      // the CLK_ENABLE register cannot be written.
+      // During top level randomized tests, it is possible to disable the clocks and then access
+      // a register in the disabled block.  This would lead to a top level hang.
+      tags: ["excl:CsrAllTests:CsrExclAll"]
+    },
+
+    { name: "CLK_HINTS",
+      desc: '''
+        Clock hint for software gateable transactional clocks during active mode.
+        During low power mode, all clocks are gated off regardless of the software hint.
+
+        Transactional clocks are not fully controlled by software.  Instead software provides only a disable hint.
+
+        When software provides a disable hint, the clock manager checks to see if the associated hardware block is idle.
+        If the hardware block is idle, then the clock is disabled.
+        If the hardware block is not idle, the clock is kept on.
+
+        For the enable case, the software hint is immediately honored and the clock turned on.  Hardware does not provide any
+        feedback in this case.
+      ''',
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        {
+          bits: "0",
+          name: "CLK_MAIN_AES_HINT",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_AES can be disabled.
+            1 CLK_MAIN_AES is enabled.
+          '''
+        }
+        {
+          bits: "1",
+          name: "CLK_MAIN_HMAC_HINT",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_HMAC can be disabled.
+            1 CLK_MAIN_HMAC is enabled.
+          '''
+        }
+        {
+          bits: "2",
+          name: "CLK_MAIN_KMAC_HINT",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_KMAC can be disabled.
+            1 CLK_MAIN_KMAC is enabled.
+          '''
+        }
+        {
+          bits: "3",
+          name: "CLK_MAIN_OTBN_HINT",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_OTBN can be disabled.
+            1 CLK_MAIN_OTBN is enabled.
+          '''
+        }
+      ]
+      // the CLK_HINT register cannot be written.
+      // During top level randomized tests, it is possible to disable the clocks to transactional blocks
+      // and then access a register in the disabled block.  This would lead to a top level hang.
+      tags: ["excl:CsrAllTests:CsrExclAll"]
+    },
+
+    { name: "CLK_HINTS_STATUS",
+      desc: '''
+        Since the final state of !!CLK_HINTS is not always determined by software,
+        this register provides read feedback for the current clock state.
+
+      ''',
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        {
+          bits: "0",
+          name: "CLK_MAIN_AES_VAL",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_AES is disabled.
+            1 CLK_MAIN_AES is enabled.
+          '''
+        }
+        {
+          bits: "1",
+          name: "CLK_MAIN_HMAC_VAL",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_HMAC is disabled.
+            1 CLK_MAIN_HMAC is enabled.
+          '''
+        }
+        {
+          bits: "2",
+          name: "CLK_MAIN_KMAC_VAL",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_KMAC is disabled.
+            1 CLK_MAIN_KMAC is enabled.
+          '''
+        }
+        {
+          bits: "3",
+          name: "CLK_MAIN_OTBN_VAL",
+          resval: 1,
+          desc: '''
+            0 CLK_MAIN_OTBN is disabled.
+            1 CLK_MAIN_OTBN is enabled.
+          '''
+        }
+      ]
+      // the CLK_HINT_STATUS register is read-only and cannot be checked.
+      // This register's value depends on the IDLE inputs, so cannot be predicted.
+      tags: ["excl:CsrNonInitTests:CsrExclCheck:CsrExclCheck"]
+    },
+
+    { name: "MEASURE_CTRL_REGWEN",
+      desc: "Measurement control write enable",
+      swaccess: "rw0c",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0",
+          name: "EN",
+          resval: "1"
+          desc: '''
+            When 1, the value of the measurement control can be set.  When 0, writes have no
+            effect.
+          '''
+        },
+      ]
+    },
+    { name: "IO_MEAS_CTRL_EN",
+      desc: '''
+        Enable for measurement control
+      ''',
+      regwen: "MEASURE_CTRL_REGWEN",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      async: "clk_io_i",
+      fields: [
+        {
+          bits: "3:0",
+          name: "EN",
+          desc: "Enable measurement for io",
+          mubi: true,
+          resval: false,
+        },
+      ]
+      // Measurements can cause recoverable errors depending on the
+      // thresholds which randomized CSR tests will not predict correctly.
+      // To provide better CSR coverage we allow writing the threshold
+      // fields, but not enabling the counters.
+      tags: ["excl:CsrAllTests:CsrExclWrite"]
+    },
+
+    { name: "IO_MEAS_CTRL_SHADOWED",
+      desc: '''
+        Configuration controls for io measurement.
+
+        The threshold fields are made wider than required (by 1 bit) to ensure
+        there is room to adjust for measurement inaccuracies.
+      ''',
+      regwen: "MEASURE_CTRL_REGWEN",
+      swaccess: "rw",
+      hwaccess: "hro",
+      async: "clk_io_i",
+      shadowed: "true",
+      update_err_alert: "recov_fault",
+      storage_err_alert: "fatal_fault",
+      fields: [
+        {
+          bits: "8:0",
+          name: "HI",
+          desc: "Max threshold for io measurement",
+          resval: "138"
+        },
+
+        {
+          bits: "17:9",
+          name: "LO",
+          desc: "Min threshold for io measurement",
+          resval: "118"
+        },
+      ]
+    },
+    { name: "MAIN_MEAS_CTRL_EN",
+      desc: '''
+        Enable for measurement control
+      ''',
+      regwen: "MEASURE_CTRL_REGWEN",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      async: "clk_main_i",
+      fields: [
+        {
+          bits: "3:0",
+          name: "EN",
+          desc: "Enable measurement for main",
+          mubi: true,
+          resval: false,
+        },
+      ]
+      // Measurements can cause recoverable errors depending on the
+      // thresholds which randomized CSR tests will not predict correctly.
+      // To provide better CSR coverage we allow writing the threshold
+      // fields, but not enabling the counters.
+      tags: ["excl:CsrAllTests:CsrExclWrite"]
+    },
+
+    { name: "MAIN_MEAS_CTRL_SHADOWED",
+      desc: '''
+        Configuration controls for main measurement.
+
+        The threshold fields are made wider than required (by 1 bit) to ensure
+        there is room to adjust for measurement inaccuracies.
+      ''',
+      regwen: "MEASURE_CTRL_REGWEN",
+      swaccess: "rw",
+      hwaccess: "hro",
+      async: "clk_main_i",
+      shadowed: "true",
+      update_err_alert: "recov_fault",
+      storage_err_alert: "fatal_fault",
+      fields: [
+        {
+          bits: "8:0",
+          name: "HI",
+          desc: "Max threshold for main measurement",
+          resval: "138"
+        },
+
+        {
+          bits: "17:9",
+          name: "LO",
+          desc: "Min threshold for main measurement",
+          resval: "118"
+        },
+      ]
+    },
+
+    { name: "RECOV_ERR_CODE",
+      desc: "Recoverable Error code",
+      swaccess: "rw1c",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "0",
+          name: "SHADOW_UPDATE_ERR",
+          resval: 0
+          desc: '''
+            One of the shadow registers encountered an update error.
+          '''
+        },
+        {
+          bits: "1",
+          name: "IO_MEASURE_ERR",
+          resval: 0,
+          desc: '''
+            io has encountered a measurement error.
+          '''
+        },
+        {
+          bits: "2",
+          name: "MAIN_MEASURE_ERR",
+          resval: 0,
+          desc: '''
+            main has encountered a measurement error.
+          '''
+        },
+        {
+          bits: "3",
+          name: "IO_TIMEOUT_ERR",
+          resval: 0,
+          desc: '''
+            io has timed out.
+          '''
+        }
+        {
+          bits: "4",
+          name: "MAIN_TIMEOUT_ERR",
+          resval: 0,
+          desc: '''
+            main has timed out.
+          '''
+        }
+      ]
+    },
+
+    { name: "FATAL_ERR_CODE",
+      desc: "Error code",
+      swaccess: "ro",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0",
+          name: "REG_INTG",
+          resval: 0
+          desc: '''
+            Register file has experienced a fatal integrity error.
+          '''
+        },
+        { bits: "1",
+          name: "IDLE_CNT",
+          resval: 0
+          desc: '''
+            One of the idle counts encountered a duplicate error.
+          '''
+        },
+        { bits: "2",
+          name: "SHADOW_STORAGE_ERR",
+          resval: 0
+          desc: '''
+            One of the shadow registers encountered a storage error.
+          '''
+        },
+      ]
+    },
+  ]
+}

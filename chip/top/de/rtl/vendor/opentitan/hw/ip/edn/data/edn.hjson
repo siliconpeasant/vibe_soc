@@ -1,0 +1,657 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name:               "edn",
+  human_name:         "Entropy Distribution Network",
+  one_line_desc:      "Distributes random numbers produced by CSRNG to hardware blocks",
+  one_paragraph_desc: '''
+  Entropy Distribution Network (EDN) interfaces various hardware blocks consuming random numbers to CSRNG.
+  Besides adapting bus widths, it provides a set of registers for firmware to manage the corresponding CSRNG application interface.
+  This allows configuring EDN to automatically send reseed and generate commands to the connected CSRNG context in order to continuously supply consumers with entropy of defined quality.
+  Additionally, EDN supports a boot-time request mode, in which it supplies a limited amount of potentially lower-quality entropy with less firmware interaction immediately at boot-time or after reset.
+  '''
+  // Unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool.
+  cip_id:             "6",
+  design_spec:        "../doc",
+  dv_doc:             "../doc/dv",
+  hw_checklist:       "../doc/checklist",
+  sw_checklist:       "/sw/device/lib/dif/dif_edn",
+  version:            "2.0.0",
+  life_stage:         "L1",
+  design_stage:       "D2S",
+  verification_stage: "V2S",
+  dif_stage:          "S2",
+  clocking: [{clock: "clk_i", reset: "rst_ni"}],
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device" }
+  ],
+  interrupt_list: [
+    { name: "edn_cmd_req_done"
+      desc: "Asserted when a software CSRNG request has completed."}
+    { name: "edn_fatal_err"
+      desc: "Asserted when a FIFO error occurs."}
+  ],
+  alert_list: [
+    { name: "recov_alert",
+      desc: "This alert is triggered when entropy bus data matches on consecutive clock cycles."
+    }
+    { name: "fatal_alert",
+      desc: '''
+            This alert triggers (i) if an illegal state machine state is reached, or
+            (ii) if a fatal integrity failure is detected on the TL-UL bus.
+            ''',
+    }
+  ],
+  inter_signal_list: [
+    { struct:  "csrng",  // csrng_req_t, csrng_rsp_t
+      type:    "req_rsp",
+      name:    "csrng_cmd",
+      act:     "req",
+      width:   "1",
+      package: "csrng_pkg",
+      desc:    '''
+               EDN supports a single CSRNG application interface.
+               ''',
+    }
+    { struct:  "edn",  // edn_req_t, edn_rsp_t
+      type:    "req_rsp",
+      name:    "edn",
+      act:     "rsp",
+      width:   "NumEndPoints",
+      default: "'0",
+      desc:    '''
+               Every endpoint has its own peripheral port.
+               ''',
+      package: "edn_pkg",
+    }
+  ],
+  // Keep the following parameters in line with the literal values defined in the corresponding registers below
+  param_list: [
+    { name:    "NumEndPoints",
+      type:    "int unsigned",
+      default: "8",
+      desc:    "Number of endpoints",
+      local:   "true",
+      expose:  "true"
+    },
+    { name:    "EdnBootInsCmdResval",
+      type:    "logic [31:0]",
+      default: "32'h901",
+      desc:    "Reset value for the boot_ins_cmd register.",
+      local:   "true",
+    },
+    { name:    "EdnBootGenCmdResval",
+      type:    "logic [31:0]",
+      default: "32'hfff003",
+      desc:    "Reset value for the boot_gen_cmd register.",
+      local:   "true",
+    },
+    { name:    "CtrlResval",
+      type:    "logic [31:0]",
+      default: "32'h9999",
+      desc:    "Reset value for the ctrl register.",
+      local:   "true",
+    },
+    { name:    "MaxNumReqsBetweenReseedsResval",
+      type:    "logic [31:0]",
+      default: "32'h0",
+      desc:    "Reset value for the max_num_reqs_between_reseeds register.",
+      local:   "true",
+    },
+  ],
+  features: [
+    {
+      name: "EDN.MODE.BOOT"
+      desc: '''
+            In boot-time request mode, EDN plays a fully hardware-controlled and fixed command sequence consisting of a single `instantiate` and a single `generate` command but no `reseed` commands.
+            EDN delivers a fixed amount of entropy only in this mode (4K 128-bit blocks).
+            '''
+    },
+    {
+      name: "EDN.MODE.AUTO"
+      desc: '''
+            The purpose of the auto request mode is to continuously deliver entropy to consuming endpoints after the system has booted.
+            To this end, EDN keeps replaying a sequence of `generate` and `reseed` commands, which can optionally come with additional data, provided by firmware via the !!RESEED_CMD and !!GENERATE_CMD registers, respectively.
+            The first `instantiate` command must be provided by firmware through the !!SW_CMD_REQ register.
+            '''
+    },
+    {
+      name: "EDN.MODE.SW"
+      desc: '''
+            In software port mode, EDN is fully software controlled.
+            It will play any commands provided by firmware via the !!SW_CMD_REQ register.
+            Firmware should check the !!SW_CMD_STS register to see if the command interface is ready before issuing a new command, and whether the command completed successfully afterwards.
+            '''
+    },
+    {
+      name: "EDN.TRACK_SEED_COMPLIANCE"
+      desc: '''
+            The entropy complex modules, including EDN, track whether seeds or the entropy bits generated using those seeds have been derived from FIPS/CC compliant entropy.
+            EDN forwards this information to entropy consuming endpoints alongside the delivered entropy bits using the `edn_fips` bit.
+            '''
+    },
+    {
+      name: "EDN.BUS_CMP_ALERT"
+      desc: '''
+            Entropy bits subsequently received from CSRNG are compared to each other.
+            In case two values match, a recoverable alert is signaled and the !!RECOV_ALERT_STS.EDN_BUS_CMP_ALERT bit is set.
+            '''
+    },
+  ],
+  countermeasures: [
+    { name: "CONFIG.REGWEN"
+      desc: "Registers are protected from writes."
+    }
+    { name: "CONFIG.MUBI"
+      desc: "Registers have multi-bit encoded fields."
+    }
+    { name: "MAIN_SM.FSM.SPARSE"
+      desc: "The EDN main state machine uses a sparse state encoding."
+    }
+    { name: "ACK_SM.FSM.SPARSE"
+      desc: "The EDN ACK state machine uses a sparse state encoding."
+    }
+    { name: "FIFO.CTR.REDUN"
+      desc: "The FIFO pointers of several FIFOs are implemented with duplicate counters."
+    }
+    { name: "CTR.REDUN"
+      desc: "Counter hardening on the generate command maximum requests counter."
+    }
+    { name: "MAIN_SM.CTR.LOCAL_ESC"
+      desc: "A mismatch detected inside any EDN counter moves the main state machine into a terminal error state."
+    }
+    { name: "CS_RDATA.BUS.CONSISTENCY"
+      desc: "Comparison on successive bus values for genbits returned from csrng that will distribute over the endpoint buses."
+    }
+    { name: "TILE_LINK.BUS.INTEGRITY"
+      desc: "Tilelink end-to-end bus integrity scheme."
+    }
+  ],
+  regwidth: "32",
+  registers: [
+    { name: "REGWEN",
+      desc: "Register write enable for all control registers",
+      swaccess: "rw0c",
+      hwaccess: "none",
+      fields: [
+        { bits: "0",
+          desc: '''
+                When true, the CTRL can be written by software.
+                When false, this field read-only. Defaults true, write zero to clear.
+                Note that this needs to be cleared after initial configuration at boot in order to
+                lock in the listed register settings.
+                '''
+          resval: 1
+        },
+      ]
+    },
+    { name: "CTRL",
+      desc: "EDN control register",
+      swaccess: "rw",
+      hwaccess: "hro",
+      regwen: "REGWEN",
+      tags: [// Keep HW from affecting other registers.
+                "excl:CsrAllTests:CsrExclWrite"]
+     fields: [
+        { bits: "3:0",
+          name: "EDN_ENABLE",
+          mubi: true,
+          desc: '''
+                Setting this field to kMultiBitBool4True enables the EDN module. The modules of the
+                entropy complex may only be enabled and disabled in a specific order, see
+                Programmers Guide for details.
+                '''
+          // keep this in line with the resval parameters above
+          resval: false
+        },
+        { bits: "7:4",
+          name: "BOOT_REQ_MODE",
+          mubi: true,
+          desc: '''
+                Setting this field to kMultiBitBool4True enables the boot-time request mode.
+                In this mode, EDN automatically sends a boot-time request to the CSRNG application interface.
+                The purpose of this mode is to request entropy as fast as possible after reset, and during chip boot time.
+
+                Note that this takes precedence over the AUTO_REQ_MODE field: If both fields are set, EDN enters boot-time request mode.
+                If none of the fields are set, EDN enters Software Port Mode upon enabling.
+                '''
+          // keep this in line with the resval parameters above
+          resval: false
+        },
+        { bits: "11:8",
+          name: "AUTO_REQ_MODE",
+          mubi: true,
+          desc: '''
+                Setting this field to kMultiBitBool4True enables auto request mode.
+                In this mode, EDN automatically sends `generate` and `reseed` command requests to the CSRNG application interface.
+                The purpose of this mode is to continuously deliver entropy to endpoints without firmware intervention.
+
+                For this to work, firmware has to 1) configure the !!GENERATE_CMD, !!RESEED_CMD, and !!MAX_NUM_REQS_BETWEEN_RESEEDS registers, and 2) to issue the first `instantiate` command via the !!SW_CMD_REQ register.
+                Once this command has been acknowledged by CSRNG, the first `generate` command is sent out automatically, and a `reseed` command is sent after every MAX_NUM_REQS_BETWEEN_RESEEDS number of `generate` commands.
+
+                Note that the BOOT_REQ_MODE field takes precedence over this field: If both fields are set, EDN enters boot-time request mode.
+                If none of the fields are set, EDN enters Software Port Mode upon enabling.
+                '''
+          // keep this in line with the resval parameters above
+          resval: false
+        },
+        { bits: "15:12",
+          name: "CMD_FIFO_RST",
+          mubi: true,
+          desc: '''
+                Setting this field to kMultiBitBool4True clears the two command FIFOs: the
+                RESEED_CMD FIFO and the GENERATE_CMD FIFO. This field must be
+                set to the reset state by software before any further commands can be issued to
+                these FIFOs.
+                '''
+          // keep this in line with the resval parameters above
+          resval: false
+        },
+      ]
+    },
+    { name: "BOOT_INS_CMD",
+      desc: "EDN boot instantiate command register",
+      swaccess: "rw",
+      hwaccess: "hro",
+      tags: [// Keep HW from affecting other registers.
+                "excl:CsrAllTests:CsrExclWrite"]
+      fields: [
+        { bits: "31:0",
+          name: "BOOT_INS_CMD",
+          desc: '''
+                This field is used as the value for the `instantiate` command at boot time.
+
+                See [Command Header](../../csrng/doc/theory_of_operation.md#command-header) for the meaning of the individual bits.
+                Note that the hardware only supports a value of 0 for the `clen` field.
+                If `clen` has a different value, EDN will hang.
+                Fixing this requires disabling and restarting both EDN and CSRNG.
+                '''
+         // keep this in line with the resval parameters above
+         resval: 0x0000_0901
+        }
+      ]
+    },
+    { name: "BOOT_GEN_CMD",
+      desc: "EDN boot generate command register",
+      swaccess: "rw",
+      hwaccess: "hro",
+      tags: [// Keep HW from affecting other registers.
+                "excl:CsrAllTests:CsrExclWrite"]
+      fields: [
+        { bits: "31:0",
+          name: "BOOT_GEN_CMD",
+          desc: '''
+                This field is used as the value for the `generate` command at boot time.
+
+                See [Command Header](../../csrng/doc/theory_of_operation.md#command-header) for the meaning of the individual bits.
+                Note that the hardware only supports a value of 0 for the `clen` field.
+                If `clen` has a different value, EDN will hang.
+                Fixing this requires disabling and restarting both EDN and CSRNG.
+                '''
+         // keep this in line with the resval parameters above
+         resval: 0x00ff_f003
+       }
+      ]
+    },
+    { name: "SW_CMD_REQ",
+      desc: "EDN csrng app command request register",
+      swaccess: "wo",
+      hwaccess: "hro",
+      hwext: "true",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0",
+          name: "SW_CMD_REQ",
+          desc: '''
+                Any CSRNG action can be initiated by writing a CSRNG command to this register.
+                Before any write operation to this register, firmware must read !!SW_CMD_STS to check whether EDN is ready to receive a new command or the next word of a previously started command.
+
+                While !!CTRL.AUTO_REQ_MODE is set, only the first instantiate command has any effect.
+                After that command has been processed, writes to this register will have no effect on operation, until !!CTRL.AUTO_REQ_MODE is de-asserted and the state machine of EDN enters the `SwPortMode` state.
+
+                Refer to the [CSRNG documentation](../../csrng/doc/theory_of_operation.md#general-command-format) for details on the command format.
+                '''
+        }
+      ]
+    },
+    { name: "SW_CMD_STS",
+      desc: "EDN software command status register",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      tags: [// Internal HW can modify status register
+                 "excl:CsrNonInitTests:CsrExclCheck"]
+      fields: [
+        { bits: "0",
+          name: "CMD_REG_RDY",
+          desc: '''
+                This bit indicates when !!SW_CMD_REQ is ready to accept the next word.
+                This bit has to be polled before each word of a command is written to !!SW_CMD_REQ.
+                0b0: The EDN is not ready to accept the next word yet.
+                0b1: The EDN is ready to accept the next word.
+                '''
+          resval: "0"
+        }
+        { bits: "1",
+          name: "CMD_RDY",
+          desc: '''
+                This bit indicates when the EDN is ready to accept the next command.
+                Before starting to write a new command to !!SW_CMD_REQ, this field needs to be polled.
+                0b0: The EDN is not ready to accept commands or the last command hasn't been acked yet.
+                0b1: The EDN is ready to accept the next command.
+                '''
+          resval: "0"
+        }
+        { bits: "2",
+          name: "CMD_ACK",
+          desc: '''
+                This one bit field indicates when a SW command has been acknowledged by the CSRNG.
+                It is set to low each time a new command is written to !!SW_CMD_REQ.
+                The field is set to high once a SW command request has been acknowledged by the CSRNG.
+                0b0: The last SW command has not been acknowledged yet.
+                0b1: The last SW command has been acknowledged.
+                '''
+          resval: "0"
+        }
+        { bits: "5:3",
+          name: "CMD_STS",
+          desc: '''
+                This field represents the status code returned with the CSRNG application command ack.
+                It is updated each time a SW command is acknowledged by CSRNG.
+                To check whether a command was successful, wait for !!INTR_STATE.EDN_CMD_REQ_DONE or
+                !!SW_CMD_STS.CMD_ACK to be high and then check the value of this field.
+                A description of the command status types can be found [here](../../csrng/doc/registers.md#sw_cmd_sts--cmd_sts).
+                '''
+          resval: "0"
+        }
+      ]
+    },
+    { name: "HW_CMD_STS",
+      desc: "EDN hardware command status register",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      tags: [// Internal HW can modify status register
+                 "excl:CsrNonInitTests:CsrExclCheck"]
+      fields: [
+        { bits: "0",
+          name: "BOOT_MODE",
+          desc: '''
+                This one bit field indicates whether the EDN is in the hardware controlled boot mode.
+                0b0: The EDN is not in boot mode.
+                0b1: The EDN is in boot mode.
+                '''
+          resval: "0"
+        }
+        { bits: "1",
+          name: "AUTO_MODE",
+          desc: '''
+                This one bit field indicates whether the EDN is in the hardware controlled part of auto mode.
+                The instantiate command is issued via SW interface and is thus not part of the hardware controlled part of auto mode.
+                0b0: The EDN is not in the hardware controlled part of auto mode.
+                0b1: The EDN is in the hardware controlled part of auto mode.
+                '''
+          resval: "0"
+        }
+        { bits: "5:2",
+          name: "CMD_TYPE",
+          desc: '''
+                This field contains the application command type of the hardware controlled command issued last.
+                The application command selects one of five operations to perform.
+                A description of the application command types can be found [here](../../csrng/doc/theory_of_operation.md#command-description).
+                '''
+          resval: "0"
+        }
+        { bits: "6",
+          name: "CMD_ACK",
+          desc: '''
+                This one bit field indicates when a HW command has been acknowledged by the CSRNG.
+                It is set to low each time a new command is sent to the CSRNG.
+                The field is set to high once a HW command request has been acknowledged by the CSRNG.
+                0b0: The last HW command has not been acknowledged yet.
+                0b1: The last HW command has been acknowledged.
+                '''
+          resval: "0"
+        }
+        { bits: "9:7",
+          name: "CMD_STS",
+          desc: '''
+                This field represents the status code returned with the CSRNG application command ack.
+                It is updated each time a HW command is acknowledged by CSRNG.
+                A description of the command status types can be found [here](../../csrng/doc/registers.md#sw_cmd_sts--cmd_sts).
+                '''
+          resval: "0"
+        }
+      ]
+    },
+    { name: "RESEED_CMD",
+      desc: "EDN csrng reseed command register",
+      swaccess: "wo",
+      hwaccess: "hro",
+      hwext: "true",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0",
+          name: "RESEED_CMD",
+          desc: '''
+                Writing this register will fill a FIFO with up to 13 command words (32b words).
+                When running in auto request mode, this FIFO is used to automatically send out a `reseed` command to the CSRNG application interface after every MAX_NUM_REQS_BETWEEN_RESEEDS number of `generate` commands.
+
+                See [General Command Format](../../csrng/doc/theory_of_operation.md#general-command-format) for details about the command format.
+
+                Note that the number of additional data words provided must match the value of the `clen` field of the first word.
+                Otherwise, undefined behavior may result.
+                If more than 13 entries are written to the FIFO, they are ignored and EDN signals an `edn_fatal_err` interrupt as well as a fatal alert.
+                '''
+        }
+      ]
+    },
+    { name: "GENERATE_CMD",
+      desc: "EDN csrng generate command register",
+      swaccess: "wo",
+      hwaccess: "hro",
+      hwext: "true",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0",
+          name: "GENERATE_CMD",
+          desc: '''
+                Writing this register will fill a FIFO with up to 13 command words (32b words).
+                When running auto request mode, this FIFO is used to automatically send out `generate` commands to the CSRNG
+                application interface.
+
+                See [General Command Format](../../csrng/doc/theory_of_operation.md#general-command-format) for details about the command format.
+
+                Note that the number of additional data words provided must match the value of the `clen` field of the first word.
+                Otherwise, undefined behavior may result.
+                If more than 13 entries are written to the FIFO, they are ignored and EDN signals an `edn_fatal_err` interrupt as well as a fatal alert.
+                '''
+        }
+      ]
+    },
+    { name: "MAX_NUM_REQS_BETWEEN_RESEEDS",
+      desc: "EDN maximum number of requests between reseeds register",
+      swaccess: "rw",
+      hwaccess: "hro",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0",
+          name: "MAX_NUM_REQS_BETWEEN_RESEEDS",
+          desc: '''
+                Setting this field will set the number of `generate` command requests that are made
+                to CSRNG before a reseed request is made.
+                This value only has meaning when running in auto request mode.
+                This register supports a maximum of 2^32 `generate` requests between reseeds.
+                This register will be used by a counter that counts down, triggering an automatic `reseed` request when it reaches zero.
+
+                Note that this value must be chosen smaller than or equal to the value configured in the [`RESEED_INTERVAL` register of CSRNG](../../csrng/doc/registers.md#reseed-interval).
+                '''
+        }
+      ]
+    },
+    {
+      name: "RECOV_ALERT_STS",
+      desc: "Recoverable alert status register",
+      swaccess: "rw0c",
+      hwaccess: "hwo",
+          tags: [ // The internal HW can modify the error code registers
+                 "excl:CsrAllTests:CsrExclCheck"]
+      fields: [
+        { bits: "0",
+          name: "EDN_ENABLE_FIELD_ALERT",
+          desc: '''
+                This bit is set when the EDN_ENABLE field is set to an illegal value,
+                something other than kMultiBitBool4True or kMultiBitBool4False.
+                Writing a zero resets this status bit.
+                '''
+        }
+        { bits: "1",
+          name: "BOOT_REQ_MODE_FIELD_ALERT",
+          desc: '''
+                This bit is set when the BOOT_REQ_MODE field is set to an illegal value,
+                something other than kMultiBitBool4True or kMultiBitBool4False.
+                Writing a zero resets this status bit.
+                '''
+        }
+        { bits: "2",
+          name: "AUTO_REQ_MODE_FIELD_ALERT",
+          desc: '''
+                This bit is set when the !!CTRL.AUTO_REQ_MODE field is set to an illegal value,
+                something other than kMultiBitBool4True or kMultiBitBool4False.
+                Writing a zero resets this status bit.
+                '''
+        }
+        { bits: "3",
+          name: "CMD_FIFO_RST_FIELD_ALERT",
+          desc: '''
+                This bit is set when the CMD_FIFO_RST field is set to an illegal value,
+                something other than kMultiBitBool4True or kMultiBitBool4False.
+                Writing a zero resets this status bit.
+                '''
+        }
+        { bits: "12",
+          name: "EDN_BUS_CMP_ALERT",
+          desc: '''
+                This bit is set when the interal entropy bus value is equal to the prior
+                valid value on the bus, indicating a possible attack.
+                Writing a zero resets this status bit.
+                '''
+        }
+        { bits: "13",
+          name: "CSRNG_ACK_ERR",
+          desc: '''
+                This bit is set when the CSRNG returns an acknowledgement where the status signal is non-zero.
+                Writing a zero resets this status bit.
+                '''
+        }
+      ]
+    },
+    {
+      name: "ERR_CODE",
+      desc: "Hardware detection of fatal error conditions status register",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "0",
+          name: "SFIFO_RESCMD_ERR",
+          desc: '''
+                This bit will be set to one when an error has been detected for the
+                reseed command FIFO. The type of error is reflected in the type status
+                bits (bits 28 through 30 of this register).
+                When this bit is set, a fatal error condition will result.
+                '''
+        }
+        { bits: "1",
+          name: "SFIFO_GENCMD_ERR",
+          desc: '''
+                This bit will be set to one when an error has been detected for the
+                generate command FIFO. The type of error is reflected in the type status
+                bits (bits 28 through 30 of this register).
+                When this bit is set, a fatal error condition will result.
+                This bit will stay set until the next reset.
+                '''
+        }
+        { bits: "20",
+          name: "EDN_ACK_SM_ERR",
+          desc: '''
+                This bit will be set to one when an illegal state has been detected for the
+                EDN ack stage state machine. This error will signal a fatal alert.
+                This bit will stay set until the next reset.
+                '''
+        }
+        { bits: "21",
+          name: "EDN_MAIN_SM_ERR",
+          desc: '''
+                This bit will be set to one when an illegal state has been detected for the
+                EDN main stage state machine. This error will signal a fatal alert.
+                This bit will stay set until the next reset.
+                '''
+        }
+        { bits: "22",
+          name: "EDN_CNTR_ERR",
+          desc: '''
+                This bit will be set to one when a hardened counter has detected an error
+                condition. This error will signal a fatal alert.
+                This bit will stay set until the next reset.
+                '''
+        }
+        { bits: "28",
+          name: "FIFO_WRITE_ERR",
+          desc: '''
+                This bit will be set to one when any of the source bits (bits 0 through 1 of this register) are asserted as a result of an error pulse generated from any full FIFO that has received a write pulse.
+                This bit will stay set until the next reset.
+                '''
+        }
+        { bits: "29",
+          name: "FIFO_READ_ERR",
+          desc: '''
+                This bit will be set to one when any of the source bits (bits 0 through 1 of this register) are asserted as a result of an error pulse generated from any empty FIFO that has received a read pulse.
+                This bit will stay set until the next reset.
+                '''
+        }
+        { bits: "30",
+          name: "FIFO_STATE_ERR",
+          desc: '''
+                This bit will be set to one when any of the source bits (bits 0 through 1 of this register) are asserted as a result of an error pulse generated from any FIFO where both the empty and full status bits are set or in case of error conditions inside the hardened counters.
+                This bit will stay set until the next reset.
+                '''
+        }
+      ]
+    },
+    { name: "ERR_CODE_TEST",
+      desc: "Test error conditions register",
+      swaccess: "rw",
+      hwaccess: "hro",
+      hwqe: "true",
+      tags: [// Keep HW from affecting other registers.
+                "excl:CsrAllTests:CsrExclWrite"]
+      fields: [
+        {
+            bits: "4:0",
+            name: "ERR_CODE_TEST",
+            desc: '''
+                  Setting this field will set the bit number for which an error
+                  will be forced in the hardware. This bit number is that same one
+                  found in the !!ERR_CODE register. The action of writing this
+                  register will force an error pulse. The sole purpose of this
+                  register is to test that any error properly propagates to either
+                  an interrupt or an alert.
+                  '''
+        },
+      ]
+    },
+    { name: "MAIN_SM_STATE",
+      desc: "Main state machine state observation register",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "8:0",
+          name: "MAIN_SM_STATE",
+          desc: '''This is the state of the EDN main state machine.
+                See the RTL file `edn_main_sm` for the meaning of the values.
+                '''
+          resval: 0x0C1
+        }
+      ]
+    },
+  ]
+}

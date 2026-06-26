@@ -28,6 +28,14 @@ csrc/
 simv*
 ucli.key
 vc_hdrs.h
+novas.conf
+novas.rc
+novas.log
+verdiLog/
+**/novas.conf
+**/novas.rc
+**/novas.log
+**/verdiLog/
 scripts/local.mk
 scripts/local.sh
 scripts/local.csh

@@ -1,0 +1,74 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  flow:             syn
+  syn_root:         "{proj_root}/hw/syn"
+  flow_makefile:    "{syn_root}/tools/dvsim/syn.mk"
+
+  // TODO: the path below is used to refer to the foundry area which does not exist in the open
+  // repo. This forces the closed "foundry" repo to be placed in that area. This might be subject to
+  // change in future.
+  foundry_root:     "{proj_root}/hw/foundry"
+
+  import_cfgs:      [// common server configuration for results upload
+                     // TODO: check whether this config file can be aligned such that it can
+                     // be reused among different flow types
+                     // "{proj_root}/hw/dv/tools/dvsim/fusesoc.hjson",
+                     "{proj_root}/hw/data/common_project_cfg.hjson",
+                     "{syn_root}/tools/dvsim/{tool}.hjson"]
+
+  // Default directory structure for the output
+  dut:              "{name}"
+  params:           ""
+  build_dir:        "{scratch_path}/{build_mode}"
+  build_log:        "{build_dir}/synthesis.log"
+
+  tool:             "dc"
+
+  // We rely on Fusesoc to generate the file list for us
+  sv_flist_gen_cmd:   "fusesoc"
+  fusesoc_core_:      "{eval_cmd} echo \"{fusesoc_core}\" | tr ':' '_'"
+
+  // TODO: switch the tool to dc once the corresponding edalize backend is available
+  sv_flist_gen_opts:  ["--cores-root {proj_root}/hw",
+                       "run"
+                       "{sv_flist_gen_flags}",
+                       "--target={flow}",
+                       "--tool icarus",
+                       "--build-root={build_dir}",
+                       "--setup",
+                       "{fusesoc_core}"]
+  sv_flist_gen_dir:   "{build_dir}/syn-icarus"
+  sv_flist:           "{sv_flist_gen_dir}/{fusesoc_core_}.scr"
+
+  // Can be used to hook in an additional post elab scripting step.
+  post_elab_script: ""
+
+  // By default we run full synthesis including ATP reporting.
+  // This can be overridden with either of the following
+  // values in order to terminate earlier (listed in order):
+  // - "analyze"
+  // - "elab"
+  // - "compile"
+  // - "reports"
+  // Every stage includes the prior stages, and the report parsing script
+  // will expect the associated reports to be available (otherwise an
+  // error will be generated and the flow will fail).
+  termination_stage: "reports"
+
+  // Common pass or fail patterns.
+  build_fail_patterns: [// FuseSoC build error
+                        "^ERROR:.*$"]
+
+  exports: [
+    { SYN_ROOT:          "{syn_root}" },
+    { FOUNDRY_ROOT:      "{foundry_root}" },
+    { BUILD_DIR:         "{build_dir}" },
+    { DUT:               "{dut}" },
+    { PARAMS:            "{params}" },
+    { SV_FLIST:          "{sv_flist}" },
+    { POST_ELAB_SCRIPT:  "{post_elab_script}" }
+    { TERMINATION_STAGE: "{termination_stage}" }
+  ]
+}

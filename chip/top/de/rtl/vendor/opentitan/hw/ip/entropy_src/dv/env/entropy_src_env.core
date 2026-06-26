@@ -1,0 +1,56 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:entropy_src_env:0.1"
+description: "ENTROPY_SRC DV UVM environment"
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:ip:entropy_src
+      - lowrisc:ip:entropy_src_pkg
+      - lowrisc:ip:entropy_src_main_sm_pkg
+      - lowrisc:dv:ralgen
+      - lowrisc:dv:dv_utils
+      - lowrisc:dv:cip_lib
+      - lowrisc:dv:push_pull_agent
+      - lowrisc:dv:entropy_src_xht_agent
+      - lowrisc:dv:entropy_subsys_fifo_exception_if
+    files:
+      - entropy_src_env_pkg.sv
+      - entropy_src_path_if.sv
+      - entropy_src_env_cfg.sv: {is_include_file: true}
+      - entropy_src_dut_cfg.sv: {is_include_file: true}
+      - entropy_src_env_cov.sv: {is_include_file: true}
+      - entropy_src_virtual_sequencer.sv: {is_include_file: true}
+      - entropy_src_scoreboard.sv: {is_include_file: true}
+      - entropy_src_env.sv: {is_include_file: true}
+      - entropy_src_env_cov.sv: {is_include_file: true}
+      - seq_lib/entropy_src_vseq_list.sv: {is_include_file: true}
+      - seq_lib/entropy_src_base_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_common_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_smoke_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_rng_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_fw_ov_contiguous_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_stress_all_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_base_rng_seq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_intr_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_alert_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_err_vseq.sv: {is_include_file: true}
+      - seq_lib/entropy_src_cfg_regwen_vseq.sv: {is_include_file: true}
+    file_type: systemVerilogSource
+
+generate:
+  ral:
+    generator: ralgen
+    parameters:
+      name: entropy_src
+      ip_hjson: ../../data/entropy_src.hjson
+    position: prepend
+
+targets:
+  default:
+    filesets:
+      - files_dv
+    generate:
+      - "!chip_level ? (ral)"

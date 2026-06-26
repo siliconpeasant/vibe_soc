@@ -1,0 +1,1397 @@
+# Registers
+
+<!-- BEGIN CMDGEN util/regtool.py -d ./hw/ip/entropy_src/data/entropy_src.hjson -->
+## Summary
+
+| Name                                                                  | Offset   |   Length | Description                                                  |
+|:----------------------------------------------------------------------|:---------|---------:|:-------------------------------------------------------------|
+| entropy_src.[`INTR_STATE`](#intr_state)                               | 0x0      |        4 | Interrupt State Register                                     |
+| entropy_src.[`INTR_ENABLE`](#intr_enable)                             | 0x4      |        4 | Interrupt Enable Register                                    |
+| entropy_src.[`INTR_TEST`](#intr_test)                                 | 0x8      |        4 | Interrupt Test Register                                      |
+| entropy_src.[`ALERT_TEST`](#alert_test)                               | 0xc      |        4 | Alert Test Register                                          |
+| entropy_src.[`ME_REGWEN`](#me_regwen)                                 | 0x10     |        4 | Register write enable for module enable register             |
+| entropy_src.[`SW_REGUPD`](#sw_regupd)                                 | 0x14     |        4 | Register write enable for control and threshold registers    |
+| entropy_src.[`REGWEN`](#regwen)                                       | 0x18     |        4 | Register write enable for all control registers              |
+| entropy_src.[`MODULE_ENABLE`](#module_enable)                         | 0x1c     |        4 | Module enable register                                       |
+| entropy_src.[`CONF`](#conf)                                           | 0x20     |        4 | Configuration register                                       |
+| entropy_src.[`ENTROPY_CONTROL`](#entropy_control)                     | 0x24     |        4 | Entropy control register                                     |
+| entropy_src.[`ENTROPY_DATA`](#entropy_data)                           | 0x28     |        4 | Entropy data bits                                            |
+| entropy_src.[`HEALTH_TEST_WINDOWS`](#health_test_windows)             | 0x2c     |        4 | Health test windows register                                 |
+| entropy_src.[`THRESHOLD_ONEWAY`](#threshold_oneway)                   | 0x30     |        4 | Threshold one way control register                           |
+| entropy_src.[`REPCNT_THRESHOLD`](#repcnt_threshold)                   | 0x34     |        4 | Repetition Count Test threshold register                     |
+| entropy_src.[`REPCNTS_THRESHOLD`](#repcnts_threshold)                 | 0x38     |        4 | Repetition Count Symbol Test threshold register              |
+| entropy_src.[`ADAPTP_HI_THRESHOLD`](#adaptp_hi_threshold)             | 0x3c     |        4 | Adaptive proportion test high threshold register             |
+| entropy_src.[`ADAPTP_LO_THRESHOLD`](#adaptp_lo_threshold)             | 0x40     |        4 | Adaptive proportion test low threshold register              |
+| entropy_src.[`BUCKET_THRESHOLD`](#bucket_threshold)                   | 0x44     |        4 | Bucket test threshold register                               |
+| entropy_src.[`MARKOV_HI_THRESHOLD`](#markov_hi_threshold)             | 0x48     |        4 | Markov test high threshold register                          |
+| entropy_src.[`MARKOV_LO_THRESHOLD`](#markov_lo_threshold)             | 0x4c     |        4 | Markov test low threshold register                           |
+| entropy_src.[`EXTHT_HI_THRESHOLD`](#extht_hi_threshold)               | 0x50     |        4 | External health test high threshold register                 |
+| entropy_src.[`EXTHT_LO_THRESHOLD`](#extht_lo_threshold)               | 0x54     |        4 | External health test low threshold register                  |
+| entropy_src.[`HT_WATERMARK_NUM`](#ht_watermark_num)                   | 0x58     |        4 | Health test watermark number register                        |
+| entropy_src.[`HT_WATERMARK`](#ht_watermark)                           | 0x5c     |        4 | Health test watermark register                               |
+| entropy_src.[`REPCNT_TOTAL_FAILS`](#repcnt_total_fails)               | 0x60     |        4 | Repetition Count Test failure counter register               |
+| entropy_src.[`REPCNTS_TOTAL_FAILS`](#repcnts_total_fails)             | 0x64     |        4 | Repetition Count Symbol Test failure counter register        |
+| entropy_src.[`ADAPTP_HI_TOTAL_FAILS`](#adaptp_hi_total_fails)         | 0x68     |        4 | Adaptive proportion high test failure counter register       |
+| entropy_src.[`ADAPTP_LO_TOTAL_FAILS`](#adaptp_lo_total_fails)         | 0x6c     |        4 | Adaptive proportion low test failure counter register        |
+| entropy_src.[`BUCKET_TOTAL_FAILS`](#bucket_total_fails)               | 0x70     |        4 | Bucket test failure counter register                         |
+| entropy_src.[`MARKOV_HI_TOTAL_FAILS`](#markov_hi_total_fails)         | 0x74     |        4 | Markov high test failure counter register                    |
+| entropy_src.[`MARKOV_LO_TOTAL_FAILS`](#markov_lo_total_fails)         | 0x78     |        4 | Markov low test failure counter register                     |
+| entropy_src.[`EXTHT_HI_TOTAL_FAILS`](#extht_hi_total_fails)           | 0x7c     |        4 | External health test high threshold failure counter register |
+| entropy_src.[`EXTHT_LO_TOTAL_FAILS`](#extht_lo_total_fails)           | 0x80     |        4 | External health test low threshold failure counter register  |
+| entropy_src.[`ALERT_THRESHOLD`](#alert_threshold)                     | 0x84     |        4 | Alert threshold register                                     |
+| entropy_src.[`ALERT_SUMMARY_FAIL_COUNTS`](#alert_summary_fail_counts) | 0x88     |        4 | Alert summary failure counts register                        |
+| entropy_src.[`ALERT_FAIL_COUNTS`](#alert_fail_counts)                 | 0x8c     |        4 | Alert failure counts register                                |
+| entropy_src.[`EXTHT_FAIL_COUNTS`](#extht_fail_counts)                 | 0x90     |        4 | External health test alert failure counts register           |
+| entropy_src.[`FW_OV_CONTROL`](#fw_ov_control)                         | 0x94     |        4 | Firmware override control register                           |
+| entropy_src.[`FW_OV_SHA3_START`](#fw_ov_sha3_start)                   | 0x98     |        4 | Firmware override sha3 block start control register          |
+| entropy_src.[`FW_OV_WR_FIFO_FULL`](#fw_ov_wr_fifo_full)               | 0x9c     |        4 | Firmware override FIFO write full status register            |
+| entropy_src.[`FW_OV_RD_FIFO_OVERFLOW`](#fw_ov_rd_fifo_overflow)       | 0xa0     |        4 | Firmware override observe FIFO overflow status               |
+| entropy_src.[`FW_OV_RD_DATA`](#fw_ov_rd_data)                         | 0xa4     |        4 | Firmware override observe FIFO read register                 |
+| entropy_src.[`FW_OV_WR_DATA`](#fw_ov_wr_data)                         | 0xa8     |        4 | Firmware override FIFO write register                        |
+| entropy_src.[`OBSERVE_FIFO_THRESH`](#observe_fifo_thresh)             | 0xac     |        4 | Observe FIFO threshold register                              |
+| entropy_src.[`OBSERVE_FIFO_DEPTH`](#observe_fifo_depth)               | 0xb0     |        4 | Observe FIFO depth register                                  |
+| entropy_src.[`DEBUG_STATUS`](#debug_status)                           | 0xb4     |        4 | Debug status register                                        |
+| entropy_src.[`RECOV_ALERT_STS`](#recov_alert_sts)                     | 0xb8     |        4 | Recoverable alert status register                            |
+| entropy_src.[`ERR_CODE`](#err_code)                                   | 0xbc     |        4 | Hardware detection of error conditions status register       |
+| entropy_src.[`ERR_CODE_TEST`](#err_code_test)                         | 0xc0     |        4 | Test error conditions register                               |
+| entropy_src.[`MAIN_SM_STATE`](#main_sm_state)                         | 0xc4     |        4 | Main state machine state debug register                      |
+
+## INTR_STATE
+Interrupt State Register
+- Offset: `0x0`
+- Reset default: `0x0`
+- Reset mask: `0xf`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "es_entropy_valid", "bits": 1, "attr": ["rw1c"], "rotate": -90}, {"name": "es_health_test_failed", "bits": 1, "attr": ["rw1c"], "rotate": -90}, {"name": "es_observe_fifo_ready", "bits": 1, "attr": ["rw1c"], "rotate": -90}, {"name": "es_fatal_err", "bits": 1, "attr": ["rw1c"], "rotate": -90}, {"bits": 28}], "config": {"lanes": 1, "fontsize": 10, "vspace": 230}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                  | Description                                                                                                                                                                             |
+|:------:|:------:|:-------:|:----------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  31:4  |        |         |                       | Reserved                                                                                                                                                                                |
+|   3    |  rw1c  |   0x0   | es_fatal_err          | Asserted when an fatal error condition is met, e.g., upon FIFO errors, or if an illegal state machine state is reached.                                                                 |
+|   2    |  rw1c  |   0x0   | es_observe_fifo_ready | Asserted when the observe FIFO has filled to the configured threshold level (see [`OBSERVE_FIFO_THRESH`](#observe_fifo_thresh)).                                                        |
+|   1    |  rw1c  |   0x0   | es_health_test_failed | Asserted whenever the main state machine is in the alert state, e.g., due to health tests failing and reaching the threshold value configured in [`ALERT_THRESHOLD.`](#alert_threshold) |
+|   0    |  rw1c  |   0x0   | es_entropy_valid      | Asserted when entropy source bits are available for firmware for consumption via [`ENTROPY_DATA`](#entropy_data) register.                                                              |
+
+## INTR_ENABLE
+Interrupt Enable Register
+- Offset: `0x4`
+- Reset default: `0x0`
+- Reset mask: `0xf`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "es_entropy_valid", "bits": 1, "attr": ["rw"], "rotate": -90}, {"name": "es_health_test_failed", "bits": 1, "attr": ["rw"], "rotate": -90}, {"name": "es_observe_fifo_ready", "bits": 1, "attr": ["rw"], "rotate": -90}, {"name": "es_fatal_err", "bits": 1, "attr": ["rw"], "rotate": -90}, {"bits": 28}], "config": {"lanes": 1, "fontsize": 10, "vspace": 230}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                  | Description                                                                     |
+|:------:|:------:|:-------:|:----------------------|:--------------------------------------------------------------------------------|
+|  31:4  |        |         |                       | Reserved                                                                        |
+|   3    |   rw   |   0x0   | es_fatal_err          | Enable interrupt when [`INTR_STATE.es_fatal_err`](#intr_state) is set.          |
+|   2    |   rw   |   0x0   | es_observe_fifo_ready | Enable interrupt when [`INTR_STATE.es_observe_fifo_ready`](#intr_state) is set. |
+|   1    |   rw   |   0x0   | es_health_test_failed | Enable interrupt when [`INTR_STATE.es_health_test_failed`](#intr_state) is set. |
+|   0    |   rw   |   0x0   | es_entropy_valid      | Enable interrupt when [`INTR_STATE.es_entropy_valid`](#intr_state) is set.      |
+
+## INTR_TEST
+Interrupt Test Register
+- Offset: `0x8`
+- Reset default: `0x0`
+- Reset mask: `0xf`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "es_entropy_valid", "bits": 1, "attr": ["wo"], "rotate": -90}, {"name": "es_health_test_failed", "bits": 1, "attr": ["wo"], "rotate": -90}, {"name": "es_observe_fifo_ready", "bits": 1, "attr": ["wo"], "rotate": -90}, {"name": "es_fatal_err", "bits": 1, "attr": ["wo"], "rotate": -90}, {"bits": 28}], "config": {"lanes": 1, "fontsize": 10, "vspace": 230}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                  | Description                                                              |
+|:------:|:------:|:-------:|:----------------------|:-------------------------------------------------------------------------|
+|  31:4  |        |         |                       | Reserved                                                                 |
+|   3    |   wo   |   0x0   | es_fatal_err          | Write 1 to force [`INTR_STATE.es_fatal_err`](#intr_state) to 1.          |
+|   2    |   wo   |   0x0   | es_observe_fifo_ready | Write 1 to force [`INTR_STATE.es_observe_fifo_ready`](#intr_state) to 1. |
+|   1    |   wo   |   0x0   | es_health_test_failed | Write 1 to force [`INTR_STATE.es_health_test_failed`](#intr_state) to 1. |
+|   0    |   wo   |   0x0   | es_entropy_valid      | Write 1 to force [`INTR_STATE.es_entropy_valid`](#intr_state) to 1.      |
+
+## ALERT_TEST
+Alert Test Register
+- Offset: `0xc`
+- Reset default: `0x0`
+- Reset mask: `0x3`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "recov_alert", "bits": 1, "attr": ["wo"], "rotate": -90}, {"name": "fatal_alert", "bits": 1, "attr": ["wo"], "rotate": -90}, {"bits": 30}], "config": {"lanes": 1, "fontsize": 10, "vspace": 130}}
+```
+
+|  Bits  |  Type  |  Reset  | Name        | Description                                      |
+|:------:|:------:|:-------:|:------------|:-------------------------------------------------|
+|  31:2  |        |         |             | Reserved                                         |
+|   1    |   wo   |   0x0   | fatal_alert | Write 1 to trigger one alert event of this kind. |
+|   0    |   wo   |   0x0   | recov_alert | Write 1 to trigger one alert event of this kind. |
+
+## ME_REGWEN
+Register write enable for module enable register
+- Offset: `0x10`
+- Reset default: `0x1`
+- Reset mask: `0x1`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ME_REGWEN", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"bits": 31}], "config": {"lanes": 1, "fontsize": 10, "vspace": 110}}
+```
+
+|  Bits  |  Type  |  Reset  | Name      | Description                                                                                                  |
+|:------:|:------:|:-------:|:----------|:-------------------------------------------------------------------------------------------------------------|
+|  31:1  |        |         |           | Reserved                                                                                                     |
+|   0    |  rw0c  |   0x1   | ME_REGWEN | When true, the [`MODULE_ENABLE`](#module_enable) register can be modified. When false, it becomes read-only. |
+
+## SW_REGUPD
+Register write enable for control and threshold registers
+- Offset: `0x14`
+- Reset default: `0x1`
+- Reset mask: `0x1`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "SW_REGUPD", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"bits": 31}], "config": {"lanes": 1, "fontsize": 10, "vspace": 110}}
+```
+
+|  Bits  |  Type  |  Reset  | Name      | Description                                                                                                                                                                                                            |
+|:------:|:------:|:-------:|:----------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  31:1  |        |         |           | Reserved                                                                                                                                                                                                               |
+|   0    |  rw0c  |   0x1   | SW_REGUPD | When this bit true and the MODULE_ENABLE field is false, the REGWEN write enable bit read as true, and is distributed to all associated control and threshold registers. When false, these registers become read-only. |
+
+## REGWEN
+Register write enable for all control registers
+- Offset: `0x18`
+- Reset default: `0x1`
+- Reset mask: `0x1`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "REGWEN", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 31}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                      |
+|:------:|:------:|:-------:|:--------------------------|
+|  31:1  |        |         | Reserved                  |
+|   0    |   ro   |   0x1   | [REGWEN](#regwen--regwen) |
+
+### REGWEN . REGWEN
+This read-only write enable bit will allow write access to control and threshold registers that are associated with this bit, but only when the [`MODULE_ENABLE`](#module_enable) register is set to `kMultiBitBool4False` and the [`SW_REGUPD`](#sw_regupd) write enable bit is set to true.
+When read as false, these registers become read-only.
+
+## MODULE_ENABLE
+Module enable register
+- Offset: `0x1c`
+- Reset default: `0x9`
+- Reset mask: `0xf`
+- Register enable: [`ME_REGWEN`](#me_regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "MODULE_ENABLE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"bits": 28}], "config": {"lanes": 1, "fontsize": 10, "vspace": 150}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                           |
+|:------:|:------:|:-------:|:-----------------------------------------------|
+|  31:4  |        |         | Reserved                                       |
+|  3:0   |   rw   |   0x9   | [MODULE_ENABLE](#module_enable--module_enable) |
+
+### MODULE_ENABLE . MODULE_ENABLE
+Setting this field to `kMultiBitBool4True` will enable the ENTROPY_SRC module. Setting this field to `kMultiBitBool4False` will effectively reset the module.
+The modules of the entropy complex may only be enabled and disabled in a specific order, see Programmers Guide for details.
+
+## CONF
+Configuration register
+- Offset: `0x20`
+- Reset default: `0x999999`
+- Reset mask: `0xffffffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FIPS_ENABLE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "FIPS_FLAG", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "RNG_FIPS", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "RNG_BIT_ENABLE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "THRESHOLD_SCOPE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "ENTROPY_DATA_REG_ENABLE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "RNG_BIT_SEL", "bits": 8, "attr": ["rw"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 250}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                      |
+|:------:|:------:|:-------:|:----------------------------------------------------------|
+| 31:24  |   rw   |   0x0   | [RNG_BIT_SEL](#conf--rng_bit_sel)                         |
+| 23:20  |   rw   |   0x9   | [ENTROPY_DATA_REG_ENABLE](#conf--entropy_data_reg_enable) |
+| 19:16  |   rw   |   0x9   | [THRESHOLD_SCOPE](#conf--threshold_scope)                 |
+| 15:12  |   rw   |   0x9   | [RNG_BIT_ENABLE](#conf--rng_bit_enable)                   |
+|  11:8  |   rw   |   0x9   | [RNG_FIPS](#conf--rng_fips)                               |
+|  7:4   |   rw   |   0x9   | [FIPS_FLAG](#conf--fips_flag)                             |
+|  3:0   |   rw   |   0x9   | [FIPS_ENABLE](#conf--fips_enable)                         |
+
+### CONF . RNG_BIT_SEL
+When [`CONF.RNG_BIT_ENABLE`](#conf) is set, this field selects which bit from the RNG bus will be processed.
+If the IP is parameterized for a bus width less than 256 bits, the upper, unused bits of this register are ignored.
+
+### CONF . ENTROPY_DATA_REG_ENABLE
+Setting this field to `kMultiBitBool4True` will enable reading entropy values from the [`ENTROPY_DATA`](#entropy_data) register.
+This function also requires that the otp_en_entropy_src_fw_read input is set to `kMultiBitBool8True`.
+
+### CONF . THRESHOLD_SCOPE
+This field controls the scope (either by-line or by-sum) of the Adaptive Proportion and the Markov health tests.
+It has no effect if [`CONF.RNG_BIT_ENABLE`](#conf) is set to `kMultiBitBool4True`, i.e., if the ENTROPY_SRC is operating in single-channel mode.
+
+If set to `kMultiBitBool4False`, the minimum/maximum results of the individual, line-based tests are taken and compared against the configured thresholds.
+This allows detecting failures of individual noise source channels in multi-channel mode.
+If set to `kMultiBitBool4True`, the individual, line-based test results are summed up and then compared against the configured thresholds.
+This allows lowering the likelihood for coincidental test failures (higher alpha).
+
+Note that the value of THRESHOLD_SCOPE needs to be considered when defining the health test thresholds.
+
+### CONF . RNG_BIT_ENABLE
+Setting this field to `kMultiBitBool4True` enables the single RNG bit mode, where only one bit is sampled per symbol.
+
+### CONF . RNG_FIPS
+Setting this field to `kMultiBitBool4True` sets the analog RNG into a conservative operation mode that may reduce the bit rate.
+In this mode, the RNG potentially outputs entropy with higher entropy per bit and with a simpler sampling mechanism.
+
+### CONF . FIPS_FLAG
+This flag indicates that the ENTROPY_SRC is setup with the configuration used for FIPS/CC validation.
+Setting this field to `kMultiBitBool4True` will set the FIPS flag for the ENTROPY_SRC block output to true.
+
+### CONF . FIPS_ENABLE
+Setting this field to `kMultiBitBool4True` selects the mode targeting FIPS/CC compliance (in short FIPS mode) with hardware conditioning enabled.
+The ENTROPY_SRC block will use the FIPS_WINDOW value of the [`HEALTH_TEST_WINDOWS`](#health_test_windows) register.
+Whether the ENTROPY_SRC block is indeed running with the configuration used for FIPS/CC validation is under the control of firmware.
+Thus, firmware must explicitly mark the produced entropy as FIPS qualified using the [`CONF.FIPS_FLAG`](#conf) field.
+Note that the hardware conditioning can still be disabled in FIPS mode by setting both [`ENTROPY_CONTROL.ES_ROUTE`](#entropy_control) and [`ENTROPY_CONTROL.ES_TYPE`](#entropy_control) fields to `kMultiBitBool4True`.
+However, no entropy is being passed to the block hardware interface in this mode.
+
+Setting this field to `kMultiBitBool4False` selects the boot-time / bypass mode in which the hardware conditioning is bypassed.
+
+## ENTROPY_CONTROL
+Entropy control register
+- Offset: `0x24`
+- Reset default: `0x99`
+- Reset mask: `0xff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ES_ROUTE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "ES_TYPE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"bits": 24}], "config": {"lanes": 1, "fontsize": 10, "vspace": 100}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                   |
+|:------:|:------:|:-------:|:---------------------------------------|
+|  31:8  |        |         | Reserved                               |
+|  7:4   |   rw   |   0x9   | [ES_TYPE](#entropy_control--es_type)   |
+|  3:0   |   rw   |   0x9   | [ES_ROUTE](#entropy_control--es_route) |
+
+### ENTROPY_CONTROL . ES_TYPE
+When this field is `kMultiBitBool4False`, the hardware conditioning inside the ENTROPY_SRC block is enabled.
+Setting this field to `kMultiBitBool4True` will bypass the hardware conditioning.
+For this to work, also [`ENTROPY_CONTROL.ES_ROUTE`](#entropy_control) needs to be set to `kMultiBitBool4True` to route the unconditioned, raw entropy to the [`ENTROPY_DATA`](#entropy_data) register.
+Alternatively, the hardware conditioning can be bypassed by setting [`CONF.FIPS_ENABLE`](#conf) to `kMultiBitBool4False`.
+This enables the bypass / boot-time mode.
+
+### ENTROPY_CONTROL . ES_ROUTE
+When this field is `kMultiBitBool4False`, the generated entropy will be forwarded out of this module to the hardware interface.
+Setting this field to `kMultiBitBool4True` routes the generated entropy to the [`ENTROPY_DATA`](#entropy_data) register to be read by firmware.
+Note that for [`ENTROPY_DATA`](#entropy_data) to become readable, also [`CONF.ENTROPY_DATA_REG_ENABLE`](#conf) needs to be set to `kMultiBitBool4True`.
+In addition, the otp_en_entropy_src_fw_read input needs to be set to `kMultiBitBool8True`.
+
+## ENTROPY_DATA
+Entropy data bits
+- Offset: `0x28`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ENTROPY_DATA", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                        |
+|:------:|:------:|:-------:|:--------------------------------------------|
+|  31:0  |   ro   |    x    | [ENTROPY_DATA](#entropy_data--entropy_data) |
+
+### ENTROPY_DATA . ENTROPY_DATA
+A read of this register provides generated entropy bits to firmware.
+For this to work also [`CONF.ENTROPY_DATA_REG_ENABLE`](#conf) needs to be set to `kMultiBitBool4True`.
+In addition, the otp_en_entropy_src_fw_read input needs to be set to `kMultiBitBool8True`.
+
+## HEALTH_TEST_WINDOWS
+Health test windows register
+- Offset: `0x2c`
+- Reset default: `0x1800200`
+- Reset mask: `0xffffffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FIPS_WINDOW", "bits": 16, "attr": ["rw"], "rotate": 0}, {"name": "BYPASS_WINDOW", "bits": 16, "attr": ["rw"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                 |
+|:------:|:------:|:-------:|:-----------------------------------------------------|
+| 31:16  |   rw   |  0x180  | [BYPASS_WINDOW](#health_test_windows--bypass_window) |
+|  15:0  |   rw   |  0x200  | [FIPS_WINDOW](#health_test_windows--fips_window)     |
+
+### HEALTH_TEST_WINDOWS . BYPASS_WINDOW
+This is the window size in bits for all health tests when running in bypass mode.
+This mode is active after reset for the first and only test run, or when this mode is programmed by firmware by setting [`CONF.FIPS_ENABLE`](#conf) to `kMultiBitBool4False`.
+The default value is 384 bits;
+
+Note that currently only a window size of 384 is supported and tested (this corresponds to the register default value 384).
+Do not use any other values, unless you know what you are doing.
+
+### HEALTH_TEST_WINDOWS . FIPS_WINDOW
+This is the window size in samples for all health tests.
+This value is used when entropy is being tested in FIPS/CC compliance mode (for simplicity referred to as FIPS mode).
+Note that the value defined in this register applies both to single-channel and multi-channel mode (see [`ENTROPY_SRC.RNG_BIT_ENABLE`](#entropy_src)).
+
+Note that the number of tested bits taken by the conditioner to produce a seed is equal to the window size x symbol size, where the symbol size is 1 in single-channel mode.
+The only exception is the startup seed which is produced using the bits of two subsequent windows, i.e., 2 x window size x symbol tested bits.
+
+Note that NIST SP 800-90B (Table 2) requires the Adaptive Proportion Test to be run on 1024 or 512 samples in single-channel or multi-channel mode, respectively (see [`ENTROPY_SRC.RNG_BIT_ENABLE`](#entropy_src)).
+The startup tests must be run on at least 1024 consecutive samples (see Section 4.3 Requirements for Health Tests of NIST SP 800-90B) and this block always uses two subsequent windows for startup health testing.
+The use of window sizes below 512 samples is thus not recommended as this may not comply with NIST SP 800-90B.
+
+## THRESHOLD_ONEWAY
+Threshold one way control register
+- Offset: `0x30`
+- Reset default: `0x9`
+- Reset mask: `0xf`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "THRESHOLD_ONEWAY", "bits": 4, "attr": ["rw1s"], "rotate": -90}, {"bits": 28}], "config": {"lanes": 1, "fontsize": 10, "vspace": 180}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                    |
+|:------:|:------:|:-------:|:--------------------------------------------------------|
+|  31:4  |        |         | Reserved                                                |
+|  3:0   |  rw1s  |   0x9   | [THRESHOLD_ONEWAY](#threshold_oneway--threshold_oneway) |
+
+### THRESHOLD_ONEWAY . THRESHOLD_ONEWAY
+Setting this field to `kMultiBitBool4True` will enable enable the one-way behavior of the health test threshold registers.
+After reset, this field reads as `kMultiBitBool4False` and the health test threshold registers can be configured without limitations.
+
+## REPCNT_THRESHOLD
+Repetition Count Test threshold register
+- Offset: `0x34`
+- Reset default: `0xffff`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "REPCNT_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                    |
+|:------:|:------:|:-------:|:--------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                |
+|  15:0  |   rw   | 0xffff  | [REPCNT_THRESHOLD](#repcnt_threshold--repcnt_threshold) |
+
+### REPCNT_THRESHOLD . REPCNT_THRESHOLD
+This is the threshold for the Repetition Count Test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is less than the current value of this register.
+   A read from this register always reflects the current value.
+
+## REPCNTS_THRESHOLD
+Repetition Count Symbol Test threshold register
+- Offset: `0x38`
+- Reset default: `0xffff`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "REPCNTS_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                       |
+|:------:|:------:|:-------:|:-----------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                   |
+|  15:0  |   rw   | 0xffff  | [REPCNTS_THRESHOLD](#repcnts_threshold--repcnts_threshold) |
+
+### REPCNTS_THRESHOLD . REPCNTS_THRESHOLD
+This is the threshold for the Repetition Count Symbol Test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is less than the current value of this register.
+   A read from this register always reflects the current value.
+
+## ADAPTP_HI_THRESHOLD
+Adaptive proportion test high threshold register
+- Offset: `0x3c`
+- Reset default: `0xffff`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ADAPTP_HI_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                             |
+|:------:|:------:|:-------:|:-----------------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                         |
+|  15:0  |   rw   | 0xffff  | [ADAPTP_HI_THRESHOLD](#adaptp_hi_threshold--adaptp_hi_threshold) |
+
+### ADAPTP_HI_THRESHOLD . ADAPTP_HI_THRESHOLD
+This is the threshold for the Adaptive Proportion Test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is less than the current value of this register.
+   A read from this register always reflects the current value.
+
+## ADAPTP_LO_THRESHOLD
+Adaptive proportion test low threshold register
+- Offset: `0x40`
+- Reset default: `0x0`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ADAPTP_LO_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                             |
+|:------:|:------:|:-------:|:-----------------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                         |
+|  15:0  |   rw   |   0x0   | [ADAPTP_LO_THRESHOLD](#adaptp_lo_threshold--adaptp_lo_threshold) |
+
+### ADAPTP_LO_THRESHOLD . ADAPTP_LO_THRESHOLD
+This is the threshold for the Adaptive Proportion Test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is greater than the current value of this register.
+   A read from this register always reflects the current value.
+
+## BUCKET_THRESHOLD
+Bucket test threshold register
+- Offset: `0x44`
+- Reset default: `0xffff`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "BUCKET_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                    |
+|:------:|:------:|:-------:|:--------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                |
+|  15:0  |   rw   | 0xffff  | [BUCKET_THRESHOLD](#bucket_threshold--bucket_threshold) |
+
+### BUCKET_THRESHOLD . BUCKET_THRESHOLD
+This is the threshold size for the bucket health test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is less than the current value of this register.
+   A read from this register always reflects the current value.
+
+## MARKOV_HI_THRESHOLD
+Markov test high threshold register
+- Offset: `0x48`
+- Reset default: `0xffff`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "MARKOV_HI_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                             |
+|:------:|:------:|:-------:|:-----------------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                         |
+|  15:0  |   rw   | 0xffff  | [MARKOV_HI_THRESHOLD](#markov_hi_threshold--markov_hi_threshold) |
+
+### MARKOV_HI_THRESHOLD . MARKOV_HI_THRESHOLD
+This is the threshold size for the Markov health test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is less than the current value of this register.
+   A read from this register always reflects the current value.
+
+## MARKOV_LO_THRESHOLD
+Markov test low threshold register
+- Offset: `0x4c`
+- Reset default: `0x0`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "MARKOV_LO_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                             |
+|:------:|:------:|:-------:|:-----------------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                         |
+|  15:0  |   rw   |   0x0   | [MARKOV_LO_THRESHOLD](#markov_lo_threshold--markov_lo_threshold) |
+
+### MARKOV_LO_THRESHOLD . MARKOV_LO_THRESHOLD
+This is the threshold size for the Markov health test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is greater than the current value of this register.
+   A read from this register always reflects the current value.
+
+## EXTHT_HI_THRESHOLD
+External health test high threshold register
+- Offset: `0x50`
+- Reset default: `0xffff`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "EXTHT_HI_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                          |
+|:------:|:------:|:-------:|:--------------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                      |
+|  15:0  |   rw   | 0xffff  | [EXTHT_HI_THRESHOLD](#extht_hi_threshold--extht_hi_threshold) |
+
+### EXTHT_HI_THRESHOLD . EXTHT_HI_THRESHOLD
+This is the threshold size for the external health test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing  to this register will only update the register if the written value is less than the current value of this register.
+   A read from this register always reflects the current value.
+
+## EXTHT_LO_THRESHOLD
+External health test low threshold register
+- Offset: `0x54`
+- Reset default: `0x0`
+- Reset mask: `0xffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "EXTHT_LO_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                          |
+|:------:|:------:|:-------:|:--------------------------------------------------------------|
+| 31:16  |        |         | Reserved                                                      |
+|  15:0  |   rw   |   0x0   | [EXTHT_LO_THRESHOLD](#extht_lo_threshold--extht_lo_threshold) |
+
+### EXTHT_LO_THRESHOLD . EXTHT_LO_THRESHOLD
+This is the threshold size for the external health test.
+   This register must be written before the module is enabled.
+   If [`THRESHOLD_ONEWAY`](#threshold_oneway) is set to `kMultiBitBool4True`, writing to this register will only update the register if the written value is greater than the current value of this register.
+   A read from this register always reflects the current value.
+
+## HT_WATERMARK_NUM
+Health test watermark number register
+- Offset: `0x58`
+- Reset default: `0x0`
+- Reset mask: `0xf`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "HT_WATERMARK_NUM", "bits": 4, "attr": ["rw"], "rotate": -90}, {"bits": 28}], "config": {"lanes": 1, "fontsize": 10, "vspace": 180}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                    |
+|:------:|:------:|:-------:|:--------------------------------------------------------|
+|  31:4  |        |         | Reserved                                                |
+|  3:0   |   rw   |   0x0   | [HT_WATERMARK_NUM](#ht_watermark_num--ht_watermark_num) |
+
+### HT_WATERMARK_NUM . HT_WATERMARK_NUM
+The value of this field defines the health test for which the HT_WATERMARK register records the watermark.
+Invalid input values, i.e., values greater than 8 are mapped to 0.
+
+This register must be written before the module is enabled.
+
+| Value   | Name       | Description                                  |
+|:--------|:-----------|:---------------------------------------------|
+| 0x0     | REPCNT_HI  | Repetition Count Test high watermark.        |
+| 0x1     | REPCNTS_HI | Repetition Count Symbol Test high watermark. |
+| 0x2     | ADAPTP_HI  | Adaptive proportion test high watermark.     |
+| 0x3     | ADAPTP_LO  | Adaptive proportion test low watermark.      |
+| 0x4     | BUCKET_HI  | Bucket test high watermark.                  |
+| 0x5     | MARKOV_HI  | Markov test high watermark.                  |
+| 0x6     | MARKOV_LO  | Markov test low watermark.                   |
+| 0x7     | EXTHT_HI   | External health test high watermark.         |
+| 0x8     | EXTHT_LO   | External health test low watermark.          |
+
+Other values are reserved.
+
+## HT_WATERMARK
+Health test watermark register
+- Offset: `0x5c`
+- Reset default: `0x0`
+- Reset mask: `0xffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "HT_WATERMARK", "bits": 16, "attr": ["ro"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name         | Description                                                                                                                                                                                                                        |
+|:------:|:------:|:-------:|:-------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 31:16  |        |         |              | Reserved                                                                                                                                                                                                                           |
+|  15:0  |   ro   |   0x0   | HT_WATERMARK | Watermark value for health test selected by HT_WATERMARK_NUM. After a reset, this register always reads as 0. If a low watermark is configured in HT_WATERMARK_NUM, this register is cleared to all-1s after enabling ENTROPY_SRC. |
+
+## REPCNT_TOTAL_FAILS
+Repetition Count Test failure counter register
+- Offset: `0x60`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "REPCNT_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name               | Description                                                                                                               |
+|:------:|:------:|:-------:|:-------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | REPCNT_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## REPCNTS_TOTAL_FAILS
+Repetition Count Symbol Test failure counter register
+- Offset: `0x64`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "REPCNTS_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                | Description                                                                                                               |
+|:------:|:------:|:-------:|:--------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | REPCNTS_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## ADAPTP_HI_TOTAL_FAILS
+Adaptive proportion high test failure counter register
+- Offset: `0x68`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ADAPTP_HI_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                  | Description                                                                                                               |
+|:------:|:------:|:-------:|:----------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | ADAPTP_HI_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## ADAPTP_LO_TOTAL_FAILS
+Adaptive proportion low test failure counter register
+- Offset: `0x6c`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ADAPTP_LO_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                  | Description                                                                                                               |
+|:------:|:------:|:-------:|:----------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | ADAPTP_LO_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## BUCKET_TOTAL_FAILS
+Bucket test failure counter register
+- Offset: `0x70`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "BUCKET_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name               | Description                                                                                                               |
+|:------:|:------:|:-------:|:-------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | BUCKET_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## MARKOV_HI_TOTAL_FAILS
+Markov high test failure counter register
+- Offset: `0x74`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "MARKOV_HI_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                  | Description                                                                                                               |
+|:------:|:------:|:-------:|:----------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | MARKOV_HI_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## MARKOV_LO_TOTAL_FAILS
+Markov low test failure counter register
+- Offset: `0x78`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "MARKOV_LO_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                  | Description                                                                                                               |
+|:------:|:------:|:-------:|:----------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | MARKOV_LO_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## EXTHT_HI_TOTAL_FAILS
+External health test high threshold failure counter register
+- Offset: `0x7c`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "EXTHT_HI_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                 | Description                                                                                                               |
+|:------:|:------:|:-------:|:---------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | EXTHT_HI_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## EXTHT_LO_TOTAL_FAILS
+External health test low threshold failure counter register
+- Offset: `0x80`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "EXTHT_LO_TOTAL_FAILS", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                 | Description                                                                                                               |
+|:------:|:------:|:-------:|:---------------------|:--------------------------------------------------------------------------------------------------------------------------|
+|  31:0  |   ro   |    x    | EXTHT_LO_TOTAL_FAILS | This register will hold a running count of test failures observed during normal operation. It will persist until cleared. |
+
+## ALERT_THRESHOLD
+Alert threshold register
+
+This register determines during how many subsequent health test windows one or more health test failures can occur before a recoverable alert is raised and the ENTROPY_SRC block stops operating.
+Note that continuous health tests such as the Repetition Count Test or the Repetition Count Symbol Test can trigger multiple test failures within a single window.
+Each symbol for which at least one continuous health test fails counts separately towards the threshold.
+In case the configured threshold is reached, firmware needs to disable/re-enable the block to restart operation including the startup health testing.
+
+Note that when reaching the threshold while running in Firmware Override: Extract & Insert mode, the recoverable alert is not raised nor does the block stop operating.
+In other modes, the generation of the recoverable alert can be disabled by configuring a value of zero.
+The default value is set to two.
+- Offset: `0x84`
+- Reset default: `0xfffd0002`
+- Reset mask: `0xffffffff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ALERT_THRESHOLD", "bits": 16, "attr": ["rw"], "rotate": 0}, {"name": "ALERT_THRESHOLD_INV", "bits": 16, "attr": ["rw"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                | Description                                                                                    |
+|:------:|:------:|:-------:|:--------------------|:-----------------------------------------------------------------------------------------------|
+| 31:16  |   rw   | 0xfffd  | ALERT_THRESHOLD_INV | This should be set to the value above, but inverted.                                           |
+|  15:0  |   rw   |   0x2   | ALERT_THRESHOLD     | This is the threshold at which a recoverable alert is signaled and the blocks stops operating. |
+
+## ALERT_SUMMARY_FAIL_COUNTS
+Alert summary failure counts register
+
+This register holds the total number of subsequent health test windows during which one or more health test failures occurred.
+For information on which health tests failed specifically, refer to [`ALERT_FAIL_COUNTS`](#alert_fail_counts) and [`EXTHT_FAIL_COUNTS.`](#extht_fail_counts)
+Note that continuous health tests such as the Repetition Count Test or the Repetition Count Symbol Test can trigger multiple test failures within a single window.
+Each symbol for which at least one continuous health test fails is counted separately.
+
+If the value of this register reaches the value configured in the [`ALERT_THRESHOLD`](#alert_threshold) register, a recoverable alert is raised and the ENTROPY_SRC block stops operating.
+If an alert is signaled, the value persists until it is cleared by firmware.
+
+The register is automatically cleared after every passing health test window unless the ENTROPY_SRC is configured in Firmware Override: Extract & Insert mode.
+The register is also cleared after re-enabling the block.
+- Offset: `0x88`
+- Reset default: `0x0`
+- Reset mask: `0xffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ANY_FAIL_COUNT", "bits": 16, "attr": ["ro"], "rotate": 0}, {"bits": 16}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name           | Description                                                                                |
+|:------:|:------:|:-------:|:---------------|:-------------------------------------------------------------------------------------------|
+| 31:16  |        |         |                | Reserved                                                                                   |
+|  15:0  |   ro   |    x    | ANY_FAIL_COUNT | The number of subsequent health test windows during which one or more health tests failed. |
+
+## ALERT_FAIL_COUNTS
+Alert failure counts register
+
+This register holds the number of health test failures since the last passing health test window.
+The values are reported on a per-test basis.
+Note that if multiple health tests fail for a certain symbol or window, the value in [`ALERT_SUMMARY_FAIL_COUNTS`](#alert_summary_fail_counts) is incremented by just one whereas multiple fields in this register may get incremented.
+
+All fields of this register are automatically cleared after every passing health test window unless the ENTROPY_SRC is configured in Firmware Override: Extract & Insert mode.
+The fields are also cleared after re-enabling the block.
+- Offset: `0x8c`
+- Reset default: `0x0`
+- Reset mask: `0xfffffff0`
+
+### Fields
+
+```wavejson
+{"reg": [{"bits": 4}, {"name": "REPCNT_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"name": "ADAPTP_HI_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"name": "ADAPTP_LO_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"name": "BUCKET_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"name": "MARKOV_HI_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"name": "MARKOV_LO_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"name": "REPCNTS_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}], "config": {"lanes": 1, "fontsize": 10, "vspace": 220}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                 | Description                                                                                                |
+|:------:|:------:|:-------:|:---------------------|:-----------------------------------------------------------------------------------------------------------|
+| 31:28  |   ro   |    x    | REPCNTS_FAIL_COUNT   | The number of symbols during which this test failed since the last passing health test window.             |
+| 27:24  |   ro   |    x    | MARKOV_LO_FAIL_COUNT | The number of health test windows during which this test failed since the last passing health test window. |
+| 23:20  |   ro   |    x    | MARKOV_HI_FAIL_COUNT | The number of health test windows during which this test failed since the last passing health test window. |
+| 19:16  |   ro   |    x    | BUCKET_FAIL_COUNT    | The number of health test windows during which this test failed since the last passing health test window. |
+| 15:12  |   ro   |    x    | ADAPTP_LO_FAIL_COUNT | The number of health test windows during which this test failed since the last passing health test window. |
+|  11:8  |   ro   |    x    | ADAPTP_HI_FAIL_COUNT | The number of health test windows during which this test failed since the last passing health test window. |
+|  7:4   |   ro   |    x    | REPCNT_FAIL_COUNT    | The number of symbols during which this test failed since the last passing health test window.             |
+|  3:0   |        |         |                      | Reserved                                                                                                   |
+
+## EXTHT_FAIL_COUNTS
+External health test alert failure counts register
+
+This register holds the number of external health test failures since the last passing health test window.
+The values are reported on a per-test basis.
+Note that if multiple health tests fail for a certain symbol or window, the value in [`ALERT_SUMMARY_FAIL_COUNTS`](#alert_summary_fail_counts) is incremented by just one whereas multiple fields in this register may get incremented.
+
+All fields of this register are automatically cleared after every passing health test window unless the ENTROPY_SRC is configured in Firmware Override: Extract & Insert mode.
+The fields are also cleared after re-enabling the block.
+- Offset: `0x90`
+- Reset default: `0x0`
+- Reset mask: `0xff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "EXTHT_HI_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"name": "EXTHT_LO_FAIL_COUNT", "bits": 4, "attr": ["ro"], "rotate": -90}, {"bits": 24}], "config": {"lanes": 1, "fontsize": 10, "vspace": 210}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                | Description                                                                                                                                                       |
+|:------:|:------:|:-------:|:--------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  31:8  |        |         |                     | Reserved                                                                                                                                                          |
+|  7:4   |   ro   |    x    | EXTHT_LO_FAIL_COUNT | The number of symbols for continuous tests or health test windows for window-based tests during which this test failed since the last passing health test window. |
+|  3:0   |   ro   |    x    | EXTHT_HI_FAIL_COUNT | The number of symbols for continuous tests or health test windows for window-based tests during which this test failed since the last passing health test window. |
+
+## FW_OV_CONTROL
+Firmware override control register
+- Offset: `0x94`
+- Reset default: `0x99`
+- Reset mask: `0xff`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FW_OV_MODE", "bits": 4, "attr": ["rw"], "rotate": -90}, {"name": "FW_OV_ENTROPY_INSERT", "bits": 4, "attr": ["rw"], "rotate": -90}, {"bits": 24}], "config": {"lanes": 1, "fontsize": 10, "vspace": 220}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                         |
+|:------:|:------:|:-------:|:-------------------------------------------------------------|
+|  31:8  |        |         | Reserved                                                     |
+|  7:4   |   rw   |   0x9   | [FW_OV_ENTROPY_INSERT](#fw_ov_control--fw_ov_entropy_insert) |
+|  3:0   |   rw   |   0x9   | [FW_OV_MODE](#fw_ov_control--fw_ov_mode)                     |
+
+### FW_OV_CONTROL . FW_OV_ENTROPY_INSERT
+Setting this field to `kMultiBitBool4True` allows firmware to extract entropy bits by reading the observe FIFO (see [`FW_OV_RD_DATA`](#fw_ov_rd_data)) and insert entropy bits into the entropy flow by writing the [`FW_OV_WR_DATA`](#fw_ov_wr_data) register.
+This is useful e.g. for performing additional health tests and/or firmware-based conditioning.
+For this to work, [`FW_OV_CONTROL.FW_OV_MODE`](#fw_ov_control) needs to be set to `kMultiBitBool4True`.
+In addition, the otp_en_entropy_src_fw_over input needs to be set to `kMultiBitBool8True`.
+
+Firmware can use the hardware conditioning for the inserted entropy bits (see [`FW_OV_SHA3_START`](#fw_ov_sha3_start)).
+
+Note that if the field is set to `kMultiBitBool4True`, post-health test entropy bits do NOT continue to flow through the hardware pipeline.
+Also, the [`FW_OV_CONTROL.FW_OV_MODE`](#fw_ov_control) bit must be set.
+The observe FIFO will collect 2 kBit of contiguous entropy bits.
+Any entropy bits arriving after the observe FIFO is full are being discarded.
+Firmware has to read out the entire observe FIFO to restart entropy collection.
+Only entropy bits inserted by firmware by writing [`FW_OV_WR_DATA`](#fw_ov_wr_data) may eventually reach the block hardware interface.
+
+Also, the hardware startup health testing is skipped and firmware becomes responsible for performing any startup health testing.
+
+### FW_OV_CONTROL . FW_OV_MODE
+Setting this field to `kMultiBitBool4True` will put the entropy flow in firmware override mode.
+In this mode, firmware can monitor the post-health test entropy by reading
+the observe FIFO (see [`FW_OV_RD_DATA`](#fw_ov_rd_data)).
+This includes the entropy bits used for the startup health testing.
+For this to work, the otp_en_entropy_src_fw_over input needs to be set to `kMultiBitBool8True`.
+
+Note that the post-health test entropy bits collected in the observe FIFO continue to flow through the hardware pipeline and may eventually reach the block hardware interface.
+
+## FW_OV_SHA3_START
+Firmware override sha3 block start control register
+- Offset: `0x98`
+- Reset default: `0x9`
+- Reset mask: `0xf`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FW_OV_INSERT_START", "bits": 4, "attr": ["rw"], "rotate": -90}, {"bits": 28}], "config": {"lanes": 1, "fontsize": 10, "vspace": 200}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                        |
+|:------:|:------:|:-------:|:------------------------------------------------------------|
+|  31:4  |        |         | Reserved                                                    |
+|  3:0   |   rw   |   0x9   | [FW_OV_INSERT_START](#fw_ov_sha3_start--fw_ov_insert_start) |
+
+### FW_OV_SHA3_START . FW_OV_INSERT_START
+Setting this field to `kMultiBitBool4True` will instruct the ENTROPY_SRC main state machine to start the SHA3 process and be ready to accept entropy data.
+This field should be set prior to writing the [`FW_OV_WR_DATA`](#fw_ov_wr_data) register.
+Once all data has been written, this field should be set to `kMultiBitBool4False`.
+Once that happened, the SHA3 block will finish processing and push the result into the esfinal FIFO.
+
+Note that clearing this bit to `kMultiBitBool4False` while there is still unprocessed entropy in [`FW_OV_WR_DATA`](#fw_ov_wr_data) will start the SHA3 engine before data can be added to the input message, and will also signal a recoverable alert in [`RECOV_ALERT_STS.ES_FW_OV_DISABLE_ALERT.`](#recov_alert_sts)
+To avoid this, check that [`FW_OV_WR_FIFO_FULL`](#fw_ov_wr_fifo_full) is clear before setting this field to `kMultiBitBool4False`.
+
+## FW_OV_WR_FIFO_FULL
+Firmware override FIFO write full status register
+- Offset: `0x9c`
+- Reset default: `0x0`
+- Reset mask: `0x1`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FW_OV_WR_FIFO_FULL", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 31}], "config": {"lanes": 1, "fontsize": 10, "vspace": 200}}
+```
+
+|  Bits  |  Type  |  Reset  | Name               | Description                                                                                                                                                                                                                    |
+|:------:|:------:|:-------:|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  31:1  |        |         |                    | Reserved                                                                                                                                                                                                                       |
+|   0    |   ro   |    x    | FW_OV_WR_FIFO_FULL | When this bit is clear, writes to the FW_OV_WR_DATA register are allowed. If this bit is set, it is the equivalent to a FIFO full condition, and writes to the FW_OV_WR_DATA register must be delayed until this bit is reset. |
+
+## FW_OV_RD_FIFO_OVERFLOW
+Firmware override observe FIFO overflow status
+- Offset: `0xa0`
+- Reset default: `0x0`
+- Reset mask: `0x1`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FW_OV_RD_FIFO_OVERFLOW", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 31}], "config": {"lanes": 1, "fontsize": 10, "vspace": 240}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                                      |
+|:------:|:------:|:-------:|:--------------------------------------------------------------------------|
+|  31:1  |        |         | Reserved                                                                  |
+|   0    |   ro   |   0x0   | [FW_OV_RD_FIFO_OVERFLOW](#fw_ov_rd_fifo_overflow--fw_ov_rd_fifo_overflow) |
+
+### FW_OV_RD_FIFO_OVERFLOW . FW_OV_RD_FIFO_OVERFLOW
+This bit is set by hardware whenever RNG data is lost due to an overflow condition
+in the observe FIFO. The RNG data rate is slow enough that firmware should always
+be able to keep up. This register meanwhile provides an additional check to confirm
+that bytes read from the [`FW_OV_RD_DATA`](#fw_ov_rd_data) register represent contiguous RNG samples.
+If an overflow event occurs, this bit is cleared by hardware as soon as the FIFO is emptied.
+
+## FW_OV_RD_DATA
+Firmware override observe FIFO read register
+- Offset: `0xa4`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FW_OV_RD_DATA", "bits": 32, "attr": ["ro"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                           |
+|:------:|:------:|:-------:|:-----------------------------------------------|
+|  31:0  |   ro   |    x    | [FW_OV_RD_DATA](#fw_ov_rd_data--fw_ov_rd_data) |
+
+### FW_OV_RD_DATA . FW_OV_RD_DATA
+A read of this register pops and returns the top of the observe FIFO.
+For this to work, the [`FW_OV_CONTROL.FW_OV_MODE`](#fw_ov_control) field needs to be set to `kMultiBitBool4True`
+In addition, the otp_en_entropy_src_fw_over input needs to be set to `kMultiBitBool8True`.
+Reading this register while the observe FIFO is empty results in a fatal error with [`ERR_CODE.FIFO_READ_ERR`](#err_code) and [`ERR_CODE.SFIFO_OBSERVE_ERR`](#err_code) going high.
+
+## FW_OV_WR_DATA
+Firmware override FIFO write register
+- Offset: `0xa8`
+- Reset default: `0x0`
+- Reset mask: `0xffffffff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FW_OV_WR_DATA", "bits": 32, "attr": ["wo"], "rotate": 0}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                           |
+|:------:|:------:|:-------:|:-----------------------------------------------|
+|  31:0  |   wo   |    x    | [FW_OV_WR_DATA](#fw_ov_wr_data--fw_ov_wr_data) |
+
+### FW_OV_WR_DATA . FW_OV_WR_DATA
+A write to this register will insert entropy back into the entropy source module flow.
+For this to work, both the [`FW_OV_CONTROL.FW_OV_MODE`](#fw_ov_control) and [`FW_OV_CONTROL.FW_OV_ENTROPY_INSERT`](#fw_ov_control) fields need to be set to `kMultiBitBool4True`.
+In addition, the otp_en_entropy_src_fw_over input needs to be set to `kMultiBitBool8True`.
+
+## OBSERVE_FIFO_THRESH
+Observe FIFO threshold register
+- Offset: `0xac`
+- Reset default: `0x10`
+- Reset mask: `0x3f`
+- Register enable: [`REGWEN`](#regwen)
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "OBSERVE_FIFO_THRESH", "bits": 6, "attr": ["rw"], "rotate": -90}, {"bits": 26}], "config": {"lanes": 1, "fontsize": 10, "vspace": 210}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                | Description                                                                                                                                                                             |
+|:------:|:------:|:-------:|:--------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  31:6  |        |         |                     | Reserved                                                                                                                                                                                |
+|  5:0   |   rw   |  0x10   | OBSERVE_FIFO_THRESH | This field will set the threshold that the depth of the observe FIFO will be compared with when setting the interrupt status bit. Note: a value of zero is reserved and not to be used. |
+
+## OBSERVE_FIFO_DEPTH
+Observe FIFO depth register
+- Offset: `0xb0`
+- Reset default: `0x0`
+- Reset mask: `0x3f`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "OBSERVE_FIFO_DEPTH", "bits": 6, "attr": ["ro"], "rotate": -90}, {"bits": 26}], "config": {"lanes": 1, "fontsize": 10, "vspace": 200}}
+```
+
+|  Bits  |  Type  |  Reset  | Name               | Description                                                 |
+|:------:|:------:|:-------:|:-------------------|:------------------------------------------------------------|
+|  31:6  |        |         |                    | Reserved                                                    |
+|  5:0   |   ro   |    x    | OBSERVE_FIFO_DEPTH | This field will hold the current depth of the observe FIFO. |
+
+## DEBUG_STATUS
+Debug status register
+- Offset: `0xb4`
+- Reset default: `0x10000`
+- Reset mask: `0x303fb`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ENTROPY_FIFO_DEPTH", "bits": 2, "attr": ["ro"], "rotate": -90}, {"bits": 1}, {"name": "SHA3_FSM", "bits": 3, "attr": ["ro"], "rotate": -90}, {"name": "SHA3_BLOCK_PR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SHA3_SQUEEZING", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SHA3_ABSORBED", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SHA3_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 6}, {"name": "MAIN_SM_IDLE", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "MAIN_SM_BOOT_DONE", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 14}], "config": {"lanes": 1, "fontsize": 10, "vspace": 200}}
+```
+
+|  Bits  |  Type  |  Reset  | Name               | Description                                                         |
+|:------:|:------:|:-------:|:-------------------|:--------------------------------------------------------------------|
+| 31:18  |        |         |                    | Reserved                                                            |
+|   17   |   ro   |    x    | MAIN_SM_BOOT_DONE  | The entropy_src main state machine is in the boot phase done state. |
+|   16   |   ro   |   0x1   | MAIN_SM_IDLE       | The entropy_src main state machine is in the idle state.            |
+| 15:10  |        |         |                    | Reserved                                                            |
+|   9    |   ro   |    x    | SHA3_ERR           | This is a logic-or of all of the SHA3 error signals.                |
+|   8    |   ro   |    x    | SHA3_ABSORBED      | This is the SHA3 absorbed signal current state.                     |
+|   7    |   ro   |    x    | SHA3_SQUEEZING     | This is the SHA3 squeezing signal current state.                    |
+|   6    |   ro   |    x    | SHA3_BLOCK_PR      | This is the SHA3 block processed signal current state.              |
+|  5:3   |   ro   |    x    | SHA3_FSM           | This is the SHA3 finite state machine current state.                |
+|   2    |        |         |                    | Reserved                                                            |
+|  1:0   |   ro   |    x    | ENTROPY_FIFO_DEPTH | This is the depth of the entropy source FIFO.                       |
+
+## RECOV_ALERT_STS
+Recoverable alert status register
+- Offset: `0xb8`
+- Reset default: `0x0`
+- Reset mask: `0x8007ffbf`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "FIPS_ENABLE_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ENTROPY_DATA_REG_EN_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "MODULE_ENABLE_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "THRESHOLD_SCOPE_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "THRESHOLD_ONEWAY_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "RNG_BIT_ENABLE_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"bits": 1}, {"name": "FW_OV_SHA3_START_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "FW_OV_MODE_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "FW_OV_ENTROPY_INSERT_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ES_ROUTE_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ES_TYPE_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ES_MAIN_SM_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ES_BUS_CMP_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ES_THRESH_CFG_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ES_FW_OV_WR_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "ES_FW_OV_DISABLE_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "FIPS_FLAG_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"name": "RNG_FIPS_FIELD_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}, {"bits": 12}, {"name": "POSTHT_ENTROPY_DROP_ALERT", "bits": 1, "attr": ["rw0c"], "rotate": -90}], "config": {"lanes": 1, "fontsize": 10, "vspace": 340}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                                                   |
+|:------:|:------:|:-------:|:---------------------------------------------------------------------------------------|
+|   31   |  rw0c  |   0x0   | [POSTHT_ENTROPY_DROP_ALERT](#recov_alert_sts--postht_entropy_drop_alert)               |
+| 30:19  |        |         | Reserved                                                                               |
+|   18   |  rw0c  |   0x0   | [RNG_FIPS_FIELD_ALERT](#recov_alert_sts--rng_fips_field_alert)                         |
+|   17   |  rw0c  |   0x0   | [FIPS_FLAG_FIELD_ALERT](#recov_alert_sts--fips_flag_field_alert)                       |
+|   16   |  rw0c  |   0x0   | [ES_FW_OV_DISABLE_ALERT](#recov_alert_sts--es_fw_ov_disable_alert)                     |
+|   15   |  rw0c  |   0x0   | [ES_FW_OV_WR_ALERT](#recov_alert_sts--es_fw_ov_wr_alert)                               |
+|   14   |  rw0c  |   0x0   | [ES_THRESH_CFG_ALERT](#recov_alert_sts--es_thresh_cfg_alert)                           |
+|   13   |  rw0c  |   0x0   | [ES_BUS_CMP_ALERT](#recov_alert_sts--es_bus_cmp_alert)                                 |
+|   12   |  rw0c  |   0x0   | [ES_MAIN_SM_ALERT](#recov_alert_sts--es_main_sm_alert)                                 |
+|   11   |  rw0c  |   0x0   | [ES_TYPE_FIELD_ALERT](#recov_alert_sts--es_type_field_alert)                           |
+|   10   |  rw0c  |   0x0   | [ES_ROUTE_FIELD_ALERT](#recov_alert_sts--es_route_field_alert)                         |
+|   9    |  rw0c  |   0x0   | [FW_OV_ENTROPY_INSERT_FIELD_ALERT](#recov_alert_sts--fw_ov_entropy_insert_field_alert) |
+|   8    |  rw0c  |   0x0   | [FW_OV_MODE_FIELD_ALERT](#recov_alert_sts--fw_ov_mode_field_alert)                     |
+|   7    |  rw0c  |   0x0   | [FW_OV_SHA3_START_FIELD_ALERT](#recov_alert_sts--fw_ov_sha3_start_field_alert)         |
+|   6    |        |         | Reserved                                                                               |
+|   5    |  rw0c  |   0x0   | [RNG_BIT_ENABLE_FIELD_ALERT](#recov_alert_sts--rng_bit_enable_field_alert)             |
+|   4    |  rw0c  |   0x0   | [THRESHOLD_ONEWAY_FIELD_ALERT](#recov_alert_sts--threshold_oneway_field_alert)         |
+|   3    |  rw0c  |   0x0   | [THRESHOLD_SCOPE_FIELD_ALERT](#recov_alert_sts--threshold_scope_field_alert)           |
+|   2    |  rw0c  |   0x0   | [MODULE_ENABLE_FIELD_ALERT](#recov_alert_sts--module_enable_field_alert)               |
+|   1    |  rw0c  |   0x0   | [ENTROPY_DATA_REG_EN_FIELD_ALERT](#recov_alert_sts--entropy_data_reg_en_field_alert)   |
+|   0    |  rw0c  |   0x0   | [FIPS_ENABLE_FIELD_ALERT](#recov_alert_sts--fips_enable_field_alert)                   |
+
+### RECOV_ALERT_STS . POSTHT_ENTROPY_DROP_ALERT
+This bit is set when post-health test entropy bits are being dropped from the hardware pipeline.
+The pipeline can drop individual symbols at the input of the postht FIFO (esbit FIFO when running in single-channel mode, see [`ENTROPY_SRC.RNG_BIT_ENABLE`](#entropy_src)).
+Entropy bits might get dropped in these locations e.g. due to backpressure from the conditioner.
+
+Note that the conditioner will still use the amount of bits configured in [`HEALTH_TEST_WINDOW.FIPS_WINDOW`](#health_test_window) to produce the seed.
+The resulting seed is still okay to use.
+But as the dropped bits are still tested, the effective test window increases beyond the value configured in [`HEALTH_TEST_WINDOW.FIPS_WINDOW.`](#health_test_window)
+
+Software should check this bit when running in Firmware Override: Observe mode as dropping post-health test entropy bits in this mode may cause the entropy bits observed from the Observe FIFO to be non-contiguous.
+
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . RNG_FIPS_FIELD_ALERT
+This bit is set when the RNG_FIPS field in the [`CONF`](#conf) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . FIPS_FLAG_FIELD_ALERT
+This bit is set when the FIPS_FLAG field in the [`CONF`](#conf) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ES_FW_OV_DISABLE_ALERT
+This bit is set when [`FW_OV_SHA3_START`](#fw_ov_sha3_start) has been set to `kMultiBitBool4False`, without waiting for the bypass packer FIFO to clear.
+The final entropy entry in the FIFO will not be included in the SHA3 digest.
+(Rather it will be added to the subsequent SHA3 digest.)
+To avoid this alert, monitor [`FW_OV_WR_FIFO_FULL`](#fw_ov_wr_fifo_full) before clearing [`FW_OV_SHA3_START.`](#fw_ov_sha3_start)
+This alert only applies when both [`FW_OV_CONTROL.FW_OV_MODE`](#fw_ov_control) and [`FW_OV_CONTROL.FW_OV_ENTROPY_INSERT`](#fw_ov_control) are set to `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ES_FW_OV_WR_ALERT
+This bit is set when the packer FIFO has been written but was full at the time,
+and in both FW_OV_MODE and FW_OV_ENTROPY_INSERT modes.
+This alert would normally be the result of not monitoring the [`FW_OV_WR_FIFO_FULL`](#fw_ov_wr_fifo_full)
+register before each write to the [`FW_OV_WR_DATA`](#fw_ov_wr_data) register.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ES_THRESH_CFG_ALERT
+This bit is set when the [`ALERT_THRESHOLD`](#alert_threshold) register is not configured properly.
+The upper field must be the exact inverse of the lower field.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ES_BUS_CMP_ALERT
+This bit is set when the internal entropy bus value is equal to the prior
+valid value on the bus, indicating a possible attack.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ES_MAIN_SM_ALERT
+This bit is set when the main state machine detects a threshold failure state.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ES_TYPE_FIELD_ALERT
+This bit is set when the ES_TYPE field in the [`ENTROPY_CONTROL`](#entropy_control) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ES_ROUTE_FIELD_ALERT
+This bit is set when the ES_ROUTE field in the [`ENTROPY_CONTROL`](#entropy_control) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . FW_OV_ENTROPY_INSERT_FIELD_ALERT
+This bit is set when the FW_OV_ENTROPY_INSERT field in the [`FW_OV_CONTROL`](#fw_ov_control) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . FW_OV_MODE_FIELD_ALERT
+This bit is set when the FW_OV_MODE field in the [`FW_OV_CONTROL`](#fw_ov_control) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . FW_OV_SHA3_START_FIELD_ALERT
+This bit is set when the FW_OV_SHA3_START field in the [`FW_OV_SHA3_START`](#fw_ov_sha3_start) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . RNG_BIT_ENABLE_FIELD_ALERT
+This bit is set when the RNG_BIT_ENABLE field in the [`CONF`](#conf) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . THRESHOLD_ONEWAY_FIELD_ALERT
+This bit is set when the [`THRESHOLD_ONEWAY`](#threshold_oneway) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . THRESHOLD_SCOPE_FIELD_ALERT
+This bit is set when the THRESHOLD_SCOPE field in the [`CONF`](#conf) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . MODULE_ENABLE_FIELD_ALERT
+This bit is set when the MODULE_ENABLE field in the [`MODULE_ENABLE`](#module_enable) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . ENTROPY_DATA_REG_EN_FIELD_ALERT
+This bit is set when the ENTROPY_DATA_REG_ENABLE field in the [`CONF`](#conf) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+### RECOV_ALERT_STS . FIPS_ENABLE_FIELD_ALERT
+This bit is set when the FIPS_ENABLE field in the [`CONF`](#conf) register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+Writing a zero resets this status bit.
+
+## ERR_CODE
+Hardware detection of error conditions status register
+- Offset: `0xbc`
+- Reset default: `0x0`
+- Reset mask: `0x71f0000f`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "SFIFO_ESRNG_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SFIFO_DISTR_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SFIFO_OBSERVE_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SFIFO_ESFINAL_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 16}, {"name": "ES_ACK_SM_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "ES_MAIN_SM_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "ES_CNTR_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SHA3_STATE_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "SHA3_RST_STORAGE_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 3}, {"name": "FIFO_WRITE_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "FIFO_READ_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"name": "FIFO_STATE_ERR", "bits": 1, "attr": ["ro"], "rotate": -90}, {"bits": 1}], "config": {"lanes": 1, "fontsize": 10, "vspace": 220}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                                    |
+|:------:|:------:|:-------:|:--------------------------------------------------------|
+|   31   |        |         | Reserved                                                |
+|   30   |   ro   |   0x0   | [FIFO_STATE_ERR](#err_code--fifo_state_err)             |
+|   29   |   ro   |   0x0   | [FIFO_READ_ERR](#err_code--fifo_read_err)               |
+|   28   |   ro   |   0x0   | [FIFO_WRITE_ERR](#err_code--fifo_write_err)             |
+| 27:25  |        |         | Reserved                                                |
+|   24   |   ro   |   0x0   | [SHA3_RST_STORAGE_ERR](#err_code--sha3_rst_storage_err) |
+|   23   |   ro   |   0x0   | [SHA3_STATE_ERR](#err_code--sha3_state_err)             |
+|   22   |   ro   |   0x0   | [ES_CNTR_ERR](#err_code--es_cntr_err)                   |
+|   21   |   ro   |   0x0   | [ES_MAIN_SM_ERR](#err_code--es_main_sm_err)             |
+|   20   |   ro   |   0x0   | [ES_ACK_SM_ERR](#err_code--es_ack_sm_err)               |
+|  19:4  |        |         | Reserved                                                |
+|   3    |   ro   |   0x0   | [SFIFO_ESFINAL_ERR](#err_code--sfifo_esfinal_err)       |
+|   2    |   ro   |   0x0   | [SFIFO_OBSERVE_ERR](#err_code--sfifo_observe_err)       |
+|   1    |   ro   |   0x0   | [SFIFO_DISTR_ERR](#err_code--sfifo_distr_err)           |
+|   0    |   ro   |   0x0   | [SFIFO_ESRNG_ERR](#err_code--sfifo_esrng_err)           |
+
+### ERR_CODE . FIFO_STATE_ERR
+This bit will be set to one when any of the source bits (bits 0 through 3 of this register) are asserted as a result of an error pulse generated from any FIFO where either both the empty and full status bits are set or in case of error conditions inside the hardened counters.
+This bit will stay set until the next reset.
+
+### ERR_CODE . FIFO_READ_ERR
+This bit will be set to one when any of the source bits (bits 0 through 3 of this register) are asserted as a result of an error pulse generated from any empty FIFO that has received a read pulse.
+This bit will stay set until the next reset.
+
+### ERR_CODE . FIFO_WRITE_ERR
+This bit will be set to one when any of the source bits (bits 0 through 3 of this register) are asserted as a result of an error pulse generated from any full FIFO that has been received a write pulse.
+This bit will stay set until the next reset.
+
+### ERR_CODE . SHA3_RST_STORAGE_ERR
+This bit will be set to one when a SHA3_RST_STORAGE_ERR signal being
+active has been detected.
+This error will signal a fatal alert, and also an interrupt if enabled.
+This bit will stay set until the next reset.
+
+### ERR_CODE . SHA3_STATE_ERR
+This bit will be set to one when a SHA3 state error has been detected.
+This error will signal a fatal alert, and also an interrupt if enabled.
+This bit will stay set until the next reset.
+
+### ERR_CODE . ES_CNTR_ERR
+This bit will be set to one when a hardened counter has detected an error
+condition. This error will signal a fatal alert, and also
+an interrupt if enabled.
+This bit will stay set until the next reset.
+
+### ERR_CODE . ES_MAIN_SM_ERR
+This bit will be set to one when an illegal state has been detected for the
+ES main stage state machine. This error will signal a fatal alert, and also
+an interrupt if enabled.
+This bit will stay set until the next reset.
+
+### ERR_CODE . ES_ACK_SM_ERR
+This bit will be set to one when an illegal state has been detected for the
+ES ack stage state machine. This error will signal a fatal alert, and also
+an interrupt if enabled.
+This bit will stay set until the next reset.
+
+### ERR_CODE . SFIFO_ESFINAL_ERR
+This bit will be set to one when an error has been detected for the
+esfinal FIFO. The type of error is reflected in the type status
+bits (bits 28 through 30 of this register).
+This bit will stay set until the next reset.
+
+### ERR_CODE . SFIFO_OBSERVE_ERR
+This bit will be set to one when an error has been detected for the
+observe FIFO. The type of error is reflected in the type status
+bits (bits 28 through 30 of this register).
+This bit will stay set until the next reset.
+
+### ERR_CODE . SFIFO_DISTR_ERR
+This bit will be set to one when an error has been detected for the distribution FIFO.
+The type of error is reflected in the type status bits (bits 28 through 30 of this register).
+This bit will stay set until the next reset.
+
+### ERR_CODE . SFIFO_ESRNG_ERR
+This bit will be set to one when an error has been detected for the
+esrng FIFO. The type of error is reflected in the type status
+bits (bits 28 through 30 of this register).
+This bit will stay set until the next reset.
+
+## ERR_CODE_TEST
+Test error conditions register
+- Offset: `0xc0`
+- Reset default: `0x0`
+- Reset mask: `0x1f`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "ERR_CODE_TEST", "bits": 5, "attr": ["rw"], "rotate": -90}, {"bits": 27}], "config": {"lanes": 1, "fontsize": 10, "vspace": 150}}
+```
+
+|  Bits  |  Type  |  Reset  | Name                                           |
+|:------:|:------:|:-------:|:-----------------------------------------------|
+|  31:5  |        |         | Reserved                                       |
+|  4:0   |   rw   |   0x0   | [ERR_CODE_TEST](#err_code_test--err_code_test) |
+
+### ERR_CODE_TEST . ERR_CODE_TEST
+Setting this field will set the bit number for which an error
+will be forced in the hardware. This bit number is that same one
+found in the [`ERR_CODE`](#err_code) register. The action of writing this
+register will force an error pulse. The sole purpose of this
+register is to test that any error properly propagates to either
+an interrupt or an alert.
+
+## MAIN_SM_STATE
+Main state machine state debug register
+- Offset: `0xc4`
+- Reset default: `0xf5`
+- Reset mask: `0x1ff`
+
+### Fields
+
+```wavejson
+{"reg": [{"name": "MAIN_SM_STATE", "bits": 9, "attr": ["ro"], "rotate": 0}, {"bits": 23}], "config": {"lanes": 1, "fontsize": 10, "vspace": 80}}
+```
+
+|  Bits  |  Type  |  Reset  | Name          | Description                                                                                                                    |
+|:------:|:------:|:-------:|:--------------|:-------------------------------------------------------------------------------------------------------------------------------|
+|  31:9  |        |         |               | Reserved                                                                                                                       |
+|  8:0   |   ro   |  0xf5   | MAIN_SM_STATE | This is the state of the ENTROPY_SRC main state machine. See the RTL file `entropy_src_main_sm` for the meaning of the values. |
+
+
+<!-- END CMDGEN -->

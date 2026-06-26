@@ -1,0 +1,19 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  build_cmd: "{job_prefix} jg"
+  build_opts: ["{batch_mode_prefix} {formal_root}/tools/{tool}/{sub_flow}.tcl",
+               "-proj jgproject",
+               "-allow_unsupported_OS"]
+
+  // If this line is not seen in the log, then fail the test.
+  build_pass_patterns: ["^INFO: Proof threads stopped\\.$"]
+
+  jg_tcl_dir: "{formal_root}/tools/{tool}"
+
+  exports: [
+    {JG_TCL_DIR: "{jg_tcl_dir}"},
+    {COMMON_MSG_TCL_PATH: "{jg_tcl_dir}/jaspergold_common_message_process.tcl"}
+  ]
+}

@@ -1,0 +1,95 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Trigger KeyNotValid error by not providing valid keymgr key during kmac transaction.
+class kmac_key_error_vseq extends kmac_app_vseq;
+
+  `uvm_object_utils(kmac_key_error_vseq)
+  `uvm_object_new
+
+  constraint num_trans_c {
+    num_trans inside {[1:20]};
+  }
+
+  virtual task body();
+    kmac_pkg::err_t kmac_err;
+    cfg.en_scb = 0;
+    check_keymgr_rsp_nonblocking();
+
+    for (int i = 0; i < num_trans; i++) begin
+      bit [7:0] share0[];
+      bit [7:0] share1[];
+
+      `uvm_info(`gfn, $sformatf("iteration: %0d/%0d", i, num_trans), UVM_LOW)
+
+      `DV_CHECK_RANDOMIZE_FATAL(this)
+      kmac_err_type = kmac_pkg::ErrKeyNotValid;
+      kmac_err = '{valid: 1'b1,
+                   code: kmac_pkg::ErrKeyNotValid,
+                   info: '0};
+      app_mode = AppKeymgr;
+
+      kmac_init();
+      `uvm_info(`gfn, "kmac_init done", UVM_LOW)
+
+      set_prefix();
+
+      write_key_shares();
+
+      if (cfg.enable_masking && entropy_mode == EntropyModeSw) begin
+        `uvm_info(`gfn, "providing SW entropy", UVM_HIGH)
+        provide_sw_entropy();
+      end
+
+      fork begin : isolation_fork
+        fork
+          send_kmac_app_req(app_mode);
+          wait (cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_req.req_valid &&
+                cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_req.req_last);
+        join_any;
+        disable fork;
+      end join
+
+      // Wait randomly time before check status and issue err_processed.
+      cfg.clk_rst_vif.wait_clks($urandom_range(0, 10_000));
+
+      // Read the `ERR_CODE` CSR and check that it contains the expected error.
+      csr_rd_check(.ptr(ral.err_code), .compare_value(kmac_err));
+      // Emulate reaction of SW to error interrupt: clear the IRQ in the `INTR_STATE` CSR, read the
+      // `ERR_CODE` CSR, and set `err_processed` in the `CMD` CSR.
+      check_err();
+      // Wait for the SHA3 core to become idle again (having processed all data items that got
+      // flushed).
+      csr_spinwait(.ptr(ral.status.sha3_idle), .exp_data(1'b1));
+      // Check that the `STATUS` CSR is back at its reset value.
+      csr_rd_check(.ptr(ral.status), .compare_value(ral.status.get_reset()));
+    end
+
+    // ICEBOX: enable scb and run normal sequence, then add this sequence to stress_all sequence.
+    // cfg.en_scb = 1;
+    // super.body();
+  endtask
+
+  // While scb is not enabled, this task checks that during KeyNotValid error case, app interface
+  // to keymgr will always return 0 digest value, and assert error when the process is done.
+  virtual task check_keymgr_rsp_nonblocking();
+    fork begin
+      while (cfg.en_scb == 0) begin
+        wait (cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_rsp.req_ready == 1);
+        `DV_CHECK_EQ(cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_rsp.digest_s0, '0)
+        `DV_CHECK_EQ(cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_rsp.digest_s1, '0)
+        wait (cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_rsp.req_ready == 0);
+      end
+    end join_none
+
+    fork begin
+      while (cfg.en_scb == 0) begin
+        wait (cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_rsp.rsp_valid == 1);
+        `DV_CHECK_EQ(cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_rsp.error, 1)
+        wait (cfg.m_kmac_app_agent_cfg[app_mode].vif.kmac_data_rsp.rsp_valid == 0);
+      end
+    end join_none
+  endtask
+
+endclass

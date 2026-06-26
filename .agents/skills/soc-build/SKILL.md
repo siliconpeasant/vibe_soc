@@ -58,6 +58,7 @@ Create structure with `soc_init`, `soc_add_chip`, or `soc_add_ip`. Do not create
 | `soc_regress` | test/seed matrix regression |
 | `soc_coverage` | single or regression coverage |
 | `soc_syn` | project-filelist Yosys synthesis; accepts `rtl_top` |
+| `soc_verdi` | open Verdi; `scope=de` loads RTL/source, `scope=dv` loads sim DB/waves |
 
 All names, simulators, tests, seeds, and job counts are validated. A nonzero process exit or timeout is an MCP tool error.
 

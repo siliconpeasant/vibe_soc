@@ -1,0 +1,41 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "lowrisc_ibex",
+  target_dir: "lowrisc_ibex",
+  patch_dir: "patches/lowrisc_ibex",
+
+  upstream: {
+    url: "https://github.com/lowRISC/ibex.git",
+    rev: "master",
+  },
+
+  mapping: [
+    "doc",
+    {
+      from:      "dv",
+      to:        "dv",
+      patch_dir: "dv"
+    }
+    "lint",
+    {
+      from:      "rtl",
+      to:        "rtl",
+      patch_dir: "rtl"
+    }
+    "syn",
+    "util",
+    "vendor/google_riscv-dv",
+
+    "ibex_configs.yaml",
+
+    "ibex_core.core",
+    "ibex_icache.core",
+    "ibex_multdiv.core",
+    "ibex_pkg.core",
+    "ibex_top.core",
+    "ibex_top_tracing.core",
+    "ibex_tracer.core"
+  ]
+}

@@ -135,7 +135,6 @@ echo "  make comp   TOP_MODULE=<tb>   # HDL 编译 + elaboration"
 echo "  make sim    TOP_MODULE=<tb>   # 运行仿真"
 echo "  make syn    RTL_TOP=<模块>    # 逻辑综合"
 echo "  make verdi  MODULE=<模块>     # Verdi 源码浏览"
-echo "  make debug-gui SIMULATOR=vcs # Verdi KDB 调试"
 echo "======================================"
 
 if [ "$CHECK_ONLY" -eq 1 ]; then

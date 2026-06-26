@@ -1,0 +1,538 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  name: rom_ext_e2e
+  github_issue_template:
+  {
+    labels:
+    [
+      Type:Task
+      Component:RomExt/E2e/Test
+    ]
+    project: OpenTitan
+    milestone: Earlgrey-PROD.ROM_EXT
+    priority: P1
+  }
+  testpoints:
+  [
+    {
+      name: rom_ext_e2e_verified_boot_positions
+      desc:
+        '''
+        Verify that ROM_EXT can boot an owner stage test program in various locations.
+
+        - The test program should be launched via the OTTF.
+        - The test program should print out the `boot_log` data.
+        - The test program should be tested in the A slot, the B slot and the virtual slot.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20240
+      }
+    }
+    {
+      name: rom_ext_e2e_verified_boot_keys
+      desc:
+        '''
+        Verify that ROM_EXT can boot an owner stage signed with different keys.
+
+        - The test program should be launched via the OTTF.
+        - The test program should print out the `boot_log` data.
+        - The test program should be signed with the fake `test` key, the fake `dev` key and an invalid key.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20241
+      }
+    }
+    {
+      name: rom_ext_e2e_handoff_expectations
+      desc:
+        '''
+        Verify that ROM_EXT checks and verifies expectations.
+
+        - Use JTAG to halt the CPU upon ROM_EXT entry.
+        - Use JTAG to corrupt registers known to the sec_mmio expectations.
+        - Resume execution and verify the ROM_EXT faults.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20242
+      }
+    }
+    {
+      name: rom_ext_e2e_handoff_fault
+      desc:
+        '''
+        Verify that ROM_EXT goes to shutdown if there is a CPU fault.
+
+        - Write a bare-metal program that does not install its own interrupt vector.
+        - Cause CPU faults (e.g. alignment fault, invalid address, hardware interrupt).
+        - Verify that the ROM_EXT shutdown handler reports the fault.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20243
+      }
+    }
+    {
+      name: rom_ext_e2e_bootsvc_empty
+      desc:
+        '''
+        Verify that ROM_EXT processes the BootSvcEmpty message.
+
+        - The test program should be launched via the OTTF.
+        - Create a boot services empty message.
+        - Reboot.
+        - Verify the ROM_EXT response to the empty message.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20244
+      }
+    }
+    {
+      name: rom_ext_e2e_bootsvc_next_bl0
+      desc:
+        '''
+        Verify that ROM_EXT processes the BootSvcNextBl0SlotReq message.
+
+        - The test program should be launched via the OTTF.
+        - The test program should log the side it booted over several boots.
+        - Boot on side A
+        - Create a boot services next BL0 slot request message requesting side B.
+        - Reboot.
+        - Verify the ROM_EXT booted the owner stage on side B.
+        - Reboot.
+        - Verify the ROM_EXT booted the owner stage on side A.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20245
+      }
+    }
+    {
+      name: rom_ext_e2e_bootsvc_primary_bl0
+      desc:
+        '''
+        Verify that ROM_EXT processes the BootSvcPrimaryBl0SlotReq message.
+
+        - The test program should be launched via the OTTF.
+        - The test program should log the side it booted over several boots.
+        - Boot on side A
+        - Create a boot services primary BL0 slot request message requesting side B.
+        - Reboot.
+        - Verify the ROM_EXT booted the owner stage on side B.
+        - Reboot.
+        - Verify the ROM_EXT booted the owner stage on side B again.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20246
+      }
+    }
+    {
+      name: rom_ext_e2e_bootsvc_bl0_sec_ver
+      desc:
+        '''
+        Verify that ROM_EXT processes the BootSvcMinBl0SecVerReq message.
+
+        - The test program should be launched via the OTTF.
+        - The test program should be signed twice: once with securtiy version N and once with version N+1.
+        - Assemble the image such that version N and N+1 are in slots A and B.
+        - Verify the ROM_EXT can boot both sides.
+        - Create a boot services minimum BL0 version message setting the version to N+1.
+        - Reboot.
+        - Verify the ROM_EXT will only boot side B.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+        silicon
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/20247
+      }
+    }
+    {
+      name: rom_ext_e2e_transfer_any_test
+      desc:
+        '''
+        Verify that ROM_EXT can unlock and transfer ownership to a new owner.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner.
+        - Activate ownership with the `dummy` activate key.
+        - Confirm code execution with the `dummy` owner application key.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24465
+      }
+    }
+    {
+      name: rom_ext_e2e_bad_unlock_test
+      desc:
+        '''
+        Verify that ROM_EXT rejects an OwnershipUnlock operation with the wrong key.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Attempt to unlock the chip into the UnlockedAny state using the wrong key.
+        - Confirm the unlock is rejected with an `OwnershipInvalidSignature` error.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24466
+      }
+    }
+    {
+      name: rom_ext_e2e_bad_activate_test
+      desc:
+        '''
+        Verify that ROM_EXT rejects an OwnershipActivate operation with the wrong key.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner.
+        - Attempt to activate ownership with the wrong activate key.
+        - Confirm the activate is rejected with an `OwnershipInvalidSignature` error.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24467
+      }
+    }
+    {
+      name: rom_ext_e2e_bad_owner_block_test
+      desc:
+        '''
+        Verify that ROM_EXT rejects a bad ownership configuration.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner with a corrupted signature.
+        - Attempt to activate ownership with the `dummy` activate key.
+        - Confirm the activate is rejected with an `OwnershipInvalidInfoPage` error.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24468
+      }
+    }
+    {
+      name: rom_ext_e2e_bad_app_key_test
+      desc:
+        '''
+        Verify that ROM_EXT will not execute code signed with the wrong key.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner with an improper application key (ie: not the `dummy` app key).
+        - Activate ownership with the `dummy` activate key.
+        - Confirm the ROM_EXT boot-fault's with the error `OwnershipKeyNotFound`.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24469
+      }
+    }
+    {
+      name: rom_ext_e2e_transfer_endorsed_test
+      desc:
+        '''
+        Verify that ROM_EXT can unlock and transfer ownership to a specific owner.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedEndorsed state using the `fake` owner unlock key.  Endorse the `dummy` owner.
+        - Upload an owner block for the `dummy` owner.
+        - Activate ownership with the `dummy` activate key.
+        - Confirm code execution with the `dummy` owner application key.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24470
+      }
+    }
+    {
+      name: rom_ext_e2e_bad_endorsee_test
+      desc:
+        '''
+        Verify that ROM_EXT rejects ownership transfer to a non-endorsed owner.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedEndorsed state using the `fake` owner unlock key.
+        - Upload an owner block using the `fake` owner key as the owner.
+        - Attempt to activate ownership with activate key.
+        - Confirm the activate is rejected with an `OwnershipInvalidInfoPage` error.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24471
+      }
+    }
+    {
+      name: rom_ext_e2e_locked_update_test
+      desc:
+        '''
+        Verify that ROM_EXT accepts an owner configuration update.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedSelf state using the `fake` owner unlock key.
+        - Upload an new owner block using the `fake` owner key (ie: embed the `dummy` app key in the `fake` owner block).
+        - Activate ownership with the `fake` activate key.
+        - Confirm code execution with the `dummy` owner application key.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24472
+      }
+    }
+    {
+      name: rom_ext_e2e_bad_locked_update_test
+      desc:
+        '''
+        Verify that ROM_EXT rejects an owner configuration update.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedSelf state using the `fake` owner unlock key.
+        - Upload an new owner block using the wrong owner key (ie: use the `dummy` owner and app key).
+        - Activate ownership with the `fake` activate key.
+        - Confirm the activate is rejected with an `OwnershipInvalidInfoPage` error.
+        - Confirm that code execution with the new app key is denied.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24473
+      }
+    }
+    {
+      name: rom_ext_e2e_rescue_limit_test
+      desc:
+        '''
+        Verify that ROM_EXT rescue respects the limits set in the owner configuration.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner that contains a rescue flash limit.
+        - Activate ownership with the `dummy` activate key.
+        - Upload a test pattern to the flash that would write data past the limit.
+        - Confirm the test pattern exists before the limit, but not after.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24474
+      }
+    }
+    {
+      name: rom_ext_e2e_rescue_permission_test
+      desc:
+        '''
+        Verify that ROM_EXT rescue rejects commands not in the allow list.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner that contains a rescue configuration omitting some commands.
+        - Activate ownership with the `dummy` activate key.
+        - Attempt to use rescue to execute the forbidden commands.
+        - Confirm that the rescue protocol rejects the forbidden commands.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24475
+      }
+    }
+    {
+      name: rom_ext_e2e_flash_permission_test
+      desc:
+        '''
+        Verify that ROM_EXT configures flash as requested in the owner configuration.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner that contains a flash configuration.
+          The new flash configuration should have a different scrambling or ECC configuration than the current configuration.
+        - Boot owner firmware and examine the flash controller's region configuration registers.
+        - Confirm that in the intermediate "dual-owner" state, the primary half of the flash is configured for the previous owner and the secondary half is configured for the next owner.
+          Confirm that the `protect_when_active` condition does not apply during the dual-owner state.
+        - Activate ownership with the `dummy` activate key.
+        - Use the rescue protocol to upload owner firmware into the newly-configured flash regions.
+        - Confirm that in the owned state, the entire flash is configured for the new owner and that the `protect_when_active` condition removes erase/program permissions appropriately.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24476
+      }
+    }
+    {
+      name: rom_ext_e2e_info_permission_test
+      desc:
+        '''
+        Verify that ROM_EXT rejects an invalid INFO page configuration.
+
+        - Start in an locked & owned state with the `fake` owner as owner.
+        - Unlock the chip into the UnlockedAny state using the `fake` owner unlock key.
+        - Upload an owner block for the `dummy` owner that tries to set properties on a creator-designated INFO page.
+        - Activate ownership with the `dummy` activate key.
+        - Confirm the activate is rejected with an `OwnershipInvalidInfoPage` error.
+        '''
+      tags:
+      [
+        rom_ext
+        fpga
+      ]
+      stage: V3
+      tests: []
+      github:
+      {
+        url: https://github.com/lowRISC/opentitan/issues/24477
+      }
+    }
+  ]
+}

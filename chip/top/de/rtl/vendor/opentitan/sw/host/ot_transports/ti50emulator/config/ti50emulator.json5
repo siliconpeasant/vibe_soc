@@ -1,0 +1,14 @@
+{
+  "interface": "ti50emulator",
+  "pins": [
+  ],
+  "uarts": [
+    {
+      "name": "console",
+      "alias_of": "GSC"
+    }
+  ],
+  "provides": {
+    "chip": "ti50emulator"
+  }
+}

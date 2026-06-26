@@ -1,0 +1,12 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+//
+// waiver file for ast
+
+`verilator_config
+
+// Manually mark a clock enable: if we don't tell Verilator we're doing it on
+// purpose, it will warn us that there's a path from "normal" logic through to
+// a clock signal.
+clock_enable -module "ast_clks_byp" -var "clk_ext_en"

@@ -1,0 +1,251 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  name:               "pattgen",
+  human_name:         "Pattern Generator",
+  one_line_desc:      "Transmission of short time-dependent data patterns on two clock-parallel output channels",
+  one_paragraph_desc: '''
+  Pattern Generator transmits short time-dependent data patterns on two clock-parallel channels.
+  Each channel consists of one clock and one data line.
+  The channels are configured using the following parameters: clock divider ratio, clock polarity, pattern length, pattern data, and repetition count.
+  Effectively, Pattern Generator outputs the pattern data a specified number of times with the corresponding clock and then raises an interrupt when it is done.
+  '''
+  // Unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool.
+  cip_id:             "17",
+  design_spec:        "../doc",
+  dv_doc:             "../doc/dv",
+  hw_checklist:       "../doc/checklist",
+  sw_checklist:       "/sw/device/lib/dif/dif_pattgen",
+  revisions: [
+    {
+      version:            "1.1.0",
+      life_stage:         "L1",
+      design_stage:       "D2S",
+      verification_stage: "V2S",
+      dif_stage:          "S2",
+      notes:              ""
+    }
+  ]
+  clocking: [{clock: "clk_i", reset: "rst_ni"}],
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device" }
+  ],
+  regwidth: "32",
+  // OUTPUT pins
+  available_output_list: [
+    { name: "pda0_tx", desc: "Serial output data bit for pattern generation on Channel 0" }
+    { name: "pcl0_tx", desc: "Clock corresponding to pattern data on Channel 0" }
+    { name: "pda1_tx", desc: "Serial output data bit for pattern generation on Channel 1" }
+    { name: "pcl1_tx", desc: "Clock corresponding to pattern data on Channel 1" }
+  ]
+  // INTERRUPT pins
+  interrupt_list: [
+    { name: "done_ch0"
+      desc: "raise if pattern generation on Channel 0 is complete"
+    }
+    { name: "done_ch1"
+      desc: "raise if pattern generation on Channel 1 is complete"
+    }
+  ],
+  alert_list: [
+    { name: "fatal_fault",
+      desc: '''
+      This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected.
+      '''
+    }
+  ],
+  param_list: [
+    { name:    "NumRegsData",
+      type:    "int",
+      default: "2",
+      desc:    "Number of data registers per each channel",
+      local:   "true"
+    }
+  ],
+  features: [
+    { name: "PATTGEN.CHANNEL.ONE",
+      desc: "Pattern generator can generate patterns on two separate channels, this is the first one."
+    },
+    { name: "PATTGEN.CHANNEL.TWO",
+      desc: "Pattern generator can generate patterns on two separate channels, this is the second one."
+    },
+    { name: "PATTGEN.CONFIG.PATTERN",
+      desc: "Each channel can be programmed with a pattern with a length of between 1 and 64 bits, inclusive."
+    },
+    { name: "PATTGEN.CONFIG.DIVIDER",
+      desc: "Each channel has an independent clock divider."
+    },
+    { name: "PATTGEN.CONFIG.REPEAT",
+      desc: "Each channel can be configured to repeat the pattern up to 1024 times."
+    },
+    { name: "PATTGEN.CONFIG.POLARITY",
+      desc: "Each channel's clock can be inverted."
+    },
+    { name: "PATTGEN.CONFIG.INACTIVE_LEVEL",
+      desc: "The inactive level of clock and data output of each channel can be configured separately."
+    }
+    { name: "PATTGEN.COMPLETE",
+      desc: "Once a pattern is finished, an interrupt is raised."
+    }
+  ],
+  countermeasures: [
+    { name: "BUS.INTEGRITY",
+      desc: "End-to-end bus integrity scheme."
+    }
+  ]
+
+  // REGISTER definition
+  registers: [
+    // CTRL register
+    { name: "CTRL",
+      desc: "PATTGEN control register",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "0",
+          resval: "0",
+          name: "ENABLE_CH0",
+          desc: "Enable pattern generator functionality for Channel 0",
+          tags: [// don't write (e.g. 1'b1) to enable bit
+                 // because DUT can operate with zero values programmed to registers - it affects several other csrs
+                 "excl:CsrNonInitTests:CsrExclWrite"]
+        }
+        { bits: "1",
+          resval: "0",
+          name: "ENABLE_CH1",
+          desc: "Enable pattern generator functionality for Channel 1",
+          tags: [// don't write (e.g. 1'b1) to enable bit
+                 // because DUT can operate with zero values programmed to registers - it affects several other csrs
+                 "excl:CsrNonInitTests:CsrExclWrite"]
+        }
+        { bits: "2",
+          resval: "0",
+          name: "POLARITY_CH0",
+          desc: "Clock (`pcl`) polarity for Channel 0.  If low, `pda` signal changes on falling edge of pcl signal, otherwise pda changes on rising edge. Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+        { bits: "3",
+          resval: "0",
+          name: "POLARITY_CH1",
+          desc: "Clock (`pcl`) polarity for Channel 1.  If low, `pda` signal changes on falling edge of `pcl` signal, otherwise pda changes on rising edge. Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+        { bits: "4"
+          resval: "0",
+          name: "INACTIVE_LEVEL_PCL_CH0",
+          desc: '''
+                If 0, `pcl` is low when pattgen is not actively sending data bits (i.e., when pattgen is disabled or all data bits have been sent).
+                If 1, `pcl` is high when pattgen is not actively sending data bits.
+                ''',
+        }
+        { bits: "5"
+          resval: "0",
+          name: "INACTIVE_LEVEL_PDA_CH0",
+          desc: '''
+                If 0, `pda` is low when pattgen is not actively sending data bits (i.e., when pattgen is disabled or all data bits have been sent).
+                If 1, `pda` is high when pattgen is not actively sending data bits.
+                ''',
+        }
+        { bits: "6"
+          resval: "0",
+          name: "INACTIVE_LEVEL_PCL_CH1",
+          desc: '''
+                If 0, `pcl` is low when pattgen is not actively sending data bits (i.e., when pattgen is disabled or all data bits have been sent).
+                If 1, `pcl` is high when pattgen is not actively sending data bits.
+                ''',
+        }
+        { bits: "7"
+          resval: "0",
+          name: "INACTIVE_LEVEL_PDA_CH1",
+          desc: '''
+                If 0, `pda` is low when pattgen is not actively sending data bits (i.e., when pattgen is disabled or all data bits have been sent).
+                If 1, `pda` is high when pattgen is not actively sending data bits.
+                ''',
+        }
+      ]
+    }
+    { name: "PREDIV_CH0",
+      desc: "PATTGEN pre-divider register for Channel 0",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "31:0",
+          resval: "0",
+          name: "CLK_RATIO",
+          desc: "Clock divider ratio fpr Channel 0 (relative to I/O clock). Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+      ]
+    },
+    { name: "PREDIV_CH1",
+      desc: "PATTGEN pre-divider register for Channel 1",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "31:0",
+          resval: "0",
+          name: "CLK_RATIO",
+          desc: "Clock divider ratio for Channel 1 (relative to I/O clock). Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+      ]
+    },
+    { multireg: {
+        name: "DATA_CH0",
+        desc: "PATTGEN seed pattern multi-registers for Channel 0."
+        count: "NumRegsData",
+        cname: "PATTGEN",
+        swaccess: "rw",
+        hwaccess: "hro",
+        fields: [
+          { bits: "31:0",
+            resval: "0",
+            name: "DATA",
+            desc: "Seed pattern for Channel 0 (1-64 bits). Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+          }
+        ]
+      }
+    },
+    { multireg: {
+        name: "DATA_CH1",
+        desc: "PATTGEN seed pattern multi-registers for Channel 1."
+        count: "NumRegsData",
+        cname: "PATTGEN",
+        swaccess: "rw",
+        hwaccess: "hro",
+        fields: [
+          { bits: "31:0",
+            resval: "0",
+            name: "DATA",
+            desc: "Seed pattern for Channel 1 (1-64 bits). Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+          }
+        ]
+      }
+    },
+    { name: "SIZE",
+      desc: "PATTGEN pattern length",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "5:0",
+          resval: "0",
+          name: "LEN_CH0",
+          desc: "Length of the seed pattern for Channel 0, minus 1. Valid values: 0..63. Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+        { bits: "15:6",
+          resval: "0",
+          name: "REPS_CH0",
+          desc: "Number of pattern repetitions for Channel 0, minus 1. Valid values: 0..1023. Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+        { bits: "21:16",
+          resval: "0",
+          name: "LEN_CH1",
+          desc: "Length of the seed pattern for Channel 1, minus 1. Valid values: 0..63. Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+        { bits: "31:22",
+          resval: "0",
+          name: "REPS_CH1",
+          desc: "Number of pattern repetitions for Channel 1, minus 1. Valid values: 0..1023. Note that writes to a channel's configuration registers have no effect while the channel is enabled."
+        }
+      ]
+    }
+  ]
+}

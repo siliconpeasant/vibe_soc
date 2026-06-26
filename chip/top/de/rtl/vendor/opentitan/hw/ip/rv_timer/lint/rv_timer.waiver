@@ -1,0 +1,8 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+#
+# waiver file for timer
+
+waive -rules ONE_BIT_MEM_WIDTH -location {rv_timer.sv} -msg {Memory 'mtimecmp_update' has word width which is single bit wide} \
+      -comment "This can occur in single hart/single timer configurations."

@@ -1,0 +1,33 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:aes_err_injection:0.1"
+description: "AES error injection modules and bind file."
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:tlul:headers
+      - lowrisc:ip:aes
+      - lowrisc:dv:aes_env
+    files:
+      - aes_err_injection_bind.sv
+      - signal_force.sv
+      - force_if.sv
+      - fi_control_fsm_wrapper.sv
+      - fi_control_if.sv
+      - fi_cipher_fsm_wrapper.sv
+      - fi_cipher_if.sv
+      - fi_ctr_fsm_wrapper.sv
+      - fi_ctr_fsm_if.sv
+      - fi_core_wrapper.sv
+      - fi_core_if.sv
+      - fi_ghash_wrapper.sv
+      - fi_ghash_if.sv
+
+    file_type: systemVerilogSource
+
+targets:
+  default: &default_target
+    filesets:
+      - files_dv

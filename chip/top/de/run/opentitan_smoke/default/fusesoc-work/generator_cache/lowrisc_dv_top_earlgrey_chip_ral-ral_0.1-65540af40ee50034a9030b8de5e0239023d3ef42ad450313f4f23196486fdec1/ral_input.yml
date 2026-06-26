@@ -1,0 +1,6 @@
+files_root: /project/hw/top_earlgrey/dv/env
+gapi: '1.0'
+parameters:
+  name: chip
+  top_hjson: ../../data/top_earlgrey.hjson
+vlnv: lowrisc:dv:top_earlgrey_chip_ral-ral:0.1

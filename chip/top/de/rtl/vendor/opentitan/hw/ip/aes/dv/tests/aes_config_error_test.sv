@@ -1,0 +1,59 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+class aes_config_error_test extends aes_base_test;
+
+  `uvm_component_utils(aes_config_error_test)
+  `uvm_component_new
+
+
+  virtual function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    configure_env();
+  endfunction
+
+  function void configure_env();
+    super.configure_env();
+
+    cfg.error_types              = 4'b0001;
+    cfg.config_error_pct         = 75;
+    cfg.config_error_type_en     = '{gcm_phase:1'b1,
+                                     key_len:  1'b1,
+                                     mode:     1'b1,
+                                     rsd_rate: 1'b1,
+                                     op:       1'b1};
+    cfg.num_messages_min         = 3;
+    cfg.num_messages_max         = 10;
+    // message related knobs
+    cfg.ecb_weight               = 10;
+    cfg.cbc_weight               = 10;
+    cfg.ctr_weight               = 10;
+    cfg.ofb_weight               = 10;
+    cfg.cfb_weight               = 10;
+    cfg.gcm_weight               = `EN_GCM ? 10 : 0;
+
+    cfg.message_len_min          = 16;    // one block (16bytes=128bits)
+    cfg.message_len_max          = 32;    //
+    cfg.aad_len_min              = 0;     //
+    cfg.aad_len_max              = 32;    //
+    cfg.manual_operation_pct     = 5;
+    cfg.use_key_mask             = 0;
+
+    cfg.fixed_data_en            = 0;
+    cfg.fixed_key_en             = 0;
+
+    cfg.fixed_operation_en       = 0;
+    cfg.fixed_operation          = aes_pkg::AES_ENC;
+
+    cfg.fixed_keylen_en          = 0;
+    cfg.fixed_keylen             = 3'b001;
+
+    cfg.fixed_iv_en              = 0;
+
+    cfg.random_data_key_iv_order = 0;
+    cfg.sideload_pct             = 50;
+
+    `DV_CHECK_RANDOMIZE_FATAL(cfg)
+  endfunction
+endclass : aes_config_error_test

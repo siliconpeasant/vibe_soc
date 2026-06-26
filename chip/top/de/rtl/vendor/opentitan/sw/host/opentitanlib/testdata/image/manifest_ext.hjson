@@ -1,0 +1,51 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  extension_params: [
+    {
+      spx_key: {
+        spx_key: "test_spx.pem"
+      }
+    },
+    {
+      secver_write: {
+        secver_write: true
+      }
+    },
+    {
+      integrator_specific_firmware_binding: {
+        strike_mask: "0x0fedcba987654321fedcba9876543210"
+        product_expr: [
+          {
+            mask: "0xffffffff",
+            value: "0xa5a5a5a5"
+          },
+          {
+            mask: "0xf0f0f0f0",
+            value: "0xa0a0a0a0"
+          }
+        ]
+      }
+    },
+    {
+      isfb_erase_policy: {
+        erase_allowed: false
+      }
+    },
+    {
+      raw: {
+        name: "0xbeef",
+        identifier: "0xabcd",
+        signed: true,
+        value: ["0x01", "0x23", "0x45", "0x67"]
+      }
+    },
+    {
+      spx_signature: {
+        spx_signature: "test_signature.bin"
+      }
+    }
+  ],
+}

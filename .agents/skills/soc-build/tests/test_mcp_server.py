@@ -33,7 +33,7 @@ class SocBuildMcpTest(unittest.TestCase):
 
     def test_tool_registry_contains_new_interfaces(self) -> None:
         tools = SERVER.mcp._tool_manager._tools
-        self.assertTrue({"soc_sim", "soc_regress", "soc_coverage", "soc_syn"} <= set(tools))
+        self.assertTrue({"soc_sim", "soc_regress", "soc_coverage", "soc_syn", "soc_verdi"} <= set(tools))
 
     def test_rejects_direct_tool_object_invocation(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
@@ -95,6 +95,28 @@ class SocBuildMcpTest(unittest.TestCase):
             cwd=str(self.module_dir.resolve()),
             timeout=1200,
         )
+
+    @patch.object(SERVER, "_run", return_value="ok")
+    def test_verdi_uses_scope(self, run) -> None:
+        SERVER.soc_verdi(
+            str(self.module_dir), scope="dv", simulator="vcs", top_module="tb", test="smoke"
+        )
+        run.assert_called_once_with(
+            [
+                "make",
+                "verdi",
+                "SUBDIR=dv",
+                "SIMULATOR=vcs",
+                "TEST=smoke",
+                "TOP_MODULE=tb",
+            ],
+            cwd=str(self.module_dir.resolve()),
+            timeout=120,
+        )
+
+    def test_verdi_rejects_bad_scope(self) -> None:
+        with self.assertRaises(ValueError):
+            SERVER.soc_verdi(str(self.module_dir), scope="wave")
 
     @patch.object(SERVER, "_run", return_value="ok")
     def test_coverage_regress(self, run) -> None:

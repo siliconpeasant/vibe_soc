@@ -1,0 +1,29 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:entropy_src_test:0.1"
+description: "ENTROPY_SRC DV UVM test"
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:dv:entropy_src_env
+    files:
+      - entropy_src_test_pkg.sv
+      - entropy_src_base_test.sv: {is_include_file: true}
+      - entropy_src_smoke_test.sv: {is_include_file: true}
+      - entropy_src_fw_ov_test.sv: {is_include_file: true}
+      - entropy_src_fw_ov_contiguous_test.sv: {is_include_file: true}
+      - entropy_src_rng_test.sv: {is_include_file: true}
+      - entropy_src_rng_max_rate_test.sv: {is_include_file: true}
+      - entropy_src_stress_all_test.sv: {is_include_file: true}
+      - entropy_src_functional_errors_test.sv: {is_include_file: true}
+      - entropy_src_alert_test.sv: {is_include_file: true}
+      - entropy_src_cfg_regwen_test.sv: {is_include_file: true}
+      - entropy_src_intr_test.sv: {is_include_file: true}
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - files_dv

@@ -1,0 +1,537 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name:               "hmac",
+  human_name:         "HMAC Accelerator",
+  one_line_desc:      "Accelerator for SHA-2 256/384/512-based keyed HMAC and the hash function",
+  one_paragraph_desc: '''
+  HMAC Accelerator is a keyed hash based message authentication code generator using [SHA-2 256/384/512][nist-fips-180-4] to check the integrity of an incoming message and optionally a signature signed with the same secret key.
+  This HMAC implementation is not hardened against side-channel analysis (SCA) or fault injection (FI) attacks; it is meant purely for hashing acceleration.
+  If hardened MAC operations are required, either the KMAC Accelerator or a software implementation should be used.
+
+  [nist-fips-180-4]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+  '''
+  // Unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool.
+  cip_id:             "10",
+  design_spec:        "../doc",
+  dv_doc:             "../doc/dv",
+  hw_checklist:       "../doc/checklist",
+  sw_checklist:       "/sw/device/lib/dif/dif_hmac",
+  revisions: [
+    {
+      version:            "0.5.0",
+      life_stage:         "L2",
+      design_stage:       "D3",
+      verification_stage: "V3",
+      commit_id:          "635afdb8dedbb50c235bd772b36002925c499884",
+      notes:              ""
+    }
+    {
+      version:            "1.0.0",
+      life_stage:         "L1",
+      design_stage:       "D3",
+      verification_stage: "V2S",
+      dif_stage:          "S2",
+      commit_id:          "2290dcc119067538aaf3fb5fd43c3dc2418458d1",
+      notes:              "",
+    }
+    {
+      version:            "2.0.1",
+      life_stage:         "L1",
+      design_stage:       "D3",
+      verification_stage: "V3",
+      dif_stage:          "S0",
+      notes:              "",
+    }
+  ]
+  clocking: [{clock: "clk_i", reset: "rst_ni", idle: "idle_o"}],
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device" }
+  ],
+  interrupt_list: [
+    { name: "hmac_done",
+      desc: "HMAC/SHA-2 has completed."
+    }
+    { name: "fifo_empty",
+      type: "status",
+      desc: '''
+            The message FIFO is empty.
+            This interrupt is raised only if the message FIFO is actually writable by software, i.e., if all of the following conditions are met:
+            i) The HMAC block is not running in HMAC mode and performing the second round of computing the final hash of the outer key as well as the result of the first round using the inner key.
+            ii) Software has not yet written the Process or Stop command to finish the hashing operation.
+            For the interrupt to be raised, the message FIFO must also have been full previously.
+            Otherwise, the hardware empties the FIFO faster than software can fill it and there is no point in interrupting the software to inform it about the message FIFO being empty.
+            '''
+    }
+    { name: "hmac_err",
+      desc: "HMAC error has occurred. ERR_CODE register shows which error occurred."
+    }
+  ],
+  alert_list: [
+    { name: "fatal_fault",
+      desc: '''
+      This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected.
+      '''
+    }
+  ],
+  inter_signal_list: [
+    { name:    "idle",
+      type:    "uni",
+      act:     "req",
+      package: "prim_mubi_pkg",
+      struct:  "mubi4",
+      width:   "1"
+    }
+  ],
+  param_list: [
+    { name:    "NumDigestWords",
+      type:    "int",
+      default: "16",
+      desc:    "Number of words for digest",
+      local:   "true"
+    }
+    { name:    "NumKeyWords",
+      type:    "int",
+      default: "32",
+      desc:    "Number of words for key",
+      local:   "true"
+    }
+  ],
+  features: [
+    {
+      name: "HMAC.MODE.SHA2",
+      desc: '''SHA-2 hashing algorithm supporting the following security strength configurations: SHA-2 256/384/512. Compliant with NIST FIPS 180-4.
+            '''
+    }
+    {
+      name: "HMAC.MODE.HMAC",
+      desc: '''Keyed-Hash Message Authentication Code (HMAC) supporting the following security strength configurations: HMAC/SHA-2 256/384/512.
+      Compliant with NIST FIPS 198-1 which will be superseded by NIST SP 800-224.
+            '''
+    }
+    {
+      name: "HMAC.DIGEST_SIZE.SHA2-256",
+      desc: '''SHA-2 256 hashing algorithm for SHA-2 and keyed HMAC.
+            '''
+    }
+    {
+      name: "HMAC.DIGEST_SIZE.SHA2-384",
+      desc: '''SHA-2 384 hashing algorithm for SHA-2 and keyed HMAC.
+            '''
+    }
+    {
+      name: "HMAC.DIGEST_SIZE.SHA2-512",
+      desc: '''SHA-2 512 hashing algorithm or SHA-2 and keyed HMAC.
+            '''
+    }
+    {
+      name: "HMAC.KEY_LENGTH.KEY_128",
+      desc: '''HMAC based on any digest size using 128-bit key.
+            '''
+    }
+    {
+      name: "HMAC.KEY_LENGTH.KEY_256",
+      desc: '''HMAC based on any digest size using 256-bit key.
+            '''
+    }
+    {
+      name: "HMAC.KEY_LENGTH.KEY_384",
+      desc: '''HMAC based on any digest size using 384-bit key.
+            '''
+    }
+    {
+      name: "HMAC.KEY_LENGTH.KEY_512",
+      desc: '''HMAC based on any digest size using 512-bit key.
+            '''
+    }
+    {
+      name: "HMAC.KEY_LENGTH.KEY_1024",
+      desc: '''HMAC based on SHA-2 384/SHA-2 512 using 1024-bit key.
+            '''
+    }
+    {
+      name: "HMAC.ENDIANNESS.MESSAGE",
+      desc: "Configurable input message endianness."
+    }
+    {
+      name: "HMAC.ENDIANNESS.DIGEST",
+      desc: "Configurable output digest endianness."
+    }
+    {
+      name: "HMAC.SECURE_WIPE",
+      desc: "Wipe of internal state and secret key with constant value provided by software."
+    }
+  ]
+  countermeasures: [
+    { name: "BUS.INTEGRITY",
+      desc: "End-to-end bus integrity scheme."
+    }
+  ]
+  regwidth: "32",
+  registers: [
+    { name: "CFG",
+      desc: '''HMAC Configuration register.
+
+            The register is updated when the engine is in Idle.
+            If the software updates the register while the engine computes the hash, the updated value is discarded.
+            ''',
+      hwext:    "true",
+      hwqe:     "true",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0",
+          name: "hmac_en",
+          desc: '''HMAC datapath enable.
+
+                If this bit is 1, HMAC operates when `hash_start` toggles.
+                ''',
+          tags: [// don't enable hmac and sha data paths - we will do that in functional tests
+                 "excl:CsrNonInitTests:CsrExclWrite"]
+        }
+        { bits: "1",
+          name: "sha_en",
+          desc: '''SHA-2 enable.
+
+                 If 0, the SHA engine will not initiate compression, this is used to stop operation of the SHA-2 engine until configuration has been done.
+                 When the SHA-2 engine is disabled the digest is cleared.'''
+          tags: [// don't enable hmac and sha data paths - we will do that in functional tests
+                 "excl:CsrNonInitTests:CsrExclWrite"]
+        }
+        { bits: "2",
+          name: "endian_swap",
+          desc: '''Endian swap.
+
+                If 0, each value will be added to the message in little-endian byte order.
+                The value is written to MSG_FIFO same to the SW writes.
+                If 1, then each individual multi-byte value, regardless of its alignment, written to !!MSG_FIFO will be added to the message in big-endian byte order.
+                A message written to !!MSG_FIFO one byte at a time will not be affected by this setting.
+                From a hardware perspective byte swaps are performed on a TL-UL word granularity.
+                ''',
+          resval: "0",
+        }
+        { bits: "3",
+          name: "digest_swap",
+          desc: '''Digest register byte swap.
+
+                If 1 the value in each digest output register is converted to big-endian byte order.
+                This setting does not affect the order of the digest output registers, !!DIGEST_0 still contains the first 4 bytes of the digest.
+                ''',
+          resval: "0",
+          tags: [
+            // Don't enable/disable digest swap in automated CSR tests because it will have side effects on the DIGEST_* CSRs that the automated tests don't know of.
+            // This field is covered in functional tests instead.
+            "excl:CsrAllTests:CsrExclWrite"
+          ]
+        }
+        { bits: "4",
+          name: "key_swap",
+          desc: '''Key register byte swap.
+
+                If 1 the endianness of each KEY_* register is swapped. Default value (value 0) is big endian representation of the KEY_* CSRs.
+                ''',
+          resval: "0",
+          tags: [
+            // Don't enable/disable key swap in automated CSR tests because it will have side effects on the KEY_* CSRs that the automated tests don't know of.
+            // This field will be covered in functional tests instead.
+            "excl:CsrAllTests:CsrExclWrite"
+          ]
+        }
+        { bits: "8:5",
+          name: "digest_size",
+          resval: "0x08",
+          desc: '''Digest size configuration.
+
+                This is a 4-bit one-hot encoded field to select digest size for either HMAC or SHA-2.
+                Invalid/unsupported values, i.e., values that don't correspond to SHA2_256, SHA2_384, or SHA2_512, are mapped to SHA2_None.
+                '''
+          enum: [
+            { value: "1",
+              name: "SHA2_256",
+              desc: '''
+              4'b0001: SHA-2 256 digest.
+              '''
+            },
+            { value: "2",
+              name: "SHA2_384",
+              desc: '''
+              4'b0010: SHA-2 384 digest.
+              '''
+            },
+            { value: "4",
+              name: "SHA2_512",
+              desc: '''
+              4'b0100: SHA-2 512 digest.
+              '''
+            },
+            { value: "8",
+              name: "SHA2_None",
+              desc: '''
+              4'b1000: Unsupported/invalid values and all-zero values are mapped to SHA2_None.
+              With this value, when HMAC/SHA-2 is triggered to start operation (via `hash_start` or `hash_continue`), it will be blocked from starting and an error is signalled to the SW.
+              '''
+            },
+          ]
+          tags: [// Exclude fields with non-zero reset value from write-read checks.
+               "excl:CsrNonInitTests:CsrExclWriteCheck"]
+        }
+        { bits: "14:9",
+          name: "key_length",
+          resval: "0x20",
+          desc: '''Key length configuration.
+
+                This is a 6-bit one-hot encoded field to configure the key length for HMAC.
+
+                The HMAC can be programmed with the following key lengths: 128-bit, 256-bit, 384-bit, 512-bit and 1024-bit.
+                But the HMAC supports any arbitrary key length: the software should configure the HMAC with the next largest supported key length and concatenate zeros to reach the programmed key length.
+                The position of these zeros depends on the endianness, thus on the programmed [`CFG.key_swap`](registers.md#cfg--key_swap).
+                For example, for an 80-bit key, HMAC should be configured with an 128-bit key length, fed with the 80-bit key and with 48 zero-bits.
+
+                Note that the key length cannot be greater than the block size: up to 1024-bit for SHA-2 384/512 and up to 512-bit for SHA-2 256.
+                The value of this register is irrelevant when only SHA-2 (not keyed HMAC) is configured.
+                However, for HMAC mode (`hmac_en == 1`), when HMAC is triggered to start while !!KEY_LENGTH holds `Key_None` or !!KEY_LENGTH holds `Key_1024` for !!DIGEST_SIZE = `SHA2_256`, starting is blocked and an error is signalled to SW.
+                '''
+          enum: [
+            { value: "1",
+              name: "Key_128",
+              desc: '''
+              6'b00_0001: 128-bit secret key.
+              '''
+            },
+            { value: "2",
+              name: "Key_256",
+              desc: '''
+              6'b00_0010: 256-bit secret key.
+              '''
+            },
+            { value: "4",
+              name: "Key_384",
+              desc: '''
+              6'b00_0100: 384-bit secret key.
+              '''
+            },
+            { value: "8",
+              name: "Key_512",
+              desc: '''
+              6'b00_1000: 512-bit secret key.
+              '''
+            },
+            { value: "16",
+              name: "Key_1024",
+              desc: '''
+              6'b01_0000: 1024-bit secret key.
+              '''
+            },
+            { value: "32",
+              name: "Key_None",
+              desc: '''
+              6'b10_0000: Unsupported/invalid values and all-zero values are mapped to Key_None.
+              With this value, when HMAC is triggered to start operation (via `hash_start` or `hash_continue`), it will be blocked from starting and an error is signalled to the SW.
+              If only unkeyed SHA-2 is configured (`hmac_en == 0`), starting is not blocked, since this does not require a key.
+              '''
+            },
+          ]
+          tags: [// Exclude fields with non-zero reset value from write-read checks.
+                 "excl:CsrNonInitTests:CsrExclWriteCheck"]
+        }
+      ],
+    }
+    { name: "CMD",
+      desc: "HMAC command register",
+      swaccess: "r0w1c",
+      hwaccess: "hro",
+      hwext: "true",
+      hwqe:  "true",
+      tags: [// design assertion : after hash_start sets, can only wr msg or set hash_process
+             // design assertion : hash_process can be set only after hash_start is set
+             "excl:CsrAllTests:CsrExclWrite"]
+      fields: [
+        { bits: "0",
+          name: "hash_start",
+          desc: '''If 1 is written into this field, SHA-2 or HMAC begins its operation.
+                CPU must configure relative information first, such as the digest size, secret key and the key length.
+                ''',
+        }
+        { bits: "1",
+          name: "hash_process",
+          desc: '''If 1 is written to this field, SHA-2 or HMAC calculates the digest or signing based on currently received message.
+                '''
+        }
+        { bits: "2",
+          name: "hash_stop",
+          desc: '''
+                When 1 is written to this field, SHA-2 or HMAC will afterwards set the `hmac_done` interrupt as soon as the current block has been hashed.
+                The hash can then be read from the registers !!DIGEST_0 to !!DIGEST_15.
+                Together with the message length in !!MSG_LENGTH_LOWER and !!MSG_LENGTH_UPPER, this forms the information that has to be saved before switching context.
+                '''
+        }
+        { bits: "3",
+          name: "hash_continue",
+          desc: '''
+                When 1 is written to this field, SHA-2 or HMAC will continue hashing based on the current hash in the digest registers and the message length, which both have to be restored to switch context.
+                '''
+        }
+      ],
+    }
+    { name: "STATUS",
+      desc: "HMAC Status register",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      hwext: "true",
+      fields: [
+        { bits: "0",
+          name: "hmac_idle",
+          desc: '''HMAC idle status.
+                When IDLE, the `DIGEST` and the `MSG_LENGTH_LOWER`/`MSG_LENGTH_UPPER` can be written to from SW which enables restoring context (to support context switching).
+                '''
+          resval: "1"
+        }
+        { bits: "1",
+          name: "fifo_empty",
+          desc: "FIFO empty",
+          resval: "1"
+        }
+        { bits: "2",
+          name: "fifo_full",
+          desc: "FIFO full. Data written to the FIFO whilst it is full will cause back-pressure on the interconnect"
+        }
+        { bits: "9:4",
+          name: "fifo_depth",
+          desc: "FIFO entry count."
+        }
+      ]
+    }
+    { name: "ERR_CODE",
+      desc: "HMAC Error Code",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "31:0",
+          name: "err_code",
+          desc: '''If an error interrupt occurs, this register has information of error cause.
+                Please take a look at `hw/ip/prim/rtl/prim_sha2_pkg.sv:err_code_e enum type.
+                '''
+          tags: [// Randomly write mem will cause this reg updated by design
+                 "excl:CsrNonInitTests:CsrExclCheck"]
+        }
+      ]
+    }
+    { name: "WIPE_SECRET",
+      desc: '''Clear internal secret registers.
+
+            If the CPU writes a value into the register, the value is used to clear some internal variables such as the secret key, intermediate hash results, digest and internal message scheduling array.
+            The clear secret operation overwrites the internal variables with the provided 32-bit value.
+            For SHA-2 384/512 that work with 64-bit words, the 32-bit value is duplicated and concatenated to generate the 64-bit value.
+            It is recommended to use a value extracted from an entropy source.
+            ''',
+      swaccess: "wo",
+      hwaccess: "hro",
+      hwext: "true",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0", name:"secret", desc: "Secret value" }
+      ]
+      tags: [
+        // Exclude automated tests that write this register, which will have side effects that the
+        // automated tests don't understand.
+        "excl:CsrAllTests:CsrExclWrite"
+      ]
+    }
+    { multireg: {
+        name: "KEY",
+        desc: '''HMAC Secret Key
+
+              HMAC using SHA-2 256/384/512 assumes any hashed secret key length up to the block size, thus capped at 1024-bit.
+              !!key_length determines how many of these registers are relevant for the HMAC operation. Order of the secret key is:
+              key[1023:0] = {KEY0, KEY1, KEY2, ... , KEY31};
+
+              The registers are allowed to be updated only when the engine is in Idle state.
+              If the engine computes the hash, it discards any attempts to update the secret keys and report an error.
+              ''',
+        count: "NumKeyWords",
+        cname: "HMAC",
+        hwext: "true",
+        hwqe : "true",
+        swaccess: "wo",
+        hwaccess: "hrw",
+        fields: [
+          { bits: "31:0", name: "key", desc: "32-bit chunk of 1024-bit secret key" }
+        ],
+      }
+    }
+    { multireg: {
+        name: "DIGEST",
+        desc: '''Digest output.
+
+              If HMAC is disabled, the register shows result of SHA-2 256/384/512.
+              Order of the 512-bit digest[511:0] = {DIGEST0, DIGEST1, DIGEST2, ... , DIGEST15}.
+              For SHA-2 256 order of the 256-bit digest[255:0] = {DIGEST0, DIGEST1, DIGEST2, DIGEST3, DIGEST4, DIGEST5, DIGEST6, DIGEST7} and {DIGEST8 - DIGEST15} are irrelevant and should not be read out.
+              For SHA-2 384, {DIGEST12-DIGEST15} are truncated; they are irrelevant and should not be read out.
+
+              The digest gets cleared when `CFG.sha_en` transitions from 1 to 0.
+              When `STATUS.hmac_idle` is 1, these registers may be written to by software.
+              Outside of this window, writes can cause unpredictable behavior.
+              ''',
+        count: "NumDigestWords",
+        cname: "HMAC",
+        swaccess: "rw",
+        hwaccess: "hrw",
+        hwext: "true",
+        hwqe: "true",
+        fields: [
+          { bits: "31:0", name: "digest", desc: "32-bit chunk of 512-bit digest" }
+        ]
+        tags: [// Exclude digest from write-read checks because it does not write value
+               // to CSRs when digest_mode is SHA2_None.
+               "excl:CsrNonInitTests:CsrExclWriteCheck"]
+
+      }
+    }
+    { name: "MSG_LENGTH_LOWER",
+      desc: '''Received Message Length calculated by the HMAC in bits [31:0]
+
+            Message is byte granularity.
+            Lower 3 bits [2:0] are ignored.
+
+            When `STATUS.hmac_idle` is 1, this register may be written by software.
+            Outside of this window, writes can cause unpredictable behavior.
+            ''',
+      swaccess: "rw",
+      hwaccess: "hrw",
+      hwext: "true",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0", name: "v", desc: "Message Length [31:0]" }
+      ]
+    }
+    { name: "MSG_LENGTH_UPPER",
+      desc: '''Received Message Length calculated by the HMAC in bits [63:32]
+
+            When `STATUS.hmac_idle` is 1, this register may be written by software.
+            Outside of this window, writes can cause unpredictable behavior.
+            For SHA-2-2 256 computations, message length is 64-bit {MSG_LENGTH_UPPER, MSG_LENGTH_LOWER}.f
+            For SHA-2 384/512 message length is extended to 128-bit in line with [nist-fips-180-4] where the upper 64 bits get zero-padded: {32'b0, 32'b0, MSG_LENGTH_UPPER, MSG_LENGTH_LOWER}.
+            ''',
+      swaccess: "rw",
+      hwaccess: "hrw",
+      hwext: "true",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0", name: "v", desc: "Message Length [63:32]" }
+      ]
+    }
+    { skipto: "0x1000" }
+    { window: {
+        name: "MSG_FIFO"
+        items: "1024"      // 4kB
+        swaccess: "wo",
+        byte-write: "true",
+        desc: '''Message FIFO. Any write to this window will be appended to the FIFO.
+        Only the lower [1:0] bits of the address matter to writes within the window
+        (for correctly dealing with non 32-bit writes)
+              '''
+      }
+    }
+  ],
+}

@@ -1,0 +1,70 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:ip:sysrst_ctrl:1.0"
+description: "sysrst_ctrl"
+filesets:
+  files_rtl:
+    depend:
+      - lowrisc:virtual_constants:top_pkg
+      - lowrisc:prim:all
+      - lowrisc:ip:tlul
+    files:
+      - rtl/sysrst_ctrl_reg_pkg.sv
+      - rtl/sysrst_ctrl_reg_top.sv
+      - rtl/sysrst_ctrl_pkg.sv
+      - rtl/sysrst_ctrl_autoblock.sv
+      - rtl/sysrst_ctrl_comboact.sv
+      - rtl/sysrst_ctrl_pin.sv
+      - rtl/sysrst_ctrl_keyintr.sv
+      - rtl/sysrst_ctrl_detect.sv
+      - rtl/sysrst_ctrl_combo.sv
+      - rtl/sysrst_ctrl_ulp.sv
+      - rtl/sysrst_ctrl_intr.sv
+      - rtl/sysrst_ctrl.sv
+    file_type: systemVerilogSource
+
+  files_verilator_waiver:
+    depend:
+      # common waivers
+      - lowrisc:lint:common
+      - lowrisc:lint:comportable
+    files:
+      - lint/sysrst_ctrl.vlt
+    file_type: vlt
+
+  files_ascentlint_waiver:
+    depend:
+      # common waivers
+      - lowrisc:lint:common
+      - lowrisc:lint:comportable
+
+parameters:
+  SYNTHESIS:
+    datatype: bool
+    paramtype: vlogdefine
+
+targets:
+  default: &default_target
+    filesets:
+      - tool_verilator  ? (files_verilator_waiver)
+      - tool_ascentlint ? (files_ascentlint_waiver)
+      - files_rtl
+    toplevel: sysrst_ctrl
+
+  formal:
+    filesets:
+      - files_rtl
+    toplevel: sysrst_ctrl
+
+  lint:
+    <<: *default_target
+    default_tool: verilator
+    parameters:
+      - SYNTHESIS=true
+    tools:
+      verilator:
+        mode: lint-only
+        verilator_options:
+          - "-Wall"

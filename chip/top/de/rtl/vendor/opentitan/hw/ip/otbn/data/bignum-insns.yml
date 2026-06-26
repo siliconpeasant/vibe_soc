@@ -1,0 +1,1467 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# Definitions for the big number group of instructions. See insns.yml
+# for the detailed format.
+
+- mnemonic: bn.add
+  synopsis: Add
+  operands: &bn-add-operands
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - &bn-shift-type-operand
+      name: shift_type
+      abbrev: st
+      type: enum(<<, >>)
+      doc: |
+        The direction of an optional shift applied to `<wrs2>`.
+    - &bn-shift-bits-operand
+      name: shift_bits
+      abbrev: sb
+      type: uimm5<<3
+      doc: |
+        Number of bits by which to shift `<wrs2>`. Defaults to 0.
+    - &bn-flag-group-operand
+      name: flag_group
+      abbrev: fg
+      type: uimm1
+      doc: Flag group to use. Defaults to 0.
+  syntax: &bn-add-syntax |
+    <wrd>, <wrs1>, <wrs2>[ <shift_type> <shift_bits>][, FG<flag_group>]
+  doc: |
+    Adds two WDR values, writes the result to the destination WDR and updates
+    flags. The content of the second source WDR can be shifted by an unsigned
+    immediate before it is consumed by the operation.
+  errs: []
+  iflow:
+    - to: [wrd, flags-all]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnaf
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b000
+      wrd: wrd
+
+- mnemonic: bn.addc
+  synopsis: Add with Carry
+  operands: *bn-add-operands
+  syntax: *bn-add-syntax
+  doc: |
+    Adds two WDR values and the Carry flag value, writes the result to the
+    destination WDR, and updates the flags. The content of the second source
+    WDR can be shifted by an unsigned immediate before it is consumed by the
+    operation.
+  errs: []
+  iflow:
+    - to: [wrd, flags-all]
+      from: [wrs1, wrs2, flags-c]
+  encoding:
+    scheme: bnaf
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b010
+      wrd: wrd
+
+- mnemonic: bn.addi
+  synopsis: Add Immediate
+  operands:
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs
+      doc: Name of the source WDR
+    - name: imm
+      type: uimm
+      doc: Immediate value
+    - *bn-flag-group-operand
+  syntax: |
+    <wrd>, <wrs>, <imm>[, FG<flag_group>]
+  doc: |
+    Adds a zero-extended unsigned immediate to the value of a WDR, writes the
+    result to the destination WDR, and updates the flags.
+  errs: []
+  iflow:
+    - to: [wrd, flags-all]
+      from: [wrs]
+  encoding:
+    scheme: bnai
+    mapping:
+      fg: flag_group
+      sub: b0
+      imm: imm
+      wrs: wrs
+      funct3: b100
+      wrd: wrd
+
+- mnemonic: bn.addm
+  synopsis: Pseudo-Modulo Add
+  operands: [wrd, wrs1, wrs2]
+  doc: |
+    Add two WDR values, modulo the MOD WSR.
+
+    The values in `wrs1` and `wrs2` are summed to get an intermediate result (of width `WLEN + 1`).
+    If this result is greater than MOD then MOD is subtracted from it.
+    The result is then truncated to 256 bits and stored in `wrd`.
+
+    This operation correctly implements addition modulo MOD, providing that the intermediate result is less than `2 * MOD`.
+    The intermediate result is small enough if both inputs are less than `MOD`.
+
+    Flags are not used or saved.
+  errs: []
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2, mod]
+  encoding:
+    scheme: bnam
+    mapping:
+      sub: b0
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b101
+      wrd: wrd
+
+- mnemonic: bn.mulqacc
+  synopsis: Quarter-word Multiply and Accumulate
+  operands:
+    - &mulqacc-zero-acc
+      name: zero_acc
+      abbrev: za
+      type: option(.Z)
+      doc: Zero the accumulator before accumulating the multiply result.
+    - &mulqacc-wrs1
+      name: wrs1
+      doc: First source WDR
+    - &mulqacc-wrs1-qwsel
+      name: wrs1_qwsel
+      abbrev: q1
+      type: uimm2
+      doc: |
+        Quarter-word select for `wrs1`.
+
+        Valid values:
+        - `0`: Select `wrs1[WLEN/4-1:0]` (least significant quarter-word)
+        - `1`: Select `wrs1[WLEN/2:WLEN/4]`
+        - `2`: Select `wrs1[WLEN/4*3-1:WLEN/2]`
+        - `3`: Select `wrs1[WLEN-1:WLEN/4*3]` (most significant quarter-word)
+    - &mulqacc-wrs2
+      name: wrs2
+      doc: Second source WDR
+    - &mulqacc-wrs2-qwsel
+      name: wrs2_qwsel
+      abbrev: q2
+      type: uimm2
+      doc: |
+        Quarter-word select for `wrs2`.
+
+        Valid values:
+        - `0`: Select `wrs2[WLEN/4-1:0]` (least significant quarter-word)
+        - `1`: Select `wrs2[WLEN/2:WLEN/4]`
+        - `2`: Select `wrs2[WLEN/4*3-1:WLEN/2]`
+        - `3`: Select `wrs2[WLEN-1:WLEN/4*3]` (most significant quarter-word)
+    - &mulqacc-acc-shift-imm
+      name: acc_shift_imm
+      abbrev: shift
+      type: uimm2<<6
+      doc: |
+        The number of bits to shift the `WLEN/2`-bit multiply result before accumulating.
+  syntax: |
+    [<zero_acc>] <wrs1>.<wrs1_qwsel>, <wrs2>.<wrs2_qwsel>, <acc_shift_imm>
+  glued-ops: true
+  doc: |
+    Multiplies two `WLEN/4` WDR values, shifts the product by `acc_shift_imm` bits, and adds the result to the accumulator.
+
+    For versions of the instruction with writeback, see `BN.MULQACC.WO` and `BN.MULQACC.SO`.
+  errs: []
+  iflow:
+    - to: [acc]
+      from: [wrs1, wrs2]
+    - test:
+        - zero_acc == 0
+      to: [acc]
+      from: [acc]
+  encoding:
+    scheme: bnaq
+    mapping:
+      fg: bx
+      so: b0
+      wb0: b0
+      qs2: wrs2_qwsel
+      qs1: wrs1_qwsel
+      wrs2: wrs2
+      wrs1: wrs1
+      shift: acc_shift_imm
+      z: zero_acc
+      wrd: bxxxxx
+
+- mnemonic: bn.mulqacc.wo
+  synopsis: Quarter-word Multiply and Accumulate with full-word writeback
+  operands:
+    - *mulqacc-zero-acc
+    - &mulqacc-wrd
+      name: wrd
+      doc: Destination WDR.
+    - *mulqacc-wrs1
+    - *mulqacc-wrs1-qwsel
+    - *mulqacc-wrs2
+    - *mulqacc-wrs2-qwsel
+    - *mulqacc-acc-shift-imm
+    - *bn-flag-group-operand
+  syntax: |
+    [<zero_acc>] <wrd>, <wrs1>.<wrs1_qwsel>, <wrs2>.<wrs2_qwsel>, <acc_shift_imm>[, FG<flag_group>]
+  glued-ops: true
+  doc: |
+    Multiplies two `WLEN/4` WDR values, shifts the product by `acc_shift_imm` bits, and adds the result to the accumulator.
+    Writes the resulting accumulator to `wrd`.
+  errs: []
+  iflow:
+    - to: [acc, wrd, flags-m, flags-l, flags-z]
+      from: [wrs1, wrs2]
+    - test:
+        - zero_acc == 0
+      to: [acc, wrd, flags-m, flags-l, flags-z]
+      from: [acc]
+  encoding:
+    scheme: bnaq
+    mapping:
+      fg: flag_group
+      so: b0
+      wb0: b1
+      qs2: wrs2_qwsel
+      qs1: wrs1_qwsel
+      wrs2: wrs2
+      wrs1: wrs1
+      shift: acc_shift_imm
+      z: zero_acc
+      wrd: wrd
+
+- mnemonic: bn.mulqacc.so
+  synopsis: Quarter-word Multiply and Accumulate with half-word writeback
+  operands:
+    - *mulqacc-zero-acc
+    - name: wrd
+      doc: Updated WDR.
+      type: wrb
+    - name: wrd_hwsel
+      abbrev: dh
+      type: enum(L,U)
+      doc: |
+        Half-word select for `wrd`.
+        A value of `L` means the less significant half-word; `U` means the more significant half-word.
+    - *mulqacc-wrs1
+    - *mulqacc-wrs1-qwsel
+    - *mulqacc-wrs2
+    - *mulqacc-wrs2-qwsel
+    - *mulqacc-acc-shift-imm
+    - *bn-flag-group-operand
+  syntax: |
+    [<zero_acc>] <wrd>.<wrd_hwsel>,
+    <wrs1>.<wrs1_qwsel>, <wrs2>.<wrs2_qwsel>, <acc_shift_imm>[, FG<flag_group>]
+  glued-ops: true
+  doc: |
+    Multiplies two `WLEN/4` WDR values, shifts the product by `acc_shift_imm` bits and adds the result to the accumulator.
+    Next, shifts the resulting accumulator right by half a word (128 bits).
+    The bits that are shifted out are written to a half-word of `wrd`, selected with `wrd_hwsel`.
+
+    This instruction never changes the `C` flag.
+    If `wrd_hwsel` is zero (so the instruction is updating the lower half-word of `wrd`), it updates the `L` and `Z` flags and leaves `M` unchanged.
+    The `L` flag is set iff the bottom bit of the shifted-out result is zero.
+    The `Z` flag is set iff the shifted-out result is zero.
+
+    If `wrd_hwsel` is one (so the instruction is updating the upper half-word of `wrd`), it updates the `M` and `Z` flags and leaves `L` unchanged.
+    The `M` flag is set iff the top bit of the shifted-out result is zero.
+    The `Z` flag is left unchanged if the shifted-out result is zero and cleared if not.
+  errs: []
+  iflow:
+    - to: [acc, wrd]
+      from: [wrs1, wrs2]
+    - test:
+        - zero_acc == 0
+        - wrd_hwsel == 0
+      to: [acc, wrd, flags-l, flags-z]
+      from: [acc, wrs1, wrs2]
+    - test:
+        - zero_acc == 0
+        - wrd_hwsel == 1
+      to: [acc, wrd, flags-m, flags-z]
+      from: [acc, wrs1, wrs2]
+    - test:
+        - zero_acc == 1
+        - wrd_hwsel == 0
+      to: [flags-l, flags-z]
+      from: [wrs1, wrs2]
+    - test:
+        - zero_acc == 1
+        - wrd_hwsel == 1
+      to: [flags-m, flags-z]
+      from: [wrs1, wrs2]
+    - test:
+        - wrd_hwsel == 1
+      to: [flags-z]
+      from: [flags-z]
+  encoding:
+    scheme: bnaq
+    mapping:
+      fg: flag_group
+      so: b1
+      wb0: wrd_hwsel
+      qs2: wrs2_qwsel
+      qs1: wrs1_qwsel
+      wrs2: wrs2
+      wrs1: wrs1
+      shift: acc_shift_imm
+      z: zero_acc
+      wrd: wrd
+
+- mnemonic: bn.sub
+  synopsis: Subtraction
+  operands: &bn-sub-operands
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - *bn-shift-type-operand
+    - *bn-shift-bits-operand
+    - *bn-flag-group-operand
+  syntax: *bn-add-syntax
+  doc: |
+    Subtracts the second WDR value from the first one, writes the result to the destination WDR and updates flags.
+    The content of the second source WDR can be shifted by an unsigned immediate before it is consumed by the operation.
+  errs: []
+  iflow:
+    - to: [wrd, flags-all]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnaf
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b001
+      wrd: wrd
+
+- mnemonic: bn.subb
+  synopsis: Subtract with borrow
+  operands: *bn-sub-operands
+  syntax: *bn-add-syntax
+  doc: |
+    Subtracts the second WDR value and the Carry from the first one, writes the result to the destination WDR, and updates the flags.
+    The content of the second source WDR can be shifted by an unsigned immediate before it is consumed by the operation.
+  iflow:
+    - to: [wrd, flags-all]
+      from: [wrs1, wrs2, flags-c]
+  encoding:
+    scheme: bnaf
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b011
+      wrd: wrd
+
+- mnemonic: bn.subi
+  synopsis: Subtract Immediate
+  operands:
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs
+      doc: Name of the source WDR
+    - name: imm
+      type: uimm
+      doc: Immediate value
+    - *bn-flag-group-operand
+  syntax: <wrd>, <wrs>, <imm>[, FG<flag_group>]
+  doc: |
+    Subtracts a zero-extended unsigned immediate from the value of a WDR,
+    writes the result to the destination WDR, and updates the flags.
+  errs: []
+  iflow:
+    - to: [wrd, flags-all]
+      from: [wrs]
+  encoding:
+    scheme: bnai
+    mapping:
+      fg: flag_group
+      sub: b1
+      imm: imm
+      wrs: wrs
+      funct3: b100
+      wrd: wrd
+
+- mnemonic: bn.subm
+  synopsis: Pseudo-modulo subtraction
+  operands: [wrd, wrs1, wrs2]
+  doc: |
+    Subtract `wrs2` from `wrs1`, modulo the `MOD` WSR.
+
+    The intermediate result is treated as a signed number (of width `WLEN + 1`).
+    If it is negative, `MOD` is added to it.
+    The 2's-complement result is then truncated to 256 bits and stored in `wrd`.
+
+    This operation correctly implements subtraction modulo `MOD`, providing that the intermediate result at least `-MOD` and at most `MOD - 1`.
+    This is guaranteed if both inputs are less than `MOD`.
+
+    Flags are not used or saved.
+  errs: []
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2, mod]
+  encoding:
+    scheme: bnam
+    mapping:
+      sub: b1
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b101
+      wrd: wrd
+
+- mnemonic: bn.and
+  synopsis: Bitwise AND
+  operands: &bn-and-operands
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - *bn-shift-type-operand
+    - *bn-shift-bits-operand
+    - *bn-flag-group-operand
+  syntax: &bn-and-syntax |
+    <wrd>, <wrs1>, <wrs2>[ <shift_type> <shift_bits>][, FG<flag_group>]
+  doc: |
+    Performs a bitwise and operation.
+    Takes the values stored in registers referenced by `wrs1` and `wrs2` and stores the result in the register referenced by `wrd`.
+    The content of the second source register can be shifted by an immediate before it is consumed by the operation.
+    The M, L and Z flags in flag group `flag_group` are updated with the result of the operation.
+  errs: []
+  iflow: &bn-and-iflow
+    - to: [wrd, flags-m, flags-l, flags-z]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bna
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b010
+      wrd: wrd
+
+- mnemonic: bn.or
+  synopsis: Bitwise OR
+  operands: *bn-and-operands
+  syntax: *bn-and-syntax
+  doc: |
+    Performs a bitwise or operation.
+    Takes the values stored in WDRs referenced by `wrs1` and `wrs2` and stores the result in the WDR referenced by `wrd`.
+    The content of the second source WDR can be shifted by an immediate before it is consumed by the operation.
+    The M, L and Z flags in flag group `flag_group` are updated with the result of the operation.
+  errs: []
+  iflow: *bn-and-iflow
+  encoding:
+    scheme: bna
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b100
+      wrd: wrd
+
+- mnemonic: bn.not
+  synopsis: Bitwise NOT
+  operands:
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs
+      doc: Name of the source WDR
+    - *bn-shift-type-operand
+    - *bn-shift-bits-operand
+    - *bn-flag-group-operand
+  syntax: |
+    <wrd>, <wrs>[ <shift_type> <shift_bits>][, FG<flag_group>]
+  doc: |
+    Negates the value in `wrs` and stores the result in the register referenced by `wrd`.
+    The source value can be shifted by an immediate before it is consumed by the operation.
+    The M, L and Z flags in flag group `flag_group` are updated with the result of the operation.
+  errs: []
+  iflow:
+    - to: [wrd, flags-m, flags-l, flags-z]
+      from: [wrs]
+  encoding:
+    scheme: bnan
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs1: wrs
+      funct3: b101
+      wrd: wrd
+
+- mnemonic: bn.xor
+  synopsis: Bitwise XOR
+  operands: *bn-and-operands
+  syntax: *bn-and-syntax
+  doc: |
+    Performs a bitwise xor operation.
+    Takes the values stored in WDRs referenced by `wrs1` and `wrs2` and stores the result in the WDR referenced by `wrd`.
+    The content of the second source WDR can be shifted by an immediate before it is consumed by the operation.
+    The M, L and Z flags in flag group `flag_group` are updated with the result of the operation.
+  errs: []
+  iflow: *bn-and-iflow
+  encoding:
+    scheme: bna
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b110
+      wrd: wrd
+
+- mnemonic: bn.rshi
+  synopsis: Concatenate and right shift immediate
+  operands:
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - name: imm
+      type: uimm
+      doc: |
+        Number of bits to shift the second source register by. Valid range: 0..(WLEN-1).
+  syntax: |
+    <wrd>, <wrs1>, <wrs2> >> <imm>
+  doc: |
+    Concatenates the content of WDRs referenced by `wrs1` and `wrs2` (`wrs1` forms the upper part), shifts it right by an immediate value and truncates to WLEN bit.
+    The result is stored in the WDR referenced by `wrd`.
+  errs: []
+  encoding:
+    scheme: bnr
+    mapping:
+      imm: imm
+      wrs2: wrs2
+      wrs1: wrs1
+      funct2: b11
+      wrd: wrd
+
+- mnemonic: bn.sel
+  synopsis: Flag Select
+  operands:
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - *bn-flag-group-operand
+    - name: flag
+      type: enum(C, M, L, Z)
+      doc: |
+        Flag to check. Valid values:
+        - C: Carry flag
+        - M: MSB flag
+        - L: LSB flag
+        - Z: Zero flag
+  syntax: |
+    <wrd>, <wrs1>, <wrs2>, [FG<flag_group>.]<flag>
+  doc: |
+    Returns in the destination WDR the value of the first source WDR if the flag in the chosen flag group is set, otherwise returns the value of the second source WDR.
+  errs: []
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2]
+    - test:
+        - flag == 0
+      to: [wrd]
+      from: [flags-c]
+    - test:
+        - flag == 1
+      to: [wrd]
+      from: [flags-m]
+    - test:
+        - flag == 2
+      to: [wrd]
+      from: [flags-l]
+    - test:
+        - flag == 3
+      to: [wrd]
+      from: [flags-z]
+  encoding:
+    scheme: bns
+    mapping:
+      fg: flag_group
+      flag: flag
+      wrs2: wrs2
+      wrs1: wrs1
+      wrd: wrd
+
+- mnemonic: bn.cmp
+  synopsis: Compare
+  operands: &bn-cmp-operands
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - *bn-shift-type-operand
+    - *bn-shift-bits-operand
+    - *bn-flag-group-operand
+  syntax: &bn-cmp-syntax |
+    <wrs1>, <wrs2>[ <shift_type> <shift_bits>][, FG<flag_group>]
+  doc: |
+    Subtracts the second WDR value from the first one and updates flags.
+    This instruction is identical to BN.SUB, except that no result register is written.
+  errs: []
+  iflow:
+    - to: [flags-all]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnc
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b001
+
+- mnemonic: bn.cmpb
+  synopsis: Compare with Borrow
+  operands: *bn-cmp-operands
+  syntax: *bn-cmp-syntax
+  doc: |
+    Subtracts the second WDR value from the first one and updates flags.
+    This instruction is identical to BN.SUBB, except that no result register is written.
+  errs: []
+  iflow:
+    - to: [flags-all]
+      from: [wrs1, wrs2, flags-c]
+  encoding:
+    scheme: bnc
+    mapping:
+      fg: flag_group
+      shift_type: shift_type
+      shift_bits: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b011
+
+- mnemonic: bn.lid
+  synopsis: Load Word (indirect source, indirect destination)
+  operands:
+    - name: grd
+      # The grd register is read to pick the WDR that should be written, so
+      # it's sort of logically a destination (hence the name) but should be
+      # treated as a source by tools like the random instruction generator.
+      type: grs
+      doc: Name of the GPR referencing the destination WDR
+    - name: grs1
+      doc: |
+        Name of the GPR containing the memory byte address.
+        The value contained in the referenced GPR must be WLEN-aligned.
+    - name: offset
+      abbrev: "off"
+      doc: |
+        Offset value.
+        Must be WLEN-aligned.
+      type: simm<<5
+    - name: grs1_inc
+      abbrev: inc1
+      type: option(++)
+      doc: |
+        Increment the value in `<grs1>` by WLEN/8 (one word).
+        Cannot be specified together with `grd_inc`.
+    - name: grd_inc
+      abbrev: incd
+      type: option(++)
+      doc: |
+        Increment the value in `<grd>` by one.
+        Cannot be specified together with `grs1_inc`.
+  syntax: |
+    <grd>[<grd_inc>], <offset>(<grs1>[<grs1_inc>])
+  doc: |
+    Load a WLEN-bit little-endian value from data memory.
+
+    The load address is `offset` plus the value in the GPR `grs1`.
+    The loaded value is stored into the WDR given by the bottom 5 bits of the GPR `grd`.
+
+    After the operation, either the value in the GPR `grs1`, or the value in `grd` can be optionally incremented.
+    Specifying both `grd_inc` and `grs1_inc` results in an error (with error code `ErrCodeIllegalInsn`).
+
+    - If `grd_inc` is set, `grd` is updated to be `*grd + 1`.
+    - If `grs1_inc` is set, the value in `grs1` is incremented by value WLEN/8 (one word).
+
+    The memory address must be aligned to WLEN bits.
+    Any address that is unaligned or is above the top of memory results in an error (setting bit `bad_data_addr` in `ERR_BITS`).
+    Any `*grd` value greater than 31 before executing the instruction results in an error (setting bit `illegal_insn` in `ERR_BITS`) and no load or optional increment occurring.
+    This instruction takes 2 cycles.
+  lsu:
+    type: mem-load
+    target: [offset, grs1]
+    bytes: 32
+  errs:
+    - A `CALL_STACK` error from using `x1` as `grs1` or `grd` when the call stack is empty.
+    - An `ILLEGAL_INSN` error if both `grd_inc` and `grs1_inc` are set.
+    - An `ILLEGAL_INSN` error if the value in GPR `grd` is greater than 31.
+    - &data-addr A `BAD_DATA_ADDR` error if the computed address is not a valid DMEM address aligned to WLEN bits.
+  iflow:
+    - to: [wref-grd]
+      from: [dmem]
+    - test:
+        - grd_inc == 1
+      to: [grd]
+      from: [grd]
+    - test:
+        - grs1_inc == 1
+      to: [grs1]
+      from: [grs1]
+  encoding:
+    scheme: bnxid
+    mapping:
+      imm: offset
+      rs2: grd
+      rs1: grs1
+      spp: grs1_inc
+      dpp: grd_inc
+      funct3: b100
+
+- mnemonic: bn.sid
+  synopsis: Store Word (indirect source, indirect destination)
+  operands:
+    - name: grs1
+      doc: |
+        Name of the GPR containing the memory byte address.
+        The value contained in the referenced GPR must be WLEN-aligned.
+    - name: grs2
+      doc: Name of the GPR referencing the source WDR.
+    - name: offset
+      abbrev: "off"
+      doc: |
+        Offset value.
+        Must be WLEN-aligned.
+      type: simm<<5
+    - name: grs1_inc
+      type: option(++)
+      abbrev: inc1
+      doc: |
+        Increment the value in `grs1` by WLEN/8 (one word).
+        Cannot be specified together with `grs2_inc`.
+    - name: grs2_inc
+      type: option(++)
+      abbrev: inc2
+      doc: |
+        Increment the value in `grs2` by one.
+        Cannot be specified together with `grs1_inc`.
+  syntax: |
+    <grs2>[<grs2_inc>], <offset>(<grs1>[<grs1_inc>])
+  doc: |
+    Store a WDR to memory as a WLEN-bit little-endian value.
+
+    The store address is `offset` plus the value in the GPR `grs1`.
+    The value to store is taken from the WDR given by the bottom 5 bits of the GPR `grs2`.
+
+    After the operation, either the value in the GPR `grs1`, or the value in `grs2` can be optionally incremented.
+    Specifying both `grs1_inc` and `grs2_inc` results in an error (with error code `ErrCodeIllegalInsn`).
+
+    - If `grs1_inc` is set, the value in `grs1` is incremented by the value WLEN/8 (one word).
+    - If `grs2_inc` is set, the value in `grs2` is updated to be `*grs2 + 1`.
+
+    The memory address must be aligned to WLEN bits.
+    Any address that is unaligned or is above the top of memory results in an error (setting bit `bad_data_addr` in `ERR_BITS`).
+    Any `*grs2` value greater than 31 before executing the instruction results in an error (setting bit `illegal_insn` in `ERR_BITS`) and no store or optional increment occurring.
+  errs:
+    - A `CALL_STACK` error from using `x1` as `grs1` or `grs2` when the call stack is empty.
+    - An `ILLEGAL_INSN` error if both `grs1_inc` and `grs2_inc` are set.
+    - An `ILLEGAL_INSN` error if the value in GPR `grs2` is greater than 31.
+    - *data-addr
+  lsu:
+    type: mem-store
+    target: [offset, grs1]
+    bytes: 32
+  iflow:
+    - to: [dmem]
+      from: [wref-grs2]
+    - test:
+        - grs1_inc == 1
+      to: [grs1]
+      from: [grs1]
+    - test:
+        - grs2_inc == 1
+      to: [grs2]
+      from: [grs2]
+  encoding:
+    scheme: bnxid
+    mapping:
+      imm: offset
+      rs2: grs2
+      rs1: grs1
+      spp: grs1_inc
+      dpp: grs2_inc
+      funct3: b101
+
+- mnemonic: bn.mov
+  synopsis: Copy content between WDRs (direct addressing)
+  operands: [wrd, wrs]
+  encoding:
+    scheme: bnmov
+    mapping:
+      src: wrs
+      dst: wrd
+  errs: []
+
+- mnemonic: bn.movr
+  synopsis: Copy content between WDRs (register-indirect addressing)
+  operands:
+    - name: grd
+      doc: Name of the GPR containing the destination WDR.
+      # The grd register is read to pick the WDR that should be written, so
+      # it's sort of logically a destination (hence the name) but should be
+      # treated as a source by tools like the random instruction generator.
+      type: grs
+    - name: grs
+      doc: Name of the GPR referencing the source WDR.
+    - name: grd_inc
+      type: option(++)
+      doc: |
+        Increment the value in `grd` by one.
+        Cannot be specified together with `grs_inc`.
+    - name: grs_inc
+      type: option(++)
+      doc: |
+        Increment the value in `grs` by one.
+        Cannot be specified together with `grd_inc`.
+  syntax: |
+    <grd>[<grd_inc>], <grs>[<grs_inc>]
+  doc: |
+    Copies WDR contents between registers with indirect addressing.
+
+    After the operation, either the value in the GPR `grd`, or the value in `grs` can be optionally incremented.
+    Specifying both `grd_inc` and `grs_inc` results in an error (with error code `ErrCodeIllegalInsn`).
+
+    - If `grd_inc` is set, `grd` is updated to be `*grd + 1`.
+    - If `grs_inc` is set, `grs` is updated to be `*grs + 1`.
+
+    Any `*grd` or `*grs` value greater than 31 results in an error (setting bit `illegal_insn` in `ERR_BITS`)
+  errs:
+    - A `CALL_STACK` error from using `x1` as `grs` or `grd` when the call stack is empty.
+    - An `ILLEGAL_INSN` error if either the value in GPR `grd` or the value in GPR `grs` is greater than 31.
+    - An `ILLEGAL_INSN` error if both `grs_inc` and `grd_inc` are set.
+  iflow:
+    - to: [wref-grd]
+      from: [wref-grs]
+    - test:
+        - grd_inc == 1
+      to: [grd]
+      from: [grd]
+    - test:
+        - grs_inc == 1
+      to: [grs]
+      from: [grs]
+  encoding:
+    scheme: bnmovr
+    mapping:
+      dst: grd
+      src: grs
+      spp: grs_inc
+      dpp: grd_inc
+
+- mnemonic: bn.wsrr
+  synopsis: Read WSR to register
+  operands:
+    - name: wrd
+      doc: Destination WDR
+    - name: wsr
+      doc: The WSR to read
+  doc: |
+    Reads a WSR to a WDR.
+    If `wsr` isn't the index of a valid WSR, this results in an error (setting bit `illegal_insn` in `ERR_BITS`).
+  errs:
+    - &bad-wsr An `ILLEGAL_INSN` error if `wsr` doesn't name a valid WSR.
+  iflow:
+    - to: [wrd]
+      from: []
+    - test:
+        - wsr == 0x0
+      to: [wrd]
+      from: [mod]
+    - test:
+        - wsr == 0x3
+      to: [wrd]
+      from: [acc]
+  encoding:
+    scheme: wcsr
+    mapping:
+      write: b0
+      wcsr: wsr
+      wrs: bxxxxx
+      wrd: wrd
+  lsu:
+    type: wsr-load
+    target: [wsr]
+
+- mnemonic: bn.wsrw
+  synopsis: Write WSR from register
+  operands: [wsr, wrs]
+  operands:
+    - name: wsr
+      doc: The WSR to read
+    - name: wrs
+      doc: Source WDR
+  doc: |
+    Writes a WDR to a WSR.
+    If `wsr` isn't the index of a valid WSR, this results in an error (setting bit `illegal_insn` in `ERR_BITS`).
+  errs:
+    - *bad-wsr
+  iflow:
+    - to: []
+      from: []
+    - test:
+        - wsr == 0x0
+      to: [mod]
+      from: [wrs]
+    - test:
+        - wsr == 0x3
+      to: [acc]
+      from: [wrs]
+  encoding:
+    scheme: wcsr
+    mapping:
+      write: b1
+      wcsr: wsr
+      wrs: wrs
+      wrd: bxxxxx
+  lsu:
+    type: wsr-store
+    target: [wsr]
+
+- mnemonic: bn.addv
+  synopsis: Add vector elementwise
+  operands: &bn-addv-operands
+    - name: elen
+      # We use an enum here for consistency with other vector instructions which support multiple element lengths.
+      type: enum(.8s)
+      doc: |
+        Select the bit-width of the vector elements.
+        - `.8s`: WDRs are interpreted as 8 32-bit elements
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+  syntax: &bn-addv-syntax |
+    <elen> <wrd>, <wrs1>, <wrs2>
+  glued-ops: true
+  doc: |
+    Add two WDR registers interpreted as vectors.
+
+    The WDRs `wrs1` and `wrs2` are interpreted as vectors with unsigned elements of size given by `elen`.
+    The vectors are summed elementwise and each sum is truncated to the element length.
+    The final vector is stored in `wrd`.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnva
+    mapping:
+      sub: b0
+      mod: b0
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b000
+      wrd: wrd
+
+- mnemonic: bn.addvm
+  synopsis: Pseudo-Modulo add vector elementwise
+  operands: *bn-addv-operands
+  syntax: *bn-addv-syntax
+  glued-ops: true
+  doc: |
+    Add two WDR registers interpreted as vectors and reduce the results using the MOD WSR.
+
+    The modulus by which the addition results are reduced comes from the bottom word of the MOD WSR at the corresponding element length.
+    For example, for `.8s` the modulus is taken from `MOD[31:0]`.
+    Let `q` be this modulus for the explanation below.
+
+    The WDRs `wrs1` and `wrs2` are interpreted as vectors with unsigned elements of the same size.
+    The vectors are summed elementwise.
+    If an individual result is equal to or larger than `q` then `q` is subtracted from it.
+    The final results are truncated to the element length and the whole vector is stored in `wrd`.
+
+    This operation correctly implements addition modulo `q`, providing that the intermediate results are less than `2 * q`.
+    The intermediate results are small enough if both inputs are less than `q`.
+    Note, this instruction can be used to implement the conditional subtraction step for the Montgomery multiplication (see `bn.mulvm`).
+    For this case, one input should be zero and the second input can be within `[0, 2*q[` as the instruction will subtract `q` when the result is equal to or greater than `q`.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2, mod]
+  encoding:
+    scheme: bnva
+    mapping:
+      sub: b0
+      mod: b1
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b000
+      wrd: wrd
+
+- mnemonic: bn.subv
+  synopsis: Subtract vector elementwise
+  operands: *bn-addv-operands
+  syntax: *bn-addv-syntax
+  glued-ops: true
+  doc: |
+    Subtract `wrs2` from `wrs1` interpreted as vectors.
+
+    The WDRs `wrs1` and `wrs2` are interpreted as vectors with unsigned elements of size given by `elen`.
+    The vectors are subtracted elementwise and each difference is truncated to the element length.
+    The final vector is stored in `wrd`.
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnva
+    mapping:
+      sub: b1
+      mod: b0
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b000
+      wrd: wrd
+
+- mnemonic: bn.subvm
+  synopsis: Pseudo-Modulo subtract vector elementwise
+  operands: *bn-addv-operands
+  syntax: *bn-addv-syntax
+  glued-ops: true
+  doc: |
+    Subtract `wrs2` from `wrs1` interpreted as vectors and reduce the result using the MOD WSR.
+
+    The modulus by which the subtraction results are reduced comes from the bottom word of the MOD WSR at the corresponding element length.
+    For example, for `.8s` the modulus is taken from `MOD[31:0]`.
+    Write `q` for this modulus.
+
+    The WDRs `wrs1` and `wrs2` are interpreted as vectors with unsigned elements of the same size.
+    The vectors are subtracted elementwise.
+    The intermediate results are treated as a signed number and if an individual result is negative, `q` is added to it.
+    The final results are truncated to the element length and the whole vector is stored in `wrd`.
+
+    This operation correctly implements subtraction modulo `q`, providing that the intermediate result are at least `-q` and at most `q - 1`.
+    This is guaranteed if both inputs are less than `q`.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2, mod]
+  encoding:
+    scheme: bnva
+    mapping:
+      sub: b1
+      mod: b1
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b000
+      wrd: wrd
+
+- mnemonic: bn.mulv
+  synopsis: Elementwise vector multiplication
+  operands: &bn-mulv-operands
+    - name: elen
+      # We use an enum here for consistency with other vector instructions which support multiple element lengths.
+      # We maybe should extend the framework such that encodings can be specified and some options can be marked as reserved.
+      type: enum(.8s)
+      doc: |
+        Select the bit-width of the vector elements.
+        - `.8s`: WDRs are interpreted as 8 32-bit elements
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+  syntax: &bn-mulv-syntax |
+    <elen> <wrd>, <wrs1>, <wrs2>
+  glued-ops: true
+  doc: |
+    Multiply two WDR registers interpreted as vectors.
+
+    The WDRs `wrs1` and `wrs2` are interpreted as vectors with unsigned elements of size given by `elen`.
+    The vectors are multiplied elementwise and each product is truncated to the element length.
+    The final vector is stored in `wrd`.
+
+    This instruction stalls OTBN for 4 cycles and uses the ACC WSR to assemble the final result, i.e., the previous value of ACC is overwritten with the results.
+    At the end of the instruction, the ACC WSR is cleared using random data supplied by the URND WSR.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd, acc]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnvm
+    mapping:
+      lane: bxxx
+      use_lane: b0
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b011
+      wrd: wrd
+
+- mnemonic: bn.mulvl
+  synopsis: Elementwise vector multiplication with fixed lane
+  operands: &bn-mulvl-operands
+    - name: elen
+      # We use an enum here for consistency with other vector instructions which support multiple element lengths.
+      # We maybe should extend the framework such that encodings can be specified and some options can be marked as reserved.
+      type: enum(.8s)
+      doc: |
+        Select the bit-width of the vector elements.
+        - `.8s`: WDRs are interpreted as 8 32-bit elements
+    - name: wrd
+      doc: Destination WDR
+    - name: wrs1
+      doc: First source WDR
+    - name: wrs2
+      doc: Second source WDR
+    - name: lane
+      doc: |
+        Select which element of `wrs2` will be multiplied with all elements of `wrs1`.
+      type: uimm3
+  syntax: &bn-mulvl-syntax |
+    <elen> <wrd>, <wrs1>, <wrs2>, <lane>
+  glued-ops: true
+  doc: |
+    Multiply each vector element of `wrs1` with element `lane` of `wrs2`.
+
+    The WDRs `wrs1` and `wrs2` are interpreted as vectors with unsigned elements of size given by `elen`.
+    The elements are indexed with `lane` starting from the lowest bits of the WDR.
+    For example, for `.8s` lane 0 specifies the bits `[31:0]` of `wrs2`.
+    Each product is truncated to the element length and the final vector is stored in `wrd`.
+
+    This instruction stalls OTBN for 4 cycles and uses the ACC WSR to assemble the final result, i.e., the previous value of ACC is overwritten with the results.
+    At the end of the instruction, the ACC WSR is cleared using random data supplied by the URND WSR.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd, acc]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnvm
+    mapping:
+      lane: lane
+      use_lane: b1
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b011
+      wrd: wrd
+
+- mnemonic: bn.mulvm
+  synopsis: Elementwise vector Montgomery multiplication
+  operands: *bn-mulv-operands
+  syntax: *bn-mulv-syntax
+  glued-ops: true
+  doc: |
+    Performs a Montgomery multiplication without the final conditional subtraction step of the Montgomery algorithm.
+    The values in `wrs1` and `wrs2` are interpreted as vectors with elements of size given by `elen` and are considered unsigned.
+    Each result is truncated to the element length and the final vector is stored in `wrd`.
+    This instruction outputs the result in `[0, 2q[` as the final conditional subtraction step is not performed.
+    For a result in `[0, q[`, a conditional subtraction must be performed after this instruction, e.g., with `BN.ADDVM` and a zero vector.
+
+    This instruction stalls OTBN for 12 cycles and uses the ACC WSR to assemble the final result, i.e., the previous value of ACC is overwritten with the results.
+    At the end of the instruction, the ACC WSR is cleared using random data supplied by the URND WSR.
+
+    **Montgomery explanation**\\
+    Inputs:
+    - `a, b`: Operands in `[0, q[`
+    - `d`:   Bit-width of operands
+    - `q`:   Modulus in `]0, 2^d]`
+    - `mu`:   Montgomery constant, precomputed, `mu = (-q)^(-1) mod 2^d`
+
+    The operands must be pre-transformed into Montgomery space with `a = a_orig * 2^d mod q`.
+    This must be ensured by the programmer.
+
+    The Montgomery multiplication is defined as:
+    ```
+    r = a*b * 2^(-d) mod q
+    ```
+    where `r` is in `[0, q[`.
+
+    This can be computed with the following steps where `[]_d` are the lower `d` bits and `[]^d` are the higher `d` bits:
+    ```
+    c = a*b
+    r = [c + [[c]_d * mu]_d * q]^d
+    if r >= q then                  // not implemented in hardware
+        return r - q
+    return r
+    ```
+
+    This instruction computes these steps except the final conditional subtraction (`r >= q`) to optimize area and timing.
+    The result is thus in `[0, 2q[` and must be reduced to `[0, q[` by the programmer.
+    This can be performed in software by using a pseudo modulo addition (`BN.ADDVM`) with a zero vector.
+
+    Note that when chaining multiplications, the conditional subtraction can be postponed until after the last multiplication in case the initial inputs are in `[0, 2q[` and `q < (2^d)/4` holds.
+
+    **Pre-requisites**\\
+    This instruction requires the modulus `q` and its corresponding Montgomery constant `mu` to be placed in the MOD WSR at the following locations:\\
+    For `.8s`: `q @ MOD[31:0]`, `mu @ MOD[63:32]`
+
+    **Micro-architectural remarks**\\
+    The ACC WSR is used to temporarily store the partial result before the complete result is written into the destination WDR.
+    It is cleared at the end of the instruction using random data from the URND WSR.
+    If required for cryptographic reasons, the ACC WSR can be overwritten prior to the execution using a `BN.WSRW` instruction.
+
+    In addition to the ACC WSR use, there are two hidden registers inside the BN MAC module to hold intermediate values of the Montgomery computation.
+    These registers are cleared using random data from URND after each Montgomery multiplication (i.e., every 3 cycles) and cannot be accessed or modified by software.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd, acc]
+      from: [wrs1, wrs2, mod]
+  encoding:
+    scheme: bnvm
+    mapping:
+      lane: bxxx
+      use_lane: b0
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b100
+      wrd: wrd
+
+- mnemonic: bn.mulvml
+  synopsis: Elementwise vector Montgomery multiplication with fixed lane
+  operands: *bn-mulvl-operands
+  syntax: *bn-mulvl-syntax
+  glued-ops: true
+  doc: |
+    Perform a Montgomery multiplication without the final conditional subtraction on each element of `wrs1` with element `lane` of `wrs2`.
+    The elements are indexed with `lane` starting from the lowest bits of the WDR.
+    For example, for `.8s` lane 0 specifies the bits `[31:0]` of `wrs2`.
+
+    See `BN.MULVM` for explanations about the Montgomery algorithm and the implementation details, especially regarding security.
+    For a correct result, a conditional subtraction must be performed after this instruction, e.g., with `BN.ADDVM`.
+
+    This instruction requires the modulus `q` and its corresponding Montgomery constant `mu` to be placed in the MOD WSR at the following location:\\
+    For `.8s`: `q @ MOD[31:0]`, `mu @ MOD[63:32]`
+
+    This instruction stalls OTBN for 12 cycles and uses the ACC WSR to assemble the final result, i.e., the previous value of ACC is overwritten with the results.
+    At the end of the instruction, the ACC WSR is cleared using random data supplied by the URND WSR.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd, acc]
+      from: [wrs1, wrs2, mod]
+  encoding:
+    scheme: bnvm
+    mapping:
+      lane: lane
+      use_lane: b1
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b100
+      wrd: wrd
+
+- mnemonic: bn.trn1
+  synopsis: Interleave vectors in even fashion
+  operands: &bn-trn-operands
+    - name: elen
+      type: enum(.8s,.4d,.2q)
+      doc: |
+        Select the bit-width of the vector elements.
+        - `.8s`: WDRs are interpreted as 8 32 bit elements
+        - `.4d`: WDRs are interpreted as 4 64 bit elements
+        - `.2q`: WDRs are interpreted as 2 128 bit elements
+    - name: wrd
+      doc: Destination WDR
+    - name: wrs1
+      doc: First source WDR
+    - name: wrs2
+  syntax: &bn-trn-syntax
+    <elen> <wrd>, <wrs1>, <wrs2>
+  glued-ops: true
+  doc: |
+    Even-numbered vector elements from `wrs1` are placed into even-numbered elements of `wrd`.
+    Even-numbered vector elements from `wrs2` are placed into odd-numbered elements of `wrd`.
+
+    For `.8s`, this can be described as `wrd[i] = wrs1[i]` and `wrd[i+1] = wrs2[i]` for `i in [0, 2, .., (256//32)-2]` which results in `wrd = {..., wrs2[2], wrs1[2], wrs2[0], wrs1[0]}`.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnvtrn
+    mapping:
+      odd: b0
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b101
+      wrd: wrd
+
+- mnemonic: bn.trn2
+  synopsis: Interleave vectors in odd fashion
+  operands: *bn-trn-operands
+  syntax: *bn-trn-syntax
+  glued-ops: true
+  doc: |
+    Odd-numbered vector elements from `wrs1` are placed into even-numbered elements of `wrd`.
+    Odd-numbered vector elements from `wrs2` are placed into odd-numbered elements of `wrd`.
+
+    For `.8s`, this can be described as `wrd[i] = wrs1[i+1]` and `wrd[i+1] = wrs2[i+1]` for `i in [0, 2, .., (256//32)-2]` which results in `wrd = {..., wrs2[3], wrs1[3], wrs2[1], wrs1[1]}`.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnvtrn
+    mapping:
+      odd: b1
+      elen: elen
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b101
+      wrd: wrd
+
+- mnemonic: bn.shv
+  synopsis: Bitwise logical shift of vector elements
+  operands:
+    - name: elen
+      type: enum(.8s)
+      doc: |
+        Select the bit-width of the vector elements.
+        - `.8s`: WDRs are interpreted as 8 32-bit elements
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs
+      doc: Name of the source WDR
+    - name: shift_type
+      abbrev: st
+      type: enum(<<, >>)
+      doc: |
+        The direction of the shift applied to elements of `wrs`.
+    - name: shift_bits
+      abbrev: sb
+      type: uimm5
+      doc: Number of bits by which to shift elements in `wrs`.
+  syntax: <elen> <wrd>, <wrs> <shift_type> <shift_bits>
+  glued-ops: true
+  doc: |
+    Logically shift each element of vector `wrs` by `shift_bits` in `shift_type` direction.
+    The elements are considered as unsigned and their size is given by `elen`.
+
+    Flags are not used or saved.
+  iflow:
+    - to: [wrd]
+      from: [wrs]
+  encoding:
+    scheme: bnvsh
+    mapping:
+      shift_type: shift_type
+      shift_bits: shift_bits
+      elen: elen
+      wrs: wrs
+      funct3: b111
+      wrd: wrd
+
+- mnemonic: bn.pack
+  synopsis: Pack 32-bit vectors into a 24-bit dense representation
+  operands:
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - name: shift_bits
+      abbrev: sb
+      type: uimm2<<6
+      doc: |
+        The number of bits to shift the concatenated dense vectors.
+  syntax: |
+    <wrd>, <wrs1>, <wrs2>, <shift_bits>
+  doc: |
+    Compresses the content of the WDRs referenced by `wrs1` and `wrs2` by extracting the lower 24 bits from each of their eight 32-bit elements to form 192-bit dense representations (8 * 24-bit).
+    The dense representations are concatenated (`wrs1` forms the upper part) and 64 zero bits are appended to the left and right to form the 512 bit vector `{64'd0, dense1, dense2, 64'd0}`.
+    This combination is then shifted to the right by `shift_bits` bits and the lowest 256 bits are stored to `wrd`.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnpk
+    mapping:
+      is_pack: b1
+      shift: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b110
+      wrd: wrd
+
+- mnemonic: bn.unpk
+  synopsis: Expand 24-bit packed vectors into 32-bit vectors
+  operands:
+    - name: wrd
+      doc: Name of the destination WDR
+    - name: wrs1
+      doc: Name of the first source WDR
+    - name: wrs2
+      doc: Name of the second source WDR
+    - name: shift_bits
+      abbrev: sb
+      type: uimm2<<6
+      doc: |
+        The number of bits to shift the concatenated WDRs before unpacking.
+  syntax: |
+    <wrd>, <wrs1>, <wrs2>, <shift_bits>
+  doc: |
+    Expands 8 elements from a 24-bit packed format into a 32-bit vector format.
+    Concatenates the content of WDRs referenced by `wrs1` and `wrs2` (`wrs1` forms the upper part) and shifts it right by the specified number of bits.
+    Finally, the lowest 8 24-bit elements are unpacked and zero extended into 32-bit elements and stored in `wrd`.
+  iflow:
+    - to: [wrd]
+      from: [wrs1, wrs2]
+  encoding:
+    scheme: bnpk
+    mapping:
+      is_pack: b0
+      shift: shift_bits
+      wrs2: wrs2
+      wrs1: wrs1
+      funct3: b110
+      wrd: wrd

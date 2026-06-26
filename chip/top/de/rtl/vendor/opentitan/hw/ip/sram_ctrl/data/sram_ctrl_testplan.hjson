@@ -1,0 +1,222 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "sram_ctrl"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/mem_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/passthru_mem_intg_testplan.hjson",
+                     "hw/dv/sv/mem_bkdr_scb/data/mem_access_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/sec_cm_count_testplan.hjson",
+                     "sram_ctrl_sec_cm_testplan.hjson"]
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            This test performs basic SRAM initialization procedure and tests basic memory function:
+              - Initialize SRAM memory to zero
+              - Perform some random memory operations, verify that they all succeed with an
+                all-zero key and nonce
+              - Request a new scrambling key from the OTP interface and verify that:
+                - A valid key is received
+                - The key seed used by OTP is valid
+              - Perform a number of random memory accesses to the SRAM, verify that all accesses
+                were executed correctly using the `mem_bkdr_util`
+            '''
+      stage: V1
+      tests: ["{name}_smoke"]
+    }
+    {
+      name: multiple_keys
+      desc: '''
+            In this test we request multiple scrambling keys from OTP and verify that the memory
+            scrambling is performed correctly even with multiple seeds.
+            Perform the following steps:
+              - Initialize the memory to zero
+              - Perform some random memory operations, verify that they succeed with an
+                all-zero key and nonce
+              - Repeat the following steps a number of times:
+                - Get a scrambling key from the OTP interface
+                - Perform a number of random memory accesses to the SRAM
+              - Verify that all memory access succeed even if the scrambling key changes at arbitrary
+                intervals
+            '''
+      stage: V2
+      tests: ["{name}_multiple_keys"]
+    }
+    {
+      name: stress_pipeline
+      desc: '''
+            This test is the same as the multiple_keys_test but we now do a series of back-to-back
+            memory accesses at each random address in order to create read/write conflicts and
+            stress the encryption pipeline.
+            '''
+      stage: V2
+      tests: ["{name}_stress_pipeline"]
+    }
+    {
+      name: bijection
+      desc: '''
+            In this test we iterate through each address in the SRAM memory.
+            For each address write the current address to the SRAM.
+
+            After this is done, read every address and check that the stored data is equivalent to
+            the current address.
+
+            This will verify that the SRAM encryption mechanism is actually bijective, and will not
+            cause any address collisions.
+
+            e.g. if the encryption scheme causes addresses 0x1 and 0x2 to collide and we write 0x1
+                 and 0x2 respectively, we will see a return value of 0x2 when we read from 0x1,
+                 instead of the expected 0x1.
+
+            This process will be repeated for a number of new key seeds.
+            '''
+      stage: V2
+      tests: ["{name}_bijection"]
+    }
+    {
+      name: access_during_key_req
+      desc: '''
+            This test is the same as the multiple_keys test, except we make sure to sequence some
+            memory transactions while a key request to OTP is still pending.
+            Verify that these transactions are completely ignored by the memory.
+            '''
+      stage: V2
+      tests: ["{name}_access_during_key_req"]
+    }
+    {
+      name: lc_escalation
+      desc: '''
+            This test is the same as the multiple_keys test, except we now randomly assert the
+            lifecycle escalation signal.
+            Upon sending an escalation request, we verify that the DUT has properly latched it,
+            and all scrambling state has been reset.
+            In this state, we perform some memory accesses, they should all be blocked and not go
+            through.
+            We then issue a reset to the SRAM to get it out of the terminal state, and issue a
+            couple of memory accesses just to make sure everything is still in working order.
+            '''
+      stage: V2
+      tests: ["{name}_lc_escalation"]
+    }
+    {
+      name: executable
+      desc: '''
+            This test is intended to test the "execute from SRAM" feature, in which TLUL memory
+            transactions tagged with the `InstrType` value in the user bits are allowed to be
+            handled by the SRAM memory.
+
+            This behavior is enabled by either setting the `exec` CSR to 1 or by driving a second
+            lifecycle input to `On` - both of these are muxed between with a `otp_en_sram_ifetch_i`
+            input from the OTP controller.
+
+            If this functionality is disabled, any memory transaction NOT tagged as `DataType` should
+            error out, however `DataType` transactions should be successful when the SRAM is
+            configured to be executable.
+            '''
+      stage: V2
+      tests: ["{name}_executable"]
+    }
+    {
+      name: partial_access
+      desc: '''
+            This test is intended to test a lot of partial accesses with random addresses or
+            back-to-back accesses.
+
+            Reuse the `smoke` and `stress_pipeline` by setting `partial_access_pct` = 90%
+            '''
+      stage: V2
+      tests: ["{name}_partial_access", "{name}_partial_access_b2b"]
+    }
+    {
+      name: max_throughput
+      desc: '''
+            This test is intended to test the max throughput of the SRAM.
+
+            Without partial write, if driver doesn't introduce any delay, it takes N+1 cycles to
+            finish N SRAM read/write accesses.
+            With partial write, it needs 2 extra cycles per partial write.
+            With readback enabled, each read needs 2 cycles and each write 3 cycles.
+            '''
+      stage: V2
+      tests: ["{name}_max_throughput", "{name}_throughput_w_partial_write",
+              "{name}_throughput_w_readback"]
+    }
+    {
+      name: regwen
+      desc: '''
+            This test is intended to test `exec_regwen`, `ctrl_regwen`, and `readback_regwen` as
+            well as their related CSRs.
+
+            `ctrl_regwen` related CSRs (renew_scr_key and init) are excluded from CSR tests as they
+            affects other CSRs.
+            `readback_regwen` related CSRs are excluded from CSR tests as they affect other CSRs.
+            `exec_regwen` and its related CSRs are tested in CSR tests, but this `exec` relates to
+            other sram inputs (en_sram_ifetch and hw_debug_en), so also test it in this test.
+
+            Both `exec_regwen` and `ctrl_regwen` as well as their related CSRs will be programmed
+            at the beginning of each iteration. So when regwen is cleared, the related CSRs will be
+            locked.
+            '''
+      stage: V2
+      tests: ["{name}_regwen"]
+    }
+    {
+      name: ram_cfg
+      desc: '''Test `cfg_i` connectivity between sram_ctrl and prim_ram_1p.
+
+               Randomly set `dut.cfg_i` and check its value is propagated to `prim_mem_1p`.'''
+      stage: V2
+      tests: ["{name}_ram_cfg"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            - Combine above sequences in one test to run sequentially, except csr sequence and
+              sequences that require zero_delays or invoke reset (such as lc_escalation).
+            - Randomly add reset between each sequence'''
+      stage: V2
+      tests: ["{name}_stress_all"]
+    }
+  ]
+
+  covergroups: [
+    {
+      name: subword_access_cg
+      desc: '''
+            Covers that all possible types of subword accesses (both reads and writes) have been
+            performed.
+            '''
+    }
+    {
+      name: access_during_key_req_cg
+      desc: '''
+            Covers that SRAM handles memory accesses during key requests.
+            '''
+    }
+    {
+      name: key_seed_valid_cg
+      desc: '''
+            Covers SRAM receiving a key from OTP in Off/On states,
+            with both valid and invalid key seeds.
+            '''
+    }
+    {
+      name: lc_escalation_idle_cg
+      desc: '''
+            Covers the assertion of LC escalation occurs during idle or SRAM memory access.
+            '''
+    }
+    {
+      name: executable_cg
+      desc: '''
+            Covers the various important scenarios that can enable SRAM executability.
+            Crosses CSR `exec`, input `lc_hw_debug_en` and input `sram_ifetch`.
+            '''
+    }
+  ]
+}

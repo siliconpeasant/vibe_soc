@@ -1,0 +1,1348 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  name: "rom_e2e"
+
+  testpoints: [
+    {
+      name: rom_e2e_smoke
+      desc: '''Verify that ROM can boot a ROM_EXT with default infrastructure configurations.
+
+            - The valid ROM_EXT should be a test program that returns `true`, optimizing for speed.
+            - The test program should be launched via the OTTF.
+            '''
+      tags: ["rom", "verilator", "dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: ["rom_e2e_smoke"]
+    }
+
+    {
+      name: rom_e2e_default_otp_bootup
+      desc: '''Verify that ROM can boot a ROM_EXT with default OTP values (all zeroes).
+
+            - Create an OTP with all zeros except:
+                - CREATOR_SW_CFG_ROM_EXEC_EN set to 0xffffffff (enabled)
+                - LC_STATE in the TEST_UNLOCKED0 state
+                - LIFE_CYCLE count value set to 1
+            - Ensure that the ROM can boot.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_shutdown_output
+      desc: '''Verify that ROM can properly report errors over UART.
+
+            - Attempt to boot without a valid ROM_EXT.
+            - Verify that we can receive the 28 character long (`BFV:xxxxxxxx\r\nLCV:xxxxxxxx\r\n`) error
+              output in all life cycle states where Ibex is enabled, i.e. TEST_UNLOCKED*, PROD,
+              PROD_END, DEV, and RMA.
+                - BFV should be 0142500d for all life cycle states.
+                - See the table below for the expected LCV value.
+
+            | LC State |     LCV    | OTP LIFE_CYCLE state | OTP LIFE_CYCLE count |
+            |:--------:|:----------:|:--------------------:|:--------------------:|
+            |   TEST   | 0x02108421 |   "TEST_UNLOCKED0"   |           5          |
+            |   DEV    | 0x21084210 |        "DEV"         |           5          |
+            |   PROD   | 0x2318c631 |        "PROD"        |           5          |
+            | PROD_END | 0x25294a52 |      "PROD_END"      |           5          |
+            |   RMA    | 0x2739ce73 |        "RMA"         |           5          |
+            '''
+      tags: ["rom", "verilator", "dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: ["rom_e2e_shutdown_output"]
+    }
+
+    {
+      name: rom_e2e_shutdown_redact
+      desc: '''Verify that ROM redacts errors properly.
+
+            - Attempt to boot without a valid ROM_EXT.
+            - Verify that there is no redaction in TEST_UNLOCKED* and RMA.
+            - For DEV, PROD, and PROD_END:
+              - Verify that BFV value is redacted according to the ROM_ERROR_REPORTING OTP item.
+
+            | OTP ROM_ERROR_REPORTING |    BFV   |
+            |:-----------------------:|:--------:|
+            |   0xe2290aa5 (None)     | 0142500d |
+            |   0x3367d3d4 (Error)    | 0042500d |
+            |   0x1e791123 (Module)   | 0000000d |
+            |   0x48eb4bd9 (All)      | ffffffff |
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_shutdown_watchdog
+      desc: '''Verify that ROM configures the watchdog properly.
+
+            - Attempt to boot with a valid ROM_EXT.
+              - ROM_EXT needs to print something and busy loop (bounded) until watchdog resets the
+                chip.
+            - Verify that the chip does not reset in TEST and RMA.
+            - For DEV, PROD, and PROD_END:
+              - Verify that the chip resets when the `WATCHDOG_BITE_THRESHOLD_CYCLES` OTP item is
+               `0x00030d40` (1 s).
+              - Verify that watchdog is disabled when `WATCHDOG_BITE_THRESHOLD_CYCLES` is `0`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: ["rom_e2e_shutdown_watchdog"]
+    }
+
+    {
+      name: rom_e2e_shutdown_exception_asm
+      desc: '''Verify that ROM asm exception handler resets the chip.
+
+            - Power on with the `CREATOR_SW_CFG_ROM_EXEC_EN` OTP item set to `0`.
+              - Execution should halt very early in `_rom_start_boot`.
+            - Connect the debugger and set a breakpoint at `_asm_exception_handler`.
+              - Note: We need to use a debugger for this test since `mtvec` points to C handlers
+                when `rom_main()` starts executing.
+            - Set `pc` to `0x10000000` (start of main SRAM) and execute one machine instruction,
+              i.e. `stepi`.
+            - Verify that execution stops at `_asm_exception_handler` since code execution from SRAM is
+              not enabled.
+            - Continue and verify that the asm exception handler resets the chip by confirming that
+              execution halts at `_rom_start_boot`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_shutdown_exception_c
+      desc: '''Verify that ROM C exception handler triggers shutdown.
+
+            - Boot a valid _fake_ ROM_EXT that doesn't register any interrupt handlers.
+            - Trigger an exception in the second stage.
+              - Set `pc` to `0x10000000` (start of main SRAM). This should trigger an exception
+                since code execution from SRAM is not enabled.
+            - Verify that the chip resets with the correct `BFV`: `01495202`, i.e. instruction
+              access fault in the interrupt module.
+            '''
+      tags: ["rom", "verilator", "dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: ["rom_e2e_shutdown_exception_c"]
+    }
+
+    {
+      name: rom_e2e_shutdown_alert_config
+      desc: '''Verify that alerts trigger a chip reset when enabled.
+
+            - For PROD, PROD_END, DEV, and RMA life cycle states
+              - Use an OTP image with an alert enabled.
+            - Boot a ROM_EXT that triggers this alert by writing to a ALERT_TEST register.
+            - Verify that ROM_EXT boots and the chip resets after the write to the ALERT_TEST
+              register.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_enabled_requested
+      desc: '''Verify that ROM enters bootstrap when enabled in OTP and requested.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip reports `bootstrap:1` over the UART.
+            - Verify that the chip responds to `READ_STATUS` (`0x05`) with `0x00`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_enabled_not_requested
+      desc: '''Verify that ROM does not enter bootstrap when enabled in OTP but not requested.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Do not apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip outputs the expected `BFV`: `0142500d` over UART.
+              - ROM will continously reset the chip and output the same `BFV`.
+            - Verify that the chip does not respond to `READ_SFDP` (`0x5a`).
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_disabled_requested
+      desc: '''Verify that ROM does not enter bootstrap when disabled in OTP but requested.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolFalse` (`0x1d4`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip outputs the expected `BFV`: `0142500d` over UART.
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            - Verify that the chip does not respond to `READ_STATUS` (`0x05`).
+              - The data on the CIPO line must be `0xff`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_disabled_not_requested
+      desc: '''Verify that ROM does not enter bootstrap when disabled in OTP and not requested.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolFalse` (`0x1d4`).
+
+            - Do not apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip outputs the expected `BFV`: `0142500d` over UART.
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            - Verify that the chip does not respond to `READ_STATUS` (`0x05`).
+              - The data on the CIPO line must be `0xff`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_read_status
+      desc: '''Verify that bootstrap handles `READ_STATUS` correctly.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip responds to `READ_STATUS` (`0x05`) with `0x00`.
+
+            See `rom_e2e_bootstrap_enabled_requested`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_watchdog_disabled
+      desc: '''Verify that watchdog is disabled upon entering bootstrap.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+            `OWNER_SW_CFG_ROM_WATCHDOG_BITE_THRESHOLD_CYCLES` OTP item must be `0x30d40`
+
+            - For TEST, DEV, PROD, PROD_END, and RMA life cycle states:
+              - Apply bootstrap pin strapping.
+              - Reset the chip.
+              - Verify that the chip responds to `READ_SFDP` (`0x5a`) correctly.
+              - Release bootstrap pin strapping and wait for 2 seconds.
+                - Note: Watchdog is always disabled in TEST and RMA. In other states, the threshold
+                  is set to `OWNER_SW_CFG_ROM_WATCHDOG_BITE_THRESHOLD_CYCLES`.
+              - Verify that the chip responds to `READ_SFDP` (`0x5a`) correctly.
+              - Verify that there was no output from UART.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: ["e2e_bootstrap_entry"]
+    }
+
+    {
+      name: rom_e2e_bootstrap_read_id
+      desc: '''Verify the JEDEC ID used during bootstrap.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip responds to `READ_JEDEC_ID` (`0x9f`) with
+              - 12 repetitions of the continuation code `0x7f`,
+              - manufacturer ID `0xef`,
+              - device ID `0x08`, and
+              - density `0x14`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_read_sfdp
+      desc: '''Verify the SFDP table used during bootstrap.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip responds to `READ_SFDP` (`0x5a`).
+            - Verify the SFDP header structure. See this
+              [document](https://docs.google.com/document/d/1X_x7f62IrPeHRLGBzybhDu9TsvsSCb6_1uKOjQO_fI4/edit?resourcekey=0-vLsVqyrt1F2mGwLrz73uwA#heading=h.gc2hf662pvy9).
+            - Verify the JEDEC Basic Flash Parameter Table. See this
+              [spreadsheet](https://docs.google.com/spreadsheets/d/1cioU3HgsWZXD4-eoUiH9TuVLZeFpucSdjyq5HND-FpQ/edit#gid=0).
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_write_enable_disable
+      desc: '''Verify that bootstrap handles `WRITE_ENABLE` (`0x06`) and `WRITE_DISABLE` (`0x04`).
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Verify that the chip responds to `READ_STATUS` (`0x05`) with `0x00`.
+            - Send `WRITE_ENABLE` (`0x06`) and `READ_STATUS` (`0x05`).
+            - Verify that the chip responds with the `WEL` bit set, i.e. `0x02`.
+            - Send `WRITE_DISABLE` (`0x04`) and `READ_STATUS` (`0x05`).
+            - Verify that the chip responds with `0x00`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase1_reset
+      desc: '''Verify that bootstrap phase 1 ignores `RESET` (`0x99`).
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Send `RESET` (`0x99`).
+            - Verify that the chip does not output anything over UART for at least 1 s.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase1_page_program
+      desc: '''Verify that bootstrap phase 1 ignores `PAGE_PROGRAM` (`0x02`).
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping.
+            - Reset the chip.
+            - Write `0x4552544f_00000000` (ASCII "\0\0\0\0OTRE") at byte offset `0x80330`.
+              - Note: Writes must start at a flash-word-aligned address and we
+                must write to the second slot since ROM returns the last error.
+            - Reset the chip.
+            - Verify that the chip outputs the expected `BFV`: `0142500d` over
+              UART (`kErrorBootPolicyBadIdentifier').
+              - If the write succeeds, which shouldn't happen, ROM outputs `0242500d`
+                (`kErrorBootPolicyBadLength`).
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase1_erase
+      desc: '''Verify that bootstrap phase 1 handles erase commands correctly.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - For `erase` in {`SECTOR_ERASE` (`0x20`), `CHIP_ERASE` (`0xc7`)}:
+              - Apply bootstrap pin strapping and reset the chip.
+              - Send `erase`.
+              - Write `0x4552544f_00000000` (ASCII "\0\0\0\0OTRE") at byte offset `0x80330`.
+                - Note: Writes must start at a flash-word-aligned address and we
+                  must write to the second slot since ROM returns the last error.
+              - Release pins and reset.
+              - Verify that the chip outputs the expected `BFV`: `0242500d`
+                over UART (`kErrorBootPolicyBadLength`).
+                - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+              - Apply bootstrap pin strapping and reset the chip.
+              - Send `erase`.
+              - Release pins and reset.
+              - Verify that the chip outputs the expected `BFV`: `0142500d`
+                over UART (`kErrorBootPolicyBadIdentifier`).
+                - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase1_read
+      desc: '''Verify that phase 1 of bootstrap ignores `READ` (`0x03`).
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping and reset the chip.
+            - Send `CHIP_ERASE` (`0xc7`).
+            - Write `0x4552544f_00000000` (ASCII "\0\0\0\0OTRE") at byte offset `0x80330`.
+              - Note: Writes must start at a flash-word-aligned address and we
+                must write to the second slot since ROM returns the last error.
+            - Reset the chip.
+            - Verify that the chip outputs the expected `BFV`: `0242500d` over
+              UART (`kErrorBootPolicyBadLength`).
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            - Apply bootstrap pin strapping and reset the chip.
+            - Verify that the chip responds to `READ_STATUS` (`0x05`) with `0x00`.
+            - Send `READ` (`0x03`) followed by the 3-byte address 0x80330.
+              - This is the start address of the write operation performed above.
+            - Verify that the data on the CIPO line does not match `0x4552544f_00000000`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase2_reset
+      desc: '''Verify that bootstrap phase 2 handles `RESET` (`0x99`) correctly.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - For `erase` in {`SECTOR_ERASE` (`0x20`), `CHIP_ERASE` (`0xc7`)}:
+              - Apply bootstrap pin strapping and reset the chip.
+              - Send `erase` transition to phase 2.
+            - Release pins and send `RESET` (`0x99`).
+            - Verify that the chip outputs the expected `BFV`: `0142500d` over UART (`kErrorBootPolicyBadIdentifier`).
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            - Verify that the chip does not respond to `READ_SFDP` (`0x5a`).
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase2_page_program
+      desc: '''Verify that bootstrap phase 2 handles `PAGE_PROGRAM` (`0x02`) correctly.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping and reset the chip.
+            - Send `CHIP_ERASE` (`0xc7`).
+            - Write `0x4552544f_00000000` (ASCII "\0\0\0\0OTRE") at byte offset `0x80330`.
+              - Note: Writes must start at a flash-word-aligned address and we must write to the second slot since ROM returns the last error.
+            - Release pins and reset.
+            - Verify that the chip outputs the expected `BFV`: `0242500d` over UART (`kErrorBootPolicyBadLength`).
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase2_erase
+      desc: '''Verify that bootstrap phase 2 handles erase commands correctly.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - For `erase` in {`SECTOR_ERASE` (`0x20`), `CHIP_ERASE` (`0xc7`)}:
+              - Apply bootstrap pin strapping and reset the chip.
+              - Send `erase`.
+                - For `SECTOR_ERASE` (`0x20`) use the lowest page-aligned address, i.e. `0x80000`.
+              - Write `0x4552544f_00000000` (ASCII "\0\0\0\0OTRE") at byte offset `0x80330`.
+                - Note: Writes must start at a flash-word-aligned address and we must write to the second slot since ROM returns the last error.
+              - Send `erase`.
+              - Release pins and reset.
+              - Verify that the chip outputs the expected `BFV`: `0142500d` over UART (`rom_e2e_bootstrap_phase2_page_program`).
+                - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_phase2_read
+      desc: '''Verify that phase 2 of bootstrap ignores `READ` (`0x03`).
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - Apply bootstrap pin strapping and reset the chip.
+            - Send `CHIP_ERASE` (`0xc7`).
+            - Write `0x4552544f_00000000` (ASCII "\0\0\0\0OTRE") at byte offset `0x80330`.
+              - Note: Writes must start at a flash-word-aligned address and we must write to the second slot since ROM returns the last error.
+            - `READ` (`0x03`) 8 bytes starting at `0x080330`.
+              - This is the address of the identifier that was written earlier.
+            - Verify that the response is not equal to `0x4552544f_00000000`.
+            - Release pins and reset.
+            - Verify that the chip outputs the expected `BFV`: `0242500d` over UART (`kErrorBootPolicyBadLength`).
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_bootstrap_shutdown
+      desc: '''Verify that invalid addresses trigger shutdown.
+
+            `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS` OTP item must not be `kHardenedBoolTrue` (`0x739`).
+
+            - For `command` in {`SECTOR_ERASE` (`0xc7`) and `PAGE_PROGRAM` (`0x02`)}
+              - Apply bootstrap pin strapping and reset the chip.
+              - Send `CHIP_ERASE` command to transition to bootstrap phase 2.
+              - Send `command` with an invalid 3-byte address, e.g. `0xffffff`.
+              - Verify that the chip outputs the expected `BFV` over UART.
+                - For `SECTOR_ERASE`: `BFV:01425303` (`kErrorBootstrapEraseAddress`) followed by `BFV:0142500d` (`kErrorBootPolicyBadIdentifier`)
+                - For `PAGE_PROGRAM`: `BFV:02425303` (`kErrorBootstrapProgramAddress`) followed by `BFV:0142500d` (`kErrorBootPolicyBadIdentifier`)
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_boot_policy_no_rom_ext
+      desc: '''Verify that ROM triggers shutdown when there is no valid ROM_EXT.
+
+            - Reset the chip.
+            - Verify that the chip outputs the expected `BFV`: `0142500d ` over UART.
+              - ROM will continously reset the chip and output the same `BFV` and `LCV`.
+            - Repeat for all life cycle states: TEST, DEV, PROD, PROD_END, and RMA.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_boot_policy_newer
+      desc: '''Verify that ROM chooses the slot with the greater security version.
+
+            - Apply bootstrap pin strapping and reset the chip.
+            - Write the ROM_EXT images to the chip.
+            - Verify that ROM chooses the slot with the greater security version.
+            - Repeat for all life cycle states: TEST, DEV, PROD, PROD_END, and RMA.
+
+            | Slot a security version | Slot b security version | Chosen |
+            |:-----------------------:|:-----------------------:|:------:|
+            |            0            |             0           |   a    |
+            |            0            |             1           |   b    |
+            |            1            |             0           |   a    |
+            |            1            |             1           |   a    |
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_boot_policy_bad_manifest
+      desc: '''Verify that ROM performs some basic checks on manifest fields.
+
+            `CREATOR_SW_CFG_MIN_SEC_VER_ROM_EXT` OTP item should be 1, and
+            `CREATOR_SW_CFG_DEFAULT_BOOT_DATA_IN_PROD` should be `kHardenedBoolTrue` for PROD and
+            PROD_END for the sake of simplicity.
+
+
+            - For `slot` in {`slot_a`, `slot_b`}
+              - Write the image to `slot`.
+                - The other slot remains empty.
+              - Verify that the chip outputs the expected `BFV` over UART.
+              - Repeat for all life cycle states: TEST, DEV, PROD, PROD_END, and RMA.
+
+            | Case                                  | `BFV`                             |
+            | :---------------------------------:   | :-------------------------------: |
+            | `identitfier = 0`                     | `kErrorBootPolicyBadIdentifier`   |
+            | `length < CHIP_ROM_EXT_SIZE_MIN`      | `kErrorBootPolicyBadLength`       |
+            | `length > CHIP_ROM_EXT_SIZE_MAX`      | No Error; image should boot.      |
+            | `length > ROM_EXT_RESIZABLE_SIZE_MAX` | `kErrorBootPolicyBadLength`       |
+            | `code_start = code_end`               | `kErrorManifestBadCodeRegion`     |
+            | `code_start < CHIP_MANIFEST_SIZE`     | `kErrorManifestBadCodeRegion`     |
+            | `code_end > length`                   | `kErrorManifestBadCodeRegion`     |
+            | `code_start` in range, unaligned      | `kErrorManifestBadCodeRegion`     |
+            | `code_end` in range, unaligned        | `kErrorManifestBadCodeRegion`     |
+            | `entry_point < code_start`            | `kErrorManifestBadCodeRegion`     |
+            | `entry_point >= code_end`             | `kErrorManifestBadCodeRegion`     |
+            | `entry_point` in range, unaligned     | `kErrorManifestBadCodeRegion`     |
+            | `security_version = 0`                | `kErrorBootPolicyRollback`        |
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_boot_policy_big_image
+      desc: '''Verify that ROM can boot flash images that are larger than the ROM_EXT slot.
+
+            Provisioning flash images may take up more space than the dedicated ROM_EXT slot,
+            and potentially, up to the size of the entire slot A/B (since there is no need to
+            have multiple boot stages for provisioning firmware).
+
+            - Write image of size `CHIP_ROM_EXT_SIZE_MAX` + 1 or greater to `slot_a`.
+              - The other slot remains empty (since it could be consumed by the single image).
+              - Image should be less than (`CHIP_ROM_EXT_RESIZABLE_SIZE_MAX` + 1).
+            - Verify that the chip boots the image successfully.
+            - Repeat for all life cycle states: TEST, DEV, PROD, PROD_END, and RMA.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_boot_policy_valid
+      desc: '''Verify that ROM chooses the slot with the valid signature.
+
+            - Apply bootstrap pin strapping and reset the chip.
+            - Write the ROM_EXT images to the chip -- same security_version.
+            - Verify that ROM chooses the slot with the valid signature, otherwise triggers a
+              shutdown.
+            - Repeat for all life cycle states: TEST, DEV, PROD, PROD_END, and RMA.
+
+            | Slot a | Slot b | Chosen |
+            |:------:|:------:|:------:|
+            |   Bad  |   Bad  |  None  |
+            |   Bad  |  Good  |   b    |
+            |  Good  |   Bad  |   a    |
+            |  Good  |  Good  |   a    |
+            '''
+      tags: ["rom", "verilator", "dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: [
+        "rom_e2e_boot_policy_valid_a_good_b_good_test_unlocked0",
+        "rom_e2e_boot_policy_valid_a_good_b_good_dev",
+        "rom_e2e_boot_policy_valid_a_good_b_good_prod",
+        "rom_e2e_boot_policy_valid_a_good_b_good_prod_end",
+        "rom_e2e_boot_policy_valid_a_good_b_good_rma",
+        "rom_e2e_boot_policy_valid_a_good_b_bad_test_unlocked0",
+        "rom_e2e_boot_policy_valid_a_good_b_bad_dev",
+        "rom_e2e_boot_policy_valid_a_good_b_bad_prod",
+        "rom_e2e_boot_policy_valid_a_good_b_bad_prod_end",
+        "rom_e2e_boot_policy_valid_a_good_b_bad_rma",
+        "rom_e2e_boot_policy_valid_a_bad_b_good_test_unlocked0",
+        "rom_e2e_boot_policy_valid_a_bad_b_good_dev",
+        "rom_e2e_boot_policy_valid_a_bad_b_good_prod",
+        "rom_e2e_boot_policy_valid_a_bad_b_good_prod_end",
+        "rom_e2e_boot_policy_valid_a_bad_b_good_rma",
+      ]
+    }
+
+    {
+      name: rom_e2e_boot_policy_rollback
+      desc: '''Verify that ROM rejects rollbacks.
+
+            `CREATOR_SW_CFG_MIN_SEC_VER_ROM_EXT` OTP item should be 1, and
+            `CREATOR_SW_CFG_DEFAULT_BOOT_DATA_IN_PROD` should be `kHardenedBoolTrue` for PROD and
+            PROD_END for the sake of simplicity.
+
+            - Apply bootstrap pin strapping and reset the chip.
+            - Write the ROM_EXT images to the chip -- valid signatures.
+            - Verify that ROM chooses the slot with acceptable & newer seurity version, otherwise
+              triggers a shutdown.
+            - Repeat for all life cycle states: TEST, DEV, PROD, PROD_END, and RMA.
+
+            | Slot a | Slot b | Chosen |
+            |:------:|:------:|:------:|
+            |    0   |    0   |  None  |
+            |    0   |    1   |   b    |
+            |    2   |    0   |   a    |
+            |    1   |    1   |   a    |
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_boot_data_recovery
+      desc: '''Verify that ROM can use the default boot data when configured to do so.
+
+            - Apply bootstrap pin strapping and reset the chip.
+            - Write the ROM_EXT images to the chip -- valid signature, security version = 2.
+            - Verify that ROM boots the slot when boot data is available.
+            - Repeat for all life cycle states: TEST, DEV, PROD, PROD_END, and RMA.
+
+            | LC State | CREATOR_SW_CFG_MIN_SEC_VER_ROM_EXT | CREATOR_SW_CFG_DEFAULT_BOOT_DATA_IN_PROD |
+            |:--------:|:----------------------------------:|:----------------------------------------:|
+            |   TEST   |                 0                  |            `kHardenedBoolFalse`          |
+            |   DEV    |                 1                  |            `kHardenedBoolFalse`          |
+            |   PROD   |                 1                  |            `kHardenedBoolTrue`           |
+            |   PROD   |                 0                  |            `kHardenedBoolFalse` (error)  |
+            | PROD_END |                 0                  |            `kHardenedBoolTrue`           |
+            | PROD_END |                 1                  |            `kHardenedBoolFalse` (error)  |
+            |   RMA    |                 0                  |            `kHardenedBoolFalse`          |
+
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_sigverify_always
+      desc: '''Verify that ROM performs signature verification in all life cycle states.
+
+            - Prepare a ROM_EXT image with a valid signature generated using an authorized key.
+            - Flip a bit/make all zeros/make all ones at random.
+              - Log so that test can be reproduced.
+            - Apply bootstrap pin strapping and reset the chip.
+            - Load the image.
+            - Verify that boot fails with the expected `BFV`: `kErrorSigverifyBadEcdsaSignature`.
+            - Repeat the steps above for TEST, DEV, PROD, PROD_END, and RMA.
+
+            See `rom_e2e_boot_policy_valid`.
+            '''
+      tags: ["rom", "verilator", "dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: [
+        "rom_e2e_sigverify_always_a_bad_b_bad_test_unlocked0",
+        "rom_e2e_sigverify_always_a_bad_b_bad_dev",
+        "rom_e2e_sigverify_always_a_bad_b_bad_prod",
+        "rom_e2e_sigverify_always_a_bad_b_bad_prod_end",
+        "rom_e2e_sigverify_always_a_bad_b_bad_rma",
+        "rom_e2e_sigverify_always_a_bad_b_nothing_test_unlocked0",
+        "rom_e2e_sigverify_always_a_bad_b_nothing_dev",
+        "rom_e2e_sigverify_always_a_bad_b_nothing_prod",
+        "rom_e2e_sigverify_always_a_bad_b_nothing_prod_end",
+        "rom_e2e_sigverify_always_a_bad_b_nothing_rma",
+        "rom_e2e_sigverify_always_a_nothing_b_bad_test_unlocked0",
+        "rom_e2e_sigverify_always_a_nothing_b_bad_dev",
+        "rom_e2e_sigverify_always_a_nothing_b_bad_prod",
+        "rom_e2e_sigverify_always_a_nothing_b_bad_prod_end",
+        "rom_e2e_sigverify_always_a_nothing_b_bad_rma",
+      ]
+    }
+
+    {
+      name: rom_e2e_sigverify_key_auth
+      desc: '''Verify that ROM only uses authorized keys for signature verification.
+
+            - Prepare a ROM_EXT image with a valid signature generated using an unauthorized key.
+            - Attempt to boot.
+            - Verify that boot fails with `BFV:kErrorSigverifyBadKey`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_sigverify_key_validity
+      desc: '''Verify that ROM only uses authorized keys that are not invalidated.
+
+            - For each key entry in the `ROT_CREATOR_AUTH_STATE` partition,
+              - Invalidate the key by setting the entry to a value other than `PROVISIONED`.
+              - Prepare a ROM_EXT image with a valid signature generated using the invalidated key.
+              - Verify that boot fails with `BFV:kErrorSigverifyBadEcdsaKey` or
+                `BFV:kErrorSigverifyBadSpxKey` depending on whether the failure is due to a bad
+                ECDSA or SPX key.
+
+            | LC State | Allowed key types |
+            |:--------:|:-----------------:|
+            |   DEV    | Prod, Dev         |
+            |   PROD   | Prod              |
+            | PROD_END | Prod              |
+            |   RMA    | Test, Prod        |
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_sigverify_key_type
+      desc: '''Verify that ROM only uses appropriate key types for each life cycle state.
+
+            - For each life cycle state and key type,
+              - Prepare a ROM_EXT image with a valid signature generated using a key of that type.
+              - Verify that boot fails with `BFV:kErrorSigverifyBadKey` or succeeds depending on the
+                life cycle state and key type. See the table below.
+
+            | LC State | Allowed key types |
+            |:--------:|:-----------------:|
+            |   TEST   | Test, Prod        |
+            |   DEV    | Prod, Dev         |
+            |   PROD   | Prod              |
+            | PROD_END | Prod              |
+            |   RMA    | Test, Prod        |
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_sigverify_usage_constraints
+      desc: '''Verify that ROM enforces usage constraints.
+
+            - Generate an otherwise valid ROM_EXT image for the following cases:
+              - No constraints specified
+              - Constrained to a specific device ID
+                - Device ID matches
+                - Device ID doesn't match
+              - Constrained to a family of devices
+                - Device ID matches
+                - Device ID doesn't match
+              - Constrained to TEST, DEV, PROD, PROD_END, RMA
+                - Life cycle state matches
+                - Life cycle state doesn't match
+              - Constrained to a creator manufacturing state
+                - `CREATOR_SW_CFG_MANUF_STATE` matches
+                - `CREATOR_SW_CFG_MANUF_STATE` doesn't match
+              - Constrained to an owner manufacturing state
+                - `OWNER_SW_CFG_MANUF_STATE` matches
+                - `OWNER_SW_CFG_MANUF_STATE` doesn't match
+              - All constraints specified
+              - Corrupt usage constraints data, e.g. wrong unselected word value.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_address_translation
+      desc: '''Verify that all address translation configurations work.
+
+            - Bootstrap the chip with a valid second stage image. See the table below.
+            - Verify that the chip behaves as expected.
+
+            | Address translation | Image addr | Slot used | Error |
+            |:-------------------:|:----------:|:---------:|:-----:|
+            |         Off         |      A     |     A     |  No   |
+            |         Off         |      B     |     B     |  No   |
+            |         Off         |      A     |     B     |  Yes  |
+            |         Off         |      B     |     A     |  Yes  |
+            |         On          |   Virtual  |     A     |  No   |
+            |         On          |   Virtual  |     B     |  No   |
+            |         Invalid     |      A     |     A     |  Yes  |
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_debug
+      desc: '''Verify that ROM can be debugged in appropriate life cycle states.
+
+            `CREATOR_SW_CFG_ROM_EXEC_EN` should be set to `0`.
+
+            - Verify that ROM can be debugged in TEST, DEV, and RMA life cycle states.
+              - Test debugging with commands to GDB connected via OpenOCD and JTAG (or the
+                SystemVerilog based JTAG debugger model in case of DV simulations).
+              - Read back GDB responses to check they match expected behaviour
+              - Connect a debugger and verify that ROM halts very early in `rom_start.S`.
+              - Trial the following activities within GDB, ensuring the correct
+                behaviour is seen:
+                - Halting execution and resetting
+                - Setting, hitting and deleting breakpoints using all available hardware breakpoints
+                - Single stepping
+                  - In particular single step over `wfi`
+                - Reading and writing all registers
+                - Reading all CSRs and writing some (write set TBD)
+                - Reading and writing memory (both SRAM and device)
+                - Setting the PC to jump to some location
+                - Executing code from GDB (using the call command)
+              - Verify that ROM fails to boot with `BFV:0142500d`.
+            '''
+      tags: ["rom", "dv", "verilator", "fpga", "silicon"]
+      stage: V3
+      si_stage: NA
+      tests: [
+        "rom_e2e_jtag_debug_test_unlocked0",
+        "rom_e2e_jtag_debug_dev",
+        "rom_e2e_jtag_debug_rma",
+      ]
+    }
+
+    {
+      name: rom_e2e_debug_disallowed_in_prod
+      desc: '''Verify that ROM can be debugged in appropriate life cycle states.
+
+            `CREATOR_SW_CFG_ROM_EXEC_EN` should be set to `0`.
+
+            - Verify that ROM cannot be debugged in PROD and PROD_END.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_jtag_inject
+      desc: '''Verify that a program can be injected into SRAM via JTAG and executed.
+
+            `CREATOR_SW_CFG_ROM_EXEC_EN` should be set to `0`.
+
+            - For TEST, DEV, and RMA:
+              - Connect a debugger.
+              - Follow the steps
+                [here](https://docs.google.com/document/d/1i6V3tFTv0UhWeM-IGCxgxkC07Bo_zpbgr6u1KE1Rehs/edit?resourcekey=0-L-XaP9QeLAkEsp8najVkUQ#heading=h.m4f6p97t15j8)
+                and execute `//sw/device/examples/sram_program` binary from SRAM.
+              - Verify that chip sends the expected message over UART.
+
+            See this
+            [doc](https://docs.google.com/document/d/1i6V3tFTv0UhWeM-IGCxgxkC07Bo_zpbgr6u1KE1Rehs/edit?resourcekey=0-L-XaP9QeLAkEsp8najVkUQ)
+            for detils.
+            '''
+      tags: ["rom", "verilator", "dv", "fpga", "silicon"]
+      stage: V3
+      si_stage: NA
+      tests: [
+        "rom_e2e_jtag_inject_test_unlocked0",
+        "rom_e2e_jtag_inject_dev",
+        "rom_e2e_jtag_inject_rma",
+      ]
+    }
+
+
+    {
+      name: rom_e2e_rom_ext_upgrade
+      desc: '''Verify that ROM_EXT can be upgraded.
+
+            `CREATOR_SW_CFG_MIN_SEC_VER_ROM_EXT` OTP item should be 0, and
+            `CREATOR_SW_CFG_DEFAULT_BOOT_DATA_IN_PROD` should be `kHardenedBoolTrue` for PROD and
+            PROD_END for the sake of simplicity.
+
+            - Load a ROM_EXT image that will
+              - print the current minimum required security version,
+                - The initial value of the minimum required security version should be 0.
+              - increment it to 1, and
+              - reset the chip.
+            - Verify that the minium required security version is incremented using UART output.
+            - Load a ROM_EXT with securiy version = 0.
+            - Verify that ROM fails to boot with `BFV:kErrorBootPolicyRollback`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_rom_ext_upgrade_interrupt
+      desc: '''Verify that an interrupted upgrade does not brick the chip.
+
+            `CREATOR_SW_CFG_MIN_SEC_VER_ROM_EXT` OTP item should be 0, and
+            `CREATOR_SW_CFG_DEFAULT_BOOT_DATA_IN_PROD` should be `kHardenedBoolTrue` for PROD and
+            PROD_END for the sake of simplicity.
+
+            - Load a ROM_EXT image that will
+              - print the current minimum required security version,
+                - The initial value of the minimum required security version should be 0.
+              - increment the minimum required security version, and
+              - reset the chip while flash is being accessed.
+            - Verify that the chip can boot after first attempt.
+            - Verify that ROM_EXT can detect the interruption and increment the minimum required
+              security version.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_asm_interrupt_handler
+      desc: '''Verify that asm interrupt handler resets the chip.
+
+            `CREATOR_SW_CFG_ROM_EXEC_EN` should be set to `0` and the chip should in a life cycle
+             state where debugging is enabled, i.e. TEST, DEV, or RMA.
+
+            - Connect a debugger.
+            - Set a breakpoint on the asm handler.
+            - Trigger an exception, e.g. by setting `PC` to an address (end of ROM) that will trigger an
+              instruction access fault.
+            - Verify that execution breaks at the asm handler.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_asm_watchdog
+      desc: '''Verify that watchdog is initialized in `rom_start.S`.
+
+            `CREATOR_SW_CFG_ROM_EXEC_EN` should be set to `0` and the chip should in a life cycle
+             state where debugging is enabled, i.e. TEST, DEV, or RMA.
+
+            - Connect a debugger.
+            - Set breakpoints on right after watchdog is initialized in `rom_start.S` and the asm
+              handler.
+            - Wait until execution breaks at the first breakpoint, wait ~1s before continuing.
+            - Verify that watchdog expires and execution breaks at the asm handler.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_asm_c_interrupt_handler
+      desc: '''Verify that `rom_start.S` configures the ROM C interrupt handler and it triggers shutdown.
+
+            **Using a ROM_EXT image (preferred)**
+            See #14274.
+
+            **Using a debugger**
+            `CREATOR_SW_CFG_ROM_EXEC_EN` should be set to `0` and the chip should in a life cycle
+             state where debugging is enabled, i.e. TEST, DEV, or RMA.
+
+            - Connect a debugger.
+            - Set a breakpoint on `rom_main()` and the ROM C handler `rom_interrupt_handler()`.
+            - Continue until `rom_main()`.
+            - Trigger an exception, e.g. by setting `PC` to an address (start of flash) that will trigger an
+              instruction access fault.
+            - Verify that execution breaks at the C interrupt handler.
+            - Verify that chip resets with `BFV:kErrorInterrupt`.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_asm_init
+      desc: '''Verify that ROM initializes peripherals properly.
+
+            Note: While the following can be checked at ROM_EXT stage, using a debugger in
+            FPGA-based tests would avoid depending on `rom.c`. Doing so would give us more
+            information and help us narrow down possible issues if we end up having a problem in
+            ROM. For DV, we don't have to use the JTAG interface: we can wait until Ibex accesses
+            `rom_main()` and backdoor check specific values.
+
+            This test should be run in all life cycle states where the processor is allowed to execute
+            instructions (TEST_UNLOCKED*, DEV, PROD*, RMA).
+
+            Also, we may want to break this into multiple tests.
+
+            - Verify that the following peripherals are initialized properly:
+              - AST
+                - `CREATOR_SW_CFG_AST_INIT_EN`: `kMultiBitBool4True` enables, `kMultiBitBool4False`
+                  disables. Both configurations should be tested.
+                - If `CREATOR_SW_CFG_AST_INIT_EN` is set to `kMultiBitBool4True`, check that the
+                  `AST_INIT_DONE` signal is correctly set to 1 in `sensor_ctrl` once the AST
+                  initialization is complete.
+              - Clock jitter
+                - `CREATOR_SW_CFG_JITTER_EN`: `kMultiBitBool4False` disables, all other values
+                  enables. `CREATOR_SW_CFG_AST_INIT_EN` must also be `kMultiBitBool4True` to enable.
+              - Entropy complex
+                - Entryop_src, csrng, and edn must be configured at boot mode.
+              - ePMP
+              - Interrupts should be disabled
+                - Trigger a test interrupt and verify that nothing happens.
+              - SRAM
+                - Must be scrambled with a new key. Can test using register values and
+                  functionality.
+            '''
+      tags: ["rom", "verilator", "dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: [
+        "rom_e2e_asm_init_test_unlocked0",
+        "rom_e2e_asm_init_dev",
+        "rom_e2e_asm_init_prod",
+        "rom_e2e_asm_init_prod_end",
+        "rom_e2e_asm_init_rma",
+      ]
+    }
+
+    {
+      name: rom_e2e_ret_ram_init
+      desc: '''Verify that ROM initializes the retention SRAM when needed.
+
+            `CREATOR_SW_CFG_RET_RAM_RESET_MASK` should be `1 << 2` so that ROM initializes the
+            retention SRAM after a SW reset request.
+
+            - Verify that `reset_reasons` reports POR.
+            - Write a known pattern into all sections of retention SRAM.
+            - Request a SW reset.
+            - Verify that `reset_reasons` reports a SW request.
+            - Verify that all previously written sections are different.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+
+    }
+
+    {
+      name: rom_e2e_ret_ram_keep
+      desc: '''Verify that the retention SRAM is preserved across resets.
+
+            - Verify that `reset_reasons` reports POR.
+            - Write a known pattern into all sections of retention SRAM.
+            - Perform a low power entry & exit.
+            - Verify that `reset_reasons` reports a low power exit.
+            - Verify that all previously written sections are intact.
+            - Request a SW reset.
+            - Verify that `reset_reasons` reports a SW request.
+            - Verify that all previously written sections are intact.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_c_init
+      desc: '''Verify that ROM initializes various peripherals properly.
+
+            - Pinmux: UART pins, SW straps if `OWNER_SW_CFG_ROM_BOOTSTRAP_DIS != kHardenedBoolTrue`
+            - UART
+            - Bits 0-5 of the `cpuctrl` CSR: `CREATOR_SW_CFG_CPUCTRL`
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_epmp_init
+      desc: '''Verify that ROM correctly configures the ePMP region for debug ROM.
+
+            - ePMP Debug ROM region should be enabled in TEST, DEV, and RMA, anddisabled in PROD and
+              PROD_END.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_watchdog_reconfig
+      desc: '''Verify that ROM reconfigures the watchdog timer correctly.
+
+            - Should be disabled in TEST and RMA.
+            - In DEV, PROD, and PROD_END, the threshold should be
+              `OWNER_SW_CFG_ROM_WATCHDOG_BITE_THRESHOLD_CYCLES` if greater than or equal to
+              `kWatchdogMinThreshold`, disabled otherwise.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_alert_config
+      desc: '''Verify that ROM configures the alert handler correctly.
+
+            - Disabled in TEST.
+            - Read from OTP in DEV, PROD, PROD_END, and RMA. Checksum of config registers must match
+              the OTP value.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_flash_ctrl_init
+      desc: '''Verify that ROM initializes the flash_ctrl correctly.
+
+            - Verify that
+              - `CREATOR_SW_CFG_FLASH_DATA_DEFAULT_CFG` controls the default scrambling, ecc, and he
+                settings for the data partitions.
+              - `CREATOR_SW_CFG_FLASH_INFO_BOOT_DATA_CFG` controls the scrambling, ecc, and he
+                settings for the boot partitions `kFlashCtrlInfoPageBootData0` and
+                `kFlashCtrlInfoPageBootData1`.
+            - Verify that flash_ctrl is initialized.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_keymgr_init
+      desc: '''Verify that ROM initializes the keymgr correctly.
+
+            - Verify that keymgr is at the "reset" state.
+            - Verify that
+              - attestation sw binding equals
+                - the digest of the software readable OTP partitions if
+                  `OWNER_SW_CFG_ROM_KEYMGR_OTP_MEAS_EN` is `kHardenedBoolTrue`, and
+                - the `binding_value` field of the manifest, otherwise,
+              - sealing sw binding equals the `binding_value` field of the manifest, and
+              - max creator key version equals the `max_key_version` field of the manifest,
+            '''
+      tags: ["rom", "dv", "verilator", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: [
+        "rom_e2e_keymgr_init_rom_ext_meas",
+        "rom_e2e_keymgr_init_rom_ext_no_meas",
+        "rom_e2e_keymgr_init_rom_ext_invalid_meas",
+      ]
+    }
+
+    {
+      name: rom_e2e_static_critical
+      desc: '''Verify that ROM initializes the data structures in the `.static_critical` section properly.
+
+            - Verify that `boot_measurements` holds the digest of the next stage.
+              - Don't specify any usage constraints to be able to compute the actual hash in the second stage.
+            - Verify that `sec_mmio_ctx` is valid using `sec_mmio_check_values()` and
+              `sec_mmio_check_counters()`.
+            - Verify that a failed sec_mmio check triggers an illegal instruction exception.
+            '''
+      tags: ["rom", "dv", "verilator", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: ["rom_e2e_static_critical"]
+    }
+
+    {
+      name: rom_functests
+      desc: '''Determine which functests can be executed using ROM.
+
+            Functests test ROM components (e.g., drivers, libraries, etc.) work as intended on-chip.
+            However, unlike when these components are embedded in the ROM, functests are linked with
+            the OTTF, and run out of flash. Additionally, unlike the ROM E2E tests, functests are
+            booted by the test ROM.
+
+            Determine which functests can be executed using ROM to understand which tests can be
+            reused on the silicon.
+            '''
+      tags: ["rom", "no_dv", "fpga", "silicon"]
+      stage: V2
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_bootstrap_rma
+      desc: '''End to end test to ensure RMA mode can be activated by halting ROM execution.
+
+      - This test must be run with the real ROM.
+      - Pre-load the device into PROD or PROD_END state.
+      - Backdoor load CREATOR_SW_CONFIG_RMA_SPIN_CYCLES and SPIN_EN.
+        - The value for CREATOR_SW_CONFIG_RMA_SPIN_CYCLES should be small, just enough
+          for the DV agent to activate the life cycle JTAG interface.
+      - Drive software strap to the RMA bootstrap value.
+      - The test contains two iterations.
+      - In iteration 1, do not issue the life cycle rma command. ROM should timeout on spin cycles
+        and automatically reset the device. Check to ensure device has reset via backdoor CSR.
+      - In iteration 2, issue the life cycle RMA command and ensure RMA transition can be successfully
+        completed.
+      '''
+      tags: ["rom", "dv"]
+      stage: V3
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_weak_straps
+      desc: '''Verify that ROM can differentiate strong pull-ups/-downs from weak pull-ups/-downs.
+
+      - For `strap` in {all 64 strap values}
+        - Verify that ROM boots as usual unless `strap == bootstrap` or `strap == rma_entry`.
+
+      Each iteration should be pretty fast since the next stage is empty.
+      If the above test takes a long time to run in DV, consider the following (or a subset of):
+
+      - For `strap` in {`bootstrap`, `rma_entry`}
+        - Apply all combinations of `strap` where pin values are the same but at least one pin uses weak pull-down.
+        - Verify that ROM boots as usual.
+      '''
+      tags: ["rom", "fpga", "dv", "silicon"]
+      stage: V3
+      si_stage: NA
+      tests: []
+    }
+
+    {
+      name: rom_e2e_self_hash
+      desc: '''Verify that the expected ROM has been properly baked into the nelist.
+
+      - Hash the contents of the ROM using SHA256.
+      - Verify the hash against golden hash baked into the test.
+      - Print out hash over console.
+      - Run in TEST_UNLOCKED0 LC state.
+      '''
+      tags: ["rom", "fpga", "dv", "silicon"]
+      stage: V3
+      si_stage: NA
+      tests: ["rom_e2e_self_hash"]
+    }
+
+    {
+      name: rom_e2e_chip_info
+      desc: '''Verify that ROM correctly embeds the chip information and stores it in the boot log
+
+            - Load a ROM_EXT image that will
+              - Print the content of the ROM's chip_info section.
+                - When running as the ROM_EXT, the ROM is still readable, the chip_info is located
+                  at the end of the ROM.
+              - Print the content of the boot log's chip info.
+              - Verify that the two are identical.
+              - Verify that the chip_info's version is the expected one.
+            '''
+      tags: ["rom", "dv", "fpga", "silicon"]
+      stage: V3
+      si_stage: SV2
+      tests: []
+    }
+  ]
+}

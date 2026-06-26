@@ -1,0 +1,552 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name:               "sram_ctrl",
+  human_name:         "SRAM Controller",
+  one_line_desc:      "Interfacing on-chip SRAM blocks with system bus, supports lightweight scrambling, integrity and secure wipe",
+  one_paragraph_desc: '''
+  SRAM Controller instantiates on-chip SRAM and makes it accessible through the TileLink on-chip interconnect.
+  SRAM Controller includes a lightweight scrambling mechanism based on the PRINCE cipher to reduce the attack surface on the confidentiality and integrity of data stored in the SRAM.
+  For end-to-end data integrity protection, SRAM Controller stores the integrity bits alongside data words in memory and raises an alert if it detects an integrity fault.
+  SRAM Controller contains an LFSR-based initialization mechanism that overwrites the entire SRAM with pseudorandom data.
+  '''
+  // Unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool.
+  cip_id:             "28",
+  design_spec:        "../doc",
+  dv_doc:             "../doc/dv",
+  hw_checklist:       "../doc/checklist",
+  sw_checklist:       "/sw/device/lib/dif/dif_sram_ctrl",
+  version:            "1.1.0",
+  life_stage:         "L1",
+  design_stage:       "D3",
+  verification_stage: "V2S",
+  dif_stage:          "S2",
+  clocking: [
+    {clock: "clk_i", reset: "rst_ni", primary: true},
+    {clock: "clk_otp_i", reset: "rst_otp_ni"}
+  ]
+
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device", name: "regs", racl_support: true }
+    { protocol: "tlul", direction: "device", name: "ram" , racl_support: true, racl_range_support: true }
+  ],
+
+  ///////////////////////////
+  // Interrupts and Alerts //
+  ///////////////////////////
+
+  alert_list: [
+    { name: "fatal_error",
+      desc: '''
+            This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected,
+            or if the initialization mechanism has reached an invalid state.
+            '''
+    }
+  ],
+
+  ////////////////
+  // Parameters //
+  ////////////////
+  param_list: [
+    { name:      "RndCnstSramKey",
+      desc:      "Compile-time random reset value for SRAM scrambling key.",
+      type:      "otp_ctrl_pkg::sram_key_t"
+      randcount: "128",
+      randtype:  "data", // randomize randcount databits
+    }
+    { name:      "RndCnstSramNonce",
+      desc:      "Compile-time random reset value for SRAM scrambling nonce.",
+      type:      "otp_ctrl_pkg::sram_nonce_t"
+      randcount: "128",
+      randtype:  "data", // randomize randcount databits
+    },
+    { name:      "RndCnstLfsrSeed",
+      desc:      "Compile-time random bits for initial LFSR seed",
+      type:      "sram_ctrl_pkg::lfsr_seed_t"
+      randcount: "64",
+      randtype:  "data", // randomize randcount databits
+    }
+    { name:      "RndCnstLfsrPerm",
+      desc:      "Compile-time random permutation for LFSR output",
+      type:      "sram_ctrl_pkg::lfsr_perm_t"
+      randcount: "64",
+      randtype:  "perm", // random permutation for randcount elements
+    }
+    // This parameter is overridden by topgen to set the actual RAM size.
+    { name:      "MemSizeRam",
+      desc:      "Memory size of the RAM (in bytes).",
+      type:      "int",
+      default:   "0x1000"
+    },
+    { name:      "InstSize",
+      desc:      "Memory size of a single RAM tile (in bytes).",
+      type:      "int",
+      default:   "4096"
+      local:   "false"
+      expose:  "true"
+    },
+    { name:      "NumRamInst",
+      desc:      "Number of internal RAM instances. Must be the same as ceil(MemSizeRam / InstSize) .",
+      type:      "int",
+      default:   "1"
+      local:     "false"
+      expose:    "true"
+    },
+    { name:      "InstrExec",
+      desc:      "Support execution from SRAM",
+      type:      "bit",
+      local:     "false",
+      expose:    "true",
+      default:   "1"
+    },
+    { name:      "NumPrinceRoundsHalf",
+      desc:      "Number of PRINCE half rounds for the SRAM scrambling feature",
+      type:      "int",
+      local:     "false",
+      expose:    "true",
+      default:   "3"
+    },
+    { name:      "Outstanding",
+      desc:      "Number of outstanding TLUL transactions",
+      type:      "int",
+      local:     "true",
+      expose:    "true",
+      default:   "2"
+    }
+    { name:      "EccCorrection",
+      desc:      "Enable single-bit error correction and error logging",
+      type:      "bit",
+      local:     "false",
+      expose:    "true",
+      default:   "0"
+    },
+  ]
+
+  features: [
+    { name: "SRAM_CTRL.INTEGRITY",
+      desc: '''
+        Words are stored with integrity bits (7 integrity bits for each 32 data bits).
+      '''
+    },
+    { name: "SRAM_CTRL.SCRAMBLED",
+      desc: '''
+        Backing memory is scrambled.
+        The scrambling depends on keys configurable by a CSR.
+      '''
+    },
+    { name: "SRAM_CTRL.LOCK_ON_ERROR",
+      desc: '''
+        The block disallows transactions and sends out an alert if it detects an error.
+        This can come from a bus integrity failure or from a message from the lifecycle controller.
+      '''
+    },
+    { name: "SRAM_CTRL.MEMSET",
+      desc: '''
+        The block can initialise the contents of memory with a pseudo-random stream.
+        This avoids leaking the cipher key (which would be possible with a CTR-based cipher).
+      '''
+    },
+    { name: "SRAM_CTRL.FETCH_ALLOW",
+      desc: '''
+        Access for instruction fetches can be allowed or disallowed.
+        Instruction fetches can be completely disallowed for an instance by a parameter.
+        If possible in this instance, the choice depends on either life-cycle state or a CSR.
+      '''
+    },
+    { name: "SRAM_CTRL.SUBWORD_ACCESS",
+      desc: '''
+        Sub-word reads and writes are supported.
+      '''
+    },
+    { name: "SRAM_CTRL.REGWEN",
+      desc: '''
+        Configuration can be locked, using a REGWEN CSR.
+      '''
+    },
+  ]
+
+  /////////////////////////////
+  // Intermodule Connections //
+  /////////////////////////////
+
+  inter_signal_list: [
+    // Key request to OTP
+    { struct:  "sram_otp_key"
+      type:    "req_rsp"
+      name:    "sram_otp_key"
+      act:     "req"
+      package: "otp_ctrl_pkg"
+    },
+    // SRAM attribute input
+    { struct:  "ram_1p_cfg"
+      type:    "uni"
+      name:    "cfg"
+      act:     "rcv"
+      width:   "NumRamInst",
+      package: "prim_ram_1p_pkg"
+    },
+    { struct:  "ram_1p_cfg_rsp"
+      type:    "uni"
+      name:    "cfg_rsp"
+      act:     "req"
+      width:   "NumRamInst",
+      default: "'0"
+      package: "prim_ram_1p_pkg"
+    },
+    // Broadcast from LC
+    { struct:  "lc_tx"
+      type:    "uni"
+      name:    "lc_escalate_en"
+      act:     "rcv"
+      default: "lc_ctrl_pkg::Off"
+      package: "lc_ctrl_pkg"
+    },
+    { struct:  "lc_tx"
+      type:    "uni"
+      name:    "lc_hw_debug_en"
+      act:     "rcv"
+      default: "lc_ctrl_pkg::Off"
+      package: "lc_ctrl_pkg"
+    },
+    { struct:  "mubi8",
+      type:    "uni",
+      name:    "otp_en_sram_ifetch",
+      act:     "rcv",
+      package: "prim_mubi_pkg",
+      default: "prim_mubi_pkg::MuBi8False"
+    },
+    { struct:  "racl_policy_vec",
+      type:    "uni",
+      name:    "racl_policies",
+      act:     "rcv",
+      package: "top_racl_pkg",
+      desc:    '''
+        Incoming RACL policy vector from a racl_ctrl instance.
+        The policy selection vector (parameter) selects the policy for each register.
+      '''
+    },
+    { struct:  "racl_error_log",
+      type:    "uni",
+      name:    "racl_error",
+      act:     "req",
+      width:   "1"
+      package: "top_racl_pkg",
+      desc:    '''
+        RACL error log information of this module.
+      '''
+    },
+    { struct:  "sram_error_t",
+      package: "sram_ctrl_pkg",
+      width:   "1"
+      type:    "uni",
+      name:    "sram_rerror",
+      act:     "req",
+      desc:    '''
+               SRAM read error indicating correctable and uncorrectable ECC errors.
+               '''
+    },
+  ]
+
+  /////////////////////
+  // Countermeasures //
+  /////////////////////
+
+  countermeasures: [
+    { name: "BUS.INTEGRITY",
+      desc: "End-to-end bus integrity scheme."
+    }
+    { name: "CTRL.CONFIG.REGWEN",
+      desc: "The SRAM control register is protected by a REGWEN."
+    }
+    { name: "EXEC.CONFIG.REGWEN",
+      desc: "The SRAM execution enable register is protected by a REGWEN."
+    }
+    { name: "READBACK.CONFIG.REGWEN",
+      desc: "The SRAM readback enable register is protected by a REGWEN."
+    }
+    { name: "EXEC.CONFIG.MUBI",
+      desc: "The SRAM execution enable register is multibit encoded."
+    }
+    { name: "EXEC.INTERSIG.MUBI",
+      desc: "The SRAM execution enable signal coming from OTP is multibit encoded."
+    }
+    { name: "LC_ESCALATE_EN.INTERSIG.MUBI",
+      desc: "The life cycle escalation enable signal is multibit encoded."
+    }
+    { name: "LC_HW_DEBUG_EN.INTERSIG.MUBI",
+      desc: "The life cycle hardware debug enable signal is multibit encoded."
+    }
+    { name: "PRIM_RAM.CTRL.MUBI",
+      desc: "The control signals inside prim_ram are multibit encoded."
+    }
+    { name: "MEM.INTEGRITY",
+      desc: "End-to-end data/memory integrity scheme."
+    }
+    { name: "MEM.READBACK",
+      desc: "Each read and write is checked with a readback."
+    }
+    { name: "MEM.SCRAMBLE",
+      desc: "Data is scrambled with a keyed reduced-round PRINCE cipher in CTR mode."
+    }
+    { name: "ADDR.SCRAMBLE",
+      desc: "Address is scrambled with a keyed lightweight permutation/diffusion function."
+    }
+    { name: "INSTR.BUS.LC_GATED",
+      desc: "Prevent code execution from SRAM in non-test lifecycle states."
+    }
+    { name: "RAM_TL_LC_GATE.FSM.SPARSE",
+      desc: "The control FSM inside the TL-UL gating primitive is sparsely encoded."
+    }
+    { name: "KEY.GLOBAL_ESC",
+      desc: "Scrambling key and nonce are reset to a fixed value upon escalation, and bus transactions going to the memory will be blocked."
+    }
+    { name: "KEY.LOCAL_ESC",
+      desc: "Scrambling key and nonce are reset to a fixed value upon local escalation due to bus integrity or counter errors, and bus transactions going to the memory will be blocked."
+    }
+    { name: "INIT.CTR.REDUN",
+      desc: "The initialization counter is duplicated."
+    }
+    { name: "SCRAMBLE.KEY.SIDELOAD",
+      desc: "The scrambling key is sideloaded from OTP and thus unreadable by SW."
+    }
+    { name: "TLUL_FIFO.CTR.REDUN",
+      desc: "The TL-UL response FIFO pointers are implemented with duplicate counters."
+    }
+  ]
+
+  regwidth: "32",
+  registers: {
+    regs: [
+      ////////////////////////
+      // Ctrl / Status CSRs //
+      ////////////////////////
+
+      { name: "STATUS",
+        desc: "SRAM status register.",
+        swaccess: "ro",
+        hwaccess: "hrw",
+        hwqe:     "false",
+        fields: [
+          { bits: "0"
+            name: "BUS_INTEG_ERROR"
+            desc: '''
+                  This bit is set to 1 if a fatal bus integrity fault is detected.
+                  This error triggers a fatal_error alert.
+                  This condition is terminal.
+                  ''',
+            resval: 0,
+          }
+          { bits: "1"
+            name: "INIT_ERROR"
+            desc: '''
+                  This bit is set to 1 if a the initialization counter has reached an invalid state.
+                  This error triggers a fatal_error alert.
+                  This condition is terminal.
+                  ''',
+            resval: 0,
+          }
+          { bits: "2"
+            name: "ESCALATED"
+            desc: '''
+                  Set to 1 if the sram controller has received an escalate request.
+                  If this is set to 1, the scrambling keys have been reset to the default values
+                  and all subsequent memory requests will be blocked.
+                  This condition is terminal.
+                  ''',
+            resval: 0,
+          }
+          { bits: "3"
+            hwaccess: "hwo",
+            name: "SCR_KEY_VALID"
+            desc: '''
+                  Set to 1 if a new scrambling key has been successfully obtained from OTP.
+                  Note that if this is set to 0, the SRAM contents are still scrambled, but a
+                  default all-zero key and nonce are used to do so.
+                  ''',
+            resval: 0,
+          }
+          { bits: "4"
+            name: "SCR_KEY_SEED_VALID"
+            desc: '''
+                  Set to 1 if the scrambling key has been derived from a valid key seed in OTP.
+                  If !!STATUS.SCR_KEY_VALID is set to 1, !!STATUS.SCR_KEY_SEED_VALID should be 1
+                  except for cases where the scrambling key seeds have not yet been provisioned to
+                  OTP. In such a case, the scrambling key is still ephemeral (i.e., it is derived
+                  using entropy from CSRNG), but a default all-zero value is used as the key seed.
+                  ''',
+            resval: 0,
+          }
+          { bits: "5"
+            name: "INIT_DONE"
+            desc: '''
+                  Set to 1 if the hardware initialization triggered via !!CTRL.INIT has completed.
+                  ''',
+            resval: 0,
+          }
+          { bits: "6"
+            name: "READBACK_ERROR"
+            desc: '''
+                  This bit is set to 1 if a SRAM readback check failed.
+                  This error triggers a fatal_error alert.
+                  This condition is terminal.
+                  ''',
+            resval: 0,
+          }
+          { bits: "7"
+            name: "SRAM_ALERT"
+            desc: '''
+                  This bit is set to 1 if a multi bit encoding error has been detected inside the RAM modules.
+                  This error triggers a fatal_error alert.
+                  This condition is terminal.
+                  ''',
+            resval: 0,
+          }
+        ]
+      }
+      { name: "EXEC_REGWEN",
+        desc: "Lock register for execution enable register.",
+        swaccess: "rw0c",
+        hwaccess: "none",
+        fields: [
+          { bits: "0"
+            desc: '''
+                  When cleared to zero, !!EXEC can not be written anymore.
+                  ''',
+            resval: 1
+          }
+        ]
+      }
+      { name: "EXEC",
+        desc: "Sram execution enable.",
+        swaccess: "rw",
+        hwaccess: "hro",
+        regwen:   "EXEC_REGWEN"
+        fields: [
+          { bits: "3:0",
+            name: "EN",
+            mubi: true,
+            desc: '''
+                  This register only has any effect if the value of the incoming
+                  otp_en_sram_ifetch_i signal is set to kMultiBitBool8True (in
+                  Earlgrey, this comes from the OTP HW_CFG1 partition).
+
+                  If so, execution from SRAM requires this register to contain
+                  kMultiBitBool4True.
+
+                  If otp_en_sram_ifetch_i is not kMultiBitBool8True, execution
+                  from SRAM is instead controlled by a signal from lc_ctrl. See
+                  "Theory of Operation" for more details.
+                  ''',
+            resval: false
+          },
+        ]
+      },
+      { name: "CTRL_REGWEN",
+        desc: "Lock register for control register.",
+        swaccess: "rw0c",
+        hwaccess: "none",
+        fields: [
+          { bits: "0"
+            desc: '''
+                  When cleared to zero, !!CTRL can not be written anymore.
+                  ''',
+            resval: 1
+          }
+        ]
+      }
+      { name: "CTRL",
+        desc: "SRAM ctrl register.",
+        swaccess: "wo",
+        hwaccess: "hro",
+        hwqe:     "true",
+        regwen:   "CTRL_REGWEN"
+        tags: [// avoid writing to CTRL, as this will cause STATUS to be modified
+               "excl:CsrNonInitTests:CsrExclWrite"]
+        fields: [
+          { bits: "0",
+            name: "RENEW_SCR_KEY",
+            desc: '''
+                  Write 1 to request a new scrambling key from OTP. After writing to this register, SRAM transactions will
+                  be blocked until !!STATUS.SCR_KEY_VALID has been set to 1. If !!STATUS.SCR_KEY_VALID was already 1
+                  before triggering a key renewal, hardware will automatically clear that status bit such that software
+                  can poll its status. Note that requesting a new scrambling key takes ~200 OTP cycles, which translates
+                  to ~800 CPU cycles (OTP runs at 24MHz, CPU runs at 100MHz). Note that writing 1 to this register while
+                  a key request or a memory initialization request is already pending has no effect.
+                  '''
+          },
+          { bits: "1",
+            name: "INIT",
+            desc: '''
+                  Write 1 to request memory init.
+                  The init mechanism uses an LFSR that is seeded with a part of the nonce supplied when requesting a scrambling key.
+                  Once seeded, the memory is initialized with pseudo-random data pulled from the LFSR.
+                  Note that !!CTRL.RENEW_SCR_KEY takes priority when writing 1 to both !!CTRL.RENEW_SCR_KEY and !!CTRL.INIT with the same write transaction.
+                  This means that the key request will complete first, followed by SRAM initialization. Note that writing 1 to this register while
+                  an init request is already pending has no effect.
+                  '''
+          },
+        ]
+      },
+      { name: "SCR_KEY_ROTATED",
+        desc: "Clearable SRAM key request status.",
+        swaccess: "rw1c",
+        hwaccess: "hwo",
+        fields: [
+          { bits: "3:0",
+            name: "SUCCESS",
+            mubi: true,
+            desc: '''
+                  This status register is similar to !!SCR_KEY_VALID with the difference that the status is multibit encoded,
+                  SW clearable and sticky (i.e., HW does not auto-clear the register except during escalation). That way,
+                  SW can use this for a hardened acknowledgement mechanism where it clears the register before requesting a key.
+
+                  kMultiBitBool4True indicates that a valid scrambling key has been obtained from OTP.
+                  Write kMultiBitBool4True to clear.
+                  ''',
+            resval: false
+          },
+        ]
+      }
+      { name: "READBACK_REGWEN",
+        desc: "Lock register for readback enable register.",
+        swaccess: "rw0c",
+        hwaccess: "none",
+        tags: [// Exclude from writes to these field because they cause side affects.
+             "excl:CsrAllTests:CsrExclAll"]
+        fields: [
+          { bits: "0"
+            desc: '''
+                  When cleared to zero, !!READBACK can not be written anymore.
+                  ''',
+            resval: 1
+          }
+        ]
+      }
+      { name: "READBACK",
+        desc: "readback enable.",
+        swaccess: "rw",
+        hwaccess: "hro",
+        regwen:   "READBACK_REGWEN"
+        tags: [// Exclude from writes to these field because they cause side affects.
+             "excl:CsrAllTests:CsrExclAll"]
+        fields: [
+          { bits: "3:0",
+            name: "EN",
+            mubi: true,
+            desc: '''
+                  Write kMultiBitBool4True to this field to enable the readback security feature for the SRAM.
+                  A readback of each memory write or read request will be performed and a comparison happens.
+                  Any other value than kMultiBitBool4False written to this field is interpreted as kMultiBitBool4True.
+                  ''',
+            resval: false
+          },
+        ]
+      },
+    ],
+  }
+  memory: {
+    ram: {
+    }
+  }
+}

@@ -1,0 +1,382 @@
+[Executing]:
+make -f /project/hw/dv/tools/dvsim/sim.mk run build_seed=None post_run_cmds='' pre_run_cmds='/project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_raw.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_raw.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_unlocked0.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_unlocked0.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_unlocked1.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_unlocked1.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_unlocked2.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_unlocked2.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_locked0.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_locked0.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_locked1.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_locked1.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+     --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_dev.hjson \
+     --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_creator_sw_cfg.hjson \
+     --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_owner_sw_cfg.hjson \
+     --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+     --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_dev.vmem \
+     --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_prod.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_creator_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_owner_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_prod.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_rma.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_creator_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_owner_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_rma.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson' proj_root=/project run_cmd=/project/scratch/master/chip_earlgrey_asic-sim-vcs/default/simv run_dir=/project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest run_opts='+sw_build_device=sim_dv +sw_images=uart_smoketest:1:new_rules,test_rom:0 +cdc_instrumentation_enabled=1 +UVM_NO_RELNOTES +UVM_VERBOSITY=UVM_LOW -licqueue -ucli -do /project/hw/dv/tools/sim.tcl +ntb_random_seed=4132528618 -xlrm hier_inst_seed -assert nopostproc +UVM_TESTNAME=chip_base_test +UVM_TEST_SEQ=chip_sw_uart_smoke_vseq' seed=67488304613701027732833721554350445652589175888826748770836187804826900455914 sw_build_cmd='python /project/util/py/scripts/build_sw_collateral_for_sim.py --sw-images='"'"'//sw/device/tests:uart_smoketest:1:new_rules //sw/device/lib/testing/test_rom:test_rom:0'"'"' --sw-build-opts='"'"''"'"' --sw-build-device=sim_dv --seed=67488304613701027732833721554350445652589175888826748770836187804826900455914 --run-dir=/project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest' sw_build_device=sim_dv sw_build_opts='' sw_images='//sw/device/tests:uart_smoketest:1:new_rules //sw/device/lib/testing/test_rom:test_rom:0' uvm_test=chip_base_test uvm_test_seq=chip_sw_uart_smoke_vseq
+
+
+[make]: pre_run
+mkdir -p /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest
+cd /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_raw.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_raw.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_unlocked0.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_unlocked0.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_unlocked1.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_unlocked1.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_unlocked2.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_unlocked2.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_locked0.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_locked0.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_test_locked1.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_test_locked1.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+     --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_dev.hjson \
+     --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_creator_sw_cfg.hjson \
+     --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_owner_sw_cfg.hjson \
+     --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+     --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_dev.vmem \
+     --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_prod.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_creator_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_owner_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_prod.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson && /project/util/design/gen-otp-img.py \
+      --img-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_rma.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_creator_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_owner_sw_cfg.hjson \
+      --add-cfg /project/hw/top_earlgrey/data/otp/otp_ctrl_img_hw_cfg.hjson \
+      --out /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/otp_ctrl_img_rma.vmem \
+      --quiet --mmap-def /project/hw/top_earlgrey/data/otp/otp_ctrl_mmap.hjson --top-secret-cfg /project/hw/top_earlgrey/data/autogen/top_earlgrey.secrets.testing.gen.hjson
+
+[make]: sw_build
+cd /project && python /project/util/py/scripts/build_sw_collateral_for_sim.py --sw-images='//sw/device/tests:uart_smoketest:1:new_rules //sw/device/lib/testing/test_rom:test_rom:0' --sw-build-opts='' --sw-build-device=sim_dv --seed=67488304613701027732833721554350445652589175888826748770836187804826900455914 --run-dir=/project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest --build-seed=None
+INFO: [build_sw_collateral_for_sim.py:539] Command: /project/util/py/scripts/build_sw_collateral_for_sim.py '--sw-images=//sw/device/tests:uart_smoketest:1:new_rules //sw/device/lib/testing/test_rom:test_rom:0' --sw-build-opts= --sw-build-device=sim_dv --seed=67488304613701027732833721554350445652589175888826748770836187804826900455914 --run-dir=/project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest --build-seed=None
+INFO: [build_sw_collateral_for_sim.py:540] Parsed arguments:
+INFO: [build_sw_collateral_for_sim.py:542]   build_seed = 'None'
+INFO: [build_sw_collateral_for_sim.py:542]   run_dir = PosixPath('/project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest')
+INFO: [build_sw_collateral_for_sim.py:542]   seed = 67488304613701027732833721554350445652589175888826748770836187804826900455914
+INFO: [build_sw_collateral_for_sim.py:542]   sw_build_device = 'sim_dv'
+INFO: [build_sw_collateral_for_sim.py:542]   sw_build_opts = []
+INFO: [build_sw_collateral_for_sim.py:542]   sw_images = ['//sw/device/tests:uart_smoketest:1:new_rules', '//sw/device/lib/testing/test_rom:test_rom:0']
+INFO: [build_sw_collateral_for_sim.py:281] Building and deploying collateral for the following images:
+[IMAGES]
+//sw/device/tests:uart_smoketest:1:new_rules
+//sw/device/lib/testing/test_rom:test_rom:0
+[RUN_DIR]
+/project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest
+
+INFO: [build_sw_collateral_for_sim.py:318] 
+BazelRunner:
+  cmd=./bazelisk.sh
+  airgapped_opts=[]
+  build_opts=['--define', 'DISABLE_VERILATOR_BUILD=true']
+  cquery_common_opts=['--ui_event_filters=-info', '--noshow_progress']
+
+INFO: [build_sw_collateral_for_sim.py:202] cquery_cmd = ./bazelisk.sh cquery //sw/device/tests:uart_smoketest_sim_dv --ui_event_filters=-info --noshow_progress --output=label_kind
+INFO: [build_sw_collateral_for_sim.py:202] cquery_cmd = ./bazelisk.sh cquery //sw/device/lib/testing/test_rom:test_rom_sim_dv --ui_event_filters=-info --noshow_progress --output=label_kind
+INFO: [build_sw_collateral_for_sim.py:367] Image query parameters determined.
+
+INFO: [build_sw_collateral_for_sim.py:371] Building all labels...
+INFO: [build_sw_collateral_for_sim.py:179] build_cmd = ./bazelisk.sh build --define DISABLE_VERILATOR_BUILD=true //sw/device/tests:uart_smoketest_sim_dv //sw/device/lib/testing/test_rom:test_rom_sim_dv
+INFO: [build_sw_collateral_for_sim.py:373] All labels built.
+
+INFO: [build_sw_collateral_for_sim.py:377] Querying runfiles for image : //sw/device/tests:uart_smoketest:1:new_rules
+INFO: [build_sw_collateral_for_sim.py:190] query_cmd = ./bazelisk.sh query //sw/device/tests:uart_smoketest_sim_dv --output=location
+INFO: [build_sw_collateral_for_sim.py:419] bazel target location: /project/sw/device/tests/BUILD:4802:15:
+INFO: [build_sw_collateral_for_sim.py:429] kind = opentitan_test
+INFO: [build_sw_collateral_for_sim.py:202] cquery_cmd = ./bazelisk.sh cquery //sw/device/tests:uart_smoketest_sim_dv --ui_event_filters=-info --noshow_progress --output=starlark --starlark:file=/project/util/py/scripts/queries/DATA_RUNFILES_FILES_QUERY.cquery
+INFO: [build_sw_collateral_for_sim.py:398] This query returned device_specific 'sim_dv' files, filtering out runfiles for other devices...
+INFO: [build_sw_collateral_for_sim.py:408] Deployed the following collateral:
+[IMAGE]
+//sw/device/tests:uart_smoketest:1:new_rules
+[FILES]
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.bin
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.39.scr.vmem
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.dis
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.elf
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.39.scr.vmem.hash.c
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.logs.txt
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.rodata.txt
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.map
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.32.vmem
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.bin
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.64.scr.vmem
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.dis
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.elf
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.logs.txt
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.rodata.txt
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.map
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.64.vmem
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.32.vmem
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/tests/uart_smoketest_sim_dv.bash
+
+INFO: [build_sw_collateral_for_sim.py:377] Querying runfiles for image : //sw/device/lib/testing/test_rom:test_rom:0
+INFO: [build_sw_collateral_for_sim.py:190] query_cmd = ./bazelisk.sh query //sw/device/lib/testing/test_rom:test_rom_sim_dv --output=location
+INFO: [build_sw_collateral_for_sim.py:419] bazel target location: /project/sw/device/lib/testing/test_rom/BUILD:53:10:
+INFO: [build_sw_collateral_for_sim.py:429] kind = alias
+INFO: [build_sw_collateral_for_sim.py:202] cquery_cmd = ./bazelisk.sh cquery //sw/device/lib/testing/test_rom:test_rom_sim_dv --ui_event_filters=-info --noshow_progress --output=starlark --starlark:file=/project/util/py/scripts/queries/FILES_QUERY.cquery
+INFO: [build_sw_collateral_for_sim.py:398] This query returned device_specific 'sim_dv' files, filtering out runfiles for other devices...
+INFO: [build_sw_collateral_for_sim.py:408] Deployed the following collateral:
+[IMAGE]
+//sw/device/lib/testing/test_rom:test_rom:0
+[FILES]
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.39.scr.vmem
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.elf
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.dis
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.map
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.logs.txt
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.rodata.txt
+bazel-out/k8-fastbuild-ST-1df456420242/bin/sw/device/lib/testing/test_rom/test_rom_sim_dv.32.vmem
+
+
+[make]: simulate
+cd /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest && /project/scratch/master/chip_earlgrey_asic-sim-vcs/default/simv +sw_build_device=sim_dv +sw_images=uart_smoketest:1:new_rules,test_rom:0 +cdc_instrumentation_enabled=1 +UVM_NO_RELNOTES +UVM_VERBOSITY=UVM_LOW -licqueue -ucli -do /project/hw/dv/tools/sim.tcl +ntb_random_seed=4132528618 -xlrm hier_inst_seed -assert nopostproc +UVM_TESTNAME=chip_base_test +UVM_TEST_SEQ=chip_sw_uart_smoke_vseq
+Chronologic VCS simulator copyright 1991-2022
+Contains Synopsys proprietary information.
+Compiler version T-2022.06_Full64; Runtime version T-2022.06_Full64;  Jun 13 16:14 2026
+ucli% # Copyright lowRISC contributors (OpenTitan project).
+ucli% # Licensed under the Apache License, Version 2.0, see LICENSE for details.
+ucli% # SPDX-License-Identifier: Apache-2.0
+ucli% # Common TCL script invoked at run-time by the simulator.
+ucli% # VCS syntax: -ucli -do <this file>
+ucli% # Xcelium syntax: -input <this file>
+ucli% set dv_root ""
+ucli% if {[info exists ::env(dv_root)]} {
+  set dv_root "$::env(dv_root)"
+} else {
+  puts "ERROR: Script run without dv_root environment variable."
+  quit
+}
+/project/hw/dv
+ucli% # Dumping waves in specific hierarchies.
+ucli% #
+ucli% # By default, if wave dumping is enabled, all hierarchies of the top level testbench are dumped.
+ucli% # For large designs, this may slow down the simulation considerably. To bypass this and only enable
+ucli% # waves in specific hierarchies, set the dump_tb_top flag to 0 (i.e. uncomment the line below), and
+ucli% # specify the paths to dump on line 32.
+ucli% # set dump_tb_top 0
+ucli% source "${dv_root}/tools/common.tcl"
+ucli% source "${dv_root}/tools/waves.tcl"
+INFO: Setting "vpd_fid" to "0".
+INFO: Dumping waves in FSDB format to waves.fsdb.
+*Verdi* Loading libsscore_vcs202206.so
+FSDB Dumper for VCS, Release Verdi_T-2022.06, Linux x86_64/64bit, 05/29/2022
+(C) 1996 - 2022 by Synopsys, Inc.
+*Verdi* : Create FSDB file 'waves.fsdb'
+INFO: Setting "dump_tb_top" to "1".
+*Verdi* : Begin traversing the scope (tb), layer (0).
+*Verdi* : Enable +all dumping.
+*Verdi* : End of traversing.
+*Verdi* : Begin traversing the SVA assertions under scope (tb), layer (0).
+*Verdi* : End of traversing the SVA assertions.
+INFO: Dumping waves in scope "tb:0".
+ucli% global waves
+ucli% global simulator
+ucli% global tb_top
+ucli% # Dumping waves in specific hierarchies (example):
+ucli% # wavedumpScope $waves $simulator tb.dut.foo.bar 12
+ucli% # wavedumpScope $waves $simulator tb.dut.baz 0
+ucli% if {$simulator eq "xcelium"} {
+  puts "INFO: The following assertions are permamently disabled:"
+  assertion -list -depth all -multiline -permoff $tb_top
+}
+ucli% global gui
+ucli% global gui_debug
+ucli% # In GUI mode, let the user take control of running the simulation.
+ucli% # In GUI debug mode, run only up until the end of the UVM elaboration phase to have access to the
+ucli% # dynamic objects.
+ucli% if {$gui_debug == 1} {
+  if {$simulator eq "xcelium"} {
+    uvm_phase -stop_at build -end
+    run
+  }
+} elseif {$gui == 0} {
+  run
+  if {$simulator eq "xcelium"} {
+    # Xcelium provides a `finish` tcl command instead of `quit`. The argument '2' enables the
+    # logging of additional resource usage information.
+    finish 2
+  } else {
+    quit
+  }
+}
+tb.dut.top_earlgrey.u_otp_ctrl.u_otp_ctrl_lfsr_timer.u_prim_double_lfsr.gen_double_lfsr[0].u_prim_lfsr.p_randomize_default_seed: DefaultSeed = 0x9caa47e5ce, DefaultSeedLocal = 0x9caa47e5ce
+tb.dut.top_earlgrey.u_otp_ctrl.u_otp_ctrl_lfsr_timer.u_prim_double_lfsr.gen_double_lfsr[1].u_prim_lfsr.p_randomize_default_seed: DefaultSeed = 0x9caa47e5ce, DefaultSeedLocal = 0x9caa47e5ce
+tb.dut.top_earlgrey.u_otp_ctrl.u_otp_ctrl_lfsr_timer.u_prim_double_lfsr.p_sync_lfsr_default_seed: Updated gen_double_lfsr[1].u_prim_lfsr.DefaultSeedLocal = 0x9caa47e5ce
+tb.dut.top_earlgrey.u_alert_handler.u_ping_timer.u_prim_double_lfsr.gen_double_lfsr[0].u_prim_lfsr.p_randomize_default_seed: DefaultSeed = 0x6138cb83, DefaultSeedLocal = 0x6138cb83
+tb.dut.top_earlgrey.u_alert_handler.u_ping_timer.u_prim_double_lfsr.gen_double_lfsr[1].u_prim_lfsr.p_randomize_default_seed: DefaultSeed = 0x6138cb83, DefaultSeedLocal = 0x6138cb83
+tb.dut.top_earlgrey.u_alert_handler.u_ping_timer.u_prim_double_lfsr.p_sync_lfsr_default_seed: Updated gen_double_lfsr[1].u_prim_lfsr.DefaultSeedLocal = 0x6138cb83
+tb.dut.top_earlgrey.u_sram_ctrl_ret_aon.u_lfsr.p_randomize_default_seed: DefaultSeed = 0x99cf6dd057f44c13, DefaultSeedLocal = 0x99cf6dd057f44c13
+tb.dut.top_earlgrey.u_flash_ctrl.u_lfsr.p_randomize_default_seed: DefaultSeed = 0xd49d87a5, DefaultSeedLocal = 0x7bfc9104
+tb.dut.top_earlgrey.u_flash_ctrl.u_eflash.u_flash.gen_prim_flash_banks[0].u_prim_flash_bank.unnamed$$_0: ReadLatency:1 ProgLatency:50 EraseLatency:200
+tb.dut.top_earlgrey.u_flash_ctrl.u_eflash.u_flash.gen_prim_flash_banks[1].u_prim_flash_bank.unnamed$$_0: ReadLatency:1 ProgLatency:50 EraseLatency:200
+tb.dut.top_earlgrey.u_aes.u_aes_core.u_aes_prng_clearing.u_lfsr.p_randomize_default_seed: DefaultSeed = 0x4f1800edecf7b176, DefaultSeedLocal = 0x3df13e115c0e73da
+tb.dut.top_earlgrey.u_keymgr.u_lfsr.p_randomize_default_seed: DefaultSeed = 0x378d030ea5d37665, DefaultSeedLocal = 0xfabb882f2539ddb9
+tb.dut.top_earlgrey.u_sram_ctrl_main.u_lfsr.p_randomize_default_seed: DefaultSeed = 0x6e6c0a2afa6a3c5, DefaultSeedLocal = 0x7612e5a7591fd85c
+tb.dut.top_earlgrey.u_rv_core_ibex.u_core.u_ibex_core.if_stage_i.gen_dummy_instr.dummy_instr_i.lfsr_i.p_randomize_default_seed: DefaultSeed = 0xb830b9e2, DefaultSeedLocal = 0x6fd9f231
+tb.dut.top_earlgrey.u_rv_core_ibex.u_core.gen_lockstep.u_ibex_lockstep.u_shadow_core.if_stage_i.gen_dummy_instr.dummy_instr_i.lfsr_i.p_randomize_default_seed: DefaultSeed = 0xb830b9e2, DefaultSeedLocal = 0x4195b190
+tb.dut.u_ast.u_rng.u_rng_lfsr.p_randomize_default_seed: DefaultSeed = 0x1d033d20eed3b14, DefaultSeedLocal = 0xa6640bec58e66cc9
+
+USBDPI: Monitor output file created at /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/usb0.log. Works well with tail:
+$ tail -f /project/scratch/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_smoketest/latest/usb0.log
+UVM_INFO @ 0.000000 us: reporter [RNTST] Running test chip_base_test...
+UVM_INFO @   0.000000 us: (chip_env_cfg.sv:152) [cfg] ral_model_names: '{"chip_reg_block"} 
+
+Warning-[CNST-PPRW] Constraint randomize NULL object warning
+src/lowrisc_dv_dv_lib_0/dv_base_test.sv, 75
+  Member object 'm_jtag_agent_cfg' was found to be NULL during randomization.
+  Please make sure all random variables/arrays/function calls being randomized
+  are allocated fully and properly.
+
+
+Warning-[CNST-PPRW] Constraint randomize NULL object warning
+src/lowrisc_dv_dv_lib_0/dv_base_test.sv, 75
+  Member object 'jtag_dmi_ral' was found to be NULL during randomization.
+  Please make sure all random variables/arrays/function calls being randomized
+  are allocated fully and properly.
+
+UVM_INFO @   0.000000 us: (chip_base_test.sv:86) uvm_test_top [uvm_test_top] test_timeout_ns = 60000000
+UVM_INFO @   0.000000 us: (mem_bkdr_util.sv:723) [mem_bkdr_util[FlashBank0Info]] Set memory
+UVM_INFO @   0.000000 us: (mem_bkdr_util.sv:723) [mem_bkdr_util[FlashBank1Info]] Set memory
+UVM_INFO @   0.000000 us: (tb.sv:563) [mem_bkdr_util[Otp]] Loading mem from file:
+otp_ctrl_img_rma.vmem
+UVM_INFO @   0.000000 us: (mem_bkdr_util.sv:714) [mem_bkdr_util[OtbnImem]] Clear memory
+UVM_INFO @   0.000000 us: (mem_bkdr_util.sv:714) [mem_bkdr_util[OtbnDmem0]] Clear memory
+UVM_INFO @   0.000000 us: (chip_base_vseq.sv:52) uvm_test_top.env.virtual_sequencer [uvm_test_top.env.virtual_sequencer.chip_sw_uart_smoke_vseq] Asserting POR_N
+  0.000000 us: Illegal instruction (hart 0) at PC 0xxxxxxxxx: 0xxxxxxxxx
+  0.000000 us: Illegal instruction (hart 0) at PC 0xxxxxxxxx: 0xxxxxxxxx
+
+tb.dut.u_ast.u_sys_clk.u_sys_osc: System Clock Power-up Frequency: 31312625 Hz
+
+tb.dut.u_ast.u_usb_clk.u_usb_osc: USB Clock Power-up Frequency: 33066596 Hz
+tb.dut.u_ast.u_usb_clk.u_usb_osc: USB Clock Drift: 210 ps
+
+tb.dut.u_ast.u_aon_clk.u_aon_osc: AON Base Clock Power-up Frequency: 100180 Hz
+tb.dut.u_ast.u_aon_clk.u_aon_osc: AON 1.0xBase Clock Power-up Frequency: 100180 Hz
+
+tb.dut.u_ast.u_io_clk.u_io_osc: IO Clock Power-up Frequency: 53995680 Hz
+UVM_INFO @  10.000000 us: (chip_base_vseq.sv:56) uvm_test_top.env.virtual_sequencer [uvm_test_top.env.virtual_sequencer.chip_sw_uart_smoke_vseq] POR_N complete
+UVM_INFO @  10.180001 us: (mem_bkdr_util.sv:723) [mem_bkdr_util[FlashBank0Data]] Set memory
+UVM_INFO @  10.180001 us: (mem_bkdr_util.sv:723) [mem_bkdr_util[FlashBank1Data]] Set memory
+UVM_INFO @  10.180001 us: (mem_bkdr_util.sv:732) [mem_bkdr_util[RamRet0]] Randomizing mem contents
+UVM_INFO @  10.180001 us: (sw_logger_if.sv:161) [tb.u_sim_sram.u_sim_sram_if.u_sw_logger_if.parse_sw_log_file.unnamed$$_0.unnamed$$_1] Loading sw log db file test_rom_sim_dv.logs.txt ...
+UVM_INFO @  10.180001 us: (sw_logger_if.sv:161) [tb.u_sim_sram.u_sim_sram_if.u_sw_logger_if.parse_sw_log_file.unnamed$$_0.unnamed$$_1] Loading sw log db file uart_smoketest_sim_dv.logs.txt ...
+UVM_INFO @  10.180001 us: (tb.sv:607) [mem_bkdr_util[Rom]] Loading mem from file:
+test_rom_sim_dv.39.scr.vmem
+UVM_INFO @  10.180001 us: (tb.sv:479) [mem_bkdr_util[FlashBank0Data]] Loading mem from file:
+uart_smoketest_sim_dv.64.scr.vmem
+UVM_INFO @ 2948.680664 us: (sw_logger_if.sv:524) [test_rom_sim_dv(sw/device/lib/testing/test_framework/status.c:49)] test_status_set to 0xb090
+UVM_INFO @ 2948.840664 us: (sw_test_status_if.sv:61) [tb.u_sim_sram.u_sim_sram_if.u_sw_test_status_if] SW test transitioned to SwTestStatusInBootRom.
+UVM_INFO @ 3338.850664 us: (sw_logger_if.sv:524) [test_rom_sim_dv(sw/device/lib/testing/test_rom/test_rom.c:190)] kBuildInfo: scm_revision=54697461
+UVM_INFO @ 3343.900664 us: (sw_logger_if.sv:524) [test_rom_sim_dv(sw/device/lib/testing/test_rom/test_rom.c:267)] Test ROM complete, jumping to flash (addr: 20000480)!
+UVM_INFO @ 3347.590664 us: (sw_logger_if.sv:524) [uart_smoketest_sim_dv(sw/device/lib/testing/test_framework/status.c:49)] test_status_set to 0x4354
+UVM_INFO @ 3347.700664 us: (sw_test_status_if.sv:61) [tb.u_sim_sram.u_sim_sram_if.u_sw_test_status_if] SW test transitioned to SwTestStatusInTest.
+UVM_INFO @ 3347.700664 us: (chip_base_vseq.sv:244) uvm_test_top.env.virtual_sequencer [uvm_test_top.env.virtual_sequencer.chip_sw_uart_smoke_vseq] Configuring and connecting UART0
+UVM_INFO @ 3348.040664 us: (sw_logger_if.sv:524) [uart_smoketest_sim_dv(sw/device/lib/testing/test_framework/ottf_main.c:182)] Enabling OTTF alert catcher
+UVM_INFO @ 3639.720664 us: (sw_logger_if.sv:524) [uart_smoketest_sim_dv(sw/device/lib/testing/test_framework/status.c:37)] PASS!
+UVM_INFO @ 3639.890664 us: (sw_test_status_if.sv:61) [tb.u_sim_sram.u_sim_sram_if.u_sw_test_status_if] SW test transitioned to SwTestStatusPassed.
+UVM_INFO @ 3639.890664 us: (sw_test_status_if.sv:82) [tb.u_sim_sram.u_sim_sram_if.u_sw_test_status_if] ==== SW TEST PASSED ====
+UVM_INFO @ 3639.890664 us: (chip_sw_base_vseq.sv:314) uvm_test_top.env.virtual_sequencer [uvm_test_top.env.virtual_sequencer.chip_sw_uart_smoke_vseq] SW TEST PASSED!
+UVM_INFO @ 3644.890664 us: (uvm_report_catcher.svh:705) [UVM/REPORT/CATCHER] 
+--- UVM Report catcher Summary ---
+
+
+Number of demoted UVM_FATAL reports  :    0
+Number of demoted UVM_ERROR reports  :    0
+Number of demoted UVM_WARNING reports:    0
+Number of caught UVM_FATAL reports   :    0
+Number of caught UVM_ERROR reports   :    0
+Number of caught UVM_WARNING reports :    0
+
+UVM_INFO @ 3644.890664 us: (uvm_report_server.svh:904) [UVM/REPORT/SERVER] 
+--- UVM Report Summary ---
+
+Quit count :     0 of     1
+** Report counts by severity
+UVM_INFO :   30
+UVM_WARNING :    0
+UVM_ERROR :    0
+UVM_FATAL :    0
+** Report counts by id
+[RNTST]     1
+[UVM/REPORT/CATCHER]     1
+[cfg]     1
+[mem_bkdr_util[FlashBank0Data]]     2
+[mem_bkdr_util[FlashBank0Info]]     1
+[mem_bkdr_util[FlashBank1Data]]     1
+[mem_bkdr_util[FlashBank1Info]]     1
+[mem_bkdr_util[OtbnDmem0]]     1
+[mem_bkdr_util[OtbnImem]]     1
+[mem_bkdr_util[Otp]]     1
+[mem_bkdr_util[RamRet0]]     1
+[mem_bkdr_util[Rom]]     1
+[tb.u_sim_sram.u_sim_sram_if.u_sw_logger_if.parse_sw_log_file.unnamed$$_0.unnamed$$_1]     2
+[tb.u_sim_sram.u_sim_sram_if.u_sw_test_status_if]     4
+[test_rom_sim_dv(sw/device/lib/testing/test_framework/status.c:49)]     1
+[test_rom_sim_dv(sw/device/lib/testing/test_rom/test_rom.c:190)]     1
+[test_rom_sim_dv(sw/device/lib/testing/test_rom/test_rom.c:267)]     1
+[uart_smoketest_sim_dv(sw/device/lib/testing/test_framework/ottf_main.c:182)]     1
+[uart_smoketest_sim_dv(sw/device/lib/testing/test_framework/status.c:37)]     1
+[uart_smoketest_sim_dv(sw/device/lib/testing/test_framework/status.c:49)]     1
+[uvm_test_top]     1
+[uvm_test_top.env.virtual_sequencer.chip_sw_uart_smoke_vseq]     4
+
+
+TEST PASSED CHECKS
+ _____         _                                  _ _ 
+|_   _|__  ___| |_   _ __   __ _ ___ ___  ___  __| | |
+  | |/ _ \/ __| __| | '_ \ / _` / __/ __|/ _ \/ _` | |
+  | |  __/\__ \ |_  | |_) | (_| \__ \__ \  __/ (_| |_|
+  |_|\___||___/\__| | .__/ \__,_|___/___/\___|\__,_(_)
+                    |_|                               
+
+$finish called from file "/usr/Synopsys/vcs/T-2022.06/etc/uvm-1.2/base/uvm_root.svh", line 527.
+$finish at simulation time 3644.890664 us
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 3644890664 ps
+CPU Time:    536.010 seconds;       Data structure size:  38.5Mb
+Sat Jun 13 16:21:53 2026
+
+[make]: post_run
+
+[make]: run_result

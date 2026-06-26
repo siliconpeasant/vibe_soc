@@ -73,11 +73,13 @@ COVERAGE_REPORT_CMD = env LD_LIBRARY_PATH=$(VCS_HOME)/amd64/lib \
                       $(VCS_HOME)/bin/urg -full64 -dir $(COV_DIR) -report $(COV_REPORT_DIR)
 
 # Source view and compiled KDB view correspond to xuanwu9000's verdi/vcs_verdi.
-VERDI_CMD     = $(VERDI_EXE) $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
-DEBUG_GUI_CMD = $(VERDI_EXE) -dbdir $(SIM_DIR)/simv.daidir &
-
-ifeq ($(FSDB),1)
-  WAVE_CMD = $(VERDI_EXE) -ssf $(SIM_DIR)/wave.fsdb &
+VERDI_SRC_ARGS  = -top $(TOP_MODULE) -f $(FILELIST)
+VERDI_DB_ARGS   = $(if $(wildcard $(SIM_DIR)/simv.daidir),-dbdir simv.daidir,$(VERDI_SRC_ARGS))
+VERDI_WAVE_FILE = $(if $(wildcard $(SIM_DIR)/waves.fsdb),waves.fsdb,$(if $(wildcard $(SIM_DIR)/wave.fsdb),wave.fsdb,))
+VERDI_WAVE_ARGS = $(if $(VERDI_WAVE_FILE),-ssf $(VERDI_WAVE_FILE),)
+ifeq ($(CURRENT_DIR),dv)
+  VERDI_CMD     = cd $(SIM_DIR) && $(VERDI_EXE) $(VERDI_FLAGS) $(VERDI_DB_ARGS) $(VERDI_WAVE_ARGS) &
 else
-  WAVE_CMD = dve -vpd $(SIM_DIR)/wave.vpd &
+  VERDI_CMD     = cd $(SIM_DIR) && $(VERDI_EXE) $(VERDI_FLAGS) $(VERDI_SRC_ARGS) &
 endif
+

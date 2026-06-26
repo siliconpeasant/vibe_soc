@@ -1,0 +1,210 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@lowrisc_opentitan//rules:const.bzl", "CONST")
+load("@lowrisc_opentitan//rules/opentitan:keyutils.bzl", "ECDSA_ONLY_KEY_STRUCTS")
+load(
+    "@lowrisc_opentitan//rules/opentitan:defs.bzl",
+    "dv_params",
+    "ecdsa_key_for_lc_state",
+    "opentitan_test",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "doc_files",
+    srcs = glob(["**/*.md"]),
+)
+
+# Note, this file contains step-by-step instructions on how to both:
+# 1. add custom test hook libraries (that override the default), labeled
+#    `TH-STEP *` for "Test Hook Step *", and,
+# 2. add custom manufacturer tests, labeled `OTFT-STEP *` for "OpenTitan
+#    Functest Step *".
+# Read on to learn more about these features.
+
+################################################################################
+# Config Settings for each Test Hook Library.
+#
+# These allow you to select which set of test hooks Bazel should use via a
+# command line argument, e.g., `--define test_hooks=<config setting name>`
+#
+# Modify this as described below to add more test hooks libraries.
+################################################################################
+# Example running the open-source AES smoketest with default test hooks:
+#   bazel test //sw/device/tests:aes_smoketest --define test_hooks=default
+#        - or -
+#   bazel test //sw/device/tests:aes_smoketest
+config_setting(
+    name = "hooks_default",
+    define_values = {
+        "test_hooks": "default",
+    },
+)
+
+# Example running the open-source AES smoketest with non-default test hooks:
+#   bazel test //sw/device/tests:aes_smoketest --define test_hooks=hooks_1
+config_setting(
+    name = "hooks_1",
+    define_values = {
+        "test_hooks": "hooks_1",
+    },
+)
+
+# TH-Step 1: Copy/Uncomment below to add an additional set of test hooks.
+# config_setting(
+#     name = "hooks_2",
+#     define_values = {
+#         "test_hooks": "hooks_2",
+#     },
+# )
+
+# TH-Step 2: Copy/Uncomment the row below to add an additional set of test hooks.
+_TEST_HOOKS_DEPS = select({
+    "hooks_1": [":test_hooks_1"],
+    # "hooks_2": [":test_hooks_2"],
+    "hooks_default": [],
+    "//conditions:default": [],
+})
+
+################################################################################
+# Example Manufacturer Test Hook Library.
+#
+# Modify this section as described below to add more test hooks libraries.
+################################################################################
+cc_library(
+    name = "test_hooks_1",
+    srcs = ["test_hooks_1.c"],
+    deps = [
+        "@//sw/device/lib/runtime:log",
+    ],
+    alwayslink = True,
+)
+
+# TH-Step 3: Copy/Uncomment below to add an additional test hooks library that
+# may override the default test hooks.
+# cc_library(
+#    # The name is the label that will be used to refer to this library below,
+#    # in the single `test_hooks` library that is a dependency of the OTTF.
+#    name = "test_hooks_2",
+#
+#    # `srcs` is a list of source files and private header files.
+#    srcs = ["test_hooks_2.c"],
+#
+#    # `hdrs` is a list of public header files for the `test_hooks` library.
+#    hdrs = [],
+#
+#    # `deps` is a list of dependencies for this library.
+#    # Any dependencies local to this repo can start with `//`.
+#    # Any dependencies from the main opentitan repo must start with `@//`.
+#    deps = ["@//sw/device/lib/runtime:log"],
+#
+#    # We use alwayslink to force the symbols exported by this library to
+#    # override the default test hook weak symbols provided by the default
+#    # `test_hooks` library below.
+#    alwayslink = True,
+# )
+
+################################################################################
+# DO NOT MODIFY THIS SECTION
+#
+# The main `test_hooks` library that may be overridden by manufacturer test hook
+# libraries defined above.
+################################################################################
+cc_library(
+    name = "test_hooks",
+    srcs = ["test_hooks_default.c"],
+    deps = ["@//sw/device/lib/base:macros"] + _TEST_HOOKS_DEPS,
+)
+
+################################################################################
+# Manufacturer Tests
+#
+# These may make use of any manufacturer test hook libraries the same was as
+# open-source tests may, but it is probably uneccessary, since these are custom
+# manufacturer defined tests.
+#
+# Additional tests may be added below as `opentitan_test` rules. Same as
+# above, any dependencies local to this repo can start with `//`. However, any
+# dependencies from the main opentitan repo must start with `@//`.
+#
+# To run the example test below using the default location:
+# `bazel test @manufacturer_test_hooks//:example_test`
+#
+# To run the example test below when the `@manufacturer_test_hooks` repo is in a
+# different location on the system, use:
+# `MANUFACTURER_HOOKS_DIR=/path/to/test_hooks
+#     bazel test @manufacturer_test_hooks//:example_test`
+################################################################################
+# OTFT-Step 1: Copy/paste the below `opentitan_test` to add an additional
+# manufacturer-specific test.
+opentitan_test(
+    name = "example_test",
+    srcs = ["example_test.c"],
+    dv = dv_params(
+        rom = "@//sw/device/silicon_creator/rom:mask_rom",
+    ),
+    ecdsa_key = ecdsa_key_for_lc_state(
+        ECDSA_ONLY_KEY_STRUCTS,
+        CONST.LCV.TEST_UNLOCKED0,
+    ),
+    exec_env = {
+        "@//hw/top_earlgrey:fpga_cw310_rom_with_fake_keys": None,
+        "@//hw/top_earlgrey:fpga_cw310_test_rom": None,
+        "@//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": None,
+        "@//hw/top_earlgrey:fpga_cw340_test_rom": None,
+        "@//hw/top_earlgrey:sim_dv": None,
+    },
+    # We need to specify the manifest because the simulation environments do not
+    # specify one by default.
+    manifest = "@//sw/device/silicon_creator/rom_ext:manifest",
+    deps = [
+        "@//sw/device/lib/testing/test_framework:ottf_main",
+    ],
+)
+
+################################################################################
+# Statically Hooked Manufacturer Tests
+#
+# This provides an example of how to use open source test code in
+# `sw/device/tests/` with manufacturer test hooks (defined in this Bazel
+# repository) without having to specify which test hooks library should be
+# executed with the test on the command line.
+#
+# TODO(lowRISC:opentitan#13180): see description in `sw/device/tests/BUILD`.
+#
+# To run the example test below using the default location:
+# `bazel test @manufacturer_test_hooks//:statically_hooked_opensource_test`
+#
+# To run the example test below when the `@manufacturer_test_hooks` repo is in a
+# different location on the system, use:
+# `MANUFACTURER_HOOKS_DIR=/path/to/test_hooks
+#     bazel test @manufacturer_test_hooks//:statically_hooked_opensource_test`
+################################################################################
+opentitan_test(
+    name = "statically_hooked_opensource_test",
+    srcs = ["@//sw/device/tests:example_test_from_flash.c"],
+    dv = dv_params(
+        rom = "@//sw/device/silicon_creator/rom:mask_rom",
+    ),
+    ecdsa_key = ecdsa_key_for_lc_state(
+        ECDSA_ONLY_KEY_STRUCTS,
+        CONST.LCV.TEST_UNLOCKED0,
+    ),
+    exec_env = {
+        "@//hw/top_earlgrey:fpga_cw310_rom_with_fake_keys": None,
+        "@//hw/top_earlgrey:fpga_cw310_test_rom": None,
+        "@//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": None,
+        "@//hw/top_earlgrey:fpga_cw340_test_rom": None,
+        "@//hw/top_earlgrey:sim_dv": None,
+    },
+    # We need to specify the manifest because the simulation environments do not
+    # specify one by default.
+    manifest = "@//sw/device/silicon_creator/rom_ext:manifest",
+    deps = [
+        "@//sw/device/lib/testing/test_framework:ottf_main",
+        "@manufacturer_test_hooks//:test_hooks_1",
+    ],
+)

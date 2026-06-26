@@ -1,0 +1,372 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "crypto_fi",
+    srcs = ["crypto_fi.c"],
+    hdrs = ["crypto_fi.h"],
+    deps = [
+        "//hw/top:aes_c_regs",
+        "//hw/top:hmac_c_regs",
+        "//hw/top:kmac_c_regs",
+        "//sw/device/lib/base:abs_mmio",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:aes",
+        "//sw/device/lib/dif:hmac",
+        "//sw/device/lib/dif:kmac",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing:aes_testutils",
+        "//sw/device/lib/testing:hmac_testutils",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:crypto_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "cryptolib_fi_sym",
+    srcs = ["cryptolib_fi_sym.c"],
+    hdrs = ["cryptolib_fi_sym.h"],
+    deps = [
+        "//sw/device/lib/base:abs_mmio",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/fi:cryptolib_fi_sym_impl",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:cryptolib_fi_sym_commands",
+    ] + select({
+        # This is the target for the cryptolib given as a prebuilt drop
+        "//sw/device/tests/penetrationtests/cryptolib_drop:use_prebuilt_cryptolib": [
+            "//sw/device/tests/penetrationtests/cryptolib_drop:cryptolib_imported",
+        ],
+        # This is the internal cryptolib
+        "//conditions:default": [
+            "//sw/device/lib/crypto",
+        ],
+    }),
+)
+
+cc_library(
+    name = "cryptolib_fi_asym",
+    srcs = ["cryptolib_fi_asym.c"],
+    hdrs = ["cryptolib_fi_asym.h"],
+    deps = [
+        "//sw/device/lib/base:abs_mmio",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/fi:cryptolib_fi_asym_impl",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:cryptolib_fi_asym_commands",
+    ] + select({
+        # This is the target for the cryptolib given as a prebuilt drop
+        "//sw/device/tests/penetrationtests/cryptolib_drop:use_prebuilt_cryptolib": [
+            "//sw/device/tests/penetrationtests/cryptolib_drop:cryptolib_imported",
+        ],
+        # This is the internal cryptolib
+        "//conditions:default": [
+            "//sw/device/lib/crypto",
+        ],
+    }),
+)
+
+cc_library(
+    name = "cryptolib_fi_asym_impl",
+    srcs = ["cryptolib_fi_asym_impl.c"],
+    hdrs = [
+        "cryptolib_fi_asym_impl.h",
+        "//sw/device/tests/penetrationtests/firmware/lib:cryptolib_asym.h",
+    ],
+    deps = [
+        "//sw/device/lib/base:hardened_memory",
+        "//sw/device/lib/base:math",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing/test_framework:check",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:cryptolib_fi_asym_commands",
+        # Specifically load the HARDENED_TRY
+        "//sw/device/lib/crypto/impl:status",
+    ] + select({
+        # This is the target for the cryptolib given as a prebuilt drop
+        "//sw/device/tests/penetrationtests/cryptolib_drop:use_prebuilt_cryptolib": [
+            "//sw/device/tests/penetrationtests/cryptolib_drop:cryptolib_imported",
+        ],
+        # This is the internal cryptolib
+        "//conditions:default": [
+            "//sw/device/lib/crypto",
+        ],
+    }),
+)
+
+cc_library(
+    name = "cryptolib_fi_sym_impl",
+    srcs = ["cryptolib_fi_sym_impl.c"],
+    hdrs = [
+        "cryptolib_fi_sym_impl.h",
+        "//sw/device/tests/penetrationtests/firmware/lib:cryptolib_sym.h",
+    ],
+    deps = [
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:hardened_memory",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing/test_framework:check",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:cryptolib_fi_sym_commands",
+        # Specifically load the HARDENED_TRY
+        "//sw/device/lib/crypto/impl:status",
+    ] + select({
+        # This is the target for the cryptolib given as a prebuilt drop
+        "//sw/device/tests/penetrationtests/cryptolib_drop:use_prebuilt_cryptolib": [
+            "//sw/device/tests/penetrationtests/cryptolib_drop:cryptolib_imported",
+        ],
+        # This is the internal cryptolib
+        "//conditions:default": [
+            "//sw/device/lib/crypto",
+        ],
+    }),
+)
+
+cc_library(
+    name = "ibex_fi",
+    srcs = [
+        "ibex_fi.S",
+        "ibex_fi.c",
+    ],
+    hdrs = ["ibex_fi.h"],
+    deps = [
+        "//hw/top:aes_c_regs",
+        "//hw/top:alert_handler_c_regs",
+        "//hw/top:entropy_src_c_regs",
+        "//hw/top:hmac_c_regs",
+        "//hw/top:keymgr_c_regs",
+        "//hw/top:otp_ctrl_c_regs",
+        "//hw/top:sram_ctrl_c_regs",
+        "//sw/device/lib/arch:boot_stage",
+        "//sw/device/lib/base:abs_mmio",
+        "//sw/device/lib/base:csr",
+        "//sw/device/lib/base:hardened",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:flash_ctrl",
+        "//sw/device/lib/dif:otp_ctrl",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/dif:sram_ctrl",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing:flash_ctrl_testutils",
+        "//sw/device/lib/testing:otp_ctrl_testutils",
+        "//sw/device/lib/testing:sram_ctrl_testutils",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/silicon_creator/lib/drivers:retention_sram",
+        "//sw/device/silicon_creator/manuf/lib:otp_fields",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:ibex_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "lc_ctrl_fi",
+    srcs = ["lc_ctrl_fi.c"],
+    hdrs = ["lc_ctrl_fi.h"],
+    deps = [
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:lc_ctrl",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing:rv_core_ibex_testutils",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:lc_ctrl_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "otbn_fi",
+    srcs = ["otbn_fi.c"],
+    hdrs = ["otbn_fi.h"],
+    deps = [
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/crypto/drivers:keymgr",
+        "//sw/device/lib/crypto/drivers:otbn",
+        "//sw/device/lib/dif:otbn",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing:entropy_testutils",
+        "//sw/device/lib/testing:keymgr_testutils",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_beq",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_bn_rshi",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_bn_sel",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_bn_wsrr",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_bne",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_dmem_access",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_dmem_write",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_hardware_dmem_op_loop",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_hardware_reg_op_loop",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_jal",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_lw",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_rf",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_unrolled_dmem_op_loop",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_char_unrolled_reg_op_loop",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_key_sideload",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_load_integrity",
+        "//sw/device/tests/penetrationtests/firmware/fi/otbn:otbn_pc",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:otbn_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "rng_fi",
+    srcs = ["rng_fi.c"],
+    hdrs = ["rng_fi.h"],
+    deps = [
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:csrng",
+        "//sw/device/lib/dif:csrng_shared",
+        "//sw/device/lib/dif:edn",
+        "//sw/device/lib/dif:entropy_src",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing:csrng_testutils",
+        "//sw/device/lib/testing:edn_testutils",
+        "//sw/device/lib/testing:entropy_src_testutils",
+        "//sw/device/lib/testing:entropy_testutils",
+        "//sw/device/lib/testing:rv_core_ibex_testutils",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:rng_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "otp_fi",
+    srcs = ["otp_fi.c"],
+    hdrs = ["otp_fi.h"],
+    deps = [
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:otp_ctrl",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing:otp_ctrl_testutils",
+        "//sw/device/lib/testing/test_framework:check",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:otp_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "rom_fi",
+    srcs = ["rom_fi.c"],
+    hdrs = ["rom_fi.h"],
+    deps = [
+        "//hw/top:rom_ctrl_c_regs",
+        "//sw/device/lib/base:abs_mmio",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:rom_ctrl",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:rom_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "boot_fi",
+    srcs = ["boot_fi.c"],
+    hdrs = ["boot_fi.h"],
+    deps = [
+        "//hw/top:flash_ctrl_c_regs",
+        "//hw/top:rom_ctrl_c_regs",
+        "//sw/device/lib/base:abs_mmio",
+        "//sw/device/lib/base:csr",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:multibits",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:rom_ctrl",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/silicon_creator/lib:boot_log",
+        "//sw/device/silicon_creator/lib:epmp_state",
+        "//sw/device/silicon_creator/lib:manifest",
+        "//sw/device/silicon_creator/lib/boot_svc:boot_svc_next_boot_bl0_slot",
+        "//sw/device/silicon_creator/lib/drivers:flash_ctrl",
+        "//sw/device/silicon_creator/lib/drivers:retention_sram",
+        "//sw/device/silicon_creator/lib/drivers:rstmgr",
+        "//sw/device/silicon_creator/rom_ext:rom_ext_manifest",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:boot_fi_commands",
+    ],
+)
+
+cc_library(
+    name = "alert_fi",
+    srcs = ["alert_fi.c"],
+    hdrs = ["alert_fi.h"],
+    deps = [
+        "//sw/device/lib/base:abs_mmio",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:status",
+        "//sw/device/lib/dif:adc_ctrl",
+        "//sw/device/lib/dif:aes",
+        "//sw/device/lib/dif:alert_handler",
+        "//sw/device/lib/dif:aon_timer",
+        "//sw/device/lib/dif:csrng",
+        "//sw/device/lib/dif:edn",
+        "//sw/device/lib/dif:entropy_src",
+        "//sw/device/lib/dif:flash_ctrl",
+        "//sw/device/lib/dif:gpio",
+        "//sw/device/lib/dif:hmac",
+        "//sw/device/lib/dif:i2c",
+        "//sw/device/lib/dif:keymgr",
+        "//sw/device/lib/dif:kmac",
+        "//sw/device/lib/dif:otbn",
+        "//sw/device/lib/dif:otp_ctrl",
+        "//sw/device/lib/dif:pattgen",
+        "//sw/device/lib/dif:pwm",
+        "//sw/device/lib/dif:pwrmgr",
+        "//sw/device/lib/dif:rv_core_ibex",
+        "//sw/device/lib/dif:rv_plic",
+        "//sw/device/lib/dif:rv_timer",
+        "//sw/device/lib/dif:sensor_ctrl",
+        "//sw/device/lib/dif:spi_device",
+        "//sw/device/lib/dif:spi_host",
+        "//sw/device/lib/dif:sysrst_ctrl",
+        "//sw/device/lib/dif:uart",
+        "//sw/device/lib/dif:usbdev",
+        "//sw/device/lib/runtime:log",
+        "//sw/device/lib/testing/test_framework:ujson_ottf",
+        "//sw/device/lib/ujson",
+        "//sw/device/tests/penetrationtests/firmware/lib:pentest_lib",
+        "//sw/device/tests/penetrationtests/json:alert_fi_commands",
+    ],
+)

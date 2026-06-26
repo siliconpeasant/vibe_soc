@@ -1,0 +1,107 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+exports_files(glob(["**"]))
+
+package(default_visibility = ["//visibility:public"])
+
+HASHES = [
+    [
+        "sha2",
+        "sha2",
+    ],
+    [
+        "shake",
+        "fips202",
+    ],
+    [
+        "haraka",
+        "haraka",
+    ],
+]
+
+LEVELS = [
+    "128",
+    "192",
+    "256",
+]
+
+LETTERS = [
+    "s",
+    "f",
+]
+
+THASHES = [
+    "simple",
+    "robust",
+]
+
+RNG_MODES = [
+    "random",
+    "deterministic",
+]
+
+cc_library(
+    name = "random",
+    srcs = ["randombytes.c"],
+    hdrs = ["randombytes.h"],
+)
+
+cc_library(
+    name = "deterministic",
+    srcs = ["rng.c"],
+    hdrs = [
+        "randombytes.h",
+        "rng.h",
+    ],
+)
+
+[
+    cc_library(
+        name = "sphincs_{}_{}_{}{}_{}".format(rng_mode, hash_alg, level, letter, thash),
+        srcs = [
+            "address.c",
+            "fors.c",
+            "merkle.c",
+            "sign.c",
+            "utils.c",
+            "utilsx1.c",
+            "wots.c",
+            "wotsx1.c",
+            "{}.c".format(hash_c),
+            "hash_{}.c".format(hash_alg),
+            "thash_{}_{}.c".format(hash_alg, thash),
+        ],
+        hdrs = [
+            "address.h",
+            "api.h",
+            "context.h",
+            "fors.h",
+            "hash.h",
+            "merkle.h",
+            "params.h",
+            "rng.h",
+            "thash.h",
+            "utils.h",
+            "utilsx1.h",
+            "wots.h",
+            "wotsx1.h",
+            "{}_offsets.h".format(hash_alg),
+            "{}.h".format(hash_c),
+            "params/params-sphincs-{}-{}{}.h".format(hash_alg, level, letter),
+        ],
+        copts = [
+            "-DPARAMS=sphincs-{}-{}{}".format(hash_alg, level, letter),
+            "-DNAMESPACE=SPX_{}_{}{}_{}_".format(hash_alg, level, letter, thash),
+        ],
+        deps = [
+            ":{}".format(rng_mode),
+        ],
+    )
+    for rng_mode in RNG_MODES
+    for hash_alg, hash_c in HASHES
+    for level in LEVELS
+    for letter in LETTERS
+    for thash in THASHES
+]

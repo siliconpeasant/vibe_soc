@@ -1,0 +1,83 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#ifndef OPENTITAN_SW_DEVICE_TESTS_PENETRATIONTESTS_JSON_AES_SCA_COMMANDS_H_
+#define OPENTITAN_SW_DEVICE_TESTS_PENETRATIONTESTS_JSON_AES_SCA_COMMANDS_H_
+#include "sw/device/lib/ujson/ujson_derive.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define AESSCA_CMD_MAX_MSG_BYTES 16
+#define AESSCA_CMD_MAX_KEY_BYTES 16
+#define AESSCA_CMD_MAX_LFSR_BYTES 4
+#define AESSCA_CMD_MAX_DATA_BYTES 16
+#define AESSCA_CMD_MAX_BLOCKS 1
+
+// clang-format off
+
+// AES SCA arguments
+
+#define AESSCA_SUBCOMMAND(_, value) \
+    value(_, Single) \
+    value(_, BatchDaisy) \
+    value(_, BatchRandom) \
+    value(_, BatchFvsrData) \
+    value(_, BatchFvsrKey) \
+    value(_, GcmFvsrBatchIvKey) \
+    value(_, GcmFvsrBatchPtxAad) \
+    value(_, GcmSingleEncrypt) \
+    value(_, Init) \
+    value(_, SeedLfsr) \
+    value(_, SeedLfsrOrder)
+C_ONLY(UJSON_SERDE_ENUM(AesScaSubcommand, aes_sca_subcommand_t, AESSCA_SUBCOMMAND));
+RUST_ONLY(UJSON_SERDE_ENUM(AesScaSubcommand, aes_sca_subcommand_t, AESSCA_SUBCOMMAND, RUST_DEFAULT_DERIVE, strum::EnumString));
+
+#define AES_SCA_KEY(field, string) \
+    field(key, uint8_t, AESSCA_CMD_MAX_KEY_BYTES) \
+    field(key_length, size_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaKey, aes_sca_key_t, AES_SCA_KEY);
+
+#define AES_SCA_TEXT(field, string) \
+    field(text, uint8_t, AESSCA_CMD_MAX_DATA_BYTES) \
+    field(text_length, size_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaText, aes_sca_text_t, AES_SCA_TEXT);
+
+#define AES_SCA_LFSR(field, string) \
+    field(seed, uint8_t, AESSCA_CMD_MAX_LFSR_BYTES)
+UJSON_SERDE_STRUCT(CryptotestAesScaLfsr, aes_sca_lfsr_t, AES_SCA_LFSR);
+
+#define AES_SCA_CIPHERTEXT(field, string) \
+    field(ciphertext, uint8_t, AESSCA_CMD_MAX_MSG_BYTES) \
+    field(ciphertext_length, uint32_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaCiphertext, aes_sca_ciphertext_t, AES_SCA_CIPHERTEXT);
+
+#define AES_SCA_FPGA_MODE(field, string) \
+    field(fpga_mode, uint8_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaFpgaMode, aes_sca_fpga_mode_t, AES_SCA_FPGA_MODE);
+
+#define AES_SCA_NUM_BLOCKS(field, string) \
+    field(num_blocks, size_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaNumBlocks, aes_sca_num_blocks_t, AES_SCA_NUM_BLOCKS);
+
+#define AES_SCA_BLOCK(field, string) \
+    field(block, uint8_t, AESSCA_CMD_MAX_DATA_BYTES) \
+    field(num_valid_bytes, size_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaBlock, aes_sca_block_t, AES_SCA_BLOCK);
+
+#define AES_SCA_GCM_TRIGGERS(field, string) \
+    field(triggers, bool, 5) \
+    field(block, size_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaGcmTriggers, aes_sca_gcm_triggers_t, AES_SCA_GCM_TRIGGERS);
+
+#define AES_SCA_NUM_OPS(field, string) \
+    field(num_batch_ops, size_t)
+UJSON_SERDE_STRUCT(CryptotestAesScaNumOps, aes_sca_num_ops_t, AES_SCA_NUM_OPS);
+
+// clang-format on
+
+#ifdef __cplusplus
+}
+#endif
+#endif  // OPENTITAN_SW_DEVICE_TESTS_PENETRATIONTESTS_JSON_AES_SCA_COMMANDS_H_

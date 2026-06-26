@@ -1,0 +1,232 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#ifndef OPENTITAN_SW_DEVICE_SILICON_CREATOR_LIB_OWNERSHIP_OWNER_BLOCK_H_
+#define OPENTITAN_SW_DEVICE_SILICON_CREATOR_LIB_OWNERSHIP_OWNER_BLOCK_H_
+
+#include "sw/device/lib/base/hardened.h"
+#include "sw/device/silicon_creator/lib/boot_data.h"
+#include "sw/device/silicon_creator/lib/error.h"
+#include "sw/device/silicon_creator/lib/ownership/datatypes.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
+/**
+ * The signature or sealing status of an owner page.
+ */
+typedef enum owner_page_status {
+  /** Invalid: `INV_`. */
+  kOwnerPageStatusInvalid = 0x5f564e49,
+  /** Sealed: `SEAL`. */
+  kOwnerPageStatusSealed = 0x4c414553,
+  /** Signed: `SIGN`. */
+  kOwnerPageStatusSigned = 0x4e474953,
+} owner_page_status_t;
+
+/**
+ * RAM copies of the owner pages read out of flash INFO pages.
+ */
+extern owner_block_t owner_page[2];
+extern owner_page_status_t owner_page_valid[2];
+
+/**
+ * The owner config struct contains high-level configuration items
+ * from an owner block.
+ */
+typedef struct owner_config {
+  /** The requested SRAM execution configuration. */
+  owner_sram_exec_mode_t sram_exec;
+  /** Allow boot_svc after wakeup. */
+  hardened_bool_t boot_svc_after_wakeup;
+  /** The requested flash configuration. */
+  const owner_flash_config_t *flash;
+  /** The requested flash INFO configuration. */
+  const owner_flash_info_config_t *info;
+  /** The requested rescue configuration. */
+  const owner_rescue_config_t *rescue;
+  /**
+   * The requested Integrator Specific Firmware Binding (ISFB) configuration.
+   */
+  const owner_isfb_config_t *isfb;
+} owner_config_t;
+
+/**
+ * The application keyring collects application keys from the owner config
+ * block.
+ */
+typedef struct owner_application_keyring {
+  /** The number of application keys found. */
+  size_t length;
+  /** Pointers to the application keys. */
+  const owner_application_key_t *key[16];
+} owner_application_keyring_t;
+
+/**
+ * Determine if the owner keys are equal between owner page 0 and 1.
+ *
+ * @return kHardenedBoolTrue if the owner key are the same between both pages.
+ */
+hardened_bool_t owner_block_owner_key_equal(void);
+
+/**
+ * Determine if the ownership update mode is one of the "newversion" modes.
+ *
+ * @return kHardenedBoolTrue if it is a newversion mode.
+ */
+hardened_bool_t owner_block_newversion_mode(void);
+
+/**
+ * Check if owner page 1 is valid for ownership transfer.
+ *
+ * @param bootdata The current bootdata.
+ * @return kHardenedBoolTrue if page 1 is valid.
+ */
+hardened_bool_t owner_block_page1_valid_for_transfer(boot_data_t *bootdata);
+
+/**
+ * Initialize the owner config with default values.
+ *
+ * The sram_exec mode is set to DisabledLocked and the three configuration
+ * pointers are set to kHardenedBoolFalse.
+ *
+ * The default implementation is weak and can be overridden for SKU-specific
+ * defaults.
+ *
+ * @param config A pointer to a config struct holding pointers to config items.
+ */
+void owner_config_default(owner_config_t *config);
+
+/**
+ * Parse an owner block, extracting pointers to keys and configuration items.
+ *
+ * @param block The owner block to parse.
+ * @param check_only Check the owner_block for validity, but do not parse into
+ *                   config and keyring structs.
+ * @param config A pointer to a config struct holding pointers to config items.
+ * @param keyring A pointer to a keyring struct holding application key
+ * pointers.
+ * @return error code.
+ */
+rom_error_t owner_block_parse(const owner_block_t *block,
+                              hardened_bool_t check_only,
+                              owner_config_t *config,
+                              owner_application_keyring_t *keyring);
+
+/**
+ * Check the flash config for errors.
+ *
+ * Currently, this checks that a flash config region covering the ROM_EXT
+ * is compatible with the default flash config region.
+ *
+ * @param flash A pointer to a flash configuration struct.
+ * @return error code.
+ */
+rom_error_t owner_block_flash_check(const owner_flash_config_t *flash);
+
+/**
+ * Check the ISFB configuration for errors.
+ *
+ * Currently, this checks that the ISFB configuration is on an owner page,
+ * and that the product_words field is within bounds.
+ *
+ * @param isfb A pointer to an ISFB configuration struct.
+ * @return error code.
+ */
+rom_error_t owner_isfb_config_check(const owner_isfb_config_t *isfb);
+
+/**
+ * Apply the flash configuration parameters from the owner block.
+ *
+ * @param flash A pointer to a flash configuration struct.
+ * @param config_side Which side of the flash to configure.
+ * @param owner_lockdown Apply any special lockdown configuration to
+ *                       silicon_owner regions on the specified side of the
+ *                       flash.  May use kHardenedBoolFalse to skip lockdown.
+ * @param mp_index The destination configuration index.  The value should be
+ *                 initialized to zero before the first call to this function.
+ * @return error code.
+ */
+rom_error_t owner_block_flash_apply(const owner_flash_config_t *flash,
+                                    uint32_t config_side,
+                                    uint32_t owner_lockdown,
+                                    uint32_t *mp_index);
+
+/**
+ * Apply the flash info configuration parameters from the owner block.
+ *
+ * @param info A pointer to a flash_info configuration.
+ * @return error code.
+ */
+rom_error_t owner_block_info_apply(const owner_flash_info_config_t *info);
+
+/**
+ * Lock the flash info configuration parameters as requested by the owner block.
+ *
+ * @param info A pointer to a flash_info configuration.
+ * @return error code.
+ */
+rom_error_t owner_block_info_lockdown(const owner_flash_info_config_t *info);
+
+/**
+ * Enable erase on the ISFB info page.
+ *
+ * Unconditionally enables erase on the ISFB info page. This function is used
+ * to enable the erase policy for the ISFB info page.
+ *
+ * The function does not enable erase on the ISFB info page if the owner config
+ * does not contain the ISFB or info page owner blocks. The settings are also
+ * ignored if the device is not in the `kOwnershipStateLockedOwner` state.
+ *
+ * @param bootdata The current boot data.
+ * @param owner_config The owner configuration.
+ *
+ * @return The result of the operation.
+ */
+rom_error_t owner_block_info_isfb_erase_enable(
+    boot_data_t *bootdata, const owner_config_t *owner_config);
+
+rom_error_t owner_keyring_find_key(const owner_application_keyring_t *keyring,
+                                   uint32_t key_id, size_t *index);
+
+/**
+ * Apply the rescue configuration parameters in the owner block.
+ *
+ * This function sets up the trigger detection when a GPIO trigger specified in
+ * the configuration.
+ *
+ * @param rescue A pointer to the rescue configuration.
+ * @return error code.
+ */
+rom_error_t owner_block_rescue_apply(const owner_rescue_config_t *rescue);
+
+/**
+ * Determine whether the given key is on owner page 0 or page 1.
+ *
+ * @return page number.
+ */
+size_t owner_block_key_page(const owner_application_key_t *key);
+
+/**
+ * Determine whether a particular rescue command is allowed.
+ *
+ * @param rescue A pointer to the rescue configuration.
+ * @param command The rescue command to check.
+ * @return kHardenedBoolTrue if allowed.
+ */
+hardened_bool_t owner_rescue_command_allowed(
+    const owner_rescue_config_t *rescue, uint32_t command);
+
+/**
+ * Measure the content of the owner page.
+ *
+ * @param page The owner page to measure.
+ * @param measurement The measurement value.
+ */
+void owner_block_measurement(size_t page, hmac_digest_t *mesaurment);
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // OPENTITAN_SW_DEVICE_SILICON_CREATOR_LIB_OWNERSHIP_OWNER_BLOCK_H_

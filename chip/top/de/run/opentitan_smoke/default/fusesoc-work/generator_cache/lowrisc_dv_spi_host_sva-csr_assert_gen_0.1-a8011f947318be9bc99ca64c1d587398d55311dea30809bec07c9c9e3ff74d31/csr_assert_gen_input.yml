@@ -1,0 +1,5 @@
+files_root: /project/hw/ip/spi_host/dv/sva
+gapi: '1.0'
+parameters:
+  spec: ../../data/spi_host.hjson
+vlnv: lowrisc:dv:spi_host_sva-csr_assert_gen:0.1

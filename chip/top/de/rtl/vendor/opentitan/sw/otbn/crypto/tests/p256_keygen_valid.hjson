@@ -1,0 +1,38 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  /**
+   * @param[out] dmem[d0]: First share of secret key.
+   * @param[out] dmem[d1]: Second share of secret key.
+   * @param[out]  dmem[x]: Public key x-coordinate.
+   * @param[out]  dmem[y]: Public key y-coordinate.
+   */
+
+  "input": {
+    "dmem": {
+      "mode": "0x00000497"  # MODE_KEYGEN
+    }
+  }
+  "output": {
+    "dmem": {
+      # Verified that (x, y) == (d0 + d1) * G
+      "x": "0x48ef3e2526e1824084adf52657a06124da17188985560f02b3d33d5ea77bc385"
+      "y": "0x025fa62f0d75db56b5d82eecdaef51081d261dcbe6744156674eaaf04f2b5632"
+
+      "d0":
+        '''
+          0x000000000000000000000000000000000000000000000000a8adb73cc1342806
+            60c50c17fe5712063e3cec29359d4fc4378c2445530b72fef8eeb209961ade0b
+
+        '''
+
+      "d1":
+        '''
+          0x00000000000000000000000000000000000000000000000073919147ce538818
+            3b0de6f0a56065d63567ecfe2c86a5717a93a37a2070f00d52cc78bdfd5426fc
+        '''
+    }
+  }
+}

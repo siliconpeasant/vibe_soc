@@ -1,0 +1,146 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "aon_timer"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/mem_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/intr_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "aon_timer_sec_cm_testplan.hjson"]
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            Smoke test initializes and starts AON Timer according to
+            the programmers guide.
+
+            **Stimulus**:
+            - Register writes to Watchdog/Wakeup COUNT, CTRL and THOLD registers
+
+            **Checks**:
+            - If we are changing WDOG_BARK_THOLD to be lower than the current WDOG_COUNT
+            watchdog timer should raise the interrupt `wdog_timer_bark`.
+            - If we are changing WDOG_BITE_THOLD to be lower than the current WDOG_COUNT
+            watchdog timer should trigger a reset request.
+            - If we are changing WKUP_THOLD to be lower than the current WKUP_COUNT
+            wakeup timer should raise the interrupt `wkup_timer_expired`.
+            '''
+      stage: V1
+      tests: ["aon_timer_smoke"]
+    }
+    {
+      name: prescaler
+      desc: '''
+            Switch prescaler value at random times without locking configuration registers
+            of watchdog timer.
+
+            **Stimulus**:
+            - Register writes to WKUP_CTRL while running.
+
+            **Checks**:
+            - WKUP_COUNT should reflect expected -and changed- passing of real time
+            regardless of its changing prescaler value.
+            '''
+      stage: V2
+      tests: ["aon_timer_prescaler"]
+    }
+    {
+      name: jump
+      desc: '''
+            Change threshold values and prescaler value on random times without locking
+            configuration registers of watchdog timer.
+
+            **Stimulus**:
+            - Register writes to WDOG_BARK_THOLD, WDOG_BITE_THOLD, WKUP_THOLD, WKUP_CTRL
+
+            **Checks**:
+            - If we are changing WDOG_BARK_THOLD to be lower than the current WDOG_COUNT
+            watchdog timer should raise the interrupt `wdog_timer_bark`.
+            - If we are changing WDOG_BITE_THOLD to be lower than the current WDOG_COUNT
+            watchdog timer should trigger a reset request.
+            - If we are changing WKUP_THOLD to be lower than the current WKUP_COUNT
+            wakeup timer should raise the interrupt `wkup_timer_expired`.
+            - WKUP_COUNT should reflect expected passing of real time regardless of
+            prescaler value.
+            '''
+      stage: V2
+      tests: ["aon_timer_jump"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            This runs random sequences in succession.
+
+            Randomly chooses from the following sequences:
+            - aon_timer_intr_test
+            - aon_timer_jump
+            - aon_timer_prescaler
+            - aon_timer_smoke
+            '''
+      stage: V2
+      tests: ["aon_timer_stress_all"]
+    }
+    {
+      name: max_threshold
+      desc: '''
+            Run the basic smoke sequence, but constrained to set max thresholds. This helps
+            close coverage.
+            '''
+      stage: V3
+      tests: ["aon_timer_smoke_max_thold"]
+    }
+    {
+      name: min_threshold
+      desc: '''
+            Run the basic smoke sequence, but constrained to set min thresholds. This helps
+            close coverage.
+            '''
+      stage: V3
+      tests: ["aon_timer_smoke_min_thold"]
+    }
+    {
+      name: wkup_count_hi_cdc
+      desc: '''
+            Run aon_timer_wkup_count_cdc_hi_vseq which maximises the chances to hit
+            conditional and branch coverage in wkup_count_hi_cdc (prim_reg_cdc and
+            prim_reg_cdc_arb).
+            '''
+      stage: V3
+      tests: ["aon_timer_wkup_count_cdc_hi"]
+    }
+    {
+      name: custom_intr
+      desc: '''
+            Run aon_timer_custom_intr_vseq, which drives random wdog/wkup control enables
+            as well as intr_test writes in order to help close intr_test_cg covergroup.
+            '''
+      stage: V3
+      tests: ["aon_timer_custom_intr"]
+    }
+    {
+      name: alternating_on_off
+      desc: '''
+            Run aon_timer_alternating_enable_on_off_vseq, which alternates each counter enable
+            between ON/OFF as well as intr_test writes in order to ensure the TB can cope with non
+            SW-like stimulus.
+            '''
+      stage: V3
+      tests: ["aon_timer_alternating_enable_on_off"]
+    }
+  ]
+
+  covergroups: [
+    {
+      name: timer_cfg_cg
+      desc: '''
+        Includes possible values of all registers of AON timer. For 32b registers, bins are
+        introduced in order to simplify coverage. Maximum and minimum values are collected in
+        a separate bin to guarantee that they are checked. 32 separate bins are auto-generated
+        in order to distribute values evenly.
+      '''
+    }
+  ]
+}

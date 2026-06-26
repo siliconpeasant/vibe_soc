@@ -1,0 +1,250 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#include "sw/device/lib/base/memory.h"
+#include "sw/device/lib/crypto/drivers/aes.h"
+#include "sw/device/lib/crypto/drivers/keymgr.h"
+#include "sw/device/lib/crypto/impl/status.h"
+#include "sw/device/lib/crypto/include/aes.h"
+#include "sw/device/lib/crypto/include/config.h"
+#include "sw/device/lib/crypto/include/entropy_src.h"
+#include "sw/device/lib/crypto/include/integrity.h"
+#include "sw/device/lib/crypto/include/key_transport.h"
+#include "sw/device/lib/runtime/log.h"
+#include "sw/device/lib/testing/keymgr_testutils.h"
+#include "sw/device/lib/testing/test_framework/check.h"
+#include "sw/device/lib/testing/test_framework/ottf_main.h"
+
+// Module ID for status codes.
+#define MODULE_ID MAKE_MODULE_ID('t', 's', 't')
+
+// Key version data for testing.
+static const uint32_t kKeyVersion = 0x0;
+
+// Two distinct key salts for testing.
+static const uint32_t kKeySalt1[7] = {
+    0x00112233, 0x44556677, 0x8899aabb, 0xccddeeff,
+    0x00010203, 0x04050607, 0x08090a0b,
+};
+static const uint32_t kKeySalt2[7] = {
+    0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f,
+    0x00112233, 0x44556677, 0x8899aabb,
+};
+
+// Indicates a sideloaded 256-bit AES-CTR key.
+static const otcrypto_key_config_t kAesKeyConfig = {
+    .version = kOtcryptoLibVersion1,
+    .key_mode = kOtcryptoKeyModeAesCtr,
+    .key_length = 256 / 8,
+    .hw_backed = kHardenedBoolTrue,
+    .security_level = kOtcryptoKeySecurityLevelLow,
+};
+
+// AES IV testing data.
+static const uint32_t kAesIv[4] = {
+    0xdeadbeef,
+    0xdeadbeef,
+    0xdeadbeef,
+    0xdeadbeef,
+};
+
+// AES plaintext testing data.
+static const uint32_t kAesPlaintextBlock[4] = {0};
+
+/**
+ * Convenience function to run AES with the test data.
+ *
+ * The salt should be exactly `kSaltNumWords` words long; the input and output
+ * buffers should both match the size of `kAesPlaintextBlock` and be a multiple
+ * of the block size (so no padding is needed).
+ *
+ * @param salt Key salt to use.
+ * @param input Cipher input block(s).
+ * @param[out] output Resulting output block(s).
+ * @return OK or error.
+ */
+static status_t run_aes(otcrypto_aes_operation_t operation,
+                        const uint32_t salt[7], const uint32_t *input,
+                        uint32_t *output) {
+  // Construct the key.
+  uint32_t keyblob[8];
+  otcrypto_blinded_key_t key = {
+      .config = kAesKeyConfig,
+      .keyblob_length = sizeof(keyblob),
+      .keyblob = keyblob,
+  };
+  TRY(otcrypto_hw_backed_key(kKeyVersion, salt, &key));
+
+  // Construct the IV.
+  uint32_t iv_data[ARRAYSIZE(kAesIv)];
+  memcpy(iv_data, kAesIv, sizeof(kAesIv));
+  otcrypto_word32_buf_t iv =
+      OTCRYPTO_MAKE_BUF(otcrypto_word32_buf_t, iv_data, ARRAYSIZE(iv_data));
+
+  // Construct the input buffer.
+  otcrypto_const_byte_buf_t input_buf =
+      OTCRYPTO_MAKE_BUF(otcrypto_const_byte_buf_t, (const unsigned char *)input,
+                        sizeof(kAesPlaintextBlock));
+
+  // Construct the output buffer.
+  otcrypto_byte_buf_t output_buf = OTCRYPTO_MAKE_BUF(
+      otcrypto_byte_buf_t, (unsigned char *)output, sizeof(kAesPlaintextBlock));
+
+  return otcrypto_aes(&key, &iv, kOtcryptoAesModeCtr, operation, &input_buf,
+                      kOtcryptoAesPaddingNull, &output_buf);
+}
+
+/**
+ * Convenience function to encrypt the test plaintext.
+ *
+ * The salt should be exactly `kSaltNumWords` words long; the output buffer
+ * should match the size of `kAesPlaintextBlock`.
+ *
+ * @param salt Key salt to use.
+ * @param[out] ciphertext Resulting encrypted output.
+ * @return OK or error.
+ */
+static status_t encrypt(const uint32_t *salt, uint32_t *ciphertext) {
+  return run_aes(kOtcryptoAesOperationEncrypt, salt, kAesPlaintextBlock,
+                 ciphertext);
+}
+
+/**
+ * Convenience function to decrypt ciphertext.
+ *
+ * The salt should be exactly `kSaltNumWords` words long; the plaintext and
+ * ciphertext buffers should both match the size of `kAesPlaintextBlock`.
+ *
+ * @param salt Key salt to use.
+ * @param ciphertext Encrypted message.
+ * @param[out] plaintext Resulting decrypted output.
+ * @return OK or error.
+ */
+static status_t decrypt(const uint32_t *salt, const uint32_t *ciphertext,
+                        uint32_t *plaintext) {
+  return run_aes(kOtcryptoAesOperationDecrypt, salt, ciphertext, plaintext);
+}
+
+/**
+ * Setup keymgr and entropy complex.
+ *
+ * Run this test before any others.
+ */
+status_t test_setup(void) {
+  // Initialize the key manager and advance to OwnerRootKey state.  Note: the
+  // keymgr testutils set this up using software entropy, so there is no need
+  // to initialize the entropy complex first. However, this is of course not
+  // the expected setup in production.
+  dif_keymgr_t keymgr;
+  dif_kmac_t kmac;
+  dif_keymgr_state_t keymgr_state;
+  TRY(keymgr_testutils_try_startup(&keymgr, &kmac, &keymgr_state));
+
+  if (keymgr_state == kDifKeymgrStateCreatorRootKey) {
+    TRY(keymgr_testutils_advance_state(&keymgr, &kOwnerIntParams));
+    TRY(keymgr_testutils_advance_state(&keymgr, &kOwnerRootKeyParams));
+  } else if (keymgr_state == kDifKeymgrStateOwnerIntermediateKey) {
+    TRY(keymgr_testutils_advance_state(&keymgr, &kOwnerRootKeyParams));
+  }
+
+  TRY(keymgr_testutils_check_state(&keymgr, kDifKeymgrStateOwnerRootKey));
+
+  // Initialize entropy complex for cryptolib, which the key manager uses to
+  // clear sideloaded keys. The `keymgr_testutils_startup` function restarts
+  // the device, so this should happen afterwards.
+  return otcrypto_init(kOtcryptoKeySecurityLevelLow);
+}
+
+/**
+ * Test that a sideloaded AES key can be used.
+ *
+ * Loads a sideloaded key, then runs encryption and decryption using the key.
+ */
+status_t basic_encrypt_decrypt_test(void) {
+  // Encrypt the test plaintext.
+  uint32_t ciphertext1[ARRAYSIZE(kAesPlaintextBlock)];
+  TRY(encrypt(kKeySalt1, ciphertext1));
+
+  // Decrypt the ciphertext.
+  uint32_t recovered_plaintext[ARRAYSIZE(kAesPlaintextBlock)];
+  TRY(decrypt(kKeySalt1, ciphertext1, recovered_plaintext));
+
+  // Check that the recovered plaintext matches the original plaintext.
+  TRY_CHECK_ARRAYS_EQ(recovered_plaintext, kAesPlaintextBlock,
+                      ARRAYSIZE(kAesPlaintextBlock));
+
+  return OK_STATUS();
+}
+
+/**
+ * Test that sideloaded AES keys are updated as expected.
+ *
+ * Different keys should produce different ciphertexts, and the same key
+ * should produce the same ciphertext.
+ */
+status_t sideload_update_test(void) {
+  // Sideload the first key and encrypt the plaintext.
+  uint32_t ciphertext1[ARRAYSIZE(kAesPlaintextBlock)];
+  TRY(encrypt(kKeySalt1, ciphertext1));
+
+  // Sideload the second key and encrypt the plaintext.
+  uint32_t ciphertext2[ARRAYSIZE(kAesPlaintextBlock)];
+  TRY(encrypt(kKeySalt2, ciphertext2));
+
+  // Check that the ciphertexts are different.
+  TRY_CHECK_ARRAYS_NE(ciphertext1, ciphertext2, ARRAYSIZE(ciphertext1));
+
+  // Sideload the first key again and encrypt the plaintext.
+  uint32_t ciphertext3[ARRAYSIZE(kAesPlaintextBlock)];
+  TRY(encrypt(kKeySalt1, ciphertext3));
+
+  // Check that the ciphertexts are the same.
+  TRY_CHECK_ARRAYS_EQ(ciphertext1, ciphertext3, ARRAYSIZE(ciphertext1));
+
+  return OK_STATUS();
+}
+
+/**
+ * Test that sideloaded AES keys are properly cleared.
+ *
+ * Clearing a key should result in an invalid key error.
+ */
+status_t sideload_clear_test(void) {
+  // Sideload the first key and encrypt the plaintext.
+  uint32_t ciphertext1[ARRAYSIZE(kAesPlaintextBlock)];
+  TRY(encrypt(kKeySalt1, ciphertext1));
+
+  // Construct a mock key for the AES driver.
+  uint32_t share0[256 / 32] = {0};
+  uint32_t share1[256 / 32] = {0};
+  aes_key_t key = {
+      .mode = kAesCipherModeCtr,
+      .sideload = kHardenedBoolTrue,
+      .key_len = kAesKeyConfig.key_length,
+      .key_shares = {share0, share1},
+  };
+
+  // Construct the IV.
+  aes_block_t iv;
+  memcpy(iv.data, kAesIv, sizeof(kAesIv));
+
+  // Try to start another encryption operation using the AES driver directly,
+  // and expect an error because the sideloaded key is not present.
+  TRY_CHECK(!status_ok(aes_encrypt_begin(key, &iv)));
+
+  return OK_STATUS();
+}
+
+OTTF_DEFINE_TEST_CONFIG();
+
+bool test_main(void) {
+  static status_t result;
+
+  CHECK_STATUS_OK(test_setup());
+  EXECUTE_TEST(result, basic_encrypt_decrypt_test);
+  EXECUTE_TEST(result, sideload_update_test);
+  EXECUTE_TEST(result, sideload_clear_test);
+
+  return status_ok(result);
+}

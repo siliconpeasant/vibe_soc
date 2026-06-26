@@ -1,0 +1,301 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# Environment varibles:
+#
+# CHECK:               Flag to turn on or off conflict and deadloop checks.
+#
+# COMMON_MSG_TCL_PATH: String to indicate the path to `jaspergold_common_message_process.tcl` file,
+#                      which sets common message configurations.
+#
+# COV:                 Flag to turn on or off coverage collection.
+#
+# DUT_TOP:             String to indicate the top-level module name.
+#
+# STOPATS:             String to indicate the name of the signal to insert `stopat`.
+#
+# TASK:                String to collect and prove a subset of assertions that contains these string.
+#
+# FPV_DEFINES:         String to add additional macro defines during anaylze phase.
+#
+# AFTER_LOAD:          String with the path to a TCL file that should be sourced after the design
+#                      and test bench have been loaded. If there is no such file, the variable
+#                      should be undefined or the string should be empty.
+#
+# PARAMS:              A string that parses as a TCL list of k,v pairs that give parameters that
+#                      should be applied to DUT_TOP on elaboration.
+
+# clear previous settings
+clear -all
+
+source $env(COMMON_MSG_TCL_PATH)
+
+if {$env(COV) == 1} {
+  check_cov -init -model {branch statement functional} \
+  -exclude_bind_hierarchies
+}
+
+#-------------------------------------------------------------------------
+# read design
+#-------------------------------------------------------------------------
+
+# Blackbox prim_count, prim_double_lfsr, and prim_onehot_check to create security countermeasures.
+# Blackbox prim_ram_1p and prim_ram_1p_scr to avoid compiling memory blocks.
+if {$env(TASK) == "FpvSecCm"} {
+  analyze -sv09 \
+    +define+FPV_ON \
+    +define+FPV_SEC_CM_ON+FPV_ALERT_NO_SIGINT_ERR+$env(FPV_DEFINES) \
+    -bbox_m prim_count \
+    -bbox_m prim_double_lfsr \
+    -bbox_m prim_onehot_check \
+    -bbox_m prim_ram_1p \
+    -bbox_m prim_ram_1p_scr \
+    -f [glob *.scr]
+} elseif {($env(DUT_TOP) == "pinmux_tb") || ($env(DUT_TOP) == "pinmux_chip_tb")} {
+  analyze -sv09 \
+    +define+FPV_ON+$env(FPV_DEFINES) \
+    -bbox_m usbdev_aon_wake \
+    -f [glob *.scr]
+} else {
+  analyze -sv09 \
+    +define+FPV_ON+$env(FPV_DEFINES) \
+    -f [glob *.scr]
+}
+
+# Convert the list of parameter pairs to a string that can be appended to the elaborate command to
+# set each of the parameters.
+set elab_args ""
+if {[info exists ::env(PARAMS)]} {
+    foreach pair $env(PARAMS) {
+        if {[llength $pair] != 2} {
+            error "PARAMS environment contained ${pair}, which is not a length 2 list"
+        }
+        set k [lindex $pair 0]
+        set v [lindex $pair 1]
+        append elab_args " -parameter ${k} ${v}"
+    }
+}
+
+# Chains of successive A ##1 B ##1 C ... in sequences can take a long time to elaborate. There is a
+# new flag to elaborate called -optimize_implication_assert which improves this, but it only appears
+# from Jasper 2023.06. Call the get_version function to figure out whether we've got the right
+# version: it should be 2023.06, 2023.09, 2023.12 or something that starts with a later year
+# (202[4-9] or 20[3-9].)
+if {[regexp "^\(20\[3-9\]\[0-9\]\)\|\(202\[4-9\]\)\|\(2023\.\(0\[69\]\)\|12\)" [get_version]]} {
+  set oia_arg "-optimize_implication_assert"
+} else {
+  set oia_arg ""
+}
+
+if {$env(DUT_TOP) == "prim_count_tb"} {
+    append elab_args " -param ResetValue $ResetValue"
+}
+
+# Running this under eval means that ${elab_args} can expand into several different arguments
+# to the elaborate command.
+eval elaborate -top $env(DUT_TOP) \
+               -enable_sva_isunknown -disable_auto_bbox \
+               ${oia_arg} ${elab_args}
+
+set stopat [regexp -all -inline {[^\s\']+} $env(STOPATS)]
+if {$stopat ne ""} {
+  stopat -env $stopat
+}
+
+# Before loading any TCL scripts in AFTER_LOAD, we initialize the pre_phases variable to zero. The
+# idea is that the AFTER_LOAD scripts can set it to something else if necessary (but there will be
+# no initial phases if the scripts do not).
+set pre_phases 0
+
+# Also set the cov_tasks variable to just <embedded> (which says to include properties that were
+# read from SystemVerilog when calculating coverage). AFTER_LOAD scripts may add extra tasks
+# (because they needed e.g. a stopat).
+set cov_tasks "<embedded>"
+
+if {[info exists ::env(AFTER_LOAD)]} {
+    set flist $env(AFTER_LOAD)
+    foreach file $flist {
+        if {$file != ""} {
+            puts "Running prefix TCL command from $file"
+            source $file
+        }
+    }
+}
+
+#-------------------------------------------------------------------------
+# specify clock(s) and reset(s)
+#-------------------------------------------------------------------------
+
+# select primary clock and reset condition (use ! for active-low reset)
+# note: -both_edges is needed below because the TL-UL protocol checker
+# tlul_assert.sv operates on the negedge clock
+# even clock this sampled at both_edges, input should only change at posedge clock cycle
+# TODO: create each DUT_TOP's individual config file
+if {($env(DUT_TOP) == "pinmux_tb") || ($env(DUT_TOP) == "pinmux_chip_tb")} {
+  clock clk_i -both_edges
+  clock clk_aon_i -factor 5
+  clock -rate -default clk_i
+  reset -expr {!rst_ni !rst_aon_ni !rst_sys_ni}
+
+} elseif {$env(DUT_TOP) == "prim_fifo_async_sram_adapter_tb"} {
+  clock clk_wr_i -factor 2
+  clock -rate {wvalid_i, wready_o, wdata_i} clk_wr_i
+  clock clk_rd_i -factor 3
+  clock -rate {rvalid_o, rready_i, rdata_o} clk_rd_i
+  reset -expr {!rst_ni}
+
+} elseif {$env(DUT_TOP) == "pwrmgr"} {
+  clock clk_i -both_edges
+  clock clk_slow_i -factor 3
+  clock clk_lc_i
+  clock -rate {esc_rst_tx_i} clk_lc_i
+  reset -expr {!rst_ni !rst_slow_ni !rst_main_ni !rst_lc_ni}
+
+} elseif {$env(DUT_TOP) == "rv_dm"} {
+  clock clk_i -both_edges
+  clock jtag_i.tck
+  clock -rate {testmode, unavailable_i, reg_tl_d_i, sba_tl_h_i} clk_i
+  clock -rate {jtag_i.tms, jtag_i.tdi} jtag_i.tck
+  reset -expr {!rst_ni !jtag_i.trst_n}
+
+} elseif {$env(DUT_TOP) == "spi_device"} {
+  clock clk_i -both_edges
+  clock cio_sck_i
+  clock -rate {scanmode_i, tl_i} clk_i
+  clock -rate {cio_csb_i, cio_sd_i} cio_sck_i
+  reset -expr {!rst_ni cio_csb_i}
+
+} elseif {$env(DUT_TOP) == "sysrst_ctrl"} {
+  clock clk_i -both_edges
+  clock clk_aon_i
+  clock -rate {tl_i} clk_i
+  clock -rate {cio_ac_present_i, cio_ec_rst_l_i, cio_key0_in_i, cio_key1_in_i, cio_key2_in_i, cio_pwrb_in_i, cio_lid_open_i} clk_aon_i
+  reset -expr {!rst_ni !rst_aon_ni}
+
+} elseif {$env(DUT_TOP) == "usbdev"} {
+  clock clk_i -both_edges
+  clock clk_aon_i
+  clock -rate {tl_i, cio_d_i, cio_dp_i, cio_dn_i, cio_sense_i} clk_i
+  reset -expr {!rst_ni !rst_aon_ni}
+
+} elseif {$env(DUT_TOP) == "clkmgr"} {
+  clock clk_main_i
+  clock clk_i -both_edges
+  clock clk_io_i -factor 1
+  clock clk_usb_i -factor 1
+  clock clk_aon_i -factor 2
+  clock -rate -default clk_i
+  reset -expr {!rst_ni !rst_main_ni}
+
+} elseif {$env(DUT_TOP) == "rstmgr"} {
+  clock clk_main_i
+  clock clk_i -both_edges
+  clock clk_io_i -factor 1
+  clock clk_io_div2_i -factor 1
+  clock clk_io_div4_i -factor 1
+  clock clk_usb_i -factor 1
+  clock clk_aon_i -factor 2
+  clock -rate -default clk_i
+  reset -expr {!rst_ni !rst_por_ni}
+
+} else {
+  clock clk_i -both_edges
+  reset -expr {!rst_ni}
+  clock -rate -default clk_i
+}
+
+#-------------------------------------------------------------------------
+# disable assertions
+#-------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------
+# assume properties for inputs
+#-------------------------------------------------------------------------
+
+# Notes on above regular expressions: ^ indicates the beginning of the string;
+# \w* includes all letters a-z, A-Z, and the underscore, but not the period.
+# And \. is for period (with escape). These regular expressions make sure that
+# the assume only applies to module_name.tlul_assert_*, but not to
+# module_name.submodule.tlul_assert_*
+
+# For sram2tlul, input tl_i.a_ready is constrained by below asssertion
+assume -from_assert -remove_original {sram2tlul.validNotReady*}
+
+# Input scanmode_i should not be X
+assume -from_assert -remove_original -regexp {^\w*\.scanmodeKnown}
+
+# run once to check if assumptions have any conflict
+if {[info exists ::env(CHECK)]} {
+  if {$env(CHECK)} {
+    check_assumptions -conflict
+    check_assumptions -live
+    check_assumptions -dead_end
+  }
+}
+
+# If `TASK` variable is set, choose the subset of assertions that contain ${TASK} in their
+# assertion names.
+if {$env(TASK) ne ""} {
+  task -create $env(TASK) -source_task <embedded> -copy *$env(TASK)* -copy_assumes -set
+}
+
+# TODO: support the following feature.
+# Uncomment "jg_auto_coi_cov_waivers" to automatically waive out COI cover items which cannot
+# propagate to "relevant signals" (by default, top instance outputs). If you need to specify
+# include/exclude relevant signals manually, run "jg_auto_coi_cov_waivers -help" for more
+# options.
+# jg_auto_coi_cov_waivers
+
+#-------------------------------------------------------------------------
+# configure proofgrid
+#-------------------------------------------------------------------------
+
+set_proofgrid_per_engine_max_local_jobs 2
+
+#-------------------------------------------------------------------------
+# prove all assertions & report
+#-------------------------------------------------------------------------
+
+# If there are any AFTER_LOAD scripts, they may have defined some "initial phases". These are
+# counted with a $pre_phases variable (which defaults to zero). If it is positive, we iterate
+# through that many phases from zero, proving them in turn.
+#
+# Properties that should go in phase N have names that start with "preN_", and these properties are
+# selected with a regexp.
+puts "Proving the initial ${pre_phases} pre* tasks"
+for {set phase 0} {$phase < $pre_phases} {incr phase} {
+    if {[info exists "engine_modes(${phase})"]} {
+        prove -task "pre${phase}" -orchestration off -engine_mode "$engine_modes(${phase})"
+    } else {
+        prove -task "pre${phase}"
+    }
+}
+
+get_reset_info -x_value -with_reset_pin
+
+# time limit set to 2 hours
+if {$env(TASK) ne ""} {
+  prove -task $env(TASK) -time_limit 2h
+} else {
+  prove -all -time_limit 2h
+}
+
+report
+
+#-------------------------------------------------------------------------
+# check coverage and report
+#-------------------------------------------------------------------------
+
+if {$env(COV) == 1} {
+    check_cov -measure -tasks ${cov_tasks} -time_limit 2h
+
+    # Waive the synthesis_optimized cover items
+    set file $env(JG_TCL_DIR)/synthesis_optimized.tcl
+    puts "Waiving items optimized in synthesis from $file"
+    source $file
+
+    check_cov -report -task ${cov_tasks} -force -exclude { reset waived }
+    check_cov -report -no_return -report_file cover.html -task ${cov_tasks} \
+                      -html -force -exclude { reset waived }
+}

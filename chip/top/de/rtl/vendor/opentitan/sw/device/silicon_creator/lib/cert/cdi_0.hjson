@@ -1,0 +1,114 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+    name: "cdi_0",
+
+    variables: {
+        // Owner intermediate public key: this is an EC point on
+        // the prime256v1 curve so it has two components
+        // (x and y) which are 32-bytes integers.
+        owner_intermediate_pub_key_ec_x: {
+            type: "integer",
+            exact-size: 32,
+        },
+        owner_intermediate_pub_key_ec_y: {
+            type: "integer",
+            exact-size: 32,
+        },
+        // Owner intermediate public key ID: this is a 20-byte hash
+        // derived from the owner intermediate public key.
+        owner_intermediate_pub_key_id: {
+            type: "byte-array",
+            exact-size: 20,
+            tweak-msb: true,
+        },
+        // This is the identifier of the public key used to
+        // sign this certificate (creator key).
+        creator_pub_key_id: {
+            type: "byte-array",
+            exact-size: 20,
+            tweak-msb: true,
+        },
+        // Hash of the ROM_EXT (SHA256).
+        rom_ext_hash: {
+            type: "byte-array",
+            exact-size: 32,
+        },
+        // ROM_EXT security version, used to prevent rollback.
+        rom_ext_security_version: {
+            type: "byte-array",
+            exact-size: 4,
+            tweak-msb: true,
+        }
+        // Certificate signature: the result of signing with ECDSA
+        // are two integers named "r" and "s"
+        cert_signature_r: {
+            type: "integer",
+            range-size: [24, 32],
+        },
+        cert_signature_s: {
+            type: "integer",
+            range-size: [24, 32],
+        },
+    },
+
+    certificate: {
+        serial_number: { var: "owner_intermediate_pub_key_id", convert: "big-endian" },
+        issuer: [
+            { serial_number: { var: "creator_pub_key_id", convert: "lowercase-hex" } },
+        ],
+        subject: [
+            { serial_number: { var: "owner_intermediate_pub_key_id", convert: "lowercase-hex" } },
+        ],
+        // From the Open Profile for DICE specification:
+        // https://pigweed.googlesource.com/open-dice/+/refs/heads/main/docs/specification.md#x_509-cdi-certificates
+        // The certificate expiration time is set to a fixed date in the future.
+        // The "not before" date is chosen to be in the past (publication date of the DICE TCG) since the device does not
+        // have a reliable way to get the time.
+        not_before: "20180322235959Z",
+        not_after: "99991231235959Z",
+        subject_public_key_info: {
+            algorithm: "ec-public-key",
+            curve: "prime256v1",
+            public_key: {
+                x: { var: "owner_intermediate_pub_key_ec_x" },
+                y: { var: "owner_intermediate_pub_key_ec_y" },
+            },
+        },
+        authority_key_identifier: { var: "creator_pub_key_id" },
+        subject_key_identifier: { var: "owner_intermediate_pub_key_id" },
+        // From the Open Profile for DICE specification:
+        // https://pigweed.googlesource.com/open-dice/+/refs/heads/main/docs/specification.md#certificate-details
+        // The standard extensions are fixed by the specification.
+        basic_constraints: { ca: true },
+        key_usage: { cert_sign: true },
+        private_extensions: [
+            {
+                type: "dice_tcb_info",
+                vendor: "OpenTitan",
+                model: "ROM_EXT",
+                svn: { var: "rom_ext_security_version", convert: "big-endian" },
+                layer: 1,
+                fw_ids: [
+                    { hash_algorithm: "sha256", digest: { var: "rom_ext_hash" } },
+                ],
+                flags: {
+                    not_configured: false,
+                    not_secure: false,
+                    recovery: false,
+                    debug: false,
+                }
+            },
+        ]
+        signature: {
+            algorithm: "ecdsa-with-sha256",
+            // The value field is optional: if not present, the signature will be cleared.
+            // Otherwise, we can reference the various fields of the signature.
+            value: {
+                r: { var: "cert_signature_r" },
+                s: { var: "cert_signature_s" }
+            }
+        }
+    }
+}

@@ -1,0 +1,30 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+gen-weights:
+  # Generators that can continue the program
+  Branch: 0.1
+  CallStackRW: 0.1
+  EdgeLoadStore: 0.1
+  Jump: 0.1
+  Loop: 0.1
+  LoopDupEnd: 0.01
+  SmallVal: 0.2
+  StraightLineInsn: 1.0
+  KnownWDR: 0.05
+  UntakenBranch: 0.05
+
+  # Generators that end the program
+  ECall: 1
+  BadAtEnd: 1
+  BadBNMovr: 1
+  BadBranch: 1
+  BadCallStackRW: 1
+  BadDeepLoop: 1
+  BadLoadStore: 1
+  BadInsn: 1
+  BadGiantLoop: 1
+  BadZeroLoop: 1
+  MisalignedLoadStore: 1
+  BadIspr: 1

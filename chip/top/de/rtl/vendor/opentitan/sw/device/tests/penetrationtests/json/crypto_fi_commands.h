@@ -1,0 +1,134 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#ifndef OPENTITAN_SW_DEVICE_TESTS_PENETRATIONTESTS_JSON_CRYPTO_FI_COMMANDS_H_
+#define OPENTITAN_SW_DEVICE_TESTS_PENETRATIONTESTS_JSON_CRYPTO_FI_COMMANDS_H_
+#include "sw/device/lib/ujson/ujson_derive.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define MODULE_ID MAKE_MODULE_ID('j', 'c', 'f')
+
+#define CRYPTOFI_HMAC_CMD_MAX_MESSAGE_BYTES 16
+#define CRYPTOFI_HMAC_CMD_MAX_KEY_WORDS 16
+#define CRYPTOFI_HMAC_CMD_MAX_TAG_WORDS 16
+
+#define CRYPTOFI_AES_MAX_MSG_BYTES 16
+#define CRYPTOFI_AES_MAX_KEY_BYTES 16
+
+#define CRYPTOFI_KMAC_MAX_MSG_BYTES 16
+#define CRYPTOFI_KMAC_MAX_KEY_BYTES 16
+#define CRYPTOFI_KMAC_MAX_DIGEST_WORDS 4
+#define CRYPTOFI_SHA3_MAX_DIGEST_WORDS 4
+
+// clang-format off
+
+#define CRYPTOFI_SUBCOMMAND(_, value) \
+    value(_, Aes) \
+    value(_, Init) \
+    value(_, Kmac) \
+    value(_, KmacState) \
+    value(_, Sha3) \
+    value(_, Hmac) \
+    value(_, ShadowRegAccess) \
+    value(_, ShadowRegRead)
+C_ONLY(UJSON_SERDE_ENUM(CryptoFiSubcommand, crypto_fi_subcommand_t, CRYPTOFI_SUBCOMMAND));
+RUST_ONLY(UJSON_SERDE_ENUM(CryptoFiSubcommand, crypto_fi_subcommand_t, CRYPTOFI_SUBCOMMAND, RUST_DEFAULT_DERIVE, strum::EnumString));
+
+#define CRYPTOFI_AES_MODE(field, string) \
+    field(key_trigger, bool) \
+    field(plaintext_trigger, bool) \
+    field(encrypt_trigger, bool) \
+    field(ciphertext_trigger, bool)
+UJSON_SERDE_STRUCT(CryptoFiAesMode, crypto_fi_aes_mode_t, CRYPTOFI_AES_MODE);
+
+#define CRYPTOFI_AES_INPUT(field, string) \
+    field(plaintext, uint8_t, CRYPTOFI_AES_MAX_MSG_BYTES) \
+    field(key, uint8_t, CRYPTOFI_AES_MAX_KEY_BYTES)
+UJSON_SERDE_STRUCT(CryptoFiAesInput, crypto_fi_aes_input_t, CRYPTOFI_AES_INPUT);
+
+#define CRYPTOFI_KMAC_MODE(field, string) \
+    field(start_trigger, bool) \
+    field(absorb_trigger, bool) \
+    field(static_trigger, bool) \
+    field(squeeze_trigger, bool)
+UJSON_SERDE_STRUCT(CryptoFiKmacMode, crypto_fi_kmac_mode_t, CRYPTOFI_KMAC_MODE);
+
+#define CRYPTOFI_AES_CIPHERTEXT(field, string) \
+    field(ciphertext, uint8_t, 16) \
+    field(alerts, uint32_t, 3) \
+    field(loc_alerts, uint32_t) \
+    field(err_status, uint32_t) \
+    field(ast_alerts, uint32_t, 2)
+UJSON_SERDE_STRUCT(FiAesCiphertext, crypto_fi_aes_ciphertext_t, CRYPTOFI_AES_CIPHERTEXT);
+
+#define CRYPTOFI_KMAC_INPUT(field, string) \
+    field(plaintext, uint8_t, CRYPTOFI_KMAC_MAX_MSG_BYTES) \
+    field(key, uint8_t, CRYPTOFI_KMAC_MAX_KEY_BYTES)
+UJSON_SERDE_STRUCT(CryptoFiKmacInput, crypto_fi_kmac_input_t, CRYPTOFI_KMAC_INPUT);
+
+#define CRYPTOFI_SHA3_INPUT(field, string) \
+    field(plaintext, uint8_t, CRYPTOFI_KMAC_MAX_MSG_BYTES)
+UJSON_SERDE_STRUCT(CryptoFiSha3Input, crypto_fi_sha3_input_t, CRYPTOFI_SHA3_INPUT);
+
+#define CRYPTOFI_KMAC_STATE(field, string) \
+    field(share0, uint8_t, 200) \
+    field(share1, uint8_t, 200) \
+    field(digest, uint32_t, CRYPTOFI_KMAC_MAX_DIGEST_WORDS) \
+    field(alerts, uint32_t, 3) \
+    field(loc_alerts, uint32_t) \
+    field(err_status, uint32_t) \
+    field(ast_alerts, uint32_t, 2)
+UJSON_SERDE_STRUCT(FiKmacState, crypto_fi_kmac_state_t, CRYPTOFI_KMAC_STATE);
+
+#define CRYPTOFI_KMAC_DIGEST(field, string) \
+    field(digest, uint32_t, CRYPTOFI_KMAC_MAX_DIGEST_WORDS) \
+    field(alerts, uint32_t, 3) \
+    field(loc_alerts, uint32_t) \
+    field(err_status, uint32_t) \
+    field(ast_alerts, uint32_t, 2)
+UJSON_SERDE_STRUCT(FiKmacDigest, crypto_fi_kmac_digest_t, CRYPTOFI_KMAC_DIGEST);
+
+#define CRYPTOFI_TEST_RESULT_MULT(field, string) \
+    field(result, uint32_t, 3) \
+    field(alerts, uint32_t, 3) \
+    field(loc_alerts, uint32_t) \
+    field(err_status, uint32_t) \
+    field(ast_alerts, uint32_t, 2)
+UJSON_SERDE_STRUCT(CRYPTOFITestResultMult, crypto_fi_test_result_mult_t, CRYPTOFI_TEST_RESULT_MULT);
+
+#define CRYPTOFI_HMAC_INPUT(field, string) \
+    field(message, uint8_t, CRYPTOFI_HMAC_CMD_MAX_MESSAGE_BYTES) \
+    field(key, uint32_t, CRYPTOFI_HMAC_CMD_MAX_KEY_WORDS)
+UJSON_SERDE_STRUCT(FiHmacInput, crypto_fi_hmac_input_t, CRYPTOFI_HMAC_INPUT);
+
+#define CRYPTOFI_HMAC_TAG(field, string) \
+    field(tag, uint32_t, CRYPTOFI_HMAC_CMD_MAX_TAG_WORDS) \
+    field(alerts, uint32_t, 3) \
+    field(loc_alerts, uint32_t) \
+    field(err_status, uint32_t) \
+    field(ast_alerts, uint32_t, 2)
+UJSON_SERDE_STRUCT(FiHmacTag, crypto_fi_hmac_tag_t, CRYPTOFI_HMAC_TAG);
+
+#define CRYPTOFI_HMAC_MODE(field, string) \
+    field(start_trigger, bool) \
+    field(msg_trigger, bool) \
+    field(process_trigger, bool) \
+    field(finish_trigger, bool) \
+    field(enable_hmac, bool) \
+    field(message_endianness_big, bool) \
+    field(digest_endianness_big, bool) \
+    field(key_endianness_big, bool) \
+    field(hash_mode, uint32_t)
+UJSON_SERDE_STRUCT(CryptoFiHmacMode, crypto_fi_hmac_mode_t, CRYPTOFI_HMAC_MODE);
+
+#undef MODULE_ID
+
+// clang-format on
+
+#ifdef __cplusplus
+}
+#endif
+#endif  // OPENTITAN_SW_DEVICE_TESTS_PENETRATIONTESTS_JSON_CRYPTO_FI_COMMANDS_H_

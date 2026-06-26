@@ -1,0 +1,196 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "csrng"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/intr_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "csrng_sec_cm_testplan.hjson"]
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            Verify that sending an instantiate command via the SW path returns OK.
+            Instantiate the CSRNG with flag0 set to true and clen set to 12.
+            Verify that sending a generate command via the SW path returns glen=1 number of words followed by an OK.
+            '''
+      stage: V1
+      tests: ["csrng_smoke"]
+    }
+    {
+      name: interrupts
+      desc: '''
+            This test verifies the behavior of the Interrupt State Register.
+            Verify cs_cmd_req_done interrupt asserts when glen number of genbit words have been generated.
+            Verify cs_entropy_req interrupt asserts when instantiate or reseed is called with flag0
+            set to false.
+            Verify cs_hw_inst_exc interrupt asserts when any of the application interfaces responds with a CSRNG_ERROR response status signal.
+            Verify cs_fatal_err interrupt asserts when any bit of err_code register is set.
+            Verify that each interrupt clears back to 0 after writing the corresponding interrupt state bit.
+            '''
+      stage: V2
+      tests: ["csrng_intr"]
+    }
+    {
+      name: alerts
+      desc: '''
+            Verify recov_alert asserts when recov_alert_sts becomes non-zero.
+            Verify each respective bit of recov_alert_sts asserts when:
+            - Either of the 3 values in the control register are not valid kMultiBitBool values.
+            - When an initiate or reseed command is sent where flag0 is not a valid kMultiBitBool value.
+            - The genbits bus value is equal to the prior valid value.
+            - When an illegal command is used (0x0,0x6-0xf).
+            Verify that writing zeros to the recoverable alert status register resets all the status bits.
+            Verify fatal_alert asserts when:
+            - An illegal state is reached.
+            - The AES block raises a fatal alert.
+            - There is an integrity failure on the bus (this is covered by an automated test).
+            '''
+      stage: V2
+      tests: ["csrng_alert"]
+    }
+    {
+      name: err
+      desc: '''
+            Verify err_code register bits assert when:
+            - An error has been detected in any of the internal fifos and the corresponding write/read/state bits.
+            - An illegal state is reached in any of the 6 state machines.
+            - An error is detected in the generate command counter.
+            Verify that the err_code register clears all bits after reset.
+            '''
+      stage: V2
+      tests: ["csrng_err"]
+    }
+    {
+      name: cmds
+      desc: '''
+            Verify all csrng commands req/status behave as predicted on all applications: HW0, HW1 and SW.
+            Verify above for all valid values of acmd, clen, flags, glen.
+            Verify for multiple hw app interfaces running in parallel.
+            Verify sw/hw app interfaces running in parallel.
+            Verify main_sm_state for sw/hw apps.
+            Verify that genbits generates the amount specified by glen.
+            Verify fips bit is set to the inverse of flag0 that was used on the last initialize or reseed.
+            Verify that if otp_en_csrng_sw_app_read is set, genbits and int_state_value registers are readable, and unreadable otherwise.
+            Verify commands with continuous/non-continuous valid.
+            Verify that if FIPS bit drops at input from entropy source that the generated block also has FIPS low.
+            '''
+      stage: V2
+      tests: ["csrng_cmds"]
+    }
+    {
+      name: life cycle
+      desc: '''
+            Verify lifecycle hardware debug mode.
+            When lc_hw_debug_en_i is set to on, the seed from the entropy source must be xor'ed with the diversification value.
+            '''
+      stage: V2
+      tests: ["csrng_cmds"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            Combine the other individual testpoints while injecting TL errors and running CSR tests in parallel.
+            '''
+      stage: V2
+      tests: ["csrng_stress_all"]
+    }
+  ]
+
+  covergroups: [
+    {
+      name: csrng_cfg_cg
+      desc: '''
+            Covers that all csrng configuration options have been tested.
+            Individual config settings that will be covered include:
+            - otp_en_cs_sw_app_read
+            - sw_app_enable
+            - read_int_state
+            - enable
+            - regwen has been true and false
+            - intr_state has had each bit set and unset at least once (handled in comportable ip coverage)
+            Cross:
+            - intr_enable and intr_state (handled in comportable ip coverage)
+            '''
+    }
+    {
+      name: csrng_cmds_cg
+      desc: '''
+            Covers that all csrng commands and variations have been tested for all apps.
+            Individual commands and command options that will be covered include:
+            - app
+            - acmd, clen, flags, glen
+            - continuous/non-continuous valid
+            Crosses of
+            - app/acmd
+            - acmd/clen
+            - acmd/flag0
+            - acmd/glen
+            - For the instantiate and reseed command:
+              - flag0 false and clen 0
+              - flag0 false and clen >0
+              - flag0 true and clen 0
+              - flag0 true and clen >0
+            '''
+    }
+    {
+      name: csrng_sts_cg
+      desc: '''
+            Covers all possible hw_exc_sts responses from each HW instance and the sub-fields of
+            sw_cmd_sts, which are cmd_rdy and cmd_sts.
+            '''
+    }
+    {
+      name: csrng_err_code_cg
+      desc: '''
+            Covers all possible fatal errors and possible AES FSM errors inside CSRNG.
+            '''
+    }
+    {
+      name: csrng_err_code_test_cg
+      desc: '''
+            Covers ERR_CODE_TEST register values for setting up fatal errors.
+            '''
+    }
+    {
+      name: csrng_recov_alert_sts_cg
+      desc: '''
+            Covers all possible recoverable alert cases.
+            '''
+    }
+    {
+      name: csrng_sfifo_cg
+      desc: '''
+            Covers each app's stage FIFO statuses.
+            - cp_hw0_cmd_depth, cp_hw1_cmd_depth, cp_sw_cmd_depth : Covers current number of commands in FIFO
+            - cp_hw0_genbits_depth, cp_hw1_genbits_depth, cp_sw_genbits_depth : Covers current number of genbit responses in FIFO
+            - cmd_depth_cross : Cross for checking each command FIFO status in different apps
+            - genbits_depth_cross : Cross for checking genbits FIFO status in different apps
+            - hw0_cmd_push_cross, hw1_cmd_push_cross, sw_cmd_push_cross : command FIFO fill status x command FIFO write valid x command FIFO write ready
+            - hw0_cmd_pop_cross, hw1_cmd_pop_cross, sw_cmd_pop_cross : command FIFO fill status x command FIFO read ready
+            - hw0_genbits_pop_cross, hw1_genbits_pop_cross, sw_genbits_pop_cross : genbits FIFO fill status x genbits FIFO read valid x genbits FIFO read ready
+            '''
+    }
+    {
+      name: csrng_otp_en_sw_app_read_cg
+      desc: '''
+            Covers otp_en_csrng_sw_app_read feature
+            - read_int_state_val_cp : Covers read of INT_STATE_VAL register
+            - read_genbits_reg_cp : Covers for read of GENBITS register
+            - cp_sw_app_read : Covers values supported by otp_en_csrng_sw_app_read
+            - cp_read_int_state_x_sw_app_enable : Cross register read of INT_STATE_VAL in combination with read_int_state field and otp_en_csrng_sw_app_read
+            - cp_read_genbits_x_sw_app_enable : Cross register read of GENBITS  in combination with read_int_state field and otp_en_csrng_sw_app_read
+            '''
+    }
+    {
+      name: csrng_genbits_cg
+      desc: '''
+            Covers FIPS/CC bit in genbits_vld register
+            genbits_fips_cp: Covers GENBITS_FIPS in GENBITS_VLD register
+            '''
+    }
+  ]
+}

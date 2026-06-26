@@ -1,0 +1,46 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:cip_lib"
+description: "Comportable Peripheral design verification environment"
+
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:dv:dv_lib
+      - lowrisc:tlul:headers
+      - lowrisc:dv:rst_shadowed_if
+      - lowrisc:dv:tl_agent
+      - lowrisc:dv:alert_esc_agent
+      - lowrisc:dv:push_pull_agent
+      - lowrisc:dv:dv_base_reg
+      - lowrisc:dv:mem_model
+      - lowrisc:dv:sec_cm
+      - lowrisc:opentitan:bus_params_pkg
+    files:
+      - cip_base_pkg.sv
+      - cip_macros.svh: {is_include_file: true}
+      - cip_base_env_cfg.sv: {is_include_file: true}
+      - cip_base_env_cov.sv: {is_include_file: true}
+      - cip_base_virtual_sequencer.sv: {is_include_file: true}
+      - cip_base_scoreboard.sv: {is_include_file: true}
+      - cip_base_env.sv: {is_include_file: true}
+      - seq_lib/cip_seq_list.sv: {is_include_file: true}
+      - seq_lib/cip_base_vseq.sv: {is_include_file: true}
+      - seq_lib/cip_base_vseq__tl_errors.svh: {is_include_file: true}
+      - seq_lib/cip_base_vseq__shadow_reg_errors.svh: {is_include_file: true}
+      - seq_lib/cip_base_vseq__sec_cm_fi.svh: {is_include_file: true}
+      - seq_lib/cip_tl_seq_item.sv: {is_include_file: true}
+      - seq_lib/cip_tl_host_single_seq.sv: {is_include_file: true}
+      - seq_lib/cip_tl_device_seq.sv: {is_include_file: true}
+      - cip_base_test.sv: {is_include_file: true}
+      - cip_mubi_cov_if.sv
+      - cip_mubi_cov_wrapper.sv
+      - cip_lc_tx_cov_if.sv
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - files_dv

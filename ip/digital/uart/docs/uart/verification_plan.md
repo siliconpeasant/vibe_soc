@@ -219,7 +219,7 @@ make comp TOP=tb_uart
 make sim TOP=tb_uart
 
 # View waveforms
-make wave TOP=tb_uart
+make verdi TOP_MODULE=tb_uart
 ```
 
 ### 7.3 仿真参数

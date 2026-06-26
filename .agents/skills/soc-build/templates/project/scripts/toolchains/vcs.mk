@@ -74,10 +74,4 @@ COVERAGE_REPORT_CMD = env LD_LIBRARY_PATH=$(VCS_HOME)/amd64/lib \
 
 # Source view and compiled KDB view correspond to xuanwu9000's verdi/vcs_verdi.
 VERDI_CMD     = $(VERDI_EXE) $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
-DEBUG_GUI_CMD = $(VERDI_EXE) -dbdir $(SIM_DIR)/simv.daidir &
 
-ifeq ($(FSDB),1)
-  WAVE_CMD = $(VERDI_EXE) -ssf $(SIM_DIR)/wave.fsdb &
-else
-  WAVE_CMD = dve -vpd $(SIM_DIR)/wave.vpd &
-endif

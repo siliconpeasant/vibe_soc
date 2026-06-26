@@ -86,8 +86,7 @@ make sim  MODULE=ip/digital/uart SIMULATOR=vcs TEST=uart_all SEED=7
 | `coverage` | 单次覆盖率采集 |
 | `coverage-regress` | 回归覆盖率采集 |
 | `coverage-report` | 覆盖率报告生成 |
-| `wave` | 打开波形 |
-| `verdi` / `debug-gui` | Verdi/调试 GUI 入口 |
+| `verdi` | Verdi 入口 |
 | `syn` | Yosys 综合入口 |
 | `clean` | 清理运行日志/波形，保留编译缓存 |
 | `debugclean` | 进一步清理调试和报告文件 |

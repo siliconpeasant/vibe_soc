@@ -1,66 +1,80 @@
 {
   "module": "vibe_soc_top",
-  "workspace": "chip/top",
+  "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/chip/top",
   "mode": "single",
   "created_at": "2026-06-21T10:18:58Z",
-  "last_updated": "2026-06-21T14:01:57Z",
+  "last_updated": "2026-06-25T11:34:09Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
       "name": "设计文档编写",
       "agent": "soc-doc-engineer",
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
-      "artifacts": [],
-      "check_results": [],
-      "notes": ""
+      "status": "done",
+      "started_at": "2026-06-25T09:58:02Z",
+      "completed_at": "2026-06-25T09:58:57Z",
+      "artifacts": [
+        "docs/opentitan_vendor_migration.md",
+        "docs/opentitan_uart_bootstrap_case.md"
+      ],
+      "check_results": [
+        {
+          "tool": "doc_review",
+          "passed": true,
+          "note": "OpenTitan_vendor_import_plan_recorded"
+        }
+      ],
+      "notes": "",
+      "blocked_by": [],
+      "last_updated": "2026-06-25T09:58:57Z"
     },
     "rtl": {
       "step_id": "rtl",
       "name": "RTL设计与编码",
       "agent": "soc-rtl-designer",
       "status": "done",
-      "started_at": "2026-06-21T10:20:16Z",
-      "completed_at": "2026-06-21T10:20:50Z",
+      "started_at": "2026-06-25T11:17:25Z",
+      "completed_at": "2026-06-25T11:33:48Z",
       "artifacts": [
-        "de/rtl/vibe_soc_top.v",
-        "de/rtl/vibe_soc_top.integrate.json",
-        "de/rtl/vibe_soc_top.integrate.csv",
+        "de/rtl/filelist.opentitan_smoke.f",
         "de/rtl/filelist.mk",
-        "README.md",
-        "Makefile"
+        "de/run/opentitan_smoke/default/fusesoc-work/lowrisc_dv_top_earlgrey_chip_sim_0.1.scr",
+        "de/run/opentitan_smoke/sw/uart_smoketest_sim_dv.64.scr.vmem",
+        "de/run/opentitan_smoke/sw/test_rom_sim_dv.39.scr.vmem"
       ],
       "check_results": [
         {
-          "tool": "soc_integrate",
-          "passed": false,
-          "note": "MCP usage limit reached; retry after 2026-06-21 21:34 CST"
-        },
-        {
-          "tool": "soc_lint",
+          "tool": "soc_sim",
           "passed": true,
-          "note": "verilator 0 error 0 warning; VCS soc_comp compile/elab passed"
-        },
-        {
-          "tool": "soc_comp",
-          "passed": true,
-          "note": "VCS compile/elaboration top=vibe_soc_top; 0 error 0 warning"
+          "note": "OpenTitan_default_top_smoke_FSDB_build_and_run_completed_seed_1"
         }
       ],
-      "notes": "Default compile and RTL top both set to vibe_soc_top; testbench remains unchanged and is not used for RTL elaboration proof",
-      "last_updated": "2026-06-21T14:01:57Z"
+      "notes": "OpenTitan_default_top_enabled_with_FSDB_wave_support",
+      "last_updated": "2026-06-25T11:33:48Z",
+      "blocked_by": []
     },
     "verif": {
       "step_id": "verif",
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
-      "artifacts": [],
-      "check_results": [],
-      "notes": ""
+      "status": "done",
+      "started_at": "2026-06-25T11:33:58Z",
+      "completed_at": "2026-06-25T11:34:09Z",
+      "artifacts": [
+        "dv/sim/compile.log",
+        "dv/sim/sim.log",
+        "dv/sim/waves.fsdb",
+        "docs/opentitan_smoketest_baseline.md"
+      ],
+      "check_results": [
+        {
+          "tool": "soc_sim",
+          "passed": true,
+          "note": "chip_sw_uart_smoketest_seed_1_FSDB_waves_generated_SW_TEST_PASSED_TEST_PASSED_CHECKS_UVM_ERROR_0_UVM_FATAL_0"
+        }
+      ],
+      "notes": "OpenTitan_default_top_FSDB_smoke_passed",
+      "blocked_by": [],
+      "last_updated": "2026-06-25T11:34:09Z"
     },
     "syn": {
       "step_id": "syn",
@@ -71,24 +85,17 @@
       "completed_at": null,
       "artifacts": [],
       "check_results": [],
-      "notes": ""
+      "notes": "OpenTitan_default_top_and_FSDB_wave_enable_reopen",
+      "blocked_by": [],
+      "last_updated": "2026-06-25T11:17:25Z"
     }
   },
   "next_actions": [
     {
-      "stage": "doc",
-      "action": "spawn soc-doc-engineer",
-      "reason": "dependencies [] satisfied, ready to start doc"
-    },
-    {
-      "stage": "verif",
-      "action": "spawn soc-verification-engineer",
-      "reason": "dependencies ['rtl'] satisfied, ready to start verif"
-    },
-    {
       "stage": "syn",
       "action": "spawn soc-synthesis-engineer",
-      "reason": "dependencies ['rtl'] satisfied, ready to start syn"
+      "reason": "dependencies ['rtl'] satisfied"
     }
-  ]
+  ],
+  "schema_version": 2
 }

@@ -1,0 +1,18 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+class pattgen_driver extends dv_base_driver #(pattgen_item, pattgen_agent_cfg);
+  `uvm_component_utils(pattgen_driver)
+  `uvm_component_new
+
+  virtual task get_and_drive();
+    @(posedge cfg.vif.rst_ni);
+    // pattgen does not require responses from pattgen_agent thus this task is kept to a minimum
+  endtask : get_and_drive
+
+  virtual task on_enter_reset();
+    // pattgen does not require responses from pattgen_agent thus this task is kept to a minimum
+  endtask
+
+endclass : pattgen_driver

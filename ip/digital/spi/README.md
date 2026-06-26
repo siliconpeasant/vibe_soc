@@ -32,7 +32,7 @@ cd ip/digital/spi/de    # de 目录下也能执行
 cd ip/digital/spi/dv    # dv 目录下也能执行
 make comp    # 编译
 make sim     # 运行仿真
-make wave    # 查看波形
+make verdi   # Verdi 调试入口
 make clean   # 清理
 ```
 

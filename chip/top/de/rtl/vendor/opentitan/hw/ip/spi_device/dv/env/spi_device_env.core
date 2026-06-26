@@ -1,0 +1,61 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:spi_device_env:0.1"
+description: "RISC-V Timer DV UVM environment"
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:dv:ralgen
+      - lowrisc:dv:cip_lib
+      - lowrisc:dv:spi_agent
+      - lowrisc:ip:spi_device_pkg:0.1
+    files:
+      - spi_device_env_pkg.sv
+      - spi_device_env_cfg.sv: {is_include_file: true}
+      - spi_device_env_cov.sv: {is_include_file: true}
+      - spi_device_virtual_sequencer.sv: {is_include_file: true}
+      - spi_device_scoreboard.sv: {is_include_file: true}
+      - spi_device_env.sv: {is_include_file: true}
+      - seq_lib/spi_device_vseq_list.sv: {is_include_file: true}
+      - seq_lib/spi_device_base_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_common_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_csb_read_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_mem_parity_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_ram_cfg_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_tpm_base_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_tpm_read_hw_reg_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_tpm_all_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_tpm_sts_read_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_tpm_rw_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_pass_base_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_pass_cmd_filtering_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_pass_addr_payload_swap_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_intercept_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_mailbox_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_upload_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_cfg_cmd_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_flash_mode_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_read_buffer_direct_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_flash_all_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_flash_mode_ignore_cmds_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_flash_and_tpm_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_flash_and_tpm_min_idle_vseq.sv: {is_include_file: true}
+      - seq_lib/spi_device_stress_all_vseq.sv: {is_include_file: true}
+    file_type: systemVerilogSource
+
+generate:
+  ral:
+    generator: ralgen
+    parameters:
+      name: spi_device
+      ip_hjson: ../../data/spi_device.hjson
+    position: prepend
+
+targets:
+  default:
+    filesets:
+      - files_dv
+    generate:
+      - "!chip_level ? (ral)"

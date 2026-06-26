@@ -1,0 +1,92 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  template_param_list: [
+    {
+      name: "topname"
+      desc: "Name of top-level design, e.g., 'darjeeling' or 'earlgrey'"
+      type: "string"
+      default: ""
+    }
+    {
+      name: "uniquified_modules"
+      desc: "A dictionary mapping template_names to uniquified_names"
+      type: "object"
+      default: {"clkmgr": "clkmgr1"}
+    }
+    {
+      name: "NumWkups"
+      desc: "Number of wakeup requests"
+      type: "int"
+      default: "6"
+    }
+    {
+      name: "Wkups"
+      desc: "A list of dictionaries describing each wakeup"
+      type: "object"
+      default: [
+        {
+          name: "wkup_req"
+          width: "1"
+          module: "sysrst_ctrl_aon"
+        }
+      ]
+    }
+    {
+      name: "rst_reqs"
+      desc: '''A dictionary of reset requests indexed by type, as in 'peripheral', 'int',
+            'debug'.
+            '''
+      type: "object"
+      default: {
+        peripheral: [
+          {
+            name: "rst_req"
+            width: "1"
+            module: "sysrst_ctrl_aon"
+            desc: "reset request running on AON clock"
+          }
+        ]
+        int: []
+        debug: []
+      }
+    }
+    {
+      name: "NumRstReqs"
+      desc: "The number of peripheral requests"
+      type: "int"
+      default: "2"
+    }
+    {
+      name: "wait_for_external_reset"
+      desc: "Wait for external reset requests"
+      type: "bool"
+      default: false
+    }
+    {
+      name: "NumRomInputs"
+      desc: "Number of ROM inputs"
+      type: "int"
+      default: "1"
+    }
+    {
+      name: "module_instance_name"
+      desc: "instance name in case there are multiple pwrmgr instances. Not yet implemented."
+      type: "string"
+      default: "pwrmgr"
+    }
+    {
+      name: "has_aon_clk"
+      desc: "true if there is an input aon clock"
+      type: "bool"
+      default: True
+    }
+    {
+      name: "src_clks"
+      desc: "the source clock names for this top, as in 'main', 'io', 'usb'"
+      type: "object"
+      default: ["main", "io", "usb"]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  // Synopsys Design Compiler
+  tool: dc
+
+  // Environment variables that are needed in the synthesis script
+  exports: [
+    { CONSTRAINT:         "{sdc_file}" },
+    { FOUNDRY_CONSTRAINT: "{foundry_sdc_file}" },
+  ]
+
+  // Tool invocation
+  build_cmd:  "{job_prefix} dc_shell-xg-t "
+  build_opts: ["-f {syn_root}/tools/dc/run-syn.tcl"]
+
+  // DC-specific results parsing script that is called after running synthesis
+  report_cmd: "{syn_root}/tools/dc/parse-syn-report.py"
+  report_opts: ["--dut {dut}",
+                "--expand-modules {expand_modules}",
+                "--expand-depth {expand_depth}",
+                "--log-path {build_dir} ",
+                "--rep-path {build_dir}/REPORTS",
+                "--out-dir {build_dir}",
+                "--termination-stage {termination_stage}"]
+
+  // By default, 1 level of hierarchy is always expanded in the area report.
+  // This can be changed by setting the expansion depth to a higher value,
+  // or by listing explicitly which submodules shall be expanded further.
+  expand_modules: "{name}"
+  expand_depth: 1
+
+  // Restrict the maximum message count in each category
+  max_msg_count: 100
+  // Sanitize the published report
+  sanitize_publish_results: true
+}

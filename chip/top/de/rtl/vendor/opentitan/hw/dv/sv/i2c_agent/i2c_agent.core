@@ -1,0 +1,36 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:i2c_agent:0.1"
+description: "I2C DV UVM agent"
+filesets:
+  files_dv:
+    depend:
+      - lowrisc:dv:dv_utils
+      - lowrisc:dv:dv_lib
+      - lowrisc:ip:i2c
+    files:
+      - i2c_agent_pkg.sv
+      - i2c_if.sv
+      - i2c_agent_cfg.sv: {is_include_file: true}
+      - i2c_agent_cov.sv: {is_include_file: true}
+      - i2c_acqdata_item.sv: {is_include_file: true}
+      - i2c_fdata_item.sv: {is_include_file: true}
+      - i2c_item.sv: {is_include_file: true}
+      - i2c_driver.sv: {is_include_file: true}
+      - i2c_monitor.sv: {is_include_file: true}
+      - i2c_sequencer.sv: {is_include_file: true}
+      - i2c_agent.sv: {is_include_file: true}
+      - seq_lib/i2c_seq_list.sv: {is_include_file: true}
+      - seq_lib/i2c_base_seq.sv: {is_include_file: true}
+      - seq_lib/i2c_device_response_seq.sv: {is_include_file: true}
+      - seq_lib/i2c_target_base_seq.sv: {is_include_file: true}
+      - seq_lib/i2c_target_may_nack_seq.sv: {is_include_file: true}
+      - seq_lib/i2c_controller_base_seq.sv: {is_include_file: true}
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - files_dv

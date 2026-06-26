@@ -1,0 +1,133 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+    name: "uds",
+
+    variables: {
+        // Creator public key: this is an EC point on
+        // the prime256v1 curve so it has two components
+        // (x and y) which are 32-bytes integers.
+        creator_pub_key_ec_x: {
+            type: "integer",
+            exact-size: 32,
+        },
+        creator_pub_key_ec_y: {
+            type: "integer",
+            exact-size: 32,
+        },
+        // Creator public key ID: this is a 20-byte hash
+        // derived from the creator public key.
+        creator_pub_key_id: {
+            type: "byte-array",
+            exact-size: 20,
+            tweak-msb: true,
+        },
+        // Authority key ID: this is the identifier of
+        // the key that will be used to sign this certificate
+        // offline.
+        auth_key_key_id: {
+            type: "byte-array",
+            exact-size: 20,
+            tweak-msb: true,
+        },
+        // Hash of the creator_sw_cfg OTP partition (SHA256).
+        otp_creator_sw_cfg_hash: {
+            type: "byte-array",
+            exact-size: 32,
+        },
+        // Hash of the owner_sw_cfg OTP partition (SHA256).
+        otp_owner_sw_cfg_hash: {
+            type: "byte-array",
+            exact-size: 32,
+        },
+        // Hash of the rot_creator_auth_codesign OTP partition (SHA256).
+        otp_rot_creator_auth_codesign_hash: {
+            type: "byte-array",
+            exact-size: 32,
+        },
+        // Hash of the rot_creator_auth_state OTP partition (SHA256).
+        otp_rot_creator_auth_state_hash: {
+            type: "byte-array",
+            exact-size: 32,
+        },
+        // Debug (whether LC state exposes JTAG access or not).
+        debug_flag: {
+            type: "boolean",
+        },
+        // Certificate signature: the result of signing with ECDSA
+        // are two integers named "r" and "s"
+        cert_signature_r: {
+            type: "integer",
+            range-size: [24, 32],
+        },
+        cert_signature_s: {
+            type: "integer",
+            range-size: [24, 32],
+        }
+    },
+
+    certificate: {
+        serial_number: { var: "creator_pub_key_id", convert: "big-endian" },
+        issuer: [
+            { country: "US" },
+            { state: "CA" },
+            { organization: "Google" },
+            { organizational_unit: "Engineering" },
+            { common_name: "Google Engineering ICA" },
+        ],
+        subject: [
+            { serial_number: { var: "creator_pub_key_id", convert: "lowercase-hex"} },
+        ],
+        // From the Open Profile for DICE specification:
+        // https://pigweed.googlesource.com/open-dice/+/refs/heads/main/docs/specification.md#x_509-cdi-certificates
+        // The certificate expiration time is set to a fixed date in the future.
+        // The "not before" date is chosen to be in the past (publication date of the DICE TCG) since the device does not
+        // have a reliable way to get the time.
+        not_before: "20180322235959Z",
+        not_after: "99991231235959Z",
+        subject_public_key_info: {
+            algorithm: "ec-public-key",
+            curve: "prime256v1",
+            public_key: {
+                x: { var: "creator_pub_key_ec_x" },
+                y: { var: "creator_pub_key_ec_y" },
+            },
+        },
+        authority_key_identifier: { var: "auth_key_key_id" },
+        subject_key_identifier: { var: "creator_pub_key_id" },
+        // From the Open Profile for DICE specification:
+        // https://pigweed.googlesource.com/open-dice/+/refs/heads/main/docs/specification.md#certificate-details
+        // The standard extensions are fixed by the specification.
+        basic_constraints: { ca: true },
+        key_usage: { cert_sign: true },
+        private_extensions: [
+            {
+                type: "dice_tcb_info",
+                vendor: "OpenTitan",
+                model: "Device",
+                layer: "0",
+                svn: "0",
+                fw_ids: [
+                    { hash_algorithm: "sha256", digest: { var: "otp_creator_sw_cfg_hash" } },
+                    { hash_algorithm: "sha256", digest: { var: "otp_owner_sw_cfg_hash" } },
+                    { hash_algorithm: "sha256", digest: { var: "otp_rot_creator_auth_codesign_hash" } },
+                    { hash_algorithm: "sha256", digest: { var: "otp_rot_creator_auth_state_hash" } },
+                ],
+                flags: {
+                    not_configured: false,
+                    not_secure: false,
+                    recovery: false,
+                    debug: { var: "debug_flag" },
+                }
+            },
+        ],
+        signature: {
+            algorithm: "ecdsa-with-sha256",
+            value: {
+                r: { var: "cert_signature_r" },
+                s: { var: "cert_signature_s" }
+            }
+        }
+    }
+}

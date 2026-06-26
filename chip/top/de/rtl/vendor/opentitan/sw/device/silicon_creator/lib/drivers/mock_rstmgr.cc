@@ -1,0 +1,28 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#include "sw/device/silicon_creator/lib/drivers/mock_rstmgr.h"
+
+namespace rom_test {
+extern "C" {
+uint32_t rstmgr_reason_get(void) { return MockRstmgr::Instance().ReasonGet(); }
+
+bool rstmgr_is_hw_reset_reason(dt_rstmgr_t dt, uint32_t reasons,
+                               dt_instance_id_t inst_id, size_t reset_req) {
+  return MockRstmgr::Instance().IsHwResetReason(dt, reasons, inst_id,
+                                                reset_req);
+}
+
+void rstmgr_reason_clear(uint32_t reasons) {
+  MockRstmgr::Instance().ReasonClear(reasons);
+}
+
+void rstmgr_alert_info_enable(void) {
+  MockRstmgr::Instance().AlertInfoEnable();
+}
+
+void rstmgr_reset(void) { MockRstmgr::Instance().Reset(); }
+void rstmgr_reboot(void) { MockRstmgr::Instance().Reboot(); }
+}  // extern "C"
+}  // namespace rom_test

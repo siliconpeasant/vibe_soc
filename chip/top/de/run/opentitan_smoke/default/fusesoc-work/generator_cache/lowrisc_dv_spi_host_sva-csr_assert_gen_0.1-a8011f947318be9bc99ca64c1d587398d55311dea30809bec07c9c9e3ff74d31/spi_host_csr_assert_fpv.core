@@ -1,0 +1,14 @@
+CAPI=2:
+filesets:
+  files_dv:
+    depend:
+    - lowrisc:tlul:headers
+    - lowrisc:prim:assert
+    file_type: systemVerilogSource
+    files:
+    - spi_host_csr_assert_fpv.sv
+name: lowrisc:fpv:spi_host_csr_assert
+targets:
+  default:
+    filesets:
+    - files_dv

@@ -1,0 +1,5 @@
+files_root: /project/hw/top_earlgrey/ip_autogen/pwrmgr/dv/sva
+gapi: '1.0'
+parameters:
+  spec: ../../data/pwrmgr.hjson
+vlnv: lowrisc:earlgrey_dv:pwrmgr_sva-csr_assert_gen:0.1

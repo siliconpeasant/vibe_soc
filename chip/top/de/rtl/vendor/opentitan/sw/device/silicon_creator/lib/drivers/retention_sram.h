@@ -1,0 +1,205 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#ifndef OPENTITAN_SW_DEVICE_SILICON_CREATOR_LIB_DRIVERS_RETENTION_SRAM_H_
+#define OPENTITAN_SW_DEVICE_SILICON_CREATOR_LIB_DRIVERS_RETENTION_SRAM_H_
+
+#include <stdint.h>
+
+#include "hw/top/dt/sram_ctrl.h"
+#include "sw/device/lib/base/macros.h"
+#include "sw/device/silicon_creator/lib/boot_log.h"
+#include "sw/device/silicon_creator/lib/boot_svc/boot_svc_msg.h"
+#include "sw/device/silicon_creator/lib/error.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * Retention SRAM silicon creator area.
+ */
+typedef struct retention_sram_creator {
+  /**
+   * Reset reasons reported by the reset manager before they were reset in mask
+   * ROM.
+   */
+  uint32_t reset_reasons;
+  /**
+   * Boot services message area.
+   *
+   * This is the shared buffer through which ROM_EXT and silicon owner code
+   * communicate with each other.
+   */
+  boot_svc_msg_t boot_svc_msg;
+
+  /**
+   * Space reserved for future allocation by the silicon creator.
+   *
+   * The first half of the retention SRAM is reserved for the silicon creator
+   * except for the first word that stores the format version. Hence the total
+   * size of this struct must be 2044 bytes.
+   *
+   * The remaining space is reserved for future use.
+   *
+   * We are locating the boot_svc at the beginning and the rest of the members
+   * at the end so that:
+   * - We can grow boot_svc down into the reserved space if needed.
+   * - We can add additional members at the end (growing up into reserved
+   *   space) without affecting the layout of other structures.
+   */
+  uint32_t reserved[(2044 - (sizeof(uint32_t)          // reset_reason
+                             + sizeof(boot_svc_msg_t)  // boot services message
+                             + sizeof(boot_log_t)      // boot_log
+                             + sizeof(rom_error_t)     // last_shutdown_reason
+                             )) /
+                    sizeof(uint32_t)];
+  /**
+   * Boot log area.
+   *
+   * This buffer tracks information about the boot process.
+   */
+  boot_log_t boot_log;
+  /**
+   * Shutdown reason.
+   *
+   * Reason of the last shutdown, redacted according to the redaction policy.
+   * This field is initialized to `kErrorOk` on PoR and a value of `kErrorOk`
+   * indicates that no shutdowns since the last PoR.
+   */
+  rom_error_t last_shutdown_reason;
+} retention_sram_creator_t;
+OT_ASSERT_MEMBER_OFFSET(retention_sram_creator_t, reset_reasons, 0);
+OT_ASSERT_MEMBER_OFFSET(retention_sram_creator_t, boot_svc_msg, 4);
+OT_ASSERT_MEMBER_OFFSET(retention_sram_creator_t, reserved, 260);
+OT_ASSERT_MEMBER_OFFSET(retention_sram_creator_t, boot_log, 1912);
+OT_ASSERT_MEMBER_OFFSET(retention_sram_creator_t, last_shutdown_reason, 2040);
+OT_ASSERT_SIZE(boot_svc_msg_t, 256);
+OT_ASSERT_SIZE(retention_sram_creator_t, 2044);
+
+/**
+ * Retention SRAM silicon owner area.
+ */
+typedef struct retention_sram_owner {
+  /**
+   * Space reserved for allocation by the silicon owner.
+   *
+   * The silcon creator boot stages will not modify this field except for
+   * clearing it at initial power on.
+   *
+   * Tests that need to trigger (or detect) a device reset may use this field to
+   * preserve state information across resets.
+   */
+  uint32_t reserved[2048 / sizeof(uint32_t)];
+} retention_sram_owner_t;
+OT_ASSERT_SIZE(retention_sram_owner_t, 2048);
+
+/**
+ * The retention SRAM is memory that is used to retain information, such as a
+ * boot service request, across a device reset. If the reset reason is 'power
+ * on' (POR) all fields will be initialized using the LFSR by the ROM.
+ */
+typedef struct retention_sram {
+  /**
+   * Retention SRAM format version.
+   *
+   * ROM sets this field to `kRetentionSramVersion2` only after PoR and
+   * does not modify it otherwise. ROM_EXT can use this information for backward
+   * compatibility and set this field to a different value after migrating to a
+   * different layout if needed.
+   */
+  uint32_t version;
+  /**
+   * Silicon creator area.
+   */
+  retention_sram_creator_t creator;
+  /**
+   * Silicon owner area.
+   */
+  retention_sram_owner_t owner;
+} retention_sram_t;
+
+OT_ASSERT_MEMBER_OFFSET(retention_sram_t, creator, 4);
+OT_ASSERT_MEMBER_OFFSET(retention_sram_t, owner, 2048);
+OT_ASSERT_SIZE(retention_sram_t, 4096);
+
+enum {
+  /**
+   * Engineering sample version.
+   */
+  kRetentionSramVersion1 = 0x72f4eb2e,
+  /**
+   * Includes the `boot_svc_msg`, `boot_log`, and `last_shutdown_reason` fields
+   * in the silicon creator area.
+   */
+  kRetentionSramVersion2 = 0x5b89bd6d,
+  /**
+   * Version 3 is a more stable and expandable layout than prior version.
+   * and the a recognizable ASCII tag of `RR03`.
+   */
+  kRetentionSramVersion3 = 0x33305252,
+  /**
+   * Version 4 is the same layout as 3, but all identifiers and commands have
+   * been changed to use "FourCC" style values.  Version 4 is identified by
+   * the ASCII tag `RR04`.
+   */
+  kRetentionSramVersion4 = 0x34305252,
+};
+
+/**
+ * Returns a typed pointer to the retention SRAM.
+ *
+ * @return A pointer to the retention SRAM.
+ */
+OT_WARN_UNUSED_RESULT
+retention_sram_t *retention_sram_get(void);
+
+/**
+ * Clear the retention SRAM by setting every word to 0.
+ */
+void retention_sram_clear(void);
+
+/**
+ * Initialize the retention SRAM with pseudo-random data from the LFSR.
+ *
+ * This function does not request a new scrambling key. See
+ * `retention_sram_scramble()`.
+ *
+ * @return Result of the operation.
+ */
+void retention_sram_init(void);
+
+/**
+ * Enable or disable the readback feature of the retention SRAM.
+ *
+ * @param en A Mubi4True to enable the feature.
+ */
+void retention_sram_readback_enable(uint32_t en);
+
+/**
+ * Start scrambling the retention SRAM.
+ *
+ * Requests a new scrambling key for the retention SRAM. This operation
+ * will wipe all of the data in the retention SRAM. The retention SRAM
+ * will then be initialized to undefined values.
+ *
+ * The scrambling operation takes time and accesses to retention SRAM
+ * will stall until it completes.
+ *
+ * @return An error if a new key cannot be requested.
+ */
+void retention_sram_scramble(void);
+
+/**
+ * Check that the retention SRAM is a known version.
+ *
+ * @return An error if the retention SRAM version is unknown.
+ */
+rom_error_t retention_sram_check_version(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // OPENTITAN_SW_DEVICE_SILICON_CREATOR_LIB_DRIVERS_RETENTION_SRAM_H_

@@ -1,0 +1,111 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "rom_ctrl"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/mem_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/passthru_mem_intg_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/sec_cm_fsm_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/sec_cm_count_testplan.hjson",
+                     "rom_ctrl_sec_cm_testplan.hjson"]
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            Smoke test exercising the main features of rom_ctrl.
+
+            **Stimulus**:
+            - Create a random valid ROM where expected digest doesn't match with the KMAC digest
+            image and load into memory model
+            - Allow the rom check to complete
+            - Perform some random memory accesses
+            - Create a random valid ROM where expected digest matches with the KMAC digest
+            - Repeat steps 2 and 3.
+
+            **Checks**:
+            - Check that all data supplied to kmac is correct
+            - Check that the rom checking sequence gives the expected result
+            - Check that the memory accesses return expected data
+            - Check that pwrmgr_data_o.good is not asserted in first iteration.
+            - Check that pwrmgr_data_o.good is asserted in second iteration.
+            - Check that tile link accesses are blocked till pwrmgr_data_o.done is asserted.
+            '''
+      stage: V1
+      tests: ["rom_ctrl_smoke"]
+    }
+    {
+      name: corrupt_sig_fatal_chk
+      desc: '''
+            Corrupt integrity of signals like the select signal to addr mux.
+
+            **Checks**:
+            - Check that fatal error is flagged.
+            '''
+      stage: V2S
+      tests: ["rom_ctrl_corrupt_sig_fatal_chk"]
+    }
+    {
+      name: max_throughput_chk
+      desc: '''
+            This test is intended to test the max throughput of ROM controller.
+            It takes N+1 cycles to finish N ROM read accesses.
+
+            **Checks**:
+            - Check if N read accesses finish in N+1 cycles.
+            '''
+      stage: V2
+      tests: ["rom_ctrl_max_throughput_chk"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            - Combine above sequences in one test to run sequentially.
+            - Randomly add reset between each sequence'''
+      stage: V2
+      tests: ["rom_ctrl_stress_all"]
+    }
+    {
+      name: kmac_err_chk
+      desc: '''
+            - Generate error from KMAC when it responds with KMAC digest image.
+            - Check that ROM controller goes into invalid state'''
+      stage: V2
+      tests: ["rom_ctrl_kmac_err_chk"]
+    }
+
+  ]
+  covergroups: [
+    {
+      name: rom_ctrl_kmac_cg
+      desc: '''
+            Collect coverage on the rom_ctrl / kmac interface, specifically around
+            stalling and back-pressure behavior.
+
+            The agent needs to cover the case where the kmac returns a digest
+            before the rom_ctrl finishes reading the expected digest from memory,
+            and also after.
+            '''
+    }
+    {
+      name: rom_ctrl_tlul_cg
+      desc: '''
+            -Collect coverage on the two TLUL interfaces, specifically checking
+            that we see requests around the same time as the rom check completes.
+            - Collect coverage to ensure that a_valid goes high when rom check
+            is in progress. This ensures that the scenario where TL accesses are
+            blocked until the ROM check is done is covered.
+            '''
+    }
+    {
+      name: rom_ctrl_check_cg
+      desc: '''
+            Collect coverage on the outputs sent to the power manager to confirm
+            that we see pass and fail results.
+            '''
+    }
+  ]
+}

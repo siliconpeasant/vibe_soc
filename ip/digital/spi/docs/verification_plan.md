@@ -305,7 +305,7 @@ make comp TOP=tb_spi
 make sim TOP=tb_spi
 
 # View waveforms
-make wave TOP=tb_spi
+make verdi TOP_MODULE=tb_spi
 ```
 
 ### 7.3 仿真参数

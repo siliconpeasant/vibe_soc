@@ -1,0 +1,249 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  name: "pattgen"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/intr_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "pattgen_sec_cm_testplan.hjson"],
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            Smoke test for pattgen ip in which dut is randomly programmed
+            to generate random patterns on output channels.
+
+            Stimulus:
+              - Program the configuration registers of the output channels
+              - Randomly activate the output channels
+              - Re-program the configuration registers of the output channels once
+                completion interrupts are asserted
+
+            Checking:
+              - Check divided clock rate for the active channels
+                matching with the values of pre-divider registers
+              - Check generated pattern matching on the active channels
+                matching with the values of pattern data registers
+              - Check completion interrupts are asserted once a pattern
+                is completely generated on the active channels
+            '''
+      stage: V1
+      tests: ["pattgen_smoke"]
+    }
+    {
+      name: perf
+      desc: '''
+            Checking ip operation at min/max bandwidth
+
+            Stimulus:
+              - Program the pre-divider registers to high/low values (slow/fast data rate)
+              - Program the pattern data registers, the pattern length per output, and
+                repeat counter registers to high/low values
+              - Start and stop channels quickly
+              - Clear interrupts quickly
+            Checking:
+              - Ensure patterns are correctly generated
+              - Ensure interrupts are robust asserted and cleared (e.g. at the high data rate)
+            '''
+      stage: V2
+      tests: ["pattgen_perf"]
+    }
+    {
+      name: cnt_rollover
+      desc: '''
+            Checking ip operation with random counter values
+
+            Stimulus:
+              - Program the pre-divider and size registers to unconstrained random values
+              - Program the clk_cnt, bit_cnt and rep_cnt to values less than but close to
+                predivider and size registers, so that counting would take a reasonable
+                number of clock cycles
+              - include programming for corner cases
+                repeat programming a random number of times
+              - Start and stop channels quickly
+              - Clear interrupts quickly
+
+            Checking:
+              - Include functional cover point that rollover value is reached and counter is re-enabled:
+              - Ensure patterns are correctly generated
+              - Ensure interrupts are robust asserted and cleared (e.g. at the high data rate)
+            '''
+      stage: V2
+      tests: ["cnt_rollover"]
+    }
+    {
+      name: error
+      desc: '''
+            Reset then re-start the output channel on the fly.
+
+            Stimulus:
+              - Program the configuration registers of the output channels
+              - Randomly re-enable the in progress output channels
+              - Re-program the configuration registers of the output channels
+
+            Checking:
+              - Ensure patterns are dropped when re-enabled
+              - Ensure the output channels get back normal after re-enable
+            '''
+      stage: V2
+      tests: ["pattgen_error"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            Stress_all test is a random mix of all the test above except csr tests.
+            '''
+      stage: V2
+      tests: ["pattgen_stress_all"]
+    }
+  ]
+
+
+  covergroups: [
+    {
+      name: pattgen_op_cg
+      desc: '''
+            Covers the ch0 pattern generation complete interrupt and event done.
+            Covers the ch1 pattern generation complete interrupt and event done.
+            '''
+    }
+    {
+      name: pattgen_counters_max_values_cg
+      desc: '''
+            Covers the initial and maximum counter values of the following:
+            - Initial and maximum values of clock divide counter
+            - Initial and maximum values of length counter
+            - Initial and maximum values of repetition counter
+            All valid combinations of the above will also be crossed.
+            '''
+    }
+    {
+      name: pattgen_ch0_cnt_reset_cg
+      desc: '''
+            Covers that ch0 counter values resets to zero when it reaches the assigned value.
+            It includes:
+            - Clock divide counter value
+            - Length counter value
+            - Repetition counter value
+            All valid combinations of the above will also be crossed.
+            '''
+    }
+    {
+      name: pattgen_ch1_cnt_reset_cg
+      desc: '''
+            Covers that ch1 counter values resets to zero when it reaches the assigned value.
+            It includes:
+            - Clock divide counter value
+            - Length counter value
+            - Repetition counter value
+            All valid combinations of the above will also be crossed.
+            '''
+    }
+    {
+      name: ctrl_cg
+      desc: '''
+            Covers that all valid enable and polarity settings
+            for the Pattgen control register have been tested.
+            Individual enable and polarity settings that will be covered include:
+            - Enable pattern generator functionality for Channel 0 (ENABLE_CH0)
+            - Enable pattern generator functionality for Channel 1 (ENABLE_CH1)
+            - Clock (pcl) polarity for Channel 0 (POLARITY_CH0)
+            - Clock (pcl) polarity for Channel 1 (POLARITY_CH1)
+            All valid combinations of the above will also be crossed.
+            '''
+    }
+    {
+      name: inter_cg
+      desc: '''
+            intr_cg is defined in cip_base_env_cov and
+            referenced in pattgen_scoreboard
+            '''
+    }
+    {
+      name: pattern_len_ch0_cg
+      desc: '''
+            Covers various Lengths of the channel0 seed pattern ranges,
+            to ensure that Pattgen can operate successfully
+            on different pattern lengths.
+            we will cover that an acceptable distribution of lengths has been seen,
+            and specifically cover some corner cases.
+            '''
+    }
+    {
+      name: pattern_len_ch1_cg
+      desc: '''
+            Similar to channel 0.
+            '''
+    }
+    {
+      name: pattern_reps_ch0_cg
+      desc: '''
+            Covers various numbers of channel repetitions of the channel0, to ensure that Pattgen
+            can operate successfully on different pattern lengths.
+            we will cover that an acceptable distribution of lengths has been seen,
+            and specifically cover all corner cases.
+            '''
+    }
+    {
+      name: pattern_reps_ch1_cg
+      desc: '''
+            Similar to channel 0.
+            '''
+    }
+    {
+      name: pattern_prediv_ch0_cg
+      desc: '''
+            Covers various numbers of clock divide ratios of the channel0, to ensure that Pattgen
+            can operate successfully on different clock divide ratios.
+            we will cover that an acceptable distribution of lengths has been seen,
+            and specifically cover corner cases.
+            '''
+    }
+    {
+      name: pattern_prediv_ch1_cg
+      desc: '''
+            Similar to channel 0.
+            '''
+    }
+    {
+      name: pattern_data_ch0_0_cg
+      desc: '''
+            Covers various data_0 values of the channel0 seed pattern ranges,
+            to ensure that Pattgen can operate successfully on different pattern lengths.
+            we will cover that an acceptable distribution of lengths has been seen,
+            and specifically cover corner cases. The covergroup takes data from
+            TL_UL scoreboard input
+            '''
+    }
+    {
+      name: pattern_data_ch0_1_cg
+      desc: '''
+            Similar to pattern_data_ch0_0_cg, except using data_1 values
+            '''
+    }
+    {
+      name: pattern_data_ch1_0_cg
+      desc: '''
+            Similar to pattern_data_ch0_0_cg.
+            '''
+    }
+    {
+      name: pattern_data_ch1_1_cg
+      desc: '''
+            Similar to pattern_data_ch0_1_cg.
+            '''
+    }
+    {
+      name: program_while_busy_cg
+      desc: '''
+            Program the DUT while pattern is being produced to insure current pattern is not being corrupt.
+            '''
+    }
+
+]
+
+}

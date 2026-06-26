@@ -1,0 +1,238 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+//
+{
+  name:               "rv_timer",
+  human_name:         "RISC-V Timer",
+  one_line_desc:      "Memory-mapped timer unit implementing RISC-V mtime and mtimecmp registers",
+  one_paragraph_desc: '''
+  RISC-V Timer provides TileLink Uncached Light (TL-UL) memory-mapped registers `mtime` and `mtimecmp` which can be used as the machine-mode timer registers as defined in the RISC-V privileged spec v1.12.
+  Additional parameters can be used to add optional features, such as prescaler, step increment size, threshold-triggered interrupts, additional 64-bit timers, and support for multiple independent harts.
+  '''
+  // Unique comportable IP identifier defined under KNOWN_CIP_IDS in the regtool.
+  cip_id:             "25",
+  design_spec:        "../doc",
+  dv_doc:             "../doc/dv",
+  hw_checklist:       "../doc/checklist",
+  sw_checklist:       "sw/device/lib/dif/dif_rv_timer",
+  revisions: [
+    {
+      version:            "0.5.0",
+      life_stage:         "L2",
+      design_stage:       "D3",
+      verification_stage: "V3",
+      commit_id:          "a4638684103da48c793301243759e9d1eb2cb9dc",
+      notes:              ""
+    }
+    {
+      version:            "1.0.0",
+      life_stage:         "L1",
+      design_stage:       "D3",
+      verification_stage: "V3",
+      dif_stage:          "S2",
+      notes:              "D3 Reviewed @ 2025-05-09, V3 Reviewed @ 2025-05-09",
+    }
+  ]
+  clocking: [{clock: "clk_i", reset: "rst_ni"}],
+  bus_interfaces: [
+    { protocol: "tlul", direction: "device", racl_support: true }
+  ],
+  available_input_list: [
+  ],
+  available_output_list: [
+  ],
+  interrupt_list: [
+    { name: "timer_expired_hart0_timer0",
+      desc: "raised if hart0's timer0 expired (mtimecmp >= mtime)"
+    },
+  ],
+  alert_list: [
+    { name: "fatal_fault",
+      desc: '''
+      This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected inside the RV_TIMER unit.
+      '''
+    }
+  ],
+  inter_signal_list: [
+    { struct:  "racl_policy_vec",
+      type:    "uni",
+      name:    "racl_policies",
+      act:     "rcv",
+      package: "top_racl_pkg",
+      desc:    '''
+        Incoming RACL policy vector from a racl_ctrl instance.
+        The policy selection vector (parameter) selects the policy for each register.
+      '''
+    }
+    { struct:  "racl_error_log",
+      type:    "uni",
+      name:    "racl_error",
+      act:     "req",
+      width:   "1"
+      package: "top_racl_pkg",
+      desc:    '''
+        RACL error log information of this module.
+      '''
+    }
+  ]
+  param_list: [
+    { name: "N_HARTS",
+      desc: "Number of harts",
+      type: "int",
+      default: "1"
+    },
+    { name: "N_TIMERS",
+      desc: "Number of timers per Hart",
+      type: "int",
+      default: "1"
+    }
+  ],
+  features: [
+    { name: "RV_TIMER.RISCV_CSRS_INTEGRATION",
+      desc: '''
+            The RV_TIMER block is integrated with the RISC-V CSRs `mtime` and `mtimecmp`.
+            '''
+    },
+    { name: "RV_TIMER.ENABLE",
+      desc: '''
+            Enable timer with CTRL CSR.
+            '''
+    },
+    { name: "RV_TIMER.DISABLE",
+      desc: '''
+            Disable timer with CTRL CSR.
+            '''
+    },
+    { name: "RV_TIMER.INTERRUPT",
+      desc: '''
+            The timer triggers interrupts when the counter register matches the compare register.
+            '''
+    },
+    { name: "RV_TIMER.CONFIG",
+      desc: '''
+            Configures the tick period.
+            '''
+    },
+    { name: "RV_TIMER.COUNTER",
+      desc: '''
+            The timer has a 64-bit counter that wraps.
+            '''
+    },
+    { name: "RV_TIMER.COMPARE",
+      desc: '''
+            The timer has a 64-bit compare register that triggers an interrupt when it matches the counter.
+            '''
+    },
+  ],
+  no_auto_intr_regs: "true",
+  countermeasures: [
+    { name: "BUS.INTEGRITY"
+      desc: "End-to-end bus integrity scheme."
+    }
+  ]
+  regwidth: "32",
+  registers: [
+    { multireg: {
+        name: "CTRL",
+        desc: "Control register",
+        count: "N_HARTS",
+        cname: "TIMER",
+        swaccess: "rw",
+        hwaccess: "hro",
+        fields: [
+          { bits: "0", name: "active",
+            desc: "If 1, timer operates",
+            tags: [// prevent timer from being enabled
+                   "excl:CsrNonInitTests:CsrExclWrite"] }
+        ],
+      }
+    },
+    { skipto: "0x100" },
+    { multireg: {
+        name: "INTR_ENABLE0",
+        desc: "Interrupt Enable",
+        count: "N_TIMERS",
+        cname: "TIMER",
+        swaccess: "rw",
+        hwaccess: "hro",
+        fields: [
+          { bits: "0", name: "IE", desc: "Interrupt Enable for timer" }
+        ]
+      }
+    }, // R: INTR_ENABLE0
+    { multireg: {
+        name: "INTR_STATE0",
+        desc: "Interrupt Status",
+        count: "N_TIMERS",
+        cname: "TIMER",
+        swaccess: "rw1c",
+        hwaccess: "hrw",
+        fields: [
+          { bits: "0", name: "IS", desc: "Interrupt status for timer",
+            tags: [// intr_state csr is affected by writes to other csrs - skip write-check
+                   "excl:CsrNonInitTests:CsrExclWriteCheck"] }
+        ],
+      }
+    }, // R: INTR_STATE0
+    { multireg: {
+        name: "INTR_TEST0",
+        desc: "Interrupt test register",
+        count: "N_TIMERS",
+        cname: "TIMER",
+        swaccess: "wo",
+        hwaccess: "hro",
+        hwext: "true",
+        hwqe: "true",
+        fields: [
+          { bits: "0", name: "T", desc: "Interrupt test for timer",
+            tags: [// intr_test csr is WO which - it reads back 0s
+                   "excl:CsrNonInitTests:CsrExclWrite"] }
+        ]
+      }
+    }, // R: INTR_TEST0
+    { name: "CFG0",
+      desc: "Configuration for Hart 0",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "11:0", name: "prescale", desc: "Prescaler to generate tick" },
+        { bits: "23:16", name: "step", resval: "0x1", desc: "Incremental value for each tick" },
+      ],
+    },
+    { name: "TIMER_V_LOWER0",
+      desc: "Timer value Lower",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "v", desc: "Timer value [31:0]" },
+      ],
+    },
+    { name: "TIMER_V_UPPER0",
+      desc: "Timer value Upper",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "v", desc: "Timer value [63:32]" },
+      ],
+    },
+    { name: "COMPARE_LOWER0_0",
+      desc: "Timer value Lower",
+      swaccess: "rw",
+      hwaccess: "hro",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0", name: "v", resval: "0xffffffff", desc: "Timer compare value [31:0]" },
+      ],
+    },
+    { name: "COMPARE_UPPER0_0",
+      desc: "Timer value Upper",
+      swaccess: "rw",
+      hwaccess: "hro",
+      hwqe: "true",
+      fields: [
+        { bits: "31:0", name: "v", resval: "0xffffffff", desc: "Timer compare value [63:32]" },
+      ],
+    },
+  ],
+}

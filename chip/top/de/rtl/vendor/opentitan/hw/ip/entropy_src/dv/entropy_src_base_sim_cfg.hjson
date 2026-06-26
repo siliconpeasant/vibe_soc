@@ -1,0 +1,184 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  // Name of the sim cfg - typically same as the name of the DUT.
+  name: entropy_src
+
+  // Top level dut name (sv module).
+  dut: entropy_src
+
+  // Top level testbench name (sv module).
+  tb: tb
+
+  // Simulator used to sign off this block
+  tool: xcelium
+
+  // Fusesoc core file used for building the file list.
+  fusesoc_core: lowrisc:dv:entropy_src_sim:0.1
+
+  // Testplan hjson file.
+  testplan: "{proj_root}/hw/ip/entropy_src/data/entropy_src_testplan.hjson"
+
+  // RAL spec - used to generate the RAL model.
+  ral_spec: "{proj_root}/hw/ip/entropy_src/data/entropy_src.hjson"
+
+  // Import additional common sim cfg files.
+  import_cfgs: [// Project wide common sim cfg file
+                "{proj_root}/hw/dv/tools/dvsim/common_sim_cfg.hjson",
+                // Common CIP test lists
+                "{proj_root}/hw/dv/tools/dvsim/tests/csr_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/intr_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/alert_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/tl_access_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/sec_cm_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/stress_tests.hjson"]
+
+  // Add additional tops for simulation.
+  sim_tops: ["entropy_src_bind", "entropy_src_cov_bind", "sec_cm_prim_onehot_check_bind"]
+
+  // Default iterations for all tests - each test entry can override this.
+  reseed: 50
+
+  xcelium_cov_refine_files: [
+  // TODO(#16276): Finalize coverage on ExtHT ports & remove the following exclusion file
+  "{proj_root}/hw/ip/entropy_src/dv/cov/entropy_src_extht_exclusions.vRefine"
+  // Leave the following as a separate refinement, to support potential DV enhancements.
+  // (See the comments within the file for more detail)
+  "{proj_root}/hw/ip/entropy_src/dv/cov/entropy_src_cnt_err_excl.vRefine",
+  // Waive toggle coverage for the prim_count and fifo_cnt inputs.
+  "{proj_root}/hw/ip/entropy_src/dv/cov/entropy_src_cnt_in_excl.vRefine",
+  // Waive toggle coverage for the prim_count outputs.  (MoreSB's not exercised)
+  "{proj_root}/hw/ip/entropy_src/dv/cov/entropy_src_cnt_out_excl.vRefine",
+  // Output of --cov-unr, with `prim_count` error exclusions removed.
+  "{proj_root}/hw/ip/entropy_src/dv/cov/entropy_src_UNR.vRefine",
+  // Waive toggle coverage for the prim_fifo_sync inputs.
+  "{proj_root}/hw/ip/entropy_src/dv/cov/entropy_src_fifo_in_excl.vRefine",
+  ]
+
+  // Default UVM test and seq class name.
+  uvm_test: entropy_src_base_test
+  uvm_test_seq: entropy_src_base_vseq
+
+  // Enable CDC instrumentation.
+  run_opts: ["+cdc_instrumentation_enabled=1"]
+
+  // List of test specifications.
+  tests: [
+    {
+      name: entropy_src_smoke
+      uvm_test: entropy_src_smoke_test
+      uvm_test_seq: entropy_src_smoke_vseq
+    }
+
+    {
+      name: entropy_src_rng
+      reseed: 300
+      uvm_test: entropy_src_rng_test
+      uvm_test_seq: entropy_src_rng_vseq
+    }
+
+    {
+      name: entropy_src_rng_max_rate
+      reseed: 400
+      uvm_test: entropy_src_rng_max_rate_test
+      uvm_test_seq: entropy_src_rng_vseq
+      // Set the delay constraint of the RNG agent to at most 1, so that the agent delivers entropy
+      // at the highest possible rate.
+      run_opts: ["+rng_max_delay=1"]
+    }
+
+    {
+      name: entropy_src_rng_with_xht_rsps
+      uvm_test: entropy_src_rng_test
+      uvm_test_seq: entropy_src_rng_vseq
+      run_opts: ["+xht_only_default_rsp=0"]
+    }
+
+    {
+      name: entropy_src_stress_all
+      uvm_test: entropy_src_stress_all_test
+      uvm_test_seq: entropy_src_stress_all_vseq
+    }
+
+    {
+      name: entropy_src_stress_all_with_rand_reset
+      reseed: 10
+    }
+
+    {
+      name: entropy_src_fw_ov
+      reseed: 300
+      uvm_test: entropy_src_fw_ov_test
+      uvm_test_seq: entropy_src_rng_vseq
+    }
+
+    {
+      name: entropy_src_fw_ov_contiguous
+      uvm_test: entropy_src_fw_ov_contiguous_test
+      uvm_test_seq: entropy_src_fw_ov_contiguous_vseq
+    }
+
+    {
+     name: entropy_src_intr
+     uvm_test: entropy_src_intr_test
+     uvm_test_seq: entropy_src_intr_vseq
+    }
+
+    {
+      name: entropy_src_functional_alerts
+      uvm_test: entropy_src_alert_test
+      uvm_test_seq: entropy_src_alert_vseq
+    }
+
+    {
+      name: entropy_src_cfg_regwen
+      uvm_test: entropy_src_cfg_regwen_test
+      uvm_test_seq: entropy_src_cfg_regwen_vseq
+    }
+
+    {
+      name: entropy_src_functional_errors
+      reseed: 1000
+      uvm_test: entropy_src_functional_errors_test
+      uvm_test_seq: entropy_src_err_vseq
+    }
+  ]
+
+  // List of regressions.
+  regressions: [
+    {
+      name: smoke
+      tests: ["entropy_src_smoke"]
+    }
+    {
+      name: live
+      tests: ["entropy_src_rng", "entropy_src_fw_ov"]
+    }
+  ]
+
+  component_a: "uvm_test_top.env.scoreboard"
+  id_a : _ALL_
+  verbosity_a: UVM_FULL
+  phase_a: run
+
+  component_b: "uvm_test_top.env.virtual_sequencer"
+  id_b : _ALL_
+  verbosity_b: UVM_FULL
+  phase_b: run
+
+  run_modes: [
+    {
+      name: set_verbosity_comp_a_uvm_debug
+      run_opts: ["+uvm_set_verbosity={component_a},{id_a},{verbosity_a},{phase_a}"]
+    }
+    {
+      name: set_verbosity_comp_b_uvm_debug
+      run_opts: ["+uvm_set_verbosity={component_b},{id_b},{verbosity_b},{phase_b}"]
+    }
+    {
+      name: short_run
+      run_opts: ["+test_timeout_ns=40_000_000"]
+    }
+  ]
+}

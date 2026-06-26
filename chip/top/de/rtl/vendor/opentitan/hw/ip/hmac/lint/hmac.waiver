@@ -1,0 +1,9 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+#
+# waiver file for HMAC
+
+# ARITH_CONTEXT
+waive -rules {ARITH_CONTEXT} -location {hmac.sv}  -regexp {Bitlength of arithmetic operation 'i % 2' is self-determined in this context} \
+      -comment "Intended"

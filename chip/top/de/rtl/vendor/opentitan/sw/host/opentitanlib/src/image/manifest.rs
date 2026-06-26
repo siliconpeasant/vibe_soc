@@ -1,0 +1,314 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+//! Structs for reading and writing manifests of flash boot stage images.
+//!
+//! Note: The structs below must match the definitions in
+//! sw/device/silicon_creator/lib/manifest.h.
+
+#![deny(warnings)]
+#![deny(unused)]
+#![deny(unsafe_code)]
+
+use crate::with_unknown;
+use anyhow::Result;
+use byteorder::{LittleEndian, WriteBytesExt};
+use serde::{Deserialize, Serialize};
+use serde_annotate::Annotate;
+use std::io::Write;
+use zerocopy::{FromBytes, Immutable, IntoBytes, KnownLayout};
+
+// Currently, these definitions must be updated manually but they can be
+// generated using the following commands (requires bindgen):
+//   cargo install bindgen
+//   cd "${REPO_TOP}"
+//   bindgen --allowlist-type manifest_t --allowlist-var "MANIFEST_.*" \
+//      --allowlist-var "CHIP_.*" \
+//      --no-doc-comments --no-layout-tests \
+//      sw/device/silicon_creator/lib/manifest.h \
+//      sw/device/silicon_creator/lib/base/chip.h \
+//      -- -I./ -Isw/device/lib/base/freestanding
+// TODO: Generate some constants as hex if possible, replacing manually for now.
+
+pub const CHIP_MANIFEST_SIZE: u32 = 1024;
+
+// TODO(moidx): Update to a valid number once we figure out a manifest
+// versioning scheme.
+pub const CHIP_MANIFEST_VERSION_MAJOR2: u16 = 0x0002;
+pub const CHIP_MANIFEST_VERSION_MINOR1: u16 = 0x6c47;
+pub const CHIP_MANIFEST_VERSION_MAJOR1: u16 = 0x71c3;
+pub const CHIP_MANIFEST_EXT_TABLE_COUNT: usize = 15;
+pub const MANIFEST_USAGE_CONSTRAINT_UNSELECTED_WORD_VAL: u32 = 0xa5a5a5a5;
+pub const MANIFEST_EXT_ID_SPX_KEY: u32 = 0x94ac01ec;
+pub const MANIFEST_EXT_ID_SPX_SIGNATURE: u32 = 0xad77f84a;
+pub const MANIFEST_EXT_ID_IMAGE_TYPE: u32 = 0x494d4754;
+pub const MANIFEST_EXT_ID_SECVER_WRITE: u32 = 0x3f086a41;
+pub const MANIFEST_EXT_ID_ISFB: u32 = 0x42465349;
+pub const MANIFEST_EXT_ID_ISFB_ERASE: u32 = 0x45465349;
+pub const MANIFEST_EXT_NAME_SPX_KEY: u32 = 0x30545845;
+pub const MANIFEST_EXT_NAME_SPX_SIGNATURE: u32 = 0x31545845;
+pub const MANIFEST_EXT_NAME_IMAGE_TYPE: u32 = 0x494d4754;
+pub const MANIFEST_EXT_NAME_SECVER_WRITE: u32 = 0x56434553;
+pub const MANIFEST_EXT_NAME_ISFB: u32 = 0x42465349;
+pub const MANIFEST_EXT_NAME_ISFB_ERASE: u32 = 0x45465349;
+pub const CHIP_ROM_EXT_IDENTIFIER: u32 = 0x4552544f;
+pub const CHIP_BL0_IDENTIFIER: u32 = 0x3042544f;
+pub const CHIP_ROM_EXT_SIZE_MIN: u32 = 8788;
+pub const CHIP_ROM_EXT_SIZE_MAX: u32 = 0x10000;
+pub const CHIP_BL0_SIZE_MIN: u32 = 8788;
+pub const CHIP_BL0_SIZE_MAX: u32 = 0x70000;
+
+with_unknown! {
+    pub enum ManifestKind: u32 {
+        RomExt = CHIP_ROM_EXT_IDENTIFIER,
+        Application = CHIP_BL0_IDENTIFIER,
+    }
+}
+
+/// Manifest for boot stage images stored in flash.
+#[repr(C)]
+#[derive(KnownLayout, Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct Manifest {
+    pub signature: SigverifyBuffer,
+    pub usage_constraints: ManifestUsageConstraints,
+    pub pub_key: SigverifyBuffer,
+    pub address_translation: u32,
+    pub identifier: u32,
+    pub manifest_version: ManifestVersion,
+    pub signed_region_end: u32,
+    pub length: u32,
+    pub version_major: u32,
+    pub version_minor: u32,
+    pub security_version: u32,
+    pub timestamp: Timestamp,
+    pub binding_value: KeymgrBindingValue,
+    pub max_key_version: u32,
+    pub code_start: u32,
+    pub code_end: u32,
+    pub entry_point: u32,
+    pub extensions: ManifestExtTable,
+}
+
+/// A type that holds 2 16-bit values for manifest major and minor format versions.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default, Copy, Clone)]
+pub struct ManifestVersion {
+    pub minor: u16,
+    pub major: u16,
+}
+
+/// A type that holds 1964 32-bit words for SPHINCS+ signatures.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Copy, Clone)]
+pub struct SigverifySpxSignature {
+    pub data: [u32; 1964usize],
+}
+
+impl Default for SigverifySpxSignature {
+    fn default() -> Self {
+        Self {
+            data: [0; 1964usize],
+        }
+    }
+}
+
+/// Extension header.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default, Serialize, Deserialize)]
+pub struct ManifestExtHeader {
+    pub identifier: u32,
+    pub name: u32,
+}
+
+impl ManifestExtHeader {
+    pub fn write(&self, dest: &mut impl Write) -> Result<()> {
+        dest.write_all(self.as_bytes())?;
+        Ok(())
+    }
+}
+
+/// SPHINCS+ signature manifest extension.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct ManifestExtSpxSignature {
+    pub header: ManifestExtHeader,
+    pub signature: SigverifySpxSignature,
+}
+
+/// A type that holds 8 32-bit words for SPHINCS+ public keys.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default, Copy, Clone)]
+pub struct SigverifySpxKey {
+    pub data: [u32; 8usize],
+}
+
+/// SPHINCS+ public key manifest extension.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct ManifestExtSpxKey {
+    pub header: ManifestExtHeader,
+    pub key: SigverifySpxKey,
+}
+
+/// A type that holds 96 32-bit words for RSA-3072.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug)]
+pub struct SigverifyBuffer {
+    pub data: [u32; 96usize],
+}
+
+impl Default for SigverifyBuffer {
+    fn default() -> Self {
+        Self { data: [0; 96usize] }
+    }
+}
+
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct ManifestExtImageType {
+    pub header: ManifestExtHeader,
+    pub image_type: u32,
+}
+
+/// SecVer Write manifest extension
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct ManifestExtSecVerWrite {
+    pub header: ManifestExtHeader,
+    pub write: u32,
+}
+
+/// Integrator Specific Firmware Binding product expression.
+#[derive(Debug, Deserialize, Annotate)]
+pub struct ManifestExtIsfbProductExpr {
+    pub mask: u32,
+    pub value: u32,
+}
+
+/// Integrator Specific Firmware Binding manifest extension.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ManifestExtIsfb {
+    pub header: ManifestExtHeader,
+    pub strike_mask: u128,
+    pub product_expr_count: u32,
+    pub product_expr: Vec<ManifestExtIsfbProductExpr>,
+}
+
+impl ManifestExtIsfb {
+    pub fn write(&self, dest: &mut impl Write) -> Result<()> {
+        self.header.write(dest)?;
+        dest.write_u128::<LittleEndian>(self.strike_mask)?;
+        dest.write_u32::<LittleEndian>(self.product_expr_count)?;
+        for x in &self.product_expr {
+            dest.write_u32::<LittleEndian>(x.mask)?;
+            dest.write_u32::<LittleEndian>(x.value)?;
+        }
+        Ok(())
+    }
+
+    pub fn to_vec(&self) -> Result<Vec<u8>> {
+        let mut buf = Vec::new();
+        self.write(&mut buf)?;
+        Ok(buf)
+    }
+}
+
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct ManifestExtIsfbErasePolicy {
+    pub header: ManifestExtHeader,
+    pub erase_allowed: u32,
+}
+
+/// A type that holds the 256-bit device identifier.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct LifecycleDeviceId {
+    pub device_id: [u32; 8usize],
+}
+
+/// Manifest usage constraints.
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug)]
+pub struct ManifestUsageConstraints {
+    pub selector_bits: u32,
+    pub device_id: LifecycleDeviceId,
+    pub manuf_state_creator: u32,
+    pub manuf_state_owner: u32,
+    pub life_cycle_state: u32,
+}
+
+impl Default for ManifestUsageConstraints {
+    fn default() -> Self {
+        Self {
+            selector_bits: 0,
+            device_id: LifecycleDeviceId {
+                device_id: [MANIFEST_USAGE_CONSTRAINT_UNSELECTED_WORD_VAL; 8usize],
+            },
+            manuf_state_creator: MANIFEST_USAGE_CONSTRAINT_UNSELECTED_WORD_VAL,
+            manuf_state_owner: MANIFEST_USAGE_CONSTRAINT_UNSELECTED_WORD_VAL,
+            life_cycle_state: MANIFEST_USAGE_CONSTRAINT_UNSELECTED_WORD_VAL,
+        }
+    }
+}
+
+/// Manifest timestamp
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct Timestamp {
+    pub timestamp_low: u32,
+    pub timestamp_high: u32,
+}
+
+#[repr(C)]
+#[derive(Immutable, IntoBytes, FromBytes, Debug, Default)]
+pub struct KeymgrBindingValue {
+    pub data: [u32; 8usize],
+}
+
+#[repr(C)]
+#[derive(KnownLayout, Immutable, IntoBytes, FromBytes, Debug, Default, Copy, Clone)]
+pub struct ManifestExtTableEntry {
+    pub identifier: u32,
+    pub offset: u32,
+}
+
+#[repr(C)]
+#[derive(KnownLayout, Immutable, IntoBytes, FromBytes, Debug, Default, Copy, Clone)]
+pub struct ManifestExtTable {
+    pub entries: [ManifestExtTableEntry; CHIP_MANIFEST_EXT_TABLE_COUNT],
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::mem::{offset_of, size_of};
+
+    /// Checks the layout of the manifest struct.
+    ///
+    /// Implemented as a function because using `offset_of!` at compile-time
+    /// requires a nightly compiler.
+    #[test]
+    pub fn test_manifest_layout() {
+        assert_eq!(offset_of!(Manifest, signature), 0);
+        assert_eq!(offset_of!(Manifest, usage_constraints), 384);
+        assert_eq!(offset_of!(Manifest, pub_key), 432);
+        assert_eq!(offset_of!(Manifest, address_translation), 816);
+        assert_eq!(offset_of!(Manifest, identifier), 820);
+        assert_eq!(offset_of!(Manifest, manifest_version), 824);
+        assert_eq!(offset_of!(Manifest, signed_region_end), 828);
+        assert_eq!(offset_of!(Manifest, length), 832);
+        assert_eq!(offset_of!(Manifest, version_major), 836);
+        assert_eq!(offset_of!(Manifest, version_minor), 840);
+        assert_eq!(offset_of!(Manifest, security_version), 844);
+        assert_eq!(offset_of!(Manifest, timestamp), 848);
+        assert_eq!(offset_of!(Manifest, binding_value), 856);
+        assert_eq!(offset_of!(Manifest, max_key_version), 888);
+        assert_eq!(offset_of!(Manifest, code_start), 892);
+        assert_eq!(offset_of!(Manifest, code_end), 896);
+        assert_eq!(offset_of!(Manifest, entry_point), 900);
+        assert_eq!(offset_of!(Manifest, extensions), 904);
+        assert_eq!(size_of::<Manifest>(), CHIP_MANIFEST_SIZE as usize);
+    }
+}

@@ -1,0 +1,419 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: kmac
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/intr_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/mem_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/shadow_reg_errors_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "kmac_sec_cm_testplan.hjson"]
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            KMAC smoke test will contain a number of rounds, and acts as a base for many other tests.
+            In each round, we run a full KMAC hashing operation:
+              - Randomly enable interrupts, operation mode (SHA3/SHAKE/CSHAKE/KMAC), key length (if
+                applicable), constraining all settings to be legal.
+              - Set function name to "KMAC" and set customization string as empty if applicable.
+              - Randomly set endianness of input msg and internal keccak state.
+              - Randomly provide a sideloaded key, do not set cfg.sideload.
+              - Set output length between 1-`keccak_rate` bytes if applicable.
+              - Randomly select either SW or EDN as the source of entropy
+              - Trigger KMAC to start absorbing input message.
+                - During absorption stage randomly read from STATE window, expect 0.
+              - Write message to MSG_FIFO window, maximum length of 32 bytes.
+              - Check SHA3 engine status.
+              - Trigger KMAC to finish absorbing stage, check kmac_done is set and status.squeeze is
+                set.
+              - Read output digest, and compare against output from reference C++ model.
+                - In masked configuration: both shares are XORed to get unmasked result digest.
+                - In unmasked configuration: Share1 is the result digest, Share2 should be 0.
+              - Signal cmd.done to tell KMAC to clear internal state.
+              - Try reading output digest again, confirm that it is 0.
+
+              This test, and all other tests in the testplan, will be checked for correctness
+              in two different ways:
+              - first, a DPI-C model is used to check that the correct digest value is produced
+              - a cycle-accurate model is implemented in the scoreboard to provide constant checks
+                during each hash operation and ensure that internal state is being updated
+                correctly
+            '''
+      stage: V1
+      tests: ["{name}_smoke"]
+    }
+    {
+      name: long_msg_and_output
+      desc: '''
+            Same as the smoke test, except with a message of up to 100KB.
+            Max firmware input size for KMAC is around 392KB, but this is too large for a DV
+            simulation.
+            Average input size from firmware would be around 60-100KB, so we use 100KB as a max
+            input size for DV, but will enable easy extensibility for emulation testing where we can
+            enable much larger messages.
+            Allow output length to vary up to 1KB (for XOF functions).
+            If output length is greater than `keccak_rate` bytes, keccak rounds will be run manually to
+            squeeze extra output data.
+            Set function name as "KMAC" and enable full randomization of customization string (if
+            applicable).
+            '''
+      stage: V2
+      tests: ["{name}_long_msg_and_output"]
+    }
+    {
+      name: burst_write
+      desc: '''
+            This is the same as the long_message test, except we burst-write chunks of the message
+            into the msg_fifo, and disable intermediate status/CSR checks.
+            '''
+      stage: V2
+      tests: ["{name}_burst_write"]
+    }
+    {
+      name: test_vectors
+      desc: '''
+            These tests drive NIST test vectors for SHA3/SHAKE/KMAC into the design and check
+            the output against the expected digest values.
+            '''
+      stage: V2
+      tests: ["{name}_test_vectors_sha3_224", "{name}_test_vectors_sha3_256",
+              "{name}_test_vectors_sha3_384", "{name}_test_vectors_sha3_512",
+              "{name}_test_vectors_shake_128", "{name}_test_vectors_shake_256",
+              "{name}_test_vectors_kmac", "{name}_test_vectors_kmac_xof"]
+    }
+    {
+      name: sideload
+      desc: '''
+            Same as the smoke test, except we set cfg.sideload and provide a
+            valid sideloaded key as well as a valid SW-provided key.
+            KMAC should operate on the sideloaded key regardless of the cfg_shadowed.sideload field
+            value.
+            '''
+      stage: V2
+      tests: ["{name}_sideload"]
+    }
+    {
+      name: app
+      desc: '''
+            Test that the Keymgr/ROM/LC can all initiate a KMAC operation through
+            the application interface - Keymgr uses KMAC hash, while ROM/LC use CShake.
+            Use an array of kmac_app_agents to send message data to the KMAC and to control
+            the hashing logic, and set cfg.sideload if the Keymgr is enabled.
+            The result digest sent to the kmac_app_agent will be compared against the result from
+            the DPI reference model.
+            In addition, read from the STATE window afterwards and confirm that this access is
+            blocked and will return 0.
+            '''
+      stage: V2
+      tests: ["{name}_app"]
+    }
+    {
+      name: app_with_partial_data
+      desc: '''
+            Based on the kmac_app test, this test will send partial data from application interface
+            by sending `strb` with values other than `8'hFF`.
+            Because the scoreboard is cycle accurate and does not support this feature, this test
+            will not check `status` and `intr_state` registers, but will check other registers and
+            all interface data including digest.
+            '''
+      stage: V2
+      tests: ["{name}_app_with_partial_data"]
+   }
+   {
+      name: entropy_refresh
+      desc: ''' Test entropy interface for KMAC.
+
+            This test randomly chooses to execute either a SW-controlled hash or a hash from the
+            App interface.
+            All configuration fields are left as is, but now we will request EDN entropy by setting
+            the following registers with random value:
+            - "cmd.entropy_req": Request an EDN entropy
+            - "cmd.hash_cnt_clear": Clear the entropy_refresh_hash_cnt
+            - "entropy_refresh_threshold_shadowed": The threshold when KMAC should request an EDN
+              entropy
+
+            In masked mode, scoreboard will check:
+            - Register `entropy_refresh_hash_cnt` value
+            - KMAC requests EDN at the correct time
+
+            In unmasked mode, scoreboard will check:
+            - Register `entropy_refresh_hash_cnt` always returns 0
+            '''
+      stage: V2
+      tests: ["{name}_entropy_refresh"]
+   }
+   {
+      name: error
+      desc: '''
+            Try several error sequences:
+
+            - Update key/prefix/config during absorption/process/squeeze stage.
+            - Write msg to msg_fifo during process/squeeze stage
+            - When in KMAC mode, set the function name to not "KMAC"
+            - Incorrect SHA3 control flow:
+              - Issue Process/Run/Done cmds before issuing Start
+              - Issue Run/Done before issuing Process
+              - Issue Start after issuing Process
+              - If squeezing data, issue Start/Process after issuing Run
+            - Incorrect KMAC configurations (e.g. set KMAC strength as 512).
+            - Provide software inputs during operation of the application interface
+            '''
+      stage: V2
+      tests: ["{name}_error"]
+    }
+    {
+      name: key_error
+      desc: ''' Test kmac responses correctly when keymgr app sends request but key is not valid.
+            **Stimulus**:
+            - Configure kmac and send keymgr request, but did not set valid bit for keymgr key
+              input.
+            - Wait randomly clock cycles.
+            - Issue `err_processed`, then wait for the keymgr interface handshake to finish.
+            - Repeat the above sequence a few times.
+            - Issue correct kmac request from app or sw interface.
+
+            **Check**:
+            - Check error related registers including `err_code`, `status`, and `interrupt`.
+            - Check keymgr interface responses with all zero digests and error bit is set.
+            - Check kmac can resume normal functionalities after processing this error case.
+            '''
+      stage: V2
+      tests: ["{name}_key_error"]
+    }
+    {
+      name: sideload_invalid
+      desc: ''' Test kmac responses correctly sideloaded key is invalidated.
+            **Stimulus**:
+            - Configure kmac and send keymgr request.
+            - Wait until random FSM app state is entered.
+            - Invalidate the sideloaded key by forcing the .valid signal to 0.
+            - Repeat the above sequence a few times to try different configurations.
+
+            **Check**:
+            - Check error related registers including `err_code`.
+            - Check keymgr interface have responses where all digests are zero and the error
+              bit is set.
+            - Check kmac can resume normal functionalities after processing this error case.
+            '''
+      stage: V2
+      tests: ["{name}_sideload_invalid"]
+    }
+    {
+      name: edn_timeout_error
+      desc: ''' Test kmac responses correctly when EDN response timeout.
+            Based on kmac app sequence, this sequence configures kmac to ensure an EDN timeout
+            error by writing `entropy_period.wait_timer` and `entropy_period.prescaler` registers.
+            **Check**:
+            - Check error related registers including `err_code`, `status`, and `interrupt`.
+            - Check keymgr interface responses with error bit sets to 1.
+            - Check kmac can resume normal functionalities after processing this error case.
+            - Check timeout error will not trigger if the `entropy_mode` is set to SW, or masking
+              is disabled.
+            '''
+      stage: V2
+      tests: ["{name}_edn_timeout_error"]
+    }
+    {
+      name: entropy_mode_error
+      desc: ''' Test kmac responses correctly when entropy mode is configured incorrectly.
+            Based on kmac edn_timeout sequence, this sequence write incorrect
+            `ral.cfg_shadowed.entropy_mode` before entropy is fetched.
+            **Check**:
+            - Check error related registers including `err_code`, `status`, and `interrupt`.
+            - Check keymgr interface responses with error bit sets to 1.
+            - Check kmac can resume normal functionalities after processing this error case.
+            - Check timeout error will not trigger if masking is disabled.
+            '''
+      stage: V2
+      tests: ["{name}_entropy_mode_error"]
+   }
+    {
+      name: entropy_ready_error
+      desc: ''' Test kmac responses correctly when entropy_ready field is not set.
+            Based on kmac app sequence, this sequence does not write `1` to
+            `ral.cfg_shadowed.entropy_ready` field before a kmac operation.
+            **Check**:
+            - If masking is enabled and the kmac operation is EDN mode:
+              - If it is a SW operation, check error related registers including `err_code`,
+                `status`, and `interrupt`.
+              - If it is an APP operation, check keymgr interface responses with error bit sets to
+                `1`.
+            - If masking is not enabled or the operation does not require entropy:
+              - Check no error triggered.
+            '''
+      stage: V2
+      tests: ["{name}_entropy_ready_error"]
+   }
+   {
+      name: lc_escalation
+      desc: '''
+            Randomly set `lc_escalate_en` to value that is not `Off` during Kmac operations.
+
+            **Checks**:
+            - Fatal alert fires continuously until reset is issued.
+            - Status fields: `alert_fatal_fault` is set to 1 and `sha3_idle` is reset to 0.
+            - Kmac does not accept any SW or APP requests.
+            - Digest window always output all 0s.
+            '''
+      stage: V2
+      tests: ["{name}_lc_escalation"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            - Combine above sequences in one test to run sequentially, except csr sequence and
+              some error tests that disabled scoreboard.
+            - Randomly add reset between each sequence'''
+      stage: V2
+      tests: ["kmac_stress_all"]
+    }
+    {
+      name: throughput
+      desc: '''
+            Measure the throughput of the various hashing calculations and make sure they correspond
+            to the expected throughput range for the design.
+            '''
+      stage: V3
+      tests: ["{name}_throughput"]
+    }
+  ]
+
+  covergroups: [
+    {
+      name: config_cg
+      desc: '''
+            Covers that all valid configuration settings for the KMAC have been tested.
+            Individual config settings that will be covered include:
+            - hashing mode (sha3/shake/kmac)
+            - security strength (128/224/256/384/512)
+            - key length (128/192/256/384/512)
+            - message endianness enable/disable
+            - digest endianness enable/disable
+            - XOF mode when using KMAC hashing
+            All valid combinations of the above will also be crossed.
+            '''
+    }
+    {
+      name: msg_len_cg
+      desc: '''
+            Covers various input message length ranges, to ensure that KMAC can operate successfully
+            on different sized messages.
+            The minimum tested msg length is 0 bytes, and the maximum length is 10_000 bytes,
+            we will cover that an acceptable distribution of lengths has been seen, and specifically
+            cover some corner cases (like length 0).
+            '''
+    }
+    {
+      name: output_digest_len_cg
+      desc: '''
+            Similar to the `msg_len_cg`, we also want to cover various output digest lengths to
+            ensure that KMAC can successfully produce outputs of varying sizes.
+            Note that this only applies to XOF functions, as SHA3 functions have a fixed output
+            length.
+            '''
+    }
+    {
+      name: prefix_range_cg
+      desc: '''
+            The prefix used for CSHAKE and KMAC (function_name + customization_string) are only
+            allowed to be valid alphabet letters, or a space character.
+            This covergroup covers that all of these characters have appeared in a prefix value.
+            '''
+    }
+    {
+      name: msgfifo_write_mask_cg
+      desc: '''
+            Covers that the msgfifo has been written using all possible TLUL masks.
+            '''
+    }
+    {
+      name: msgfifo_level_cg
+      desc: '''
+            Covers that all possible fifo statuses have been seen when running different hash
+            operations (like sha3/shake/cshake/kmac), such as various fifo depths, fifo full, and
+            fifo empty.
+            '''
+    }
+    {
+      name: sha3_status_cg
+      desc: '''
+            Covers that all sha3-related status fields have eventually been seen.
+            '''
+    }
+    {
+      name: state_read_mask_cg
+      desc: '''
+            Covers that the state windows have been read using all possible TLUL masks.
+            '''
+    }
+    {
+      name: cmd_process_cg
+      desc: '''
+            Covers that the KMAC can handle seeing a `CmdProcess` command during the following sets
+            of scenarios:
+            - various msgfifo status (full/empty/in between)
+            - while keccak rounds are currently active/inactive
+            '''
+    }
+    {
+      name: sideload_cg
+      desc: '''
+            Covers that the KMAC sees scenarios where the sideloaded key is provided and should be
+            used (`en_sideload==1`, `app_mode==AppKeymgr`), and scenarios where the sideloaded key
+            is provided but should not be used.
+            '''
+    }
+    {
+      name: app_cg
+      desc: '''
+            Covers several scenarios related to the app interface:
+            - A single data beat is sent
+            - All partial data lengths have been seen (only applies to the last data beat)
+            - Errors are reported through this interface
+            - `Done` signal is sent while keccak rounds are currently active/inactive
+
+            Note that this covergroup will be duplicated once per app interface.
+            '''
+    }
+    {
+      name: app_sw_cfg_cg
+      desc: '''
+            Covers several scenarios related to the app interface and cfg_shadowed register value:
+            - Hash_mode field value.
+            - Kmac_en field value.
+            - Kstrength field value.
+
+            These sw register settings should not affect kmac app interface calculation.
+            Note that this covergroup will be duplicated once per app interface.
+            '''
+   }
+   {
+      name: entropy_timer_cg
+      desc: '''
+            Cover the values for the entropy_period register's `prescaler` and `wait_timer` fields.
+            Cross these field ranges with whether the entropy EDN mode is on or off.
+            '''
+   }
+   {
+      name: error_cg
+      desc: '''
+            Covers all error scenarios:
+            - ErrKeyNotValid: covers that secret key is invalid when KeyMgr initiates App operation
+            - ErrSwPushedMsgFifo: covers that SW writes the msgfifo while App interface is active
+            - ErrSwIssuedCmdInAppActive: covers that SW writes all possible commands to the KMAC
+                                         while App interface is active
+            - ErrWaitTimerExpired: covers that the KMAC timed out while waiting for EDN entropy
+            - ErrIncorrectEntropyMode: covers that incorrect entropy modes are detected by the KMAC
+            - ErrUnexpectedModeStrength: covers that 128-bit strength is seen for SHA3, and all but
+                                         128/256 bit strengths are seen for XOF functions
+            - ErrIncorrectFunctionName: covers that the function name is configured incorrectly
+                                        when KMAC mode is enabled
+            - ErrSwCmdSequence: covers that SW issues commands to the KMAC out of order
+            '''
+    }
+  ]
+}

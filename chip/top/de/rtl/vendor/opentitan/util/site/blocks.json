@@ -1,0 +1,197 @@
+{
+    "high-speed-crossbar": {
+        "name": "High Speed Crossbar",
+        "data_file": "hw/ip/tlul/data/tlul.prj.hjson",
+        "report": "/hw/top_earlgrey/ip/xbar_main/dv/autogen"
+    },
+    "ibex": {
+        "name": "Ibex",
+        "data_file": "hw/top_earlgrey/ip_autogen/rv_core_ibex/data/rv_core_ibex.hjson",
+        "report": null
+    },
+    "interrupt-controller": {
+        "name": "Interrupt Controller",
+        "data_file": "hw/top_earlgrey/ip_autogen/rv_plic/data/rv_plic.hjson",
+        "report": null
+    },
+    "debug-module": {
+        "name": "Debug Module",
+        "data_file": "hw/ip/rv_dm/data/rv_dm.hjson",
+        "report": "/hw/ip/rv_dm/dv"
+    },
+    "rom": {
+        "name": "ROM",
+        "data_file": "hw/ip/rom_ctrl/data/rom_ctrl.hjson",
+        "report": "/hw/ip/rom_ctrl/dv"
+    },
+    "main-sram": {
+        "name": "Main SRAM",
+        "data_file": "hw/ip/sram_ctrl/data/sram_ctrl.hjson",
+        "report": "/hw/ip/sram_ctrl_main/dv"
+    },
+    "key-manager": {
+        "name": "Key Manager",
+        "data_file": "hw/ip/keymgr/data/keymgr.hjson",
+        "report": "/hw/ip/keymgr/dv"
+    },
+    "otbn": {
+        "name": "OTBN",
+        "data_file": "hw/ip/otbn/data/otbn.hjson",
+        "report": "/hw/ip/otbn/dv/uvm"
+    },
+    "aes": {
+        "name": "AES",
+        "data_file": "hw/ip/aes/data/aes.hjson",
+        "report": "/hw/ip/aes_unmasked/dv"
+    },
+    "kmac": {
+        "name": "KMAC",
+        "data_file": "hw/ip/kmac/data/kmac.hjson",
+        "report": "/hw/ip/kmac_unmasked/dv"
+    },
+    "hmac": {
+        "name": "HMAC",
+        "data_file": "hw/ip/hmac/data/hmac.hjson",
+        "report": "/hw/ip/hmac/dv"
+    },
+    "flash": {
+        "name": "Flash",
+        "data_file": "hw/top_earlgrey/ip_autogen/flash_ctrl/data/flash_ctrl.hjson",
+        "report": "/hw/top_earlgrey/ip_autogen/flash_ctrl/dv"
+    },
+    "edn": {
+        "name": "EDN",
+        "data_file": "hw/ip/edn/data/edn.hjson",
+        "report": "/hw/ip/edn/dv"
+    },
+    "csrng": {
+        "name": "CSRNG",
+        "data_file": "hw/ip/csrng/data/csrng.hjson",
+        "report": "/hw/ip/csrng/dv"
+    },
+    "entropy-source": {
+        "name": "Entropy Source",
+        "data_file": "hw/ip/entropy_src/data/entropy_src.hjson",
+        "report": "/hw/ip/entropy_src/dv"
+    },
+    "spi-host-0": {
+        "name": "SPI Host",
+        "data_file": "hw/ip/spi_host/data/spi_host.hjson",
+        "report": "/hw/ip/spi_host/dv"
+    },
+    "spi-host-1": {
+        "name": "SPI Host",
+        "data_file": "hw/ip/spi_host/data/spi_host.hjson",
+        "report": "/hw/ip/spi_host/dv"
+    },
+    "usb": {
+        "name": "USB",
+        "data_file": "hw/ip/usbdev/data/usbdev.hjson",
+        "report": "/hw/ip/usbdev/dv"
+    },
+    "peripheral-crossbar": {
+        "name": "Peripheral Crossbar",
+        "data_file": "hw/ip/tlul/data/tlul.prj.hjson",
+        "report": "/hw/top_earlgrey/ip/xbar_peri/dv/autogen"
+    },
+    "otp-fuse-controller": {
+        "name": "OTP Fuse Controller",
+        "data_file": "hw/top_earlgrey/ip_autogen/otp_ctrl/data/otp_ctrl.hjson",
+        "report": "/hw/top_earlgrey/ip_autogen/otp_ctrl/dv"
+    },
+    "life-cycle": {
+        "name": "Life Cycle",
+        "data_file": "hw/ip/lc_ctrl/data/lc_ctrl.hjson",
+        "report": "/hw/ip/lc_ctrl/dv"
+    },
+    "alert-handler": {
+        "name": "Alert Handler",
+        "data_file": "hw/top_earlgrey/ip_autogen/alert_handler/data/alert_handler.hjson",
+        "report": "/hw/top_earlgrey/ip_autogen/alert_handler/dv"
+    },
+    "uart": {
+        "name": "UART",
+        "data_file": "hw/ip/uart/data/uart.hjson",
+        "report": "/hw/ip/uart/dv"
+    },
+    "timers": {
+        "name": "Timers",
+        "data_file": "hw/ip/rv_timer/data/rv_timer.hjson",
+        "report": "/hw/ip/rv_timer/dv"
+    },
+    "gpio": {
+        "name": "GPIO",
+        "data_file": "hw/top_earlgrey/ip_autogen/gpio/data/gpio.hjson",
+        "report": "/hw/top_earlgrey/ip_autogen/gpio/dv"
+    },
+    "i2c": {
+        "name": "I2C",
+        "data_file": "hw/ip/i2c/data/i2c.hjson",
+        "report": "/hw/ip/i2c/dv"
+    },
+    "spi-device": {
+        "name": "SPI Device",
+        "data_file": "hw/ip/spi_device/data/spi_device.hjson",
+        "report": "/hw/ip/spi_device/dv"
+    },
+    "pattern-generators": {
+        "name": "Pattern Generators",
+        "data_file": "hw/ip/pattgen/data/pattgen.hjson",
+        "report": "/hw/ip/pattgen/dv"
+    },
+    "pwm": {
+        "name": "PWM",
+        "data_file": "hw/top_earlgrey/ip_autogen/pwm/data/pwm.hjson",
+        "report": "/hw/top_earlgrey/ip_autogen/pwm/dv"
+    },
+    "retention-sram": {
+        "name": "Retention SRAM",
+        "data_file": "hw/ip/sram_ctrl/data/sram_ctrl.hjson",
+        "report": "/hw/ip/sram_ctrl_ret/dv"
+    },
+    "power-manager": {
+        "name": "Power Manager",
+        "data_file": "hw/top_earlgrey/ip_autogen/pwrmgr/data/pwrmgr.hjson",
+        "report": "/hw/top_earlgrey/ip_autogen/pwrmgr/dv"
+    },
+    "sysrst-controller": {
+        "name": "SYSRST Controller",
+        "data_file": "hw/ip/sysrst_ctrl/data/sysrst_ctrl.hjson",
+        "report": "/hw/ip/sysrst_ctrl/dv"
+    },
+    "aon-timers": {
+        "name": "AON Timer",
+        "data_file": "hw/ip/aon_timer/data/aon_timer.hjson",
+        "report": "/hw/ip/aon_timer/dv"
+    },
+    "clkrst-managers": {
+        "name": "CLK/RST Managers",
+        "data_file": "hw/top_earlgrey/ip_autogen/clkmgr/data/clkmgr.hjson",
+        "report": "hw/top_earlgey/ip_autogen/clkmgr/dv"
+    },
+    "pinmux-padctrl": {
+        "name": "PINMUX/PADCTRL",
+        "data_file": "hw/top_earlgrey/ip_autogen/pinmux/data/pinmux.hjson",
+        "report": null
+    },
+    "adc-controller": {
+        "name": "ADC Controller",
+        "data_file": "hw/ip/adc_ctrl/data/adc_ctrl.hjson",
+        "report": "/hw/ip/adc_ctrl/dv"
+    },
+    "sensor-control": {
+        "name": "Sensor Controller",
+        "data_file": "hw/top_earlgrey/ip/sensor_ctrl/data/sensor_ctrl.hjson",
+        "report": null
+    },
+    "analog-sensor-top": {
+        "name": "Analog Sensor Top",
+        "data_file": "hw/top_earlgrey/ip/ast/data/ast.hjson",
+        "report": null
+    },
+    "padring": {
+        "name": "Padring",
+        "data_file": null,
+        "report": null
+    }
+}

@@ -1,0 +1,251 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  // The `name` field that provides the name of the sim_cfg
+  name: kmac
+
+  // Top level dut name
+  dut: kmac
+
+  // Top level testbench name (sv module).
+  tb: tb
+
+  // Simulator used to sign off this block
+  tool: vcs
+
+  // Fusesoc core file used for building the file list.
+  fusesoc_core: lowrisc:dv:kmac_sim:0.1
+
+  // Testplan hjson file
+  testplan: "{proj_root}/hw/ip/kmac/data/kmac_testplan.hjson"
+
+  // RAL spec - used to generate the RAL model.
+  ral_spec: "{proj_root}/hw/ip/kmac/data/kmac.hjson"
+
+  // Import additional common sim cfg files.
+  import_cfgs: [// Project wide common sim cfg file
+                "{proj_root}/hw/dv/tools/dvsim/common_sim_cfg.hjson",
+                // Common CIP test lists
+                "{proj_root}/hw/dv/tools/dvsim/tests/csr_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/intr_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/tl_access_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/mem_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/alert_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/shadow_reg_errors_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/sec_cm_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/stress_tests.hjson"]
+
+  // Add additional tops for simulation.
+  sim_tops: ["kmac_bind",
+             "kmac_cov_bind",
+             "sec_cm_prim_onehot_check_bind",
+             "sec_cm_prim_sparse_fsm_flop_bind",
+             "sec_cm_prim_count_bind"]
+
+  // Default iterations for all tests - each test entry can override this.
+  reseed: 20
+
+  run_opts: ["+test_timeout_ns=4_000_000_000"]
+
+  // Need to override the default output directory
+  overrides: [
+    {
+      name: scratch_path
+      value: "{scratch_base_path}/{name}_{variant}-{flow}-{tool}"
+    }
+    {
+      name: rel_path
+      value: "hw/ip/{name}_{variant}/dv"
+    }
+  ]
+
+  build_modes: [
+    {
+      name: enable_mask_mode
+      build_opts: ["+define+EN_MASKING=1", "+define+SW_KEY_MASKED=0"]
+      run_opts: ["+enable_masking=1", "+sw_key_masked=0"]
+    }
+    {
+      name: disable_mask_mode
+      build_opts: ["+define+EN_MASKING=0", "+define+SW_KEY_MASKED=0"]
+      run_opts: ["+enable_masking=0", "+sw_key_masked=0"]
+    }
+    {
+      name: disable_mask_mode_with_masked_sw_keys
+      build_opts: ["+define+EN_MASKING=0", "+define+SW_KEY_MASKED=1"]
+      run_opts: ["+enable_masking=0", "+sw_key_masked=1"]
+    }
+  ]
+
+  // Default UVM test and seq class name.
+  uvm_test: kmac_base_test
+  uvm_test_seq: kmac_base_vseq
+
+  // Enable cdc instrumentation.
+  run_opts: ["+cdc_instrumentation_enabled=1"]
+
+  // List of test specifications.
+  tests: [
+    {
+      name: "{name}_smoke"
+      uvm_test_seq: kmac_smoke_vseq
+    }
+    {
+      name: "{name}_long_msg_and_output"
+      uvm_test_seq: kmac_long_msg_and_output_vseq
+      run_opts: ["+test_timeout_ns=10_000_000_000"]
+      run_timeout_mins: 120
+    }
+    {
+      name: "{name}_sideload"
+      uvm_test_seq: kmac_sideload_vseq
+      run_opts: ["+test_timeout_ns=1_000_000_000"]
+    }
+    {
+      name: "{name}_sideload_invalid"
+      uvm_test_seq: kmac_sideload_invalid_vseq
+      run_opts: ["+test_timeout_ns=1_000_000_000"]
+      reseed: 50
+    }
+    {
+      name: "{name}_burst_write"
+      uvm_test_seq: kmac_burst_write_vseq
+      run_opts: ["+test_timeout_ns=500_000_000"]
+    }
+    {
+      name: "{name}_test_vectors_sha3_224"
+      uvm_test_seq: kmac_test_vectors_sha3_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0",
+                 "+test_timeout_ns=5_000_000_000",
+                 "+test_vectors_sha3_variant=224"]
+      run_timeout_mins: 90
+      reseed: 5
+    }
+    {
+      name: "{name}_test_vectors_sha3_256"
+      uvm_test_seq: kmac_test_vectors_sha3_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0",
+                 "+test_timeout_ns=5_000_000_000",
+                 "+test_vectors_sha3_variant=256"]
+      run_timeout_mins: 90
+      reseed: 5
+    }
+    {
+      name: "{name}_test_vectors_sha3_384"
+      uvm_test_seq: kmac_test_vectors_sha3_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0",
+                 "+test_timeout_ns=5_000_000_000",
+                 "+test_vectors_sha3_variant=384"]
+      reseed: 5
+    }
+    {
+      name: "{name}_test_vectors_sha3_512"
+      uvm_test_seq: kmac_test_vectors_sha3_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0",
+                 "+test_timeout_ns=5_000_000_000",
+                 "+test_vectors_sha3_variant=512"]
+      reseed: 5
+    }
+    {
+      name: "{name}_test_vectors_shake_128"
+      uvm_test_seq: kmac_test_vectors_shake_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0",
+                 "+test_timeout_ns=5_000_000_000",
+                 "+test_vectors_shake_variant=128"]
+      run_timeout_mins: 90
+      reseed: 5
+    }
+    {
+      name: "{name}_test_vectors_shake_256"
+      uvm_test_seq: kmac_test_vectors_shake_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0",
+                 "+test_timeout_ns=5_000_000_000",
+                 "+test_vectors_shake_variant=256"]
+      run_timeout_mins: 90
+      reseed: 5
+    }
+    {
+      name: "{name}_test_vectors_kmac"
+      uvm_test_seq: kmac_test_vectors_kmac_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0"]
+      reseed: 5
+    }
+    {
+      name: "{name}_test_vectors_kmac_xof"
+      uvm_test_seq: kmac_test_vectors_kmac_xof_vseq
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0"]
+      reseed: 5
+    }
+    {
+      name: "{name}_app"
+      uvm_test_seq: kmac_app_vseq
+      run_opts: ["+test_timeout_ns=500_000_000"]
+      reseed: 25
+    }
+    {
+      name: "{name}_app_with_partial_data"
+      uvm_test_seq: kmac_app_with_partial_data_vseq
+      run_opts: ["+test_timeout_ns=500_000_000"]
+      reseed: 10
+    }
+    {
+      name: "{name}_entropy_refresh"
+      uvm_test_seq: kmac_entropy_refresh_vseq
+      run_opts: ["+test_timeout_ns=500_000_000"]
+    }
+    {
+      name: "{name}_mubi"
+      uvm_test_seq: kmac_mubi_vseq
+      reseed: 10
+    }
+    {
+      name: "{name}_error"
+      uvm_test_seq: kmac_error_vseq
+    }
+    {
+      name: "{name}_key_error"
+      uvm_test_seq: kmac_key_error_vseq
+    }
+    {
+      name: "{name}_edn_timeout_error"
+      uvm_test_seq: kmac_edn_timeout_error_vseq
+      run_opts: ["+en_scb=0"]
+      reseed: 20
+    }
+    {
+      name: "{name}_entropy_mode_error"
+      uvm_test_seq: kmac_entropy_mode_error_vseq
+      run_opts: ["+en_scb=0"]
+      reseed: 20
+    }
+    {
+      name: "{name}_entropy_ready_error"
+      uvm_test_seq: kmac_entropy_ready_error_vseq
+      reseed: 10
+    }
+    {
+      name: "{name}_lc_escalation"
+      uvm_test_seq: kmac_lc_escalation_vseq
+      reseed: 50
+    }
+    {
+      name: kmac_stress_all
+      run_opts: ["+test_timeout_ns=10_000_000_000",
+                 "+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0"]
+    }
+    {
+      name: kmac_stress_all_with_rand_reset
+      run_opts: ["+test_vectors_dir={build_dir}/fusesoc-work/src/lowrisc_dv_test_vectors_0"]
+      reseed: 10
+    }
+  ]
+
+  // List of regressions.
+  regressions: [
+    {
+      name: smoke
+      tests: ["{name}_smoke"]
+    }
+  ]
+}

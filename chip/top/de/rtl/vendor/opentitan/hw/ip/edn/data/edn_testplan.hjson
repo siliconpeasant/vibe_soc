@@ -1,0 +1,152 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "edn"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/intr_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "edn_sec_cm_testplan.hjson"]
+  testpoints: [
+    {
+      name: smoke
+      desc: '''
+            Verify send instantiate/generate command
+            Verify single endpoint requests
+            Verify endpoint data = genbits data
+            '''
+      stage: V1
+      tests: ["edn_smoke"]
+    }
+    {
+      name: firmware
+      desc: '''
+            Verify SW_CMD_REQ/SW_CMD_STS registers/bits behave as predicted.
+            Verify software mode behaves as predicted.
+            Verify INSTANTIATE/GENERATE software cmds.
+            Verify cmd_fifo_reset bit causes fifos to reset.
+            '''
+      stage: V2
+      tests: ["edn_genbits"]
+    }
+    {
+      name: csrng_commands
+      desc: '''
+            Verify when no/some/all endpoints requesting (test arbiter).
+            Verify boot request mode behaves as predicted.
+            Verify BOOT_INS_CMD/BOOT_GEN_CMD registers.
+            Verify auto request mode behaves as predicted.
+            Verify RESEED_CMD/GENERATE_CMD/MAX_NUM_REQS_BETWEEN_RESEEDS registers.
+            Verify MAIN_SM_STATE register bits behave as predicted.
+            Verify all csrng commands (clen = 0-12, sw_mode, boot/auto_req_mode).
+            Verify with ready randomly asserting/deasserting
+            '''
+      stage: V2
+      tests: ["edn_genbits"]
+    }
+    {
+      name: genbits
+      desc: '''
+            Verify genbits input is transferred to endpoint(s) as predicted.
+            Verify fips bit(s) are properly transferred to endpoint.
+            '''
+      stage: V2
+      tests: ["edn_genbits"]
+    }
+    {
+      name: interrupts
+      desc: '''
+            Verify intr_edn_cmd_req_done interrupt asserts/clears as predicted.
+            Verify intr_edn_fatal_err interrupt asserts/clears as predicted.
+            '''
+      stage: V2
+      tests: ["edn_intr"]
+    }
+    {
+      name: alerts
+      desc: '''
+            Verify recov_alert_sts asserts/clears as predicted.
+            '''
+      stage: V2
+      tests: ["edn_alert"]
+    }
+    {
+      name: errs
+      desc: '''
+            Verify ERR_CODE asserts as predicted.
+            Verify ERR_CODE all reg bits via ERR_CODE_TEST.
+            '''
+      stage: V2
+      tests: ["edn_err"]
+    }
+    {
+      name: disable
+      desc: '''
+            Disable EDN in all states and verify proper operation when re-enabled.
+            '''
+      stage: V2
+      tests: ["edn_disable", "edn_disable_auto_req_mode"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            Combine the other individual testpoints while injecting TL errors and running CSR tests
+            in parallel.
+            '''
+      stage: V2
+      tests: ["edn_stress_all"]
+    }
+  ]
+
+covergroups: [
+    {
+      name: edn_cfg_cg
+      desc: '''
+            Covers that all edn configuration options have been tested.
+            Individual config settings that will be covered include:
+            - boot_req_mode
+            - auto_req_mode
+            - sw_mode (neither boot_req_mode/auto_req_mode)
+            - num_endpoints
+            - num_boot_reqs
+            Cross between num_endpoints and mode.
+            '''
+    }
+    {
+      name: edn_endpoints_cg
+      desc: '''
+            Covers none/some/all endpoints requesting
+            '''
+    }
+    {
+      name: edn_cs_cmds_cg
+      desc: '''
+            Covers the following:
+            - csrng_commands vs clen, flags, glen
+              - sw, auto_req_mode commands (boot_req_mode cmds have no additional data)
+            - ready deasserts during command
+            Crosses between above coverpoints
+            '''
+    }
+    {
+      name: edn_error_cg
+      desc: '''
+            Covers that all fatal errors, all fifo errors and all error codes of edn have been tested.
+            Individual config settings that will be covered include:
+            - 3 different FIFOs: rescmd, gencmd and output
+            - 3 other error codes: ack state machine, main state machine and counter
+            - 3 types of FIFO errors: write/read/state errors
+            '''
+    }
+    {
+      name: edn_alert_cg
+      desc: '''
+            Cover all the recoverable alerts:
+            - Invalid MUBI values: enable field, boot request mode, auto request mode and command FIFO reset
+            - EDN bus comparison
+            '''
+    }
+  ]
+}

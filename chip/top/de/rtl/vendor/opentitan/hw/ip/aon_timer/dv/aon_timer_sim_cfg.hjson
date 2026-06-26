@@ -1,0 +1,109 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  // Name of the sim cfg - typically same as the name of the DUT.
+  name: aon_timer
+
+  // Top level dut name (sv module).
+  dut: aon_timer
+
+  // Top level testbench name (sv module).
+  tb: tb
+
+  // Simulator used to sign off this block
+  tool: vcs
+
+  // Fusesoc core file used for building the file list.
+  fusesoc_core: lowrisc:dv:aon_timer_sim:0.1
+
+  // Testplan hjson file.
+  testplan: "{proj_root}/hw/ip/aon_timer/data/aon_timer_testplan.hjson"
+
+  // RAL spec - used to generate the RAL model.
+  ral_spec: "{proj_root}/hw/ip/aon_timer/data/aon_timer.hjson"
+
+  // Import additional common sim cfg files.
+  import_cfgs: [// Project wide common sim cfg file
+                "{proj_root}/hw/dv/tools/dvsim/common_sim_cfg.hjson",
+                // Common CIP test lists
+                "{proj_root}/hw/dv/tools/dvsim/tests/csr_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/mem_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/alert_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/intr_test.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/tl_access_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/sec_cm_tests.hjson",
+                "{proj_root}/hw/dv/tools/dvsim/tests/stress_tests.hjson"]
+
+  // Add additional tops for simulation.
+  sim_tops: ["aon_timer_bind", "sec_cm_prim_onehot_check_bind"]
+
+  // Default iterations for all tests - each test entry can override this.
+  reseed: 15
+
+  // Add specific exclusion files.
+  vcs_cov_excl_files: ["{proj_root}/hw/ip/aon_timer/dv/cov/aon_timer_unr_excl.el",
+                       "{proj_root}/hw/ip/aon_timer/dv/cov/aon_timer_unr_manually_excluded_excl.el",
+                       "{proj_root}/hw/ip/aon_timer/dv/cov/aon_timer_unr_non_racl_manually_excluded_excl.el",
+                       "{proj_root}/hw/ip/aon_timer/dv/cov/rtl_exclusions_pending_rtl_changes.el"]
+
+  // Default UVM test and seq class name.
+  uvm_test: aon_timer_base_test
+  uvm_test_seq: aon_timer_base_vseq
+
+  // Enable cdc instrumentation.
+  run_opts: ["+cdc_instrumentation_enabled=1"]
+
+  // List of test specifications.
+  tests: [
+    {
+      name: aon_timer_smoke
+      uvm_test_seq: aon_timer_smoke_vseq
+      reseed: 5
+    }
+    {
+      name: aon_timer_prescaler
+      uvm_test_seq: aon_timer_prescaler_vseq
+    }
+    {
+      name: aon_timer_jump
+      uvm_test_seq: aon_timer_jump_vseq
+      reseed: 5
+    }
+    {
+      name: aon_timer_custom_intr
+      uvm_test_seq: aon_timer_custom_intr_vseq
+      reseed: 10
+    }
+    {
+      name: aon_timer_smoke_max_thold
+      uvm_test_seq: aon_timer_smoke_max_thold_vseq
+      reseed: 5
+    }
+    {
+      name: aon_timer_smoke_min_thold
+      uvm_test_seq: aon_timer_smoke_min_thold_vseq
+      reseed: 5
+    }
+    {
+      name: aon_timer_wkup_count_cdc_hi
+      uvm_test_seq: aon_timer_wkup_count_cdc_hi_vseq
+      reseed: 5
+    }
+    {
+      name: aon_timer_alternating_enable_on_off
+      uvm_test_seq: aon_timer_alternating_enable_on_off_vseq
+      reseed: 5
+    }
+  ]
+
+  // List of regressions.
+  regressions: [
+    {
+      name: smoke
+      tests: ["aon_timer_smoke", "aon_timer_prescaler", "aon_timer_jump",
+             "aon_timer_stress_all", "aon_timer_stress_all_with_rand_reset",
+             "aon_timer_csr_rw"]
+    }
+  ]
+}

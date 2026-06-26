@@ -1,0 +1,39 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:tool:check_tool_requirements:0.1"
+description: "Check tool requirements"
+
+filesets:
+  files_check_tool_requirements:
+    files:
+      - check_tool_requirements.py : { copyto: check_tool_requirements.py }
+      - tool_requirements.py : { copyto: tool_requirements.py }
+    file_type: user
+
+scripts:
+  check_tool_requirements_verible:
+    cmd:
+      - python3
+      - check_tool_requirements.py
+      - 'verible'
+    # TODO: Use this syntax once https://github.com/olofk/fusesoc/issues/353 is
+    # fixed. Remove the filesets from the default target, and also remove the
+    # copyto.
+    #filesets:
+    #  - files_check_tool_requirements
+  check_tool_requirements_verilator:
+    cmd:
+      - python3
+      - check_tool_requirements.py
+      - 'verilator'
+
+targets:
+  default:
+    filesets:
+      - files_check_tool_requirements
+    hooks:
+      pre_build:
+        - tool_verilator   ? (check_tool_requirements_verilator)
+        - tool_veriblelint ? (check_tool_requirements_verible)

@@ -1,0 +1,53 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:dv:csrng_env:0.1"
+description: "CSRNG DV UVM environment"
+filesets:
+  files_rtl:
+    depend:
+      - lowrisc:ip:aes
+  files_dv:
+    depend:
+      - lowrisc:dv:ralgen
+      - lowrisc:dv:cip_lib
+      - lowrisc:dv:push_pull_agent
+      - lowrisc:dv:csrng_agent
+      - lowrisc:dv:csr_utils
+      - lowrisc:dv:aes_model_dpi
+    files:
+      - csrng_env_pkg.sv
+      - csrng_agents_if.sv
+      - csrng_path_if.sv
+      - csrng_env_cfg.sv: {is_include_file: true}
+      - csrng_env_cov.sv: {is_include_file: true}
+      - csrng_virtual_sequencer.sv: {is_include_file: true}
+      - csrng_scoreboard.sv: {is_include_file: true}
+      - csrng_env.sv: {is_include_file: true}
+      - seq_lib/csrng_vseq_list.sv: {is_include_file: true}
+      - seq_lib/csrng_base_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_common_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_smoke_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_cmds_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_stress_all_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_intr_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_alert_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_err_vseq.sv: {is_include_file: true}
+      - seq_lib/csrng_regwen_vseq.sv: {is_include_file: true}
+    file_type: systemVerilogSource
+
+generate:
+  ral:
+    generator: ralgen
+    parameters:
+      name: csrng
+      ip_hjson: ../../data/csrng.hjson
+    position: prepend
+
+targets:
+  default:
+    filesets:
+      - files_dv
+    generate:
+      - "!chip_level ? (ral)"

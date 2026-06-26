@@ -1,0 +1,295 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "aes"
+  import_testplans: ["hw/dv/tools/dvsim/testplans/csr_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/shadow_reg_errors_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/alert_test_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/tl_device_access_types_testplan.hjson",
+                     "hw/dv/tools/dvsim/testplans/stress_all_with_reset_testplan.hjson",
+                     "aes_sec_cm_testplan.hjson"]
+  testpoints: [
+   // {
+   //   name: default_setting
+   //   desc: '''
+   //        '''
+   //   stage: V1
+   //   tests: []
+   // }
+    {
+      name: wake_up
+      desc: '''
+           Basic hello world,  encrypt a plain text read it back - decrypt and compare to input.'''
+      stage: V1
+      tests: ["aes_wake_up"]
+    }
+    {
+      name: smoke
+      desc: '''
+           Encrypt a plain text read it back - decrypt and compare to input but use reference model to compare after both encryption and decryption.'''
+      stage: V1
+      tests: ["aes_smoke"]
+    }
+    {
+      name: algorithm
+      desc: '''
+           Compare cypher text from DUT with the output of a C model using same key and data.'''
+           stage: V2
+      tests: ["aes_smoke", "aes_stress", "aes_config_error"]
+    }
+    {
+      name: key_length
+      desc: '''
+           Randomly select key length to verify all supported key lengths are working.'''
+           stage: V2
+      tests: ["aes_stress", "aes_smoke", "aes_config_error"]
+    }
+    {
+      name: back2back
+      desc: '''
+           Back to back Messages are not possible as the DUT need to be idle before writing a new configuration.
+           But Back2back verifies that DUT can handle back to back data blocks and other spacings.'''
+      stage: V2
+      tests: ["aes_b2b", "aes_stress"]
+    }
+    {
+      name: backpressure
+      desc: '''
+        Try to write data to registers without offloading the DUT output to verify Stall functionality.'''
+        stage: V2
+      tests: ["aes_stress"]
+    }
+    {
+      name: multi_message
+      desc: '''
+        Run multiple messages in a random mix of encryption / decryption.
+        Each message should select its mode randomly.'''
+      stage: V2
+      tests: ["aes_stress", "aes_smoke", "aes_config_error", "aes_alert_reset"]
+    }
+    {
+      name: failure_test
+      desc: '''
+            - Tests what happens if a register is written a the wrong time?
+              If a key does not match the key setting etc.
+              Will the DUT ignore or fail gracefully.
+            - Enter a 256bit key but set DUT to use 128bit for encryption.
+              Then enter the 128bit of the key and use for decryption.
+              Will result match plain text and vice.
+            - Write unsupported configurations (Key length and mode are 1 hot, what happens if more than one bit is set.)'''
+      stage: V2
+      tests: ["aes_config_error", "aes_alert_reset", "aes_man_cfg_err"]
+    }
+    {
+      name: trigger_clear_test
+      desc: '''
+            Exercise trigger and clear registers at random times to make sure we handle the different cornercases correctly.
+            Example of a cornercases clearing data input or data output before the data is consumed or the DUT finishes an operation.'''
+      stage: V2
+      tests: ["aes_clear"]
+    }
+    {
+      name: nist_test_vectors
+      desc: '''
+            Verify that the DUT handles the NIST test vectors correctly.'''
+      stage: V2
+      tests: ["aes_nist_vectors"]
+    }
+    {
+      name: nist_test_vectors_gcm
+      desc: '''
+            Verify that the DUT handles the NIST GCM test vectors correctly.'''
+      stage: V2
+      tests: ["aes_nist_vectors_gcm"]
+    }
+    {
+      name: reset_recovery
+      desc: '''
+            Pull reset at random times, make sure DUT recover/resets correctly and there is no residual data left in the registers.'''
+      stage: V2
+      tests: ["aes_alert_reset"]
+    }
+    {
+      name: stress
+      desc: '''
+            This will combine the other individual testpoints to ensure we stress test everything across the board.'''
+      stage: V2
+      tests: ["aes_stress"]
+    }
+    {
+      name: sideload
+      desc: '''
+            Verify that DUT uses sideload correctly when sideload is enabled.
+            and that it ignores any valid on the bus when disabled.'''
+      stage: V2
+      tests: ["aes_stress", "aes_sideload"]
+    }
+    {
+      name: deinitialization
+      desc: '''
+            Make sure that there is no residual data from latest operation. '''
+      stage: V2
+      tests: ["aes_deinit"]
+    }
+    {
+      name: stress_all
+      desc: '''
+            Run assorted sequences back-to-back.
+            '''
+      stage: V2
+      tests: ["aes_stress_all"]
+    }
+    {
+      name: gcm_save_and_restore
+      desc: '''
+            Verify that saving and restoring contexts in GCM works correctly.
+            When triggered, save the current context, clear the entire state, restore the context, and proceed with the operation.
+            '''
+      stage: V2
+      tests: ["aes_gcm_save_restore"]
+    }
+    {
+      name: reseeding
+      desc: '''
+            Verify that internal PRNGs are effectively reseeded upon manually triggering a PRNG reseed, and - depending on the configuration - if the initial key changes.
+            Verify that the masking PRNG is reseeded automatically at the correct reseed rate.
+            To reduce simulation time, the block counter triggering the automatic reseeding is manually changed to lower values.
+            Verify that the PRNGs do not get reseeded unexpectedly.
+            Verify that the data received from EDN effectively propagates into the PRNGs.
+            '''
+      stage: V2S
+      tests: ["aes_reseed"]
+    }
+    {
+      name:fault_inject
+      desc: '''
+            Verify that injecting bit errors in one of the state machines or the round counter triggers an error '''
+      stage: V2S
+        tests: ["aes_fi", "aes_control_fi", "aes_cipher_fi"]
+    }
+  ]
+
+
+covergroups: [
+    {
+     name: key_iv_data_cg
+     desc: '''
+           Covers that these registers have been written in random order and interleaved and that it has triggered an operation.
+           - the individual registers (KEY/IV/DATA) can be written in random order
+           - The writes to these registers can also be interleaved
+           - Data out can be read in random order
+           '''
+    }
+    {
+     name: ctrl_reg_cg
+     desc: '''
+           Covers that all valid settings have been tested.
+           Further more it covers that also illegal values have been tested.
+           Individual control settings that are covered includes:
+           - operation (encode/decode/illegal)
+           - mode (all modes + illegal/aes_none)
+           - key_len (128/192/256 + illegal)
+           - sideload
+           - prng_reseed_rate(all + illegal)
+           - manual operation
+
+           All valid combinations of these will be crossed.
+           '''
+    }
+    {
+     name: ctrl_gcm_reg_cg
+     desc: '''
+           Covers that all valid settings have been tested.
+           Further more it covers that also illegal values have been tested.
+           Individual control settings that are covered include:
+           - phase (all phases including illegal values)
+           - restore after init
+           - save after aad/text
+           '''
+    }
+    {
+     name: gcm_len_cg
+     desc: '''
+           Covers that, when in AES-GCM mode, different sized AAD and TEXT blocks have
+           been tested. This includes:
+           - enc / dec
+           - zero sized AAD block
+           - Full and partial AAD / TEXT blocks
+           - Single and multiple AAD / TEXT blocks
+           '''
+    }
+    {
+     name: ctrl_aux_cg
+     desc: '''
+           Covers when enabled a complete write forces a reseed.
+           this is done by checking the DUT goes out of idle state after a full key has been provided.
+           also covers that this is not the case then key_touch_forces_reseed = 0.
+           '''
+    }
+    {
+     name: trigger_cg
+     desc: '''
+           This covergroup has two very different cover points.
+           - start covers that a start initiates an operation in manual mode.
+             and that it does not when not in manual mode
+           - that a write to key_iv_data_in/data_out_clear clear clears the data from the register
+            Additionally it covers that going from automatic mode to manual mode it is not possible to trigger a start without configuring the DUT (writing to CTRL should trigger a need for new configuration)
+           The prng reseed is covered by the reseed_cg
+           '''
+    }
+    {
+     name: status_cg
+     desc: '''
+           Covers the different status bits was seen
+           '''
+    }
+    {
+     name: reseed_cg
+     desc: '''
+           Cover that the different reseed configurations has been used.
+           - reseed_rate (per_1, per_64, per_8k)
+           '''
+    }
+    {
+     name: fault_inject_cg
+     desc: '''
+           Cover that a recoverable error has been seen:
+           - When the DUT is idle but just about to start
+           - When the DUT is busy
+           '''
+    }
+    {
+     name: self_clearing_cg
+     desc: '''
+           Cover that the DUT self clearing is working correctly.
+           An attack could be made by triggering an operation after a reset without configuring the DUT.
+           The self clearing mechanism should prevent the DUT from starting.
+           This mechanism should also clear any data in the output register with random data
+           After a reset is pulled two things will be covered
+           - manually write trigger.start and poll status.idle and make sure the DUT stays in idle.
+           - read output registers make sure output is no longer present
+           '''
+    }
+    {
+     name: dut_busy_cg
+     desc: '''
+           Cover that a busy DUT cannot be manipulated.
+           This includes:
+           - Trying to change the configuration (CTRL)
+           - Trying to change the key
+           - Trying to change the IV
+           '''
+    }
+    {
+     name: sideload_cg
+     desc: '''
+           Cover sideload functionality
+           This includes:
+           - That an operation does not start before a valid key is present at the sideload interface with sideload enabled.
+           - That a key on the sideload interface is not consumed when sideload is disabled.
+           '''
+    }
+
+  ]
+}

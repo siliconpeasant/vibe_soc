@@ -46,3 +46,26 @@ make sim      # 运行仿真
 ```
 
 `de/rtl/vibe_soc_top.v`、`.integrate.json` 和 `.integrate.csv` 均为自动生成文件。端口或子模块变化后应使用 `soc_update`/`soc_integrate` MCP 刷新，禁止直接编辑顶层 RTL。
+
+## OpenTitan Vendor Mode
+
+`chip/top` now also carries a staged OpenTitan Earlgrey vendor island for bootstrap bring-up.
+The default `make` flow now enters the OpenTitan vendor path. With no explicit `TEST`, it uses the
+validated `chip_sw_uart_smoketest` baseline. Set `OT_DEFAULT_TOP=0` to return to the original
+`vibe_soc_top` path.
+
+Key files:
+
+- `docs/opentitan_vendor_migration.md`: migration boundary and staged split plan
+- `docs/opentitan_uart_bootstrap_case.md`: selected OpenTitan UART bootstrap case
+- `docs/opentitan_source_manifest.md`: imported source size and file counts
+- `de/rtl/vendor/opentitan/`: source-level OpenTitan import, excluding local caches and build output
+- `de/rtl/filelist.opentitan.f`: first vibe_soc-owned OpenTitan simulation filelist
+- `dv/tests/tests.list`: lists `chip_sw_uart_smoketest` and `chip_sw_uart_tx_rx_bootstrap`
+
+The smoke baseline uses the captured FuseSoC-generated filelist and has a passing `soc-build.soc_sim`
+log. The bootstrap path should reuse this generated dependency order instead of the earlier hand-written
+OpenTitan filelist.
+
+OpenTitan vendor simulations default to `FSDB=1`, which passes `WAVES=fsdb` into the OpenTitan runtime
+TCL and writes `dv/sim/waves.fsdb`. Use `FSDB=0` to run without wave dumping.

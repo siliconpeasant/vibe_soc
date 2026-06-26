@@ -1,0 +1,166 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#![allow(clippy::bool_assert_comparison)]
+use anyhow::{Result, anyhow, ensure};
+use clap::Parser;
+use regex::Regex;
+use std::path::PathBuf;
+use std::time::Duration;
+
+use opentitanlib::app::{TransportWrapper, UartRx};
+use opentitanlib::chip::rom_error::RomError;
+use opentitanlib::ownership::OwnershipKeyAlg;
+use opentitanlib::rescue::serial::RescueSerial;
+use opentitanlib::rescue::{EntryMode, Rescue};
+use opentitanlib::test_utils::init::InitializeTest;
+use opentitanlib::uart::console::UartConsole;
+use transfer_lib::HybridPair;
+
+#[derive(Debug, Parser)]
+struct Opts {
+    #[command(flatten)]
+    init: InitializeTest,
+
+    /// Console receive timeout.
+    #[arg(long, value_parser = humantime::parse_duration, default_value = "10s")]
+    timeout: Duration,
+    #[arg(long, default_value_t = OwnershipKeyAlg::EcdsaP256, help = "Current Owner key algorithm")]
+    next_key_alg: OwnershipKeyAlg,
+    #[arg(long, help = "Next Owner private key (ECDSA P256)")]
+    next_owner_key: Option<PathBuf>,
+    #[arg(long, help = "Next Owner public key (ECDSA P256)")]
+    next_owner_key_pub: Option<PathBuf>,
+    #[arg(long, help = "Next Owner activate private key (ECDSA P256)")]
+    next_activate_key: Option<PathBuf>,
+    #[arg(long, help = "Next Owner unlock private key (ECDSA P256)")]
+    next_unlock_key: Option<PathBuf>,
+    #[arg(long, help = "Next Owner's application public key (ECDSA P256)")]
+    next_application_key: PathBuf,
+
+    #[arg(long, help = "Next Owner private key (SPX)")]
+    next_owner_key_spx: Option<PathBuf>,
+    #[arg(long, help = "Next Owner public key (SPX)")]
+    next_owner_key_spx_pub: Option<PathBuf>,
+    #[arg(long, help = "Next Owner activate private key (SPX)")]
+    next_activate_key_spx: Option<PathBuf>,
+    #[arg(long, help = "Next Owner unlock private key (SPX)")]
+    next_unlock_key_spx: Option<PathBuf>,
+
+    #[arg(
+        long,
+        default_value_t = transfer_lib::TEST_OWNER_CONFIG_VERSION,
+        help = "Configuration version to put in the owner config"
+    )]
+    config_version: u32,
+
+    #[arg(
+        long,
+        help = "Lock the owner config to the device identification number"
+    )]
+    locked_to_din: Option<u64>,
+
+    #[arg(
+        long,
+        value_enum,
+        default_value = "basic",
+        help = "Style of Owner Config for this test"
+    )]
+    config_kind: transfer_lib::OwnerConfigKind,
+
+    #[arg(long, help = "Expected success conditions")]
+    expect: Vec<String>,
+
+    #[arg(long, help = "Expected error condition")]
+    expected_error: Option<String>,
+}
+
+fn newversion_test(opts: &Opts, transport: &TransportWrapper) -> Result<()> {
+    let uart = transport.uart("console")?;
+    let rescue = RescueSerial::new(uart.clone());
+
+    log::info!("###### Get Device Info ######");
+    rescue.enter(transport, EntryMode::Reset)?;
+    let (data, devid) = transfer_lib::get_device_info(transport, &rescue)?;
+
+    log::info!("###### Upload Owner Block ######");
+    transfer_lib::create_owner(
+        transport,
+        &rescue,
+        data.rom_ext_nonce,
+        opts.next_key_alg,
+        HybridPair::load(
+            opts.next_owner_key.as_deref(),
+            opts.next_owner_key_spx.as_deref(),
+        )?,
+        HybridPair::load(
+            opts.next_activate_key.as_deref(),
+            opts.next_activate_key_spx.as_deref(),
+        )?,
+        HybridPair::load(
+            opts.next_unlock_key.as_deref(),
+            opts.next_unlock_key_spx.as_deref(),
+        )?,
+        &opts.next_application_key,
+        opts.config_kind,
+        /*customize=*/
+        |owner| {
+            owner.config_version = opts.config_version;
+            if let Some(din) = opts.locked_to_din {
+                let din = match din {
+                    0 => devid.din,
+                    x => x,
+                };
+                owner.lock_constraint = 0x6;
+                owner.device_id[1] = din as u32;
+                owner.device_id[2] = (din >> 32) as u32;
+            }
+        },
+    )?;
+
+    log::info!("###### Boot After Update Complete ######");
+    transport.reset_with_delay(UartRx::Clear, Duration::from_millis(50))?;
+    let capture = UartConsole::wait_for_bytes(
+        &*uart,
+        r"(?msR)Running.*PASS!$|BFV:([0-9A-Fa-f]{8})$",
+        opts.timeout,
+    )?;
+    if capture[0].starts_with("BFV") {
+        return RomError(u32::from_str_radix(&capture[1], 16)?).into();
+    }
+
+    for exp in opts.expect.iter() {
+        let erx = Regex::new(exp)?;
+        ensure!(
+            erx.is_match(&capture[0]),
+            "Did not find expected output {exp:?}"
+        );
+    }
+
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    let opts = Opts::parse();
+    opts.init.init_logging();
+    let transport = opts.init.init_target()?;
+
+    let result = newversion_test(&opts, &transport);
+    if let Some(error) = &opts.expected_error {
+        match result {
+            Ok(_) => Err(anyhow!("Ok when expecting {error:?}")),
+            Err(e) => {
+                let re = Regex::new(error).expect("regex");
+                if re.is_match(&e.to_string()) {
+                    log::info!("Got expected error code: {e}");
+                    Ok(())
+                } else {
+                    Err(anyhow!("Expected {error:?} but got {e}"))
+                }
+            }
+        }
+    } else {
+        result
+    }
+}

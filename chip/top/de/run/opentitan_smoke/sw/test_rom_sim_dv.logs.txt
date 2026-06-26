@@ -1,0 +1,175 @@
+addr: 4
+severity: 2
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 146
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start_controller_init(&flash_ctrl) returns %0d
+str_arg_idx: 
+addr: 18
+severity: 2
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 147
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 2c
+severity: 0
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 190
+nargs: 1
+format: kBuildInfo: scm_revision=%0h
+str_arg_idx: 
+addr: 40
+severity: 0
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 215
+nargs: 1
+format: TestROM:%08h
+str_arg_idx: 
+addr: 54
+severity: 0
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 223
+nargs: 0
+format: Boot strap requested
+str_arg_idx: 
+addr: 68
+severity: 2
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 228
+nargs: 1
+format: Bootstrap failed with status code: %08h
+str_arg_idx: 
+addr: 7c
+severity: 2
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 252
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_configure_addr_translation( &ibex, kDifRvCoreIbexAddrTranslationSlot_0, kDifRvCoreIbexAddrTranslationDBus, addr_map) returns %0d
+str_arg_idx: 
+addr: 90
+severity: 2
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 255
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_configure_addr_translation( &ibex, kDifRvCoreIbexAddrTranslationSlot_0, kDifRvCoreIbexAddrTranslationIBus, addr_map) returns %0d
+str_arg_idx: 
+addr: a4
+severity: 2
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 258
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_enable_addr_translation( &ibex, kDifRvCoreIbexAddrTranslationSlot_0, kDifRvCoreIbexAddrTranslationDBus) returns %0d
+str_arg_idx: 
+addr: b8
+severity: 2
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 261
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_enable_addr_translation( &ibex, kDifRvCoreIbexAddrTranslationSlot_0, kDifRvCoreIbexAddrTranslationIBus) returns %0d
+str_arg_idx: 
+addr: cc
+severity: 0
+file: sw/device/lib/testing/test_rom/test_rom.c
+line: 267
+nargs: 1
+format: Test ROM complete, jumping to flash (addr: %0h)!
+str_arg_idx: 
+addr: e0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: f4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 108
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx: 
+addr: 11c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 48
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 130
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 51
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 144
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 54
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 158
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 59
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 16c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 180
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 77
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kPadUart0Rx, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 194
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 85
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1a8
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 89
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1bc
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 110
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDp, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 1d0
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 112
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDn, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 1e4
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 117
+nargs: 1
+format: DIF-fail: dif_pinmux_mio_select_output(pinmux, kDtPadIoc7, kDtPeriphIoConstantHighZ) returns %0d
+str_arg_idx:

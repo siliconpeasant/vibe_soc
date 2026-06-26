@@ -1,0 +1,295 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Security countermeasures testplan extracted from the IP Hjson using reggen.
+//
+// This testplan is auto-generated only the first time it is created. This is
+// because this testplan needs to be hand-editable. It is possible that these
+// testpoints can go out of date if the spec is updated with new
+// countermeasures. When `reggen` is invoked when this testplan already exists,
+// It checks if the list of testpoints is up-to-date and enforces the user to
+// make further manual updates.
+//
+// These countermeasures and their descriptions can be found here:
+// .../aes/data/aes.hjson
+//
+// It is possible that the testing of some of these countermeasures may already
+// be covered as a testpoint in a different testplan. This duplication is ok -
+// the test would have likely already been developed. We simply map those tests
+// to the testpoints below using the `tests` key.
+//
+// Please ensure that this testplan is imported in:
+// .../aes/data/aes_testplan.hjson
+{
+  testpoints: [
+    {
+      name: sec_cm_bus_integrity
+      desc: "Verify the countermeasure(s) BUS.INTEGRITY."
+      stage: V2S
+      tests: ["aes_tl_intg_err"]
+    }
+    {
+      name: sec_cm_lc_escalate_en_intersig_mubi
+      desc: '''
+            Verify the countermeasure(s) LC_ESCALATE_EN.INTERSIG.MUBI.
+            Upon randomly switching the life cycle escalation input signal, it is ensured that the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_alert_reset"]
+    }
+    {
+      name: sec_cm_main_config_shadow
+      desc: "Verify the countermeasure(s) MAIN.CONFIG.SHADOW."
+      stage: V2S
+      tests: ["aes_shadow_reg_errors"]
+    }
+    {
+      name: sec_cm_gcm_config_shadow
+      desc: "Verify the countermeasure(s) GCM.CONFIG.SHADOW."
+      stage: V2S
+      tests: ["aes_shadow_reg_errors"]
+    }
+    {
+      name: sec_cm_main_config_sparse
+      desc: '''
+            Verify the countermeasure(s) MAIN.CONFIG.SPARSE.
+            Illegally encoded values are written into the main control register via register interface and it is ensured that the values are resolved to the correct legal values.
+            Internal wires carrying the corresponding signals are forced to invalid values and depending on the target wire it is ensured that the DUT stops processing data and signals an alert.
+            '''
+      stage: V2S
+      tests: ["aes_stress", "aes_smoke", "aes_alert_reset", "aes_core_fi"]
+    }
+    {
+      name: sec_cm_gcm_config_sparse
+      desc: '''
+            Verify the countermeasure(s) GCM.CONFIG.SPARSE.
+            Illegally encoded values as well as currently disallowed but legal values are written into the GCM control register via register interface and it is ensured that the values are resolved to the correct legal values.
+            Internal wires carrying the corresponding signals are forced to invalid values and it is ensured that the DUT stops processing data.
+            '''
+      stage: V2S
+      tests: ["aes_stress", "aes_config_error", "aes_gcm_save_restore", "aes_core_fi"]
+    }
+    {
+      name: sec_cm_aux_config_shadow
+      desc: "Verify the countermeasure(s) AUX.CONFIG.SHADOW."
+      stage: V2S
+      tests: ["aes_shadow_reg_errors"]
+    }
+    {
+      name: sec_cm_aux_config_regwen
+      desc: '''
+            Verify the countermeasure(s) AUX.CONFIG.REGWEN.
+            It is ensured that once the REGWEN bit is set to 0, the content of the CTRL_AUX_SHADOWED register cannot be altered anymore until reset.
+            '''
+      stage: V2S
+        tests: ["aes_stress", "aes_readability"]
+    }
+    {
+      name: sec_cm_key_sideload
+      desc: "Verify the countermeasure(s) KEY.SIDELOAD."
+      stage: V2S
+      tests: ["aes_stress", "aes_sideload"]
+    }
+    {
+      name: sec_cm_key_sw_unreadable
+      desc: '''
+            Verify the countermeasure(s) KEY.SW_UNREADABLE.
+            It is ensured that the initial key registers cannot be read via register interface.
+            '''
+      stage: V2S
+      tests: ["aes_readability"]
+    }
+    {
+      name: sec_cm_data_reg_sw_unreadable
+      desc: '''
+            Verify the countermeasure(s) DATA_REG.SW_UNREADABLE.
+            It is ensured that the input data registers cannot be read via register interface.
+            '''
+      stage: V2S
+      tests: ["aes_readability"]
+    }
+    {
+      name: sec_cm_key_sec_wipe
+      desc: '''
+            Verify the countermeasure(s) KEY.SEC_WIPE.
+            It is ensured that after triggering the clearing of the initial key registers with pseudo-random data, the content of these registers indeed changes to a different value.
+            '''
+      stage: V2S
+      tests: ["aes_readability"]
+    }
+    {
+      name: sec_cm_iv_config_sec_wipe
+      desc: '''
+            Verify the countermeasure(s) IV.CONFIG.SEC_WIPE.
+            It is ensured that after triggering the clearing of the IV registers with pseudo-random data, the values read back from these registers via register interface indeed change.
+            '''
+      stage: V2S
+      tests: ["aes_readability"]
+    }
+    {
+      name: sec_cm_data_reg_sec_wipe
+      desc: '''
+            Verify the countermeasure(s) DATA_REG.SEC_WIPE.
+            It is ensured that after triggering the clearing of the input and output data registers with pseudo-random data, the values read back from output data registers via register interface indeed change and that the content of the input data registers changes to a different value.
+            '''
+      stage: V2S
+      tests: ["aes_readability"]
+    }
+    {
+      name: sec_cm_data_reg_key_sca
+      desc: '''
+            Verify the countermeasure(s) DATA_REG.KEY.SCA.
+            SVAs inside aes_cipher_core.sv check that the internal state register gets cleared with pseudo-random data at the end of the last round of every encryption.
+            '''
+      stage: V2S
+      tests: ["aes_stress"]
+    }
+    {
+      name: sec_cm_key_masking
+      desc: '''
+            Verify the countermeasure(s) KEY.MASKING.
+            SVAs inside aes_cipher_core.sv are used to check some aspects of the masking countermeasure.
+            However, the actual verification of the masking countermeasure cannot be done in DV though.
+            FPGA measurements and formal masking verification tools are used for that purpose.
+            '''
+      stage: V2S
+      tests: ["aes_stress"]
+    }
+    {
+      name: sec_cm_main_fsm_sparse
+      desc: '''
+            Verify the countermeasure(s) MAIN.FSM.SPARSE.
+            It is ensured that upon randomly forcing bits in the state register of the main FSM, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+        tests: ["aes_fi"]
+    }
+    {
+      name: sec_cm_main_fsm_redun
+      desc: '''
+            Verify the countermeasure(s) MAIN.FSM.REDUN.
+            It is ensured that upon randomly forcing the state, inputs or outputs of any of the independent, redundant logic rails of the main FSM to both valid and invalid encodings, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_cipher_fi", "aes_ctr_fi"]
+    }
+    {
+      name: sec_cm_cipher_fsm_sparse
+      desc: '''
+            Verify the countermeasure(s) CIPHER.FSM.SPARSE.
+            It is ensured that upon randomly forcing bits in the state register of the cipher core FSM, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi"]
+    }
+    {
+      name: sec_cm_cipher_fsm_redun
+      desc: '''
+            Verify the countermeasure(s) CIPHER.FSM.REDUN.
+            It is ensured that upon randomly forcing the state, inputs or outputs of any of the independent, redundant logic rails of the cipher core FSM to both valid and invalid encodings, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_cipher_fi"]
+    }
+    {
+      name: sec_cm_cipher_ctr_redun
+      desc: '''
+            Verify the countermeasure(s) CIPHER.CTR.REDUN.
+            It is ensured that upon randomly forcing the value of any of the independent, redundant logic rails of round counter inside the cipher core FSM, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_cipher_fi"]
+    }
+    {
+      name: sec_cm_ctr_fsm_sparse
+      desc: '''
+            Verify the countermeasure(s) CTR.FSM.SPARSE.
+            It is ensured that upon randomly forcing bits in the state register of the CTR mode FSM, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi"]
+    }
+    {
+      name: sec_cm_ctr_fsm_redun
+      desc: '''
+            Verify the countermeasure(s) CTR.FSM.REDUN.
+            It is ensured that upon randomly forcing the state, inputs or outputs of any of the independent, redundant logic rails of the CTR mode FSM to both valid and invalid encodings, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_ctr_fi"]
+    }
+    {
+      name: sec_cm_ghash_fsm_sparse
+      desc: '''
+            Verify the countermeasure(s) GHASH.FSM.SPARSE.
+            It is ensured that upon forcing the state register of the GHASH FSM to an invalid value, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi"]
+    }
+    {
+      name: sec_cm_ctrl_sparse
+      desc: '''
+            Verify the countermeasure(s) CTRL.SPARSE.
+            It is ensured that upon randomly forcing the value of any of these critical control signals to an invalid encoding, the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_cipher_fi", "aes_ctr_fi"]
+    }
+    {
+      name: sec_cm_main_fsm_global_esc
+      desc: '''
+            Verify the countermeasure(s) MAIN.FSM.GLOBAL_ESC.
+            Upon randomly switching the life cycle escalation input signal, it is ensured that the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_alert_reset"]
+    }
+    {
+      name: sec_cm_main_fsm_local_esc
+      desc: '''
+            Verify the countermeasure(s) MAIN.FSM.LOCAL_ESC.
+            Upon detecting a local alert condition it is ensured that the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_cipher_fi", "aes_ctr_fi"]
+    }
+    {
+      name: sec_cm_cipher_fsm_local_esc
+      desc: '''
+            Verify the countermeasure(s) CIPHER.FSM.LOCAL_ESC.
+            Upon detecting a local alert condition it is ensured that the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_cipher_fi", "aes_ctr_fi"]
+    }
+    {
+      name: sec_cm_ctr_fsm_local_esc
+      desc: '''
+            Verify the countermeasure(s) CTR.FSM.LOCAL_ESC.
+            Upon detecting a local alert condition it is ensured that the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_ctr_fi"]
+    }
+    {
+      name: sec_cm_ghash_fsm_local_esc
+      desc: '''
+            Verify the countermeasure(s) GHASH.FSM.LOCAL_ESC.
+            Upon detecting a local alert condition it is ensured that the DUT stops processing data, locks up and triggers a fatal alert.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_ghash_fi"]
+    }
+    {
+      name: sec_cm_data_reg_local_esc
+      desc: '''
+            Verify the countermeasure(s) DATA_REG.LOCAL_ESC.
+            SVAs inside aes_core.sv are used to ensure that upon local escalation triggered through FI the cipher core doesn't release intermediate state into the readable output data or IV registers.
+            '''
+      stage: V2S
+      tests: ["aes_fi", "aes_control_fi", "aes_cipher_fi"]
+    }
+  ]
+}
