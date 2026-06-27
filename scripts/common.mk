@@ -64,8 +64,10 @@ FILELIST     ?= $(if $(filter de rtl,$(CURRENT_DIR)),$(RTL_FLIST),$(CANONICAL_FL
 # This preserves the reference project's paths -> defs -> filelist -> rules order.
 -include $(RTL_PATH)/filelist.mk
 
+TB_FILELIST ?= $(TB_PATH)/filelist.f
 TB_FILES := $(shell find $(TB_PATH) -type f \( -name "*.v" -o -name "*.sv" \) 2>/dev/null | sort)
-ACTIVE_FILELISTS := $(if $(strip $(MODULE_FILELISTS)),$(sort $(MODULE_FILELISTS)),$(RTL_PATH)/filelist.f)
+ACTIVE_FILELISTS := $(if $(strip $(MODULE_FILELISTS)),$(MODULE_FILELISTS),$(RTL_PATH)/filelist.f)
+ACTIVE_DV_FILELISTS := $(if $(filter de rtl,$(CURRENT_DIR)),,$(wildcard $(TB_FILELIST)))
 FILELIST_MK_DEPS := $(sort $(filter %/filelist.mk,$(MAKEFILE_LIST)))
 
 # If FILELIST is defined, extract sources (strip comments/empty lines, expand $SOC)
@@ -82,7 +84,7 @@ include $(TOOLCHAIN_MK)
 
 BUILD_METADATA = simulator=$(SIMULATOR)|top=$(TOP_MODULE)|timescale=$(TIMESCALE)|fsdb=$(FSDB)|coverage=$(COVERAGE)|partcomp=$(PARTCOMP)|vlog=$(VLOG_FLAGS)|elab=$(VCS_ELAB_FLAGS)|includes=$(VCS_INCLUDE_FLAGS)|iverilog=$(IVERILOG_FLAGS)|verilator=$(VERILATOR_FLAGS)|user_compile=$(USER_COMPILE_FLAGS)
 BUILD_CONFIG_DEPS := $(PROJECT_ROOT)/scripts/common.mk $(PROJECT_ROOT)/scripts/config.mk $(TOOLCHAIN_MK) $(MODULE_PATH)/Makefile
-BUILD_EXTRA_DEPS := $(BUILD_CONFIG_DEPS) $(RTL_PATH) $(if $(filter de rtl,$(CURRENT_DIR)),,$(TB_PATH))
+BUILD_EXTRA_DEPS := $(BUILD_CONFIG_DEPS) $(RTL_PATH) $(if $(filter de rtl,$(CURRENT_DIR)),,$(TB_PATH) $(ACTIVE_DV_FILELISTS))
 
 # Verdi source browsing is simulator-independent; toolchains may override it.
 VERDI_CMD ?= cd $(SIM_DIR) && verdi $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
@@ -204,10 +206,17 @@ $(RTL_PATH)/filelist.f:
 	@echo "[FLIST] Generated $@"
 
 # --- Generate simulation filelist (RTL + TB) ---
-$(SIM_FLIST): $(ACTIVE_FILELISTS) $(FILELIST_MK_DEPS) $(TB_FILES) $(MODULE_PATH)/Makefile
+$(SIM_FLIST): $(ACTIVE_FILELISTS) $(ACTIVE_DV_FILELISTS) $(FILELIST_MK_DEPS) $(TB_FILES) $(MODULE_PATH)/Makefile
 	@mkdir -p $(SIM_DIR)
 	@> $@
 	@for fl in $(ACTIVE_FILELISTS); do \
+		if [ -f $$fl ]; then \
+			echo "// -f $$fl" >> $@; \
+			cat $$fl >> $@; \
+			echo "" >> $@; \
+		fi; \
+	done
+	@for fl in $(ACTIVE_DV_FILELISTS); do \
 		if [ -f $$fl ]; then \
 			echo "// -f $$fl" >> $@; \
 			cat $$fl >> $@; \

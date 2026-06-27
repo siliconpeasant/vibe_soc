@@ -1,0 +1,22 @@
+{
+  "case": "chip_sw_uart_tx_rx",
+  "type": "case_sw_image",
+  "status": "migrated_prebuilt_image",
+  "expected_sw_image_base": "uart_tx_rx_test",
+  "origin": "OpenTitan //sw/device/tests:uart_tx_rx_test for chip_sw_uart_tx_rx",
+  "origin_run_dir": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_host_manual/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx/20260627_123732",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_uart_tx_rx",
+  "files": [
+    "uart_tx_rx_test_sim_dv.32.vmem",
+    "uart_tx_rx_test_sim_dv.64.scr.vmem",
+    "uart_tx_rx_test_sim_dv.64.vmem",
+    "uart_tx_rx_test_sim_dv.bash",
+    "uart_tx_rx_test_sim_dv.bin",
+    "uart_tx_rx_test_sim_dv.dis",
+    "uart_tx_rx_test_sim_dv.elf",
+    "uart_tx_rx_test_sim_dv.logs.txt",
+    "uart_tx_rx_test_sim_dv.map",
+    "uart_tx_rx_test_sim_dv.rodata.txt"
+  ],
+  "note": "Run with TEST=chip_sw_uart_tx_rx; Makefile maps this to chip_sw_uart_tx_rx_vseq and uart_idx=0."
+}

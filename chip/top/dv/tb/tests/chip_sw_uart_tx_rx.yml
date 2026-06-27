@@ -1,0 +1,22 @@
+name: chip_sw_uart_tx_rx
+status: migrated_sw_collateral
+top_module: tb
+rtl_filelist: de/rtl/filelist.f
+uvm_test: chip_base_test
+uvm_sequence: chip_sw_uart_tx_rx_vseq
+timeout_ns: 160000000
+waves: fsdb
+run_opts:
+  - +uart_idx=0
+  - +calibrate_usb_clk=1
+sw_collateral:
+  common_otp: dv/tb/sw/common/otp
+  test_rom:
+    base: dv/tb/sw/common/test_rom/test_rom
+    slot: 0
+  images:
+    - base: dv/tb/sw/cases/chip_sw_uart_tx_rx/uart_tx_rx_test
+      slot: 1
+      rule: new_rules
+provenance:
+  origin: /project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_host_manual/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx/20260627_123732

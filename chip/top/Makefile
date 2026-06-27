@@ -6,6 +6,7 @@ LOCAL_CURRENT_DIR := $(if $(SUBDIR),$(SUBDIR),$(notdir $(CURDIR)))
 
 OT_VENDOR := 1
 OT_SMOKE_TESTS := chip_sw_uart_smoketest
+OT_UART_TX_RX_TESTS := chip_sw_uart_tx_rx
 OT_BOOTSTRAP_TESTS := chip_sw_uart_tx_rx_bootstrap
 ifeq ($(TEST),default)
   TEST := chip_sw_uart_smoketest
@@ -86,6 +87,12 @@ endif
     OT_SMOKE_PREBUILT_SIMV ?= /project/xuanwu9000/user/silicon/opentitan-master/scratch/master/chip_earlgrey_asic-sim-vcs/default/simv
     OT_USE_PREBUILT_SIMV ?= 0
     REGRESS_PASS_REGEX ?= TEST PASSED CHECKS|SW TEST PASSED
+  else ifneq (,$(filter $(OT_UART_TX_RX_TESTS),$(TEST)))
+    USER_COMPILE_FLAGS += +define+DISABLE_ROM_INTEGRITY_CHECK
+    USER_SIM_FLAGS += +UVM_TEST_SEQ=chip_sw_uart_tx_rx_vseq
+    USER_SIM_FLAGS += +uart_idx=0
+    USER_SIM_FLAGS += +calibrate_usb_clk=1
+    USER_SIM_FLAGS += +sw_images=$(OT_CASE_SW_DIR)/uart_tx_rx_test:1:new_rules,$(OT_TEST_ROM_DIR)/test_rom:0
   else
     USER_COMPILE_FLAGS += +define+DISABLE_ROM_INTEGRITY_CHECK
     USER_SIM_FLAGS += +UVM_TEST_SEQ=chip_sw_uart_tx_rx_vseq
