@@ -1,7 +1,7 @@
 name: chip_sw_uart_tx_rx_bootstrap
 status: pending_sw_collateral
 top_module: tb
-rtl_filelist: de/rtl/filelist.opentitan.f
+rtl_filelist: de/rtl/filelist.f
 uvm_test: chip_base_test
 uvm_sequence: chip_sw_uart_tx_rx_vseq
 timeout_ns: 160000000

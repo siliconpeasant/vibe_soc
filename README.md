@@ -182,9 +182,9 @@ EDA 阶段必须走注册 MCP 工具：验证调用 `soc-build.soc_sim`，综合
 顶层位于 `chip/top`。自动集成产物包括：
 
 ```text
-chip/top/de/rtl/vibe_soc_top.v
-chip/top/de/rtl/vibe_soc_top.integrate.json
-chip/top/de/rtl/vibe_soc_top.integrate.csv
+chip/top/de/rtl/filelist.f
+chip/top/de/rtl/vendor/opentitan/
+chip/top/de/rtl/generated/opentitan_fusesoc/
 ```
 
 集成应通过 `soc-integrate` 工具生成和刷新，复杂连接使用显式 port map。不要手工改自动生成的实例连接；子模块端口变化后用配置刷新并重新检查。

@@ -4,21 +4,13 @@ MODULE_NAME   = vibe_soc_top
 TEST ?= default
 LOCAL_CURRENT_DIR := $(if $(SUBDIR),$(SUBDIR),$(notdir $(CURDIR)))
 
-OT_DEFAULT_TOP ?= 1
+OT_VENDOR := 1
 OT_SMOKE_TESTS := chip_sw_uart_smoketest
 OT_BOOTSTRAP_TESTS := chip_sw_uart_tx_rx_bootstrap
-OT_VENDOR_TESTS := $(OT_SMOKE_TESTS) $(OT_BOOTSTRAP_TESTS)
-ifeq ($(OT_DEFAULT_TOP),1)
-  OT_VENDOR ?= 1
-  ifeq ($(TEST),default)
-    TEST := chip_sw_uart_smoketest
-  endif
-endif
-ifneq (,$(filter $(OT_VENDOR_TESTS),$(TEST)))
-  OT_VENDOR := 1
+ifeq ($(TEST),default)
+  TEST := chip_sw_uart_smoketest
 endif
 
-ifeq ($(OT_VENDOR),1)
   RTL_TOP    = chip_earlgrey_asic
   ifeq ($(LOCAL_CURRENT_DIR),de)
     TOP_MODULE = $(RTL_TOP)
@@ -89,14 +81,12 @@ ifeq ($(OT_VENDOR),1)
   USER_SIM_FLAGS += -licqueue -ucli -do $(OT_SIM_TCL)
   USER_SIM_FLAGS += -xlrm hier_inst_seed -assert nopostproc
   ifneq (,$(filter $(OT_SMOKE_TESTS),$(TEST)))
-    OT_FILELIST_NAME := filelist.opentitan.f
     USER_SIM_FLAGS += +UVM_TEST_SEQ=chip_sw_uart_smoke_vseq
     USER_SIM_FLAGS += +sw_images=$(OT_CASE_SW_DIR)/uart_smoketest:1:new_rules,$(OT_TEST_ROM_DIR)/test_rom:0
     OT_SMOKE_PREBUILT_SIMV ?= /project/xuanwu9000/user/silicon/opentitan-master/scratch/master/chip_earlgrey_asic-sim-vcs/default/simv
     OT_USE_PREBUILT_SIMV ?= 0
     REGRESS_PASS_REGEX ?= TEST PASSED CHECKS|SW TEST PASSED
   else
-    OT_FILELIST_NAME := filelist.opentitan.f
     USER_COMPILE_FLAGS += +define+DISABLE_ROM_INTEGRITY_CHECK
     USER_SIM_FLAGS += +UVM_TEST_SEQ=chip_sw_uart_tx_rx_vseq
     USER_SIM_FLAGS += +use_spi_load_bootstrap=1
@@ -105,14 +95,8 @@ ifeq ($(OT_VENDOR),1)
     USER_SIM_FLAGS += +test_timeout_ns=160000000
     USER_SIM_FLAGS += +sw_images=$(OT_CASE_SW_DIR)/uart_tx_rx_test:1:new_rules,$(OT_TEST_ROM_DIR)/test_rom:0
   endif
-else
-  RTL_TOP       = vibe_soc_top
-  TOP_MODULE    = vibe_soc_top
-endif
-
 include $(PROJECT_ROOT)/scripts/common.mk
 
-ifeq ($(OT_VENDOR),1)
 ifeq ($(OT_USE_PREBUILT_SIMV),1)
 BUILD_OUTPUT = $(SIM_DIR)/.ot_smoke_prebuilt_simv
 COMP_CMD = test -x $(OT_SMOKE_PREBUILT_SIMV) && touch $(BUILD_OUTPUT)
@@ -129,5 +113,4 @@ ELAB_CMD =
 SIM_CMD = $(OT_COPY_SW_COLLATERAL) && \
           env SIMULATOR=vcs WAVES=$(OT_WAVES) GUI=$(GUI) GUI_DEBUG=0 TB_TOP=tb \
           VERDI_HOME=$(VERDI_HOME) NOVAS_HOME=$(VERDI_HOME) dv_root=$(OT_HW_DV_ROOT) ./simv $(VCS_SIM_FLAGS) $(USER_SIM_FLAGS)
-endif
 endif

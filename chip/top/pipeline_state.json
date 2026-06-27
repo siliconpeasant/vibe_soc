@@ -3,7 +3,7 @@
   "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/chip/top",
   "mode": "single",
   "created_at": "2026-06-21T10:18:58Z",
-  "last_updated": "2026-06-26T16:37:44Z",
+  "last_updated": "2026-06-27T00:27:44Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -32,28 +32,27 @@
       "name": "RTL设计与编码",
       "agent": "soc-rtl-designer",
       "status": "done",
-      "started_at": "2026-06-26T15:36:15Z",
-      "completed_at": "2026-06-26T15:36:16Z",
+      "started_at": "2026-06-27T00:08:26Z",
+      "completed_at": "2026-06-27T00:17:15Z",
       "artifacts": [
-        "de/rtl/filelist.opentitan.f",
+        "de/rtl/filelist.f",
+        "de/rtl/filelist.mk",
         "de/rtl/generated/opentitan_fusesoc/mapping_report.txt",
         "de/rtl/generated/opentitan_fusesoc/src/lowrisc_dv_chip_ral_pkg_0/chip_ral_pkg.sv",
         "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_clkmgr_csr_assert_0/clkmgr_csr_assert_fpv.sv",
         "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_pwrmgr_csr_assert_0/pwrmgr_csr_assert_fpv.sv",
         "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_rstmgr_csr_assert_0/rstmgr_csr_assert_fpv.sv",
-        "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_spi_host_csr_assert_0/spi_host_csr_assert_fpv.sv",
-        "de/rtl/filelist.opentitan_smoke.f",
-        "de/rtl/filelist.mk"
+        "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_spi_host_csr_assert_0/spi_host_csr_assert_fpv.sv"
       ],
       "check_results": [
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "de_top_chip_earlgrey_asic_and_dv_tb_compile_passed_with_de_rtl_vendor_generated_static_filelist"
+          "note": "de_top_chip_earlgrey_asic_and_dv_tb_compile_passed_with_single_de_rtl_filelist_f"
         }
       ],
-      "notes": "filelist.opentitan.f preserves FuseSoC order but sources are under de/rtl/vendor/opentitan and de/rtl/generated/opentitan_fusesoc",
-      "last_updated": "2026-06-26T15:36:16Z",
+      "notes": "chip/top now uses OpenTitan as the only top; de/rtl/filelist.f is the single canonical filelist",
+      "last_updated": "2026-06-27T00:17:15Z",
       "blocked_by": []
     },
     "verif": {
@@ -61,8 +60,8 @@
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
       "status": "done",
-      "started_at": "2026-06-26T16:13:57Z",
-      "completed_at": "2026-06-26T16:37:44Z",
+      "started_at": "2026-06-27T00:17:28Z",
+      "completed_at": "2026-06-27T00:27:44Z",
       "artifacts": [
         "dv/tb/tests/chip_sw_uart_smoketest.yml",
         "dv/tb/tests/chip_sw_uart_tx_rx_bootstrap.yml",
@@ -80,12 +79,12 @@
         {
           "tool": "soc_sim",
           "passed": true,
-          "note": "chip_sw_uart_smoketest_seed_1_uses_dv_tb_sw_collateral_SW_TEST_PASSED_TEST_PASSED_CHECKS_UVM_ERROR_0_UVM_FATAL_0"
+          "note": "chip_sw_uart_smoketest_seed_1_single_de_rtl_filelist_f_SW_TEST_PASSED_TEST_PASSED_CHECKS_UVM_ERROR_0_UVM_FATAL_0"
         }
       ],
-      "notes": "OpenTitan smoke uses stable dv/tb/sw collateral and dv/tb/tests case definition; bootstrap case definition is present but pending SW collateral",
+      "notes": "OpenTitan smoke passed after converging chip/top to single de/rtl/filelist.f",
       "blocked_by": [],
-      "last_updated": "2026-06-26T16:37:44Z"
+      "last_updated": "2026-06-27T00:27:44Z"
     },
     "syn": {
       "step_id": "syn",
@@ -96,9 +95,9 @@
       "completed_at": null,
       "artifacts": [],
       "check_results": [],
-      "notes": "Move static OpenTitan filelist sources from de/run/fusesoc-work to de/rtl vendor/generated roots",
+      "notes": "Converge chip/top on OpenTitan as the only top and make de/rtl/filelist.f the single canonical filelist",
       "blocked_by": [],
-      "last_updated": "2026-06-26T15:36:15Z"
+      "last_updated": "2026-06-27T00:08:26Z"
     }
   },
   "next_actions": [

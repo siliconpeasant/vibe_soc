@@ -21,7 +21,7 @@ The upstream log ended with `SW TEST PASSED`, `TEST PASSED CHECKS`, and zero UVM
 Reusable generated inputs were promoted into canonical vibe_soc roots:
 
 ```text
-chip/top/de/rtl/filelist.opentitan.f
+chip/top/de/rtl/filelist.f
 chip/top/de/rtl/generated/opentitan_fusesoc/
 chip/top/dv/tb/sw/common/otp/
 chip/top/dv/tb/sw/common/test_rom/
@@ -31,7 +31,7 @@ chip/top/dv/tb/tests/chip_sw_uart_smoketest.yml
 
 The copied collateral includes:
 
-- static OpenTitan compile order in `de/rtl/filelist.opentitan.f`
+- static OpenTitan compile order in `de/rtl/filelist.f`
 - the small set of FuseSoC-generated SV sources needed outside the vendor tree
 - prebuilt `test_rom_sim_dv` ROM images
 - prebuilt `uart_smoketest_sim_dv` flash images
@@ -45,7 +45,7 @@ The original `simv`, `simv.daidir`, FSDB waveforms, and runtime database files w
 `chip/top/Makefile` selects the OpenTitan vendor path when `TEST=chip_sw_uart_smoketest`.
 For this case it:
 
-- uses `chip/top/de/rtl/filelist.opentitan.f`
+- uses `chip/top/de/rtl/filelist.f`
 - uses a static project-owned expansion of the verified FuseSoC dependency order
 - overrides VCS to the OpenTitan-style one-step build because the filelist includes C/C++ DPI files
 - runs `chip_base_test` with `chip_sw_uart_smoke_vseq`
@@ -83,7 +83,7 @@ Local host compatibility adjustments are kept in `chip/top/Makefile`:
 
 `chip/top` now defaults to the OpenTitan vendor path for bring-up. If `TEST` is not specified,
 `chip/top/Makefile` selects `chip_sw_uart_smoketest`, the passing FuseSoC-generated baseline.
-Use `OT_DEFAULT_TOP=0` to return to the original generated `vibe_soc_top` flow.
+The original generated `vibe_soc_top` flow has been removed from `chip/top`; OpenTitan is now the only top-level path.
 
 For OpenTitan vendor simulations, `FSDB` defaults to `1`, and `WAVES=fsdb` is passed into the
 OpenTitan runtime TCL. The expected waveform output is:

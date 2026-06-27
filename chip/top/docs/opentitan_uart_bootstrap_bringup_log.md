@@ -27,7 +27,7 @@ The latest observed failure is:
 dv_base_reg_pkg requires prim_mubi_pkg before dv_base_reg_pkg is analyzed
 ```
 
-Earlier dependency fixes already made in `de/rtl/filelist.opentitan.f`:
+Earlier dependency fixes already made in `de/rtl/filelist.f`:
 
 - Added explicit VCS UVM package source before OpenTitan UVM code
 - Moved `top_pkg` before `bus_params_pkg`
@@ -38,17 +38,16 @@ Earlier dependency fixes already made in `de/rtl/filelist.opentitan.f`:
 
 ## Historical Diagnosis
 
-The remaining issue is not a single missing RTL file. OpenTitan chip simulation depends on the
-ordered dependency graph encoded in FuseSoC `.core` files and dvsim configuration. The generated
-`filelist.opentitan.f` is currently a first-pass vibe_soc filelist, not a complete topological
-expansion of OpenTitan's core graph.
+The original issue was not a single missing RTL file. OpenTitan chip simulation depends on the
+ordered dependency graph encoded in FuseSoC `.core` files and dvsim configuration. That order is
+now captured as the canonical `de/rtl/filelist.f`.
 
 ## Filelist Next Step (Completed for Smoke Baseline)
 
 This was the required filelist-ordering action before the smoke baseline could be declared done:
 
 1. Install/use FuseSoC and generate the official `lowrisc:dv:top_earlgrey_chip_sim:0.1` VCS filelist,
-   then adapt that output into `de/rtl/filelist.opentitan.f`.
+   then adapt that output into `de/rtl/filelist.f`.
 2. Write a local `.core` dependency expander for the imported OpenTitan tree that emits an ordered
    VCS filelist for `top_earlgrey_chip_sim`.
 
@@ -73,7 +72,7 @@ This confirms that the vendor-island OpenTitan structure, FuseSoC-generated file
 
 ## Static FuseSoC Filelist Captured
 
-`de/rtl/filelist.opentitan.f` has been replaced with a static expansion of the known-good
+`de/rtl/filelist.f` has been replaced with a static expansion of the known-good
 FuseSoC-generated `top_earlgrey_chip_sim` order.
 
 The filelist no longer delegates through `-f ...fusesoc-work/...scr`; it directly lists the
