@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sram_ctrl_execution_main_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sram_ctrl_execution_main_test",
+  "images": [
+    {
+      "image_base": "sram_ctrl_execution_main_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sram_ctrl_execution_main_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.32.vmem",
+      "size_bytes": 34266,
+      "sha256": "d90fce4f3720a82d9b05e55565427f111f60f2e21b21c1fa92d6d4efc0924153",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.64.scr.vmem",
+      "size_bytes": 36929,
+      "sha256": "8d028dcfb32db79e281dc65515386638f6ae55441b808238b6a21aa396b7350e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.64.vmem",
+      "size_bytes": 32045,
+      "sha256": "82a069cc06f10d1bfffbd2a96b75389c52514cf6abae5342b6114040d43a86be",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.bash"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.bin",
+      "size_bytes": 13128,
+      "sha256": "a25efe47fe79eb5095b642689d3d9353629d0453af758f10fbf36da05eec73a1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.bin"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.dis",
+      "size_bytes": 541159,
+      "sha256": "d870209517ca3a0ceaeb89a7a9177b409ba606a5c91d2441c402de3572be2725",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.dis"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.elf",
+      "size_bytes": 283188,
+      "sha256": "ff76a63f63ffc7ee366af5e6ba201676d564f93f77f8a58b213c73a5b261f792",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.elf"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.logs.txt",
+      "size_bytes": 5569,
+      "sha256": "984bd40169dbe8938f1643656da45ce40a53ee9bce8f31b3879013701f37ea80",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.map",
+      "size_bytes": 166724,
+      "sha256": "a4c17739a2b193bdb59c84a337313cde57138d6b2fef6498ea21650364fa940a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.map"
+    },
+    {
+      "file": "sram_ctrl_execution_main_test_sim_dv.rodata.txt",
+      "size_bytes": 43992,
+      "sha256": "9fddf10e1b5469ec8550cdd2b610fead46225063e56b4863d01b30d6082a14a7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_execution_main_test_sim_dv.rodata.txt"
+    }
+  ]
+}

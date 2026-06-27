@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_normal_sleep_all_wake_ups",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_normal_sleep_all_wake_ups",
+  "images": [
+    {
+      "image_base": "pwrmgr_normal_sleep_all_wake_ups",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_normal_sleep_all_wake_ups"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.32.vmem",
+      "size_bytes": 41010,
+      "sha256": "ec9a4813e242f0bdeb70dde46c2a466019e32316e86a620003e70eeca1bbf1f9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.64.scr.vmem",
+      "size_bytes": 44189,
+      "sha256": "728823dae155ae6a5cbdafb4830a26267303bdb4f115358ce2e258e3293ec580",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.64.vmem",
+      "size_bytes": 38336,
+      "sha256": "a4ca8b61ad5c1f7076ea5267e532c0a23cf6ecfd5c0d01e7812cc20c701dcc96",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.bin",
+      "size_bytes": 15712,
+      "sha256": "9db7111dc33c2a3c1cc2c4133b5cd92416710a38ff854aa2fdfefa221504d117",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.dis",
+      "size_bytes": 553972,
+      "sha256": "f8f4cf8aa1d35503a764418fdbbb0d0323735d0bd23bd639cfde2db23a34c560",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.elf",
+      "size_bytes": 326760,
+      "sha256": "bd7363491ed2a3ae18186e8127cb4d127edad96340a727e85fb050922694d89d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.logs.txt",
+      "size_bytes": 8716,
+      "sha256": "5c21e3133cd31ad0159359fbd4fa6e9e9f94a37636e061e427f71b20c61d9c69",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.map",
+      "size_bytes": 199469,
+      "sha256": "00208e8ac849bd1c6393e82614ba1eb9d075589235376328fcb6036787cf3679",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_normal_sleep_all_wake_ups_sim_dv.rodata.txt",
+      "size_bytes": 54228,
+      "sha256": "714a981274d44f2febe11ee06f73345cc2b769eb37091a822ce42c029dc1c696",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_normal_sleep_all_wake_ups_sim_dv.rodata.txt"
+    }
+  ]
+}

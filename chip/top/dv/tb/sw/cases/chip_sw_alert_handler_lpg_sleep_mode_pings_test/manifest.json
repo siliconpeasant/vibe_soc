@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_alert_handler_lpg_sleep_mode_pings_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_alert_handler_lpg_sleep_mode_pings_test",
+  "images": [
+    {
+      "image_base": "alert_handler_lpg_sleep_mode_pings_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:alert_handler_lpg_sleep_mode_pings_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.32.vmem",
+      "size_bytes": 53255,
+      "sha256": "3207fd506bb19f62ef0e1ae40b2ec527f5bd058c68394b1a501e660aaa5df66b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.64.scr.vmem",
+      "size_bytes": 57419,
+      "sha256": "418e2d58fb9073fe999d3b2d5ab43772e537d9f473e54f01337f69099145d80b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.64.vmem",
+      "size_bytes": 49802,
+      "sha256": "5e805448775b78e7ecd78a4c7cc616d1f1a60a6c0bcfcd43441f0fa7a15b4b73",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.bash"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.bin",
+      "size_bytes": 20412,
+      "sha256": "3eb7da8fe8c8ad62d43536844faeb3fbd02c19520c08614f948b9790efed5ca6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.bin"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.dis",
+      "size_bytes": 765338,
+      "sha256": "4ccf668462a56549aa867a71dc29dbe8fcbb1cdbc9b959735eff0db4f902de67",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.dis"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.elf",
+      "size_bytes": 399152,
+      "sha256": "2a8bbaa438fec8c9ef78e1ae031ac1b7581f986fc23e589e82b2a322f8d0a841",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.elf"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.logs.txt",
+      "size_bytes": 12639,
+      "sha256": "cf40e96ac10b31aa2b34a2d724587914b4198b93f2e9b1d8bfbfc68500c77094",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.map",
+      "size_bytes": 264743,
+      "sha256": "30bc6d594e4035e40404ab732fb717b1a347e1f67e75b265973bf50173cf1bd6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.map"
+    },
+    {
+      "file": "alert_handler_lpg_sleep_mode_pings_test_sim_dv.rodata.txt",
+      "size_bytes": 69964,
+      "sha256": "ff68a99d6f3662ffa6545fce8f71b248e407db01c1f109e293121c37f707b39a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_sleep_mode_pings_test_sim_dv.rodata.txt"
+    }
+  ]
+}

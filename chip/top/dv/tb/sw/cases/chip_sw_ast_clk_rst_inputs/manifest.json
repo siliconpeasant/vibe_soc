@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_ast_clk_rst_inputs",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_ast_clk_rst_inputs",
+  "images": [
+    {
+      "image_base": "ast_clk_rst_inputs",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:ast_clk_rst_inputs"
+    }
+  ],
+  "files": [
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.32.vmem",
+      "size_bytes": 57909,
+      "sha256": "5ccae6fd293ee7935b81fdda0ea004a4c11ca8a16e3b5f803c2036d5f7a4af4e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.32.vmem"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.64.scr.vmem",
+      "size_bytes": 62439,
+      "sha256": "724bf76ea590a1e48a048cfedb87eb7d3f6ea0dc798ff9fe7481659350ab833f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.64.vmem",
+      "size_bytes": 54153,
+      "sha256": "1574adc766aaddb7264ae7882f8f8d166be14ffaad15b84fa622827359c18b10",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.64.vmem"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.bash"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.bin",
+      "size_bytes": 22196,
+      "sha256": "20d93ede7ce0116c8822b07d5366998e0374500faa57ced26faff5743ffdc61d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.bin"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.dis",
+      "size_bytes": 816137,
+      "sha256": "b6e0ec096bf239e183e32eef2c28a36f8818972f83c0f234480a8c727e9cbbd9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.dis"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.elf",
+      "size_bytes": 458876,
+      "sha256": "305ff5aadba953336c788aaaf8b33b206c6dafeab491a787bcf56c9ebb999cdc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.elf"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.logs.txt",
+      "size_bytes": 14695,
+      "sha256": "cd9419758e4f4ce3aa187c203622c4d1e0a52a9456506e59c41604a6c4b24d4d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.logs.txt"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.map",
+      "size_bytes": 281975,
+      "sha256": "62d604f11246f59a66fdbc6fa42270b4253630def27c83367ffb2b8f00467d1a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.map"
+    },
+    {
+      "file": "ast_clk_rst_inputs_sim_dv.rodata.txt",
+      "size_bytes": 67929,
+      "sha256": "1d9329c49f11ac12d256a54d3d3ecfd3a49d4aaf6dd16cf90b80d69c4beccdc8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/ast_clk_rst_inputs_sim_dv.rodata.txt"
+    }
+  ]
+}

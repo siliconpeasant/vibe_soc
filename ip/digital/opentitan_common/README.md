@@ -1,52 +1,31 @@
-# opentitan_common IP
+# OpenTitan Common DE Package
 
-## 简介
+`opentitan_common` owns the shared OpenTitan primitive RTL slices that have been split out of the `chip/top` vendor island into a native vibe_soc package boundary.
 
-opentitan_common 是自研 IP 模块。
+## Scope
 
-## 目录结构
+- OpenTitan `prim` / `prim_generic` base filelist used before TLUL.
+- Additional `prim` / `prim_generic` ordered fragments split from the frozen Earlgrey chip dependency graph.
+- No independent DV environment yet; chip-level smoke remains the validation point.
 
-```
-opentitan_common/
-├── de/
-│   ├── rtl/      # RTL 源码
-│   ├── lint/     # Lint 脚本/报告
-│   ├── cdc/      # CDC 配置
-│   ├── syn/      # 综合约束/脚本
-│   ├── formal/   # 形式验证
-│   └── run/      # 设计生成文件
-├── dv/
-│   ├── tb/       # Testbench (可独立编译仿真)
-│   ├── verif/    # 验证脚本
-│   ├── tests/    # Test case
-│   └── sim/      # 验证生成文件
-├── Makefile      # IP 级仿真入口
-└── README.md     # 本文档
-```
+## Filelist Layout
 
-## 独立仿真
+```text
+de/rtl/filelist.f
+  Base common primitive entries.
 
-```bash
-cd ip/digital/opentitan_common       # 根目录执行
-cd ip/digital/opentitan_common/de    # de 目录下也能执行
-cd ip/digital/opentitan_common/dv    # dv 目录下也能执行
-make comp    # 编译
-make sim     # 运行仿真
-make clean   # 清理
+de/rtl/fragments/10_top00_prim_block1.f
+  First prim/prim_generic block formerly embedded in chip/top 00 fragment.
+
+de/rtl/fragments/20_top00_prim_block2.f
+  Second prim/prim_generic block formerly embedded in chip/top 00 fragment.
+
+de/rtl/fragments/30_top10_prim_block1.f
+  prim/prim_generic block formerly embedded in chip/top 10 fragment.
 ```
 
-## 集成到 Chip
+`de/rtl/filelist.mk` exposes each fragment as a named variable. Standalone consumers may include the package normally; `chip/top` still inserts fragments at the original frozen source-order points.
 
-将 RTL 文件放入 `chip/periph/de/rtl/` 或 `chip/bus/de/rtl/` 等对应目录，
-然后在 `chip/top/de/rtl/` 的顶层模块中实例化。
+## Integration Contract
 
-## 端口说明
-
-| 信号名 | 方向 | 位宽 | 说明 |
-|--------|------|------|------|
-| clk    | input | 1 | 时钟 |
-| rst_n  | input | 1 | 异步复位，低有效 |
-| data_in | input | 8 | 输入数据 |
-| valid_in | input | 1 | 输入有效 |
-| data_out | output | 8 | 输出数据 |
-| valid_out | output | 1 | 输出有效 |
+This package still references the OpenTitan vendor source tree for shared primitive RTL. It is a filelist ownership split first, not a source-pruning step. The vendor copies remain the source of truth until each primitive block is explicitly promoted to copied native RTL.

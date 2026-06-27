@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_sensor_ctrl_deep_sleep_wake_up",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_sensor_ctrl_deep_sleep_wake_up",
+  "images": [
+    {
+      "image_base": "pwrmgr_sensor_ctrl_deep_sleep_wake_up",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_sensor_ctrl_deep_sleep_wake_up"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.32.vmem",
+      "size_bytes": 37761,
+      "sha256": "277e354502c2c7b35fd12bf9b9265d12e850e90269a5dfd561bd92e37ca43f14",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.64.scr.vmem",
+      "size_bytes": 40709,
+      "sha256": "1abf5785b9ab0504e28a77f354444dec0d583adc6c99adecd20d43c5744b00c7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.64.vmem",
+      "size_bytes": 35321,
+      "sha256": "e064ea728e4c45add35d6fba75a9b6e2e4bb8dbf11c67f39fb27921093d26442",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.bin",
+      "size_bytes": 14468,
+      "sha256": "429156325836babd6170e6c0228b18ed2c3da1cf0ab71b61bab7274c5df434d3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.dis",
+      "size_bytes": 539017,
+      "sha256": "b3ae62a3766fc310985d7c45695797bcbedbc97a3b4c577bb1349fbb0c19f118",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.elf",
+      "size_bytes": 286896,
+      "sha256": "05a8918eadf720362c7a30b72da1da7fecf3a912fa0713f1cfed7af87b607096",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.logs.txt",
+      "size_bytes": 6374,
+      "sha256": "8fcf4e1fa423af63665aa5f6a90a42d4c4adc07bbb605e862b287ca5774e5451",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.map",
+      "size_bytes": 178097,
+      "sha256": "9d879feb1152c41f8fb50052e4099685c2e1899db8d598bd578180b726350ed6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.rodata.txt",
+      "size_bytes": 47682,
+      "sha256": "3a0afb870b1a89636fb238acd6a4622855c862fd229e308851f9ef4326ff9817",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sensor_ctrl_deep_sleep_wake_up_sim_dv.rodata.txt"
+    }
+  ]
+}

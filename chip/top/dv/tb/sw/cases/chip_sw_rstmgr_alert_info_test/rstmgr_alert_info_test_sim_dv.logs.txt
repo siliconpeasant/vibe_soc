@@ -1,0 +1,749 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 345
+nargs: 1
+format: DIF-fail: dif_aon_timer_irq_acknowledge(&aon_timer, irq) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 352
+nargs: 0
+format: IRQ: class A
+str_arg_idx: 
+addr: 1002c
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 369
+nargs: 1
+format: IRQ: class B %0d
+str_arg_idx: 
+addr: 10040
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 372
+nargs: 0
+format: IRQ: class C
+str_arg_idx: 
+addr: 10054
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 377
+nargs: 0
+format: IRQ: class D
+str_arg_idx: 
+addr: 10068
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 378
+nargs: 0
+format: IRQ: extra alert called
+str_arg_idx: 
+addr: 1007c
+severity: 3
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 382
+nargs: 1
+format: IRQ: unknown irq %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 729
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 752
+nargs: 1
+format: DIF-fail: dif_rstmgr_alert_info_set_enabled(&rstmgr, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 759
+nargs: 1
+format: eset info = 0x%02H
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 764
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100e0
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 765
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100f4
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 766
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10108
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 767
+nargs: 1
+format: Test round %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 777
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10130
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 789
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassa, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 793
+nargs: 0
+format: CHECK-fail: Should have reset before this line
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 797
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1016c
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 799
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10180
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 800
+nargs: 1
+format: Test round %0d
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 813
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101a8
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 823
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassb, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 825
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassc, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 828
+nargs: 0
+format: CHECK-fail: Should have reset before this line
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 835
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassd, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 838
+nargs: 0
+format: CHECK-fail: Should have reset before this line
+str_arg_idx: 
+addr: 1020c
+severity: 3
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 859
+nargs: 1
+format: unexpected reset info %0d
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 613
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeReset, dt_aon_timer_instance_id(kDtAonTimerAon), kDtAonTimerResetReqAonTimer, &reset_sources) returns %0d
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 615
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( &pwrmgr, kDifPwrmgrReqTypeReset, reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 411
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, node.alert, node.class, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 416
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_class( &alert_handler, alert_class, kConfigProfiles[alert_class], kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 419
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_ping_timer( &alert_handler, 0, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 316
+nargs: 0
+format: CHECK-fail: unhandled device type
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 624
+nargs: 1
+format: DIF-fail: dif_rstmgr_alert_info_dump_read( &rstmgr, dump, DIF_RSTMGR_ALERT_INFO_MAX_SIZE, &seg_size) returns %0d
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 627
+nargs: 2
+format: Testname: %0s  DUMP SIZE %0d
+str_arg_idx: 0
+addr: 102c0
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 629
+nargs: 2
+format: DUMP:%0d: 0x%0h
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 632
+nargs: 0
+format: CHECK-fail: seg_size must fit in int
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 634
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102fc
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 645
+nargs: 2
+format: loc_alert_cause: exp: %08h   obs: %08h
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 647
+nargs: 0
+format: CHECK-fail: expected_info[round].alert_info.loc_alert_cause == actual_info.loc_alert_cause
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 649
+nargs: 0
+format: observed alert cause:
+str_arg_idx: 
+addr: 10338
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 651
+nargs: 0
+format: expected alert cause:
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 658
+nargs: 3
+format: CHECK-fail: At alert cause %0d Expected %0d, got %0d
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 669
+nargs: 3
+format: CHECK-fail: alert_info.class_accum_cnt[%0d] mismatch exp:0x%0h  obs:0x%0h
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 678
+nargs: 3
+format: CHECK-fail: alert_info.class_esc_state[%0d] mismatch exp:0x%0h  obs:0x%0h
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 393
+nargs: 2
+format: alert_cause[%0d]: 0x%0h
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 445
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, node.alert, node.class, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 452
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert(&alert_handler, node.alert, node.class, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 458
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_class( &alert_handler, alert_classes[i], class_configs[i], kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 497
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, i, alert_class, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 528
+nargs: 1
+format: Escalation set to %0d cycles
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 539
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_class( &alert_handler, alert_classes[i], class_configs[i], kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 544
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_ping_timer( &alert_handler, 1000, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 562
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, i, kDifAlertHandlerClassA, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 586
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_local_alert( &alert_handler, loc_alert, loc_alert_class, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 590
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_class( &alert_handler, kDifAlertHandlerClassB, class_config, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 593
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_ping_timer( &alert_handler, 1, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/tests/rstmgr_alert_info_test.c
+line: 597
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassb, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 67
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 68
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: value != ((void*)0)
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 83
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 84
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: value < 4294967295U
+str_arg_idx: 
+addr: 10540
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10554
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10568
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10590
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 105a4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 105b8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 105cc
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: word_index < dump_size
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 78
+nargs: 0
+format: CHECK-fail: word_index < dump_size
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10680
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10694
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 31
+nargs: 0
+format: CHECK-fail: num_bits <= 32
+str_arg_idx: 
+addr: 106a8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 32
+nargs: 0
+format: CHECK-fail: *bit_index < 32
+str_arg_idx: 
+addr: 106bc
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 106d0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 106e4
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 106f8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1070c
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10720
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10734
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 71
+nargs: 0
+format: CHECK-fail: memcmp(data->value, readback_data.value, sizeof(data->value)) == 0
+str_arg_idx: 
+addr: 10748
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 1075c
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 10770
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 308
+nargs: 0
+format: Flash_ctrl fault status has memory_properties_error
+str_arg_idx: 
+addr: 10784
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 309
+nargs: 0
+format: Flash_ctrl fault status has read_error
+str_arg_idx: 
+addr: 10798
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 310
+nargs: 0
+format: Flash_ctrl fault status has prog_window_error
+str_arg_idx: 
+addr: 107ac
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 311
+nargs: 0
+format: Flash_ctrl fault status has prog_type_error
+str_arg_idx: 
+addr: 107c0
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 312
+nargs: 0
+format: Flash_ctrl fault status has host_gnt_error
+str_arg_idx: 
+addr: 107d4
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 313
+nargs: 0
+format: Flash_ctrl fault status has register_integrity_error
+str_arg_idx: 
+addr: 107e8
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 314
+nargs: 0
+format: Flash_ctrl fault status has phy_integrity_error
+str_arg_idx: 
+addr: 107fc
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 315
+nargs: 0
+format: Flash_ctrl fault status has lifecycle_manager_error
+str_arg_idx: 
+addr: 10810
+severity: 0
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 316
+nargs: 0
+format: Flash_ctrl fault status has shadow_storage_error
+str_arg_idx: 
+addr: 10824
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10838
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 1084c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

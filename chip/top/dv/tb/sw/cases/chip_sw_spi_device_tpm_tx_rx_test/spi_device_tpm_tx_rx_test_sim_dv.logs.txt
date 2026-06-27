@@ -1,0 +1,245 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 115
+nargs: 1
+format: nexpected interrupt: %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 144
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInSpiDeviceTpmCsb, kTopEarlgreyPinmuxInselIoa7) returns %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 156
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs(&pinmux, kTopEarlgreyMuxedPadsIoa7, kDifPinmuxPadKindMio, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 160
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10054
+severity: 0
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 170
+nargs: 0
+format: SYNC: Begin TPM Test
+str_arg_idx: 
+addr: 10068
+severity: 0
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 178
+nargs: 1
+format: Iteration %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 194
+nargs: 0
+format: CHECK-fail: Expected write command, received read
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 198
+nargs: 1
+format: Expecting %0d bytes from tpm write
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 205
+nargs: 1
+format: DIF-fail: status returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 0
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 211
+nargs: 0
+format: SYNC: Waiting Read
+str_arg_idx: 
+addr: 100cc
+severity: 0
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 226
+nargs: 2
+format: Expected 0x%0h, received 0x%0h
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 228
+nargs: 0
+format: CHECK-fail: Expected read command, received write
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 229
+nargs: 0
+format: CHECK-fail: Received address did not match
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 84
+nargs: 1
+format: DIF-fail: dif_spi_device_irq_set_enabled(spi_device, kIrqs[i], kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/spi_device_tpm_tx_rx_test.c
+line: 126
+nargs: 1
+format: DIF-fail: dif_spi_device_irq_set_enabled( &spi_device->dev, kDifSpiDeviceIrqTpmHeaderNotEmpty, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 789
+nargs: 1
+format: DIF-fail: dif_spi_device_irq_get_type(spi_device_ctx.spi_device, irq, &type) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 792
+nargs: 1
+format: DIF-fail: dif_spi_device_irq_acknowledge(spi_device_ctx.spi_device, irq) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 101bc
+severity: 0
+file: sw/device/lib/testing/spi_device_testutils.c
+line: 378
+nargs: 0
+format: Specified slew rate not supported, trying supported slew rate
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/lib/testing/spi_device_testutils.c
+line: 384
+nargs: 0
+format: Specified drive strength not supported, trying supported drive strength
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10284
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

@@ -1,0 +1,252 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 98
+nargs: 1
+format: DIF-fail: dif_usbdev_init_from_dt((dt_usbdev_t)dt, usbdev) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 101
+nargs: 1
+format: DIF-fail: dif_spi_device_init_from_dt((dt_spi_device_t)dt, spi_device) returns %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 102
+nargs: 1
+format: DIF-fail: dif_spi_host_init_from_dt((dt_spi_host_t)dt, spi_host) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 103
+nargs: 1
+format: DIF-fail: dif_i2c_init_from_dt((dt_i2c_t)dt, i2c) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 385
+nargs: 1
+format: DIF-fail: dif_rstmgr_get_sw_reset_index(kDtRstmgrAon, reset, &sw_reset_index) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 387
+nargs: 1
+format: DIF-fail: dif_rstmgr_software_reset(&rstmgr, sw_reset_index, kDifRstmgrSoftwareReset) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 396
+nargs: 2
+format: reset_val for %0s is 0x%08h
+str_arg_idx: 0
+addr: 10090
+severity: 0
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 412
+nargs: 1
+format: programmed value : 0x%0h
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 420
+nargs: 1
+format: DIF-fail: dif_rstmgr_get_sw_reset_index(kDtRstmgrAon, reset_index, &sw_reset_index) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 422
+nargs: 1
+format: DIF-fail: dif_rstmgr_software_reset(&rstmgr, sw_reset_index, kDifRstmgrSoftwareReset) returns %0d
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 427
+nargs: 3
+format: CHECK-fail: after configure: reset_val for %0s mismatch: want 0x%0h, got 0x%0h
+str_arg_idx: 0
+addr: 100e0
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 114
+nargs: 1
+format: DIF-fail: dif_spi_device_configure(handle, cfg) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 131
+nargs: 1
+format: DIF-fail: dif_spi_host_configure(dif, cfg) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 149
+nargs: 1
+format: DIF-fail: dif_spi_host_configure(dif, cfg) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 162
+nargs: 1
+format: DIF-fail: dif_i2c_configure(dif, cfg) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 171
+nargs: 1
+format: DIF-fail: dif_i2c_configure(dif, cfg) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/rstmgr_sw_rst_ctrl_test.c
+line: 179
+nargs: 1
+format: DIF-fail: dif_i2c_configure(dif, cfg) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 101bc
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 101d0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

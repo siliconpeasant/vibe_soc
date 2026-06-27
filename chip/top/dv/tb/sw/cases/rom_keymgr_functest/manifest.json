@@ -1,0 +1,77 @@
+{
+  "case": "rom_keymgr_functest",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/rom_keymgr_functest",
+  "images": [
+    {
+      "origin_target": "//sw/device/silicon_creator/lib/drivers:keymgr_functest:1:new_rules",
+      "image_base": "keymgr_functest",
+      "slot": 1,
+      "rule": "new_rules"
+    }
+  ],
+  "files": [
+    {
+      "file": "keymgr_functest_sim_dv.32.vmem",
+      "size_bytes": 58174,
+      "sha256": "1f56cd5701b5d67474c0c0630287e948f2bf3d7833a0c7e6ed75b192f28e3526",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.32.vmem"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.64.scr.vmem",
+      "size_bytes": 62709,
+      "sha256": "d0532734231aca6ef069b0a53a416825f392a87f51e4f934a22e592ae934c9aa",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.64.vmem",
+      "size_bytes": 54387,
+      "sha256": "50cde3dd5a4e6bc49a1ec94751f60a623c252b49c2154f8c978224fff0aa6312",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.64.vmem"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.bash"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.bin",
+      "size_bytes": 22296,
+      "sha256": "fe47a9cb31e1e26a6d15846405b8402a3ecfc31f372b272ada6f6cb154d39beb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.bin"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.dis",
+      "size_bytes": 862086,
+      "sha256": "adf66ee4e662d6c0ba7c257d819ff0ef5673e0bbff988c44a259681dab1fc0b0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.dis"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.elf",
+      "size_bytes": 417212,
+      "sha256": "3faa71d746c09342dbce583713a866b1ee4dc6e474e21e3ff6a6467a0d5df0b2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.elf"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.logs.txt",
+      "size_bytes": 12502,
+      "sha256": "f9fe4bcc6200b70a45aea4abc2e1e1ff510777eeb32c37ec39b847394bdf7850",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.logs.txt"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.map",
+      "size_bytes": 287046,
+      "sha256": "0953496e4b3911b055535f9c0c51edb1ff11cc61917f3f19ab5f1803b444266e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.map"
+    },
+    {
+      "file": "keymgr_functest_sim_dv.rodata.txt",
+      "size_bytes": 72009,
+      "sha256": "36b775bbfa923e144905824a5e256b609d5225a0edaa22a42085b3ce594c1a4c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_functest_sim_dv.rodata.txt"
+    }
+  ]
+}

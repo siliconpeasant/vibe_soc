@@ -1,0 +1,616 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 483
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10018
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 488
+nargs: 0
+format: CHECK-fail: ottf_task_create(main_task, "main", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 489
+nargs: 0
+format: CHECK-fail: ottf_task_create(otbn_task, "otbn", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 490
+nargs: 0
+format: CHECK-fail: ottf_task_create(ibex_task, "ibex", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 491
+nargs: 0
+format: CHECK-fail: ottf_task_create(aes_task, "aes", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 492
+nargs: 0
+format: CHECK-fail: ottf_task_create(csrng_task, "csrng", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 425
+nargs: 0
+format: CHECK-fail: next_state < kTestStateCount
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 426
+nargs: 1
+format: Test state: %0s
+str_arg_idx: 0
+addr: 100a4
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 462
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 463
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 350
+nargs: 0
+format: Generating EDN and CSRNG params
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 385
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100f4
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 386
+nargs: 1
+format: DIF-fail: dif_csrng_configure(&csrng) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 387
+nargs: 1
+format: DIF-fail: dif_edn_set_auto_mode(&edn0, edn_params0) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 388
+nargs: 1
+format: DIF-fail: dif_edn_set_auto_mode(&edn1, edn_params1) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 390
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10144
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 391
+nargs: 1
+format: DIF-fail: dif_csrng_uninstantiate(&csrng) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 392
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1016c
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 394
+nargs: 1
+format: DIF-fail: dif_csrng_instantiate(&csrng, sw_ins.entropy_src_enable, sw_ins.seed_material) returns %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 395
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 412
+nargs: 0
+format: Continuing without esfinal FIFO being full
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 186
+nargs: 0
+format: OTBN:START
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 194
+nargs: 0
+format: CHECK-fail: otbn_randomness_test_end(&otbn, 0)
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 196
+nargs: 0
+format: OTBN:DONE
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 218
+nargs: 0
+format: Ibex:START
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 234
+nargs: 0
+format: CHECK-fail: Unexpected duplicate data
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 235
+nargs: 0
+format: CHECK-fail: new_data != 0
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 236
+nargs: 0
+format: CHECK-fail: new_data != 4294967295U
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 239
+nargs: 0
+format: Ibex:DONE
+str_arg_idx: 
+addr: 10248
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 262
+nargs: 0
+format: AES:START
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 273
+nargs: 0
+format: AES:DONE
+str_arg_idx: 
+addr: 10270
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 296
+nargs: 0
+format: CSRNG:START
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 308
+nargs: 1
+format: DIF-fail: dif_csrng_get_cmd_interface_status(&csrng, &cmd_status) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 309
+nargs: 0
+format: CHECK-fail: cmd_status.kind != kDifCsrngCmdStatusError
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 313
+nargs: 1
+format: IF-fail: csrng_send_app_cmd(csrng.base_addr, kCsrngAppCmdTypeCsrng, sw_gen) returns %0d
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 328
+nargs: 1
+format: DIF-fail: dif_csrng_get_cmd_interface_status(&csrng, &cmd_status) returns %0d
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 329
+nargs: 0
+format: CHECK-fail: cmd_status.kind != kDifCsrngCmdStatusError
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 333
+nargs: 1
+format: DIF-fail: csrng_send_app_cmd(csrng.base_addr, kCsrngAppCmdTypeCsrng, sw_res) returns %0d
+str_arg_idx: 
+addr: 102fc
+severity: 0
+file: sw/device/tests/csrng_edn_concurrency_test.c
+line: 335
+nargs: 0
+format: CSRNG:DONE
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 40
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10324
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 48
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10338
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 49
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1034c
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 51
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10360
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 56
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10374
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 59
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10388
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1039c
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 64
+nargs: 1
+format: ERROR: Test with index %0d failed.
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 47
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 77
+nargs: 0
+format: CHECK-fail: cmd_status.kind != kDifCsrngCmdStatusError
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 382
+nargs: 0
+format: CHECK-fail: alerts == 0
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 35
+nargs: 1
+format: DIF-fail: dif_entropy_src_configure(&entropy_src, config, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 177
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 200
+nargs: 1
+format: entropy_src status. err: 0x%0h
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 209
+nargs: 2
+format: csrng error status. err: 0x%0h, kind: 0x%0h
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 217
+nargs: 2
+format: end0 error status. err: 0x%0h, fifo_err: 0x%0h
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 224
+nargs: 2
+format: end1 error status. err: 0x%0h, fifo_err: 0x%0h
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 226
+nargs: 0
+format: CHECK-fail: entropy_testutils_error_check fail
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 40
+nargs: 1
+format: CHECK-fail: OTBN is locked. Error bits: 0x%08h
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 47
+nargs: 3
+format: CHECK-fail: OTBN error bits: got: 0x%08h, expected: 0x%08h.Instruction count: 0x%08h
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: imem_size % sizeof(uint32_t) == 0
+str_arg_idx: 0
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: data_size % sizeof(uint32_t) == 0
+str_arg_idx: 0
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 63
+nargs: 0
+format: CHECK-fail: app->imem_end > app->imem_start
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 65
+nargs: 0
+format: CHECK-fail: app->dmem_data_end >= app->dmem_data_start
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10504
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10540
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 20
+nargs: 1
+format: %0s
+str_arg_idx: 0
+addr: 10554
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10568
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 105a4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10680
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10694
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 106a8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 106bc
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 106d0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

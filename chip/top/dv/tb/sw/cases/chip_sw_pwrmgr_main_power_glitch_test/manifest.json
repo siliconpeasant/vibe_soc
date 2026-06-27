@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_main_power_glitch_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_main_power_glitch_test",
+  "images": [
+    {
+      "image_base": "pwrmgr_main_power_glitch_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_main_power_glitch_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.32.vmem",
+      "size_bytes": 32432,
+      "sha256": "dba5454e3b7b2500eb7e1c240aedc769f6661de63ffc732f7387c463a4e4693c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.64.scr.vmem",
+      "size_bytes": 34949,
+      "sha256": "60498230a296390f7a4f37ce481bbe73f7ac3ac551dd30d56b88ff5f7f95445f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.64.vmem",
+      "size_bytes": 30329,
+      "sha256": "c2c52171eda547cbb4a046bbf6470cc4317122f88ddac0b3eb82b56543babbe9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.bin",
+      "size_bytes": 12424,
+      "sha256": "bc0ff935ac40620a0494678e42c79c5538bacd4b4c8323927327a04a10fc40c1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.dis",
+      "size_bytes": 463512,
+      "sha256": "a5da482807433632f46551c6db614b10ad4ef16141ee7e09a2a1a365ded79df2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.elf",
+      "size_bytes": 265788,
+      "sha256": "c08e1c1555a7582abe572f89d00259c2e6cf094bce5a571bd52f1f3dec1cc59f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.logs.txt",
+      "size_bytes": 4728,
+      "sha256": "f5158fdba2805802ef175a89e0e2b1581a2daa8f0827cef17c9fb9b0a2ace22d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.map",
+      "size_bytes": 153715,
+      "sha256": "ed40816b0de76dbb04f5ce12d5778b83a13abf70cdc0f9cfe343880eb7f3cfb9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_main_power_glitch_test_sim_dv.rodata.txt",
+      "size_bytes": 42040,
+      "sha256": "6108b9def313aabf8c3b3990876a1be6627f25d43fb7ebcc0357e8d921beff93",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_main_power_glitch_test_sim_dv.rodata.txt"
+    }
+  ]
+}

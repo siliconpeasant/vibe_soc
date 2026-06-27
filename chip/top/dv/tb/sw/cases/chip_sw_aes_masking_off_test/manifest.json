@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_aes_masking_off_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_aes_masking_off_test",
+  "images": [
+    {
+      "image_base": "aes_masking_off_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:aes_masking_off_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "aes_masking_off_test_sim_dv.32.vmem",
+      "size_bytes": 53109,
+      "sha256": "90e369026d85ab816e0c0db1c5fcd6133d8e427d3c84eb80dca352736e0d9ca4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.64.scr.vmem",
+      "size_bytes": 57269,
+      "sha256": "d7389ad8d5226f5688253471df4f8c9f02b1700bf21babfcebec159db76417dc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.64.vmem",
+      "size_bytes": 49673,
+      "sha256": "6fd2c082f9d955403f0ed877c58ff309634dc4b88ebe4ff3c629998a0d66bfe4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.bash"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.bin",
+      "size_bytes": 20356,
+      "sha256": "e49a2153b66a19c745d76ac39b2c3a5b74d22c96fdc32740932f010720225900",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.bin"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.dis",
+      "size_bytes": 807579,
+      "sha256": "889f09296770e2b236f06eab1fb97fc2a475dd933d9cdb27975d5394d093f778",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.dis"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.elf",
+      "size_bytes": 355716,
+      "sha256": "0203d1058c88bab444d25aacad47161b827be98f231a7cf492c59ea9dd398283",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.elf"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.logs.txt",
+      "size_bytes": 8221,
+      "sha256": "f27b5943dbac38a8bf9e5edcde9738b9f2be0f284281cf5b3217004e86b96143",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.map",
+      "size_bytes": 257910,
+      "sha256": "5ebca16cd385c450fb3e58c6f49385b7df978e2dffac220c893c99ea4b7ab279",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.map"
+    },
+    {
+      "file": "aes_masking_off_test_sim_dv.rodata.txt",
+      "size_bytes": 66672,
+      "sha256": "9320e9361da20e93dca163f8bc7ac7ef858058590fadced98d7b734f4963b65a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_masking_off_test_sim_dv.rodata.txt"
+    }
+  ]
+}

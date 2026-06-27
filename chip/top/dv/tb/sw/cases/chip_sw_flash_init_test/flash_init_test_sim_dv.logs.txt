@@ -1,0 +1,469 @@
+addr: 4
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 88
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 18
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 91
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 2c
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 94
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 40
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 97
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 54
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 101
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 68
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 125
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 7c
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 128
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 90
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 131
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: a4
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 134
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: b8
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 137
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: cc
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 152
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: e0
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 153
+nargs: 1
+format: CHECK-fail: readback_data %0smatches kBank0Page0Data
+str_arg_idx: 0
+addr: f4
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 153
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 108
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 156
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 11c
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 157
+nargs: 1
+format: CHECK-fail: readback_data %0smatches kBank1Page0Data
+str_arg_idx: 0
+addr: 130
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 157
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 144
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 160
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 158
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 161
+nargs: 1
+format: CHECK-fail: readback_data %0smatches kCreatorSecretData
+str_arg_idx: 0
+addr: 16c
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 161
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 180
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 164
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 194
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 165
+nargs: 1
+format: CHECK-fail: readback_data %0smatches kOwnerSecretData
+str_arg_idx: 0
+addr: 1a8
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 165
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 1bc
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 168
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1d0
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 169
+nargs: 1
+format: CHECK-fail: readback_data %0smatches kIsoPartData
+str_arg_idx: 0
+addr: 1e4
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 169
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 1f8
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 145
+nargs: 1
+format: CHECK-fail: host_data %0smatches check_data
+str_arg_idx: 0
+addr: 20c
+severity: 0
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 145
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 220
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 107
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 234
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 110
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 248
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 113
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 25c
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 116
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 270
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 119
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 284
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 205
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start(&flash_state, transaction) returns %0d
+str_arg_idx: 
+addr: 298
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 207
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_read_fifo_pop(&flash_state, kNumTestWords, readback_data) returns %0d
+str_arg_idx: 
+addr: 2ac
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 208
+nargs: 0
+format: CHECK-fail: transaction_end_check_read_error()
+str_arg_idx: 
+addr: 2c0
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 211
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start(&flash_state, transaction) returns %0d
+str_arg_idx: 
+addr: 2d4
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 213
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_read_fifo_pop(&flash_state, kNumTestWords, readback_data) returns %0d
+str_arg_idx: 
+addr: 2e8
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 214
+nargs: 0
+format: CHECK-fail: transaction_end_check_read_error()
+str_arg_idx: 
+addr: 2fc
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 218
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start(&flash_state, transaction) returns %0d
+str_arg_idx: 
+addr: 310
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 220
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_read_fifo_pop(&flash_state, kNumTestWords, readback_data) returns %0d
+str_arg_idx: 
+addr: 324
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 221
+nargs: 0
+format: CHECK-fail: transaction_end_check_read_error()
+str_arg_idx: 
+addr: 338
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 224
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start(&flash_state, transaction) returns %0d
+str_arg_idx: 
+addr: 34c
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 226
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_read_fifo_pop(&flash_state, kNumTestWords, readback_data) returns %0d
+str_arg_idx: 
+addr: 360
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 227
+nargs: 0
+format: CHECK-fail: transaction_end_check_read_error()
+str_arg_idx: 
+addr: 374
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 230
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start(&flash_state, transaction) returns %0d
+str_arg_idx: 
+addr: 388
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 232
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_read_fifo_pop(&flash_state, kNumTestWords, readback_data) returns %0d
+str_arg_idx: 
+addr: 39c
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 233
+nargs: 0
+format: CHECK-fail: transaction_end_check_read_error()
+str_arg_idx: 
+addr: 3b0
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 180
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 3c4
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 181
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 3d8
+severity: 2
+file: sw/device/tests/sim_dv/flash_init_test.c
+line: 237
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start_controller_init(&flash_state) returns %0d
+str_arg_idx: 
+addr: 3ec
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 48
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 400
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 51
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 414
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 54
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 428
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 59
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 43c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 450
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 77
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kPadUart0Rx, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 464
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 85
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 478
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 89
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 48c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 110
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDp, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 4a0
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 112
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDn, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 4b4
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 117
+nargs: 1
+format: DIF-fail: dif_pinmux_mio_select_output(pinmux, kDtPadIoc7, kDtPeriphIoConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 4c8
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 4dc
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 4f0
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 183
+nargs: 1
+format: Unaligned address 0x%0h
+str_arg_idx: 
+addr: 504
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 518
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 52c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

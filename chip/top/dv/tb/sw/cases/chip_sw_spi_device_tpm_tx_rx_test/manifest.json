@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_spi_device_tpm_tx_rx_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_spi_device_tpm_tx_rx_test",
+  "images": [
+    {
+      "image_base": "spi_device_tpm_tx_rx_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:spi_device_tpm_tx_rx_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.32.vmem",
+      "size_bytes": 37287,
+      "sha256": "090363025c97720050a1a4e0105b857f9f95d4d28a245e6ca6cc5c9ffa9c13b5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.64.scr.vmem",
+      "size_bytes": 40189,
+      "sha256": "c5f29a2ad8b899085244dda2c76c3e6c5d2dbde5845885bf51526ff3efb3ef21",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.64.vmem",
+      "size_bytes": 34870,
+      "sha256": "e0efe9eca049faf8be632ed1d4f147ffb7094b218df4ecbf15f2af7c057f78c5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.bash"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.bin",
+      "size_bytes": 14284,
+      "sha256": "ec4e50f96be917f1ad49583b3f20eaa1845039bc724bef92267ce66fc7158759",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.bin"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.dis",
+      "size_bytes": 562266,
+      "sha256": "59e348e9ee83a4312187178bdfc98ec20ccf0bdf1c80177f129e311aa3b4aac6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.dis"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.elf",
+      "size_bytes": 344168,
+      "sha256": "6835d0c3cee3d228faa19c86e5fb187a4a90dae3bcbe5378fa79f7e9ba5b8185",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.elf"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.logs.txt",
+      "size_bytes": 6345,
+      "sha256": "2033b0464741cead4489faffa8bdcf0057e7751d7182b2bf09a05b4ec3a9e74b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.map",
+      "size_bytes": 183493,
+      "sha256": "8b0d4fc8a7416ab7d50a9f3f435e02248c14d038260a1b83e696143b6cee5d61",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.map"
+    },
+    {
+      "file": "spi_device_tpm_tx_rx_test_sim_dv.rodata.txt",
+      "size_bytes": 48497,
+      "sha256": "091b49357c2c928bca74e814fee71f4d7f757dba9ce63cc51e4db661e2e59001",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_tpm_tx_rx_test_sim_dv.rodata.txt"
+    }
+  ]
+}

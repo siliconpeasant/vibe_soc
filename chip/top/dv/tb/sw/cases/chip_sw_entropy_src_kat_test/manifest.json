@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_entropy_src_kat_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_entropy_src_kat_test",
+  "images": [
+    {
+      "image_base": "entropy_src_kat_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:entropy_src_kat_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "entropy_src_kat_test_sim_dv.32.vmem",
+      "size_bytes": 36374,
+      "sha256": "a1c3b94f73ae6c7ff687e63a31425ac3eace77b5537cfcf7d14be85beb6df272",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.64.scr.vmem",
+      "size_bytes": 39199,
+      "sha256": "cf53b9a775f8a2d4b7d99997f18118c4389b9457c3e693a022d8ad021cb8ae5e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.64.vmem",
+      "size_bytes": 34012,
+      "sha256": "9d4b7ec3c61084d4642a7b34556af2558eca09944348622315b55dedad275139",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.bash"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.bin",
+      "size_bytes": 13936,
+      "sha256": "a88befd5fbbeb94a6bd0c7239fbbf52e47dbc5fd5638a0422ad108bbddeca487",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.bin"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.dis",
+      "size_bytes": 529010,
+      "sha256": "91c1c96479732024d8a515bd218897d176fb0d6ce43ce9f32868492cd1ba298e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.dis"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.elf",
+      "size_bytes": 293384,
+      "sha256": "30b7751c03ce1209a83fca5fed288a8564f4d46ba724e65f851dff6c5ee315c5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.elf"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.logs.txt",
+      "size_bytes": 5584,
+      "sha256": "3bd9816df9714928c65dbee58b39e0dfe775380ac34da3135afdfafa0c65d2e3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.map",
+      "size_bytes": 176399,
+      "sha256": "a913b527c9036528652fd6ea0ba079685d4bff42bd83e9de4c0131933b7b5a84",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.map"
+    },
+    {
+      "file": "entropy_src_kat_test_sim_dv.rodata.txt",
+      "size_bytes": 46061,
+      "sha256": "89df1ccb7465c4dac71413cbaeb1c7da666fe1474285d9385dc79b2ce7ff8011",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_kat_test_sim_dv.rodata.txt"
+    }
+  ]
+}

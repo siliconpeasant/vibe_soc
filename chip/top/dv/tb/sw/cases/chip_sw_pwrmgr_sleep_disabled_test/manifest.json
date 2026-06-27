@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_sleep_disabled_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_sleep_disabled_test",
+  "images": [
+    {
+      "image_base": "pwrmgr_sleep_disabled_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_sleep_disabled_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.32.vmem",
+      "size_bytes": 37068,
+      "sha256": "d56ee2f1efd177cbc1bbe96c19498c7593ced9dbfc3c0566a6481337ab5eec14",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.64.scr.vmem",
+      "size_bytes": 39939,
+      "sha256": "3da849b4fd54d7d35eafb19f1e310c191ef001d0805bca305a906a065897b22e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.64.vmem",
+      "size_bytes": 34653,
+      "sha256": "8b44213b8e9aa26aed9e4fda99c3a8c56b7d0090efaafc9d68d43759673920ed",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.bin",
+      "size_bytes": 14200,
+      "sha256": "35643e44cde8f5be2962c7ebe69a08715b477d8551237244a7e798e4b66f656e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.dis",
+      "size_bytes": 513701,
+      "sha256": "193a42caffeb01a81082d98da37053a4dfd1c96379d8e42b0a2377c8b1982e74",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.elf",
+      "size_bytes": 284012,
+      "sha256": "8fbe8e9040cc7bf0f5b2f775ee2a8e777681fd372b0a94d4b1e8505e1f2dad71",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.logs.txt",
+      "size_bytes": 6764,
+      "sha256": "04465e756e582b2770a22e5671918f76dafc014b1c2aac4ce209c1514b5f872a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.map",
+      "size_bytes": 175582,
+      "sha256": "260d21c60c17c6312e5a99c748c7df0eb902fc5f1a4f4f076f01e9e6799d28fc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_sleep_disabled_test_sim_dv.rodata.txt",
+      "size_bytes": 46938,
+      "sha256": "f16572953c26ca7346a3c0cd9fd8f82322cf7704fcc49f5745a5d67900748aee",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_disabled_test_sim_dv.rodata.txt"
+    }
+  ]
+}

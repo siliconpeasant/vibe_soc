@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_sleep_power_glitch_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_sleep_power_glitch_test",
+  "images": [
+    {
+      "image_base": "pwrmgr_sleep_power_glitch_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_sleep_power_glitch_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.32.vmem",
+      "size_bytes": 46439,
+      "sha256": "c1c2d8a550c7dab6d6bd08264a76c6dfe1b7373cb7d7019437aed8b43ef6772c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.64.scr.vmem",
+      "size_bytes": 50069,
+      "sha256": "a9257b18694b4a6e5a9bbdc2b85668a3db1830205f331ae58db8fa9e18c1e760",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.64.vmem",
+      "size_bytes": 43433,
+      "sha256": "4dcf030744d1fdaadad6451d096b9853c8ea066b2acec225bc4b49b5f754f18f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.bin",
+      "size_bytes": 17796,
+      "sha256": "507fb099e4a855946e91e4beea15e5b912f60da3ce495948a00679f79fc7028f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.dis",
+      "size_bytes": 500865,
+      "sha256": "637859c48a694e610d9e463cc2f9119ea40f8b854cd3b49894b777be80087f8d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.elf",
+      "size_bytes": 287688,
+      "sha256": "5aeba954f07df5128fc424275c1d35ebf6fe4207be3a91081d6d5420f7184e56",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.logs.txt",
+      "size_bytes": 10076,
+      "sha256": "e87ea155effe14eb206a1ea3409d6e09fb638f7136b38092e5ccca3c059df00f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.map",
+      "size_bytes": 166568,
+      "sha256": "42c0e4389fd6138d06816aea160fcc1bd041c122bf5c574cc6c9bd4b3fab5a13",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_sleep_power_glitch_test_sim_dv.rodata.txt",
+      "size_bytes": 49876,
+      "sha256": "e10025316ad871b13d92ed53c04a34168f5feb7f3e7a0e4bddd27193dd4d2770",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_sleep_power_glitch_test_sim_dv.rodata.txt"
+    }
+  ]
+}

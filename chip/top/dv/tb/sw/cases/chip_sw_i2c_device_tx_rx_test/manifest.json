@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_i2c_device_tx_rx_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_i2c_device_tx_rx_test",
+  "images": [
+    {
+      "image_base": "i2c_device_tx_rx_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:i2c_device_tx_rx_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.32.vmem",
+      "size_bytes": 50007,
+      "sha256": "553857325abaec659fcfac33e3d0d010f937fc206b3a8583c3dd97d13c88af5b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.64.scr.vmem",
+      "size_bytes": 53909,
+      "sha256": "d14aa2e0d3bd2353da1920313332841486744357858322818c825d395cd2f7fa",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.64.vmem",
+      "size_bytes": 46760,
+      "sha256": "0eda4476b68699f02f5f81b2e95e70965140330bc31741a180f12087a4efe481",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.bash"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.bin",
+      "size_bytes": 19164,
+      "sha256": "d2e6bcecfd62a91875532e0196d04f041e74c3fe73299aea551c8e6f678c61da",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.bin"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.dis",
+      "size_bytes": 719448,
+      "sha256": "56e0f35ccfa8b9cfb7dd729f7e9cd5383bd00a310932bc79a01bab84868fc643",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.dis"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.elf",
+      "size_bytes": 393880,
+      "sha256": "9495b2a44357a8743c2779451b49607f82c5e75a6e5826542660a5aef86b1b7c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.elf"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.logs.txt",
+      "size_bytes": 9568,
+      "sha256": "a66a6e5ea3822431e84e0840af613b99793f0ced7840abae03ccc4ace74df8dc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.map",
+      "size_bytes": 242934,
+      "sha256": "118270e8f1d34f70496ac6d547cbc6e273cf17db9268fd1a67ab03952f9cfad7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.map"
+    },
+    {
+      "file": "i2c_device_tx_rx_test_sim_dv.rodata.txt",
+      "size_bytes": 65884,
+      "sha256": "47a1ce025aa6023fc7fb24bea2cab80763f99ab48748fd7efc75d4774465f221",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/i2c_device_tx_rx_test_sim_dv.rodata.txt"
+    }
+  ]
+}

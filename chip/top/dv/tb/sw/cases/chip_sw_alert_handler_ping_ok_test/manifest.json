@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_alert_handler_ping_ok_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_alert_handler_ping_ok_test",
+  "images": [
+    {
+      "image_base": "alert_handler_ping_ok_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:alert_handler_ping_ok_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.32.vmem",
+      "size_bytes": 36027,
+      "sha256": "190d52c77fecd60094c53579026baaab9c509f611f96ec861b00c7975c0f7bd2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.64.scr.vmem",
+      "size_bytes": 38839,
+      "sha256": "5e6275f01493b86a67ec3b223e4cb9d7bd5b59fac121e927d89c75dac7860456",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.64.vmem",
+      "size_bytes": 33700,
+      "sha256": "ff426b5b1678795b6904261d27f84e77635098a1bc74ea390315ed23677a96f8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.bash"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.bin",
+      "size_bytes": 13804,
+      "sha256": "27b9e407fa6003a7b8622fdca6665cfb14c2b13ca331162dd188cd64cfbe8164",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.bin"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.dis",
+      "size_bytes": 519656,
+      "sha256": "4fbd81cc81c748b34d35b6eb0200bfc8df4dd74982289cc07734a7b7a1b3e923",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.dis"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.elf",
+      "size_bytes": 284976,
+      "sha256": "a7d917c0a8d3ed5fb0e05d4f86d6b2162835fe1e3b9f87919ab536a5cb62af05",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.elf"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.logs.txt",
+      "size_bytes": 6996,
+      "sha256": "8a79111a3413165ab589b7b67c29eeac5daaa131b3e13f8a887593473b4158d8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.map",
+      "size_bytes": 182186,
+      "sha256": "3c444c1c8ef8d31d08320fc3dbf627de69f053052461a20bc2f314383bbf9dce",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.map"
+    },
+    {
+      "file": "alert_handler_ping_ok_test_sim_dv.rodata.txt",
+      "size_bytes": 43872,
+      "sha256": "884433a8f0bd21d2d0872c2d560bd61782e719140da913b35c69db49c8189ecc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_ok_test_sim_dv.rodata.txt"
+    }
+  ]
+}

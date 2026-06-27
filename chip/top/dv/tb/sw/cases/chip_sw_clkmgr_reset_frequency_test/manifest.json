@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_clkmgr_reset_frequency_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_clkmgr_reset_frequency_test",
+  "images": [
+    {
+      "image_base": "clkmgr_reset_frequency_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:clkmgr_reset_frequency_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.32.vmem",
+      "size_bytes": 42333,
+      "sha256": "5e546d6ff0d5d696b6dc197f5703a1de47b5710b61eae894f5c7e18ea0c13b7f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.64.scr.vmem",
+      "size_bytes": 45629,
+      "sha256": "8df681d37a5edf972fe4bb0697429d04257ce707b8173ff129b83b7c2ef295f1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.64.vmem",
+      "size_bytes": 39584,
+      "sha256": "9c73add6b2b0d17243b590d76072fd51452d74ce5b86448405a9fd6a07c83a13",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.bash"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.bin",
+      "size_bytes": 16220,
+      "sha256": "8d1babee1d8845249644a87b9d145be6d6244a4bcfef6bf3d24d81741ab90009",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.bin"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.dis",
+      "size_bytes": 597697,
+      "sha256": "5d99ea6bcb6326eec39d942b9d95bcfd65bf961bccb45fc1dfd2cf88e77a57a6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.dis"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.elf",
+      "size_bytes": 312180,
+      "sha256": "9bccd12530148357031c0627e8d7221c996ccb24455186cf7177772ca52b8434",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.elf"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.logs.txt",
+      "size_bytes": 7721,
+      "sha256": "8e5316bc62ca50a4269f0fb94076195725b3a78d0ac622a8014e1e191715bd36",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.map",
+      "size_bytes": 198213,
+      "sha256": "5ac989613a720032235d11a5d637a643118e3960502763039558f48a4547c6ea",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.map"
+    },
+    {
+      "file": "clkmgr_reset_frequency_test_sim_dv.rodata.txt",
+      "size_bytes": 54757,
+      "sha256": "96bc9685a90bba08f12e1cc68493745f8734396a3838521a6901b0ce8d1a26eb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_reset_frequency_test_sim_dv.rodata.txt"
+    }
+  ]
+}

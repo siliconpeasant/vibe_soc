@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_spi_host_tx_rx_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_spi_host_tx_rx_test",
+  "images": [
+    {
+      "image_base": "spi_host_tx_rx_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:spi_host_tx_rx_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.32.vmem",
+      "size_bytes": 50746,
+      "sha256": "dda9259058e903f790e07486defd24a9d638b4c9772147fe48380aa8f7f5fd9c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.64.scr.vmem",
+      "size_bytes": 54699,
+      "sha256": "c5263854d007a4e8d7477a9b25938de3dd07af74941ba3577d6fb8ac4691a9d9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.64.vmem",
+      "size_bytes": 47445,
+      "sha256": "bd7f8bf39a36d29426cc22f8784a8fc3e60d60dd6374e1cc31f4afee2d1fb265",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.bash"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.bin",
+      "size_bytes": 19448,
+      "sha256": "ce9f3789a12598a768525b39aab6d85d307cb1d8e8f24b5d72c28ad03de10369",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.bin"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.dis",
+      "size_bytes": 673168,
+      "sha256": "39b04298829844c9972083bd7485ed7e87546ff67832895d46445433d208f146",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.dis"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.elf",
+      "size_bytes": 328272,
+      "sha256": "5c97245894e971728176c598aa9e2ea6e63f6d086be1e51beaa94512209d0d7d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.elf"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.logs.txt",
+      "size_bytes": 9086,
+      "sha256": "b9590b413e5baaf52b501b903d5f61da5b4fe8b4cbc6c5a9ea0ea5dab08d8e40",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.map",
+      "size_bytes": 233458,
+      "sha256": "bd0d48e21c6f9e0cd19e95f3cc2c5dc641d60c371cad8e9185468f0ca94b0446",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.map"
+    },
+    {
+      "file": "spi_host_tx_rx_test_sim_dv.rodata.txt",
+      "size_bytes": 65752,
+      "sha256": "aad6d1955226fa382722dcce7f14dea637a173c43b5111420bf66c612850e690",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_host_tx_rx_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_csrng_lc_hw_debug_en_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_csrng_lc_hw_debug_en_test",
+  "images": [
+    {
+      "image_base": "csrng_lc_hw_debug_en_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:csrng_lc_hw_debug_en_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.32.vmem",
+      "size_bytes": 55911,
+      "sha256": "2adc7fae3758a1f89832f0bcd3daa13ec7575e6e0b86f713d44a529ce8caf13d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.64.scr.vmem",
+      "size_bytes": 60279,
+      "sha256": "2a4b3da20c7aa7bef52dc91991f5bea193c91544ebee2e879719ce06897e94a4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.64.vmem",
+      "size_bytes": 52281,
+      "sha256": "1fc815e8c4dd695e6bc99e82661b89219a6817bfd2d28ca212a28df0ef0d3ec1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.bash"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.bin",
+      "size_bytes": 21428,
+      "sha256": "f06bba7fcd0c065929da6d1a62856c883212a56beddd097c956cc04101ae2ce1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.bin"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.dis",
+      "size_bytes": 917636,
+      "sha256": "1e7606bdbce57a0baf1e4ebdb8d4597d670af1f44a662ee26f096bfc0bf143e8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.dis"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.elf",
+      "size_bytes": 419828,
+      "sha256": "c730951008b03b708ced279edde582ec0d8eb5641e2ad2c785f0bd2a08afbcd2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.elf"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.logs.txt",
+      "size_bytes": 11764,
+      "sha256": "3709607cfadd704de3402804a0be285cd536e41132bde85d048a82128a053e8e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.map",
+      "size_bytes": 279972,
+      "sha256": "0849d3bf34f1297471b8ec73b498290f0fb2884af2b31610e5c6877b60ebac18",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.map"
+    },
+    {
+      "file": "csrng_lc_hw_debug_en_test_sim_dv.rodata.txt",
+      "size_bytes": 68776,
+      "sha256": "26f8b557fbc4dff7b0fba03730a330bdec5da0fd319b24ac2a55cf4724d25920",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_lc_hw_debug_en_test_sim_dv.rodata.txt"
+    }
+  ]
+}

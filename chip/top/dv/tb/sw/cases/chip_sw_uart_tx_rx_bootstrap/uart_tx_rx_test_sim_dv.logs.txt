@@ -1,0 +1,574 @@
+addr: 10004
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 172
+nargs: 0
+format: CHECK-fail: Unexpected TX watermark interrupt
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 179
+nargs: 0
+format: CHECK-fail: Unexpected TX empty interrupt
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 186
+nargs: 0
+format: CHECK-fail: Unexpected RX watermark interrupt
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 191
+nargs: 0
+format: CHECK-fail: Unexpected TX done interrupt
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 196
+nargs: 0
+format: CHECK-fail: Unexpected RX overflow interrupt
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 201
+nargs: 1
+format: Unexpected interrupt (at PLIC): %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 209
+nargs: 0
+format: CHECK-fail: UART interrupt fired at PLIC did not fire at UART
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: w/device/tests/uart_tx_rx_test.c
+line: 472
+nargs: 0
+format: Read and check LC state.
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 474
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_get_state(&lc, &curr_state) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 476
+nargs: 0
+format: CHECK-fail: LC State isn't in {kDifLcCtrlStateRma, kDifLcCtrlStateDev}!
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 479
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100e0
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 491
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for kUartIdx != 0xff
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 507
+nargs: 0
+format: CHECK-fail: uartBaudrate must fit in uint32_t
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 508
+nargs: 0
+format: CHECK-fail: uartFreqHz must fit in uint32_t
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 511
+nargs: 0
+format: CHECK-fail: UART index out of bounds
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: w/device/tests/uart_tx_rx_test.c
+line: 522
+nargs: 1
+format: Test UART%0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 526
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 532
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1016c
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 547
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10180
+severity: 0
+file: w/device/tests/uart_tx_rx_test.c
+line: 222
+nargs: 0
+format: Initializing the UART.
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 232
+nargs: 1
+format: DIF-fail: dif_uart_configure(uart, (dif_uart_config_t){ .baudrate = (uint32_t)uartBaudrate, .clk_freq_hz = (uint32_t)uartFreqHz, .parity_enable = kDifToggleDisabled, .parity = kDifUartParityEven, .tx_enable = kDifToggleEnabled, .rx_enable = kDifToggleEnabled, }) returns %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 242
+nargs: 1
+format: DIF-fail: dif_uart_irq_set_enabled(uart, kDifUartIrqRxWatermark, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 244
+nargs: 1
+format: DIF-fail: dif_uart_irq_set_enabled(uart, kDifUartIrqTxDone, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 246
+nargs: 1
+format: DIF-fail: dif_uart_irq_set_enabled(uart, kDifUartIrqRxOverflow, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: w/device/tests/uart_tx_rx_test.c
+line: 253
+nargs: 0
+format: Initializing the PLIC.
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 262
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqTxEmpty), 0x1) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 264
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxWatermark), 0x2) returns %0d
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 266
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqTxDone), 0x3) returns %0d
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 268
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxOverflow), 0x1) returns %0d
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 270
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxFrameErr), 0x2) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 272
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxBreakErr), 0x3) returns %0d
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 274
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxTimeout), 0x1) returns %0d
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 276
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxParityErr), 0x2) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 284
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqTxWatermark), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 288
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqTxEmpty), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 292
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxWatermark), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 296
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqTxDone), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 300
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxOverflow), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 304
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxFrameErr), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 308
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxBreakErr), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 312
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxTimeout), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 316
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, dt_uart_irq_to_plic_id(uart_dt, kDtUartIrqRxParityErr), kPlicTarget, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1034c
+severity: 0
+file: w/device/tests/uart_tx_rx_test.c
+line: 392
+nargs: 0
+format: Executing the test.
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 403
+nargs: 0
+format: CHECK-fail: uart_transfer_ongoing_bytes( uart, kUartSend, (uint8_t *)kUartTxData, 64, &uart_tx_bytes_written, 32, &uart_tx_done)
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 421
+nargs: 0
+format: CHECK-fail: uart_transfer_ongoing_bytes( uart, kUartReceive, uart_rx_data, 64, &uart_rx_bytes_read, 64, &uart_rx_done)
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 441
+nargs: 0
+format: CHECK-fail: TX empty interrupt did not fire
+str_arg_idx: 
+addr: 1039c
+severity: 0
+file: w/device/tests/uart_tx_rx_test.c
+line: 460
+nargs: 0
+format: Checking the received UART RX data for consistency.
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 464
+nargs: 3
+format: CHECK-fail: UART RX data[%0d] mismatched: {act: %0h, exp: %0h}
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 347
+nargs: 1
+format: DIF-fail: dif_uart_irq_set_enabled(uart, kDifUartIrqTxWatermark, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 349
+nargs: 1
+format: DIF-fail: dif_uart_irq_set_enabled(uart, kDifUartIrqTxEmpty, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: w/device/tests/uart_tx_rx_test.c
+line: 357
+nargs: 1
+format: DIF-fail: dif_uart_irq_set_enabled(uart, kDifUartIrqRxWatermark, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10400
+severity: 3
+file: w/device/tests/uart_tx_rx_test.c
+line: 360
+nargs: 0
+format: Invalid UART data transfer direction!
+str_arg_idx: 
+addr: 10414
+severity: 0
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 143
+nargs: 4
+format: Variability for %0s(%0d) %0d is %0d
+str_arg_idx: 0
+addr: 10428
+severity: 0
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 172
+nargs: 4
+format: Enabling clock count measurement for %0s(%0d) lo %0d hi %0d
+str_arg_idx: 0
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 186
+nargs: 0
+format: CHECK-fail: !(external_clk && jitter_enabled)
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 215
+nargs: 0
+format: CHECK-fail: this clock is not measurable!
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 269
+nargs: 1
+format: Unexpected recoverable error codes 0x%0h
+str_arg_idx: 
+addr: 10478
+severity: 0
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 272
+nargs: 0
+format: Clock measurements are okay
+str_arg_idx: 
+addr: 1048c
+severity: 0
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 282
+nargs: 0
+format: Configure clkmgr to enable external clock
+str_arg_idx: 
+addr: 104a0
+severity: 0
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 285
+nargs: 0
+format: Switching to external clock completes
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/clkmgr_testutils.c
+line: 109
+nargs: 0
+format: CHECK-fail: val <= 4294967295U
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/uart_testutils.c
+line: 108
+nargs: 0
+format: CHECK-fail: Channel out of bounds
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/uart_testutils.c
+line: 111
+nargs: 0
+format: CHECK-fail: UART index out of bounds
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10504
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10540
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10554
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10568
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 105a4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10630
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10644
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10658
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

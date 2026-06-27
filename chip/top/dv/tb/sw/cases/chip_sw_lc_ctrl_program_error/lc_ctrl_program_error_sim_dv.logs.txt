@@ -1,0 +1,777 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 150
+nargs: 0
+format: At regular external ISR
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 154
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1002c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 167
+nargs: 1
+format: CHECK-fail: Unexpected aon timer interrupt %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 170
+nargs: 0
+format: CHECK-fail: fault_checker.function
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 171
+nargs: 0
+format: CHECK-fail: fault_checker.ip_inst
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 182
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled(&alert_handler, irq, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 187
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled(&plic, irq_id, kPlicTarget, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 196
+nargs: 0
+format: Regular external ISR exiting
+str_arg_idx: 
+addr: 100a4
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 206
+nargs: 0
+format: At NMI handler
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 209
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 218
+nargs: 2
+format: CHECK-fail: Alert handler NMI state not expected:	alert_enable:%0h	alert_raised:%0h
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 222
+nargs: 2
+format: CHECK-fail: Watchdog NMI state not expected:	wdog_enabled:%0h	wdog_barked:%0h
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 228
+nargs: 1
+format: CHECK-fail: Wrong phase %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 234
+nargs: 0
+format: CHECK-fail: is_cause
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 239
+nargs: 0
+format: NMI handler exiting
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 249
+nargs: 1
+format: DIF-fail: dif_rstmgr_alert_info_dump_read( &rstmgr, dump, DIF_RSTMGR_ALERT_INFO_MAX_SIZE, &seg_size) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 251
+nargs: 1
+format: DUMP SIZE %0d
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 253
+nargs: 2
+format: DUMP:%0d: 0x%0h
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 256
+nargs: 0
+format: CHECK-fail: seg_size must fit in int
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 258
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 259
+nargs: 0
+format: The alert info crash dump:
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 264
+nargs: 1
+format: CHECK-fail: Expected alert cause %0d to be set
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 270
+nargs: 2
+format: Unexpected alert cause %0d, may be triggered by %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 304
+nargs: 1
+format: CHECK-fail: Wrong reset reason %02H
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 307
+nargs: 0
+format: Booting for the first time: starting test
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 309
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1020c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 310
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10220
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 311
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10234
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 313
+nargs: 0
+format: Enabling rstmgr alert info capture
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 315
+nargs: 1
+format: DIF-fail: dif_rstmgr_alert_info_set_enabled(&rstmgr, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 317
+nargs: 0
+format: Configuring alert handlers
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 323
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, kTopEarlgreyAlertIdLcCtrlFatalProgError, kDifAlertHandlerClassA, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 329
+nargs: 1
+format: IF-fail: dif_alert_handler_configure_class( &alert_handler, kDifAlertHandlerClassA, kConfigProfiles[0], kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 331
+nargs: 0
+format: Configuring fault checker
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 336
+nargs: 0
+format: Saving fault checker to Flash
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 340
+nargs: 0
+format: Enabling watchdog and alert NMIs
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 351
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_get_state(&lc_ctrl, &state) returns %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 353
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102fc
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 356
+nargs: 0
+format: Begin life cycle transition
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 359
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_mutex_try_acquire(&lc_ctrl) returns %0d
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 363
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_configure(&lc_ctrl, kDifLcCtrlStateScrap, false, NULL) returns %0d
+str_arg_idx: 
+addr: 10338
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 364
+nargs: 0
+format: Configuring lc transition to scrap state
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 365
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_transition(&lc_ctrl) returns %0d
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 373
+nargs: 0
+format: CHECK-fail: Got unexpected lc-side error
+str_arg_idx: 
+addr: 10374
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 374
+nargs: 1
+format: lc STATUS:0x%0h
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 380
+nargs: 0
+format: Booting for the second time due to escalation reset
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 385
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103b0
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 387
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103c4
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 389
+nargs: 1
+format: Interrupt count %0d
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 390
+nargs: 1
+format: NMI count %0d
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 394
+nargs: 0
+format: CHECK-fail: Regular ISR should not run for kTopEarlgreyAlertIdLcCtrlFatalProgError
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 396
+nargs: 0
+format: CHECK-fail: NMI should not run for kTopEarlgreyAlertIdLcCtrlFatalProgError
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 401
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10428
+severity: 0
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 402
+nargs: 1
+format: Reset counter value: %0d
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 403
+nargs: 0
+format: CHECK-fail: Too many resets, expected only one non-POR
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 406
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10464
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 412
+nargs: 0
+format: CHECK-fail: !is_cause
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 423
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_get_state(&lc_ctrl, &state) returns %0d
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 425
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104a0
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 426
+nargs: 0
+format: CHECK-fail: Unexpected lc state change
+str_arg_idx: 
+addr: 104b4
+severity: 3
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 430
+nargs: 1
+format: unexpected reset info %0d
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 137
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 104dc
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 110
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104f0
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 112
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10504
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 117
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10518
+severity: 2
+file: sw/device/tests/sim_dv/lc_ctrl_program_error.c
+line: 119
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 67
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10540
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 68
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10554
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10568
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: value != ((void*)0)
+str_arg_idx: 
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 83
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 105a4
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 84
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: value < 4294967295U
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 100
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 101
+nargs: 0
+format: CHECK-fail: dest != ((void*)0)
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 102
+nargs: 0
+format: CHECK-fail: offset + size <= kRetSramTestutilsScratchSizeAsInts
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 111
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 112
+nargs: 0
+format: CHECK-fail: src != ((void*)0)
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: offset + size <= kRetSramTestutilsScratchSizeAsInts
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10658
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10680
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10694
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 106a8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 106bc
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 106d0
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 106e4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 106f8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: word_index < dump_size
+str_arg_idx: 
+addr: 1070c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 78
+nargs: 0
+format: CHECK-fail: word_index < dump_size
+str_arg_idx: 
+addr: 10720
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 84
+nargs: 0
+format: alert_info:
+str_arg_idx: 
+addr: 10734
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 87
+nargs: 4
+format: esc_state [0]=%0h, [1]=%0h, [2]=%0h, [3]=%0h
+str_arg_idx: 
+addr: 10748
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 90
+nargs: 4
+format: esc_cnt [0]=0x%0h, [1]=0x%0h, [2]=0x%0h, [3]=0x%0h
+str_arg_idx: 
+addr: 1075c
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 93
+nargs: 4
+format: accum_cnt [0]=0x%0h, [1]=0x%0h, [2]=0x%0h, [3]=0x%0h
+str_arg_idx: 
+addr: 10770
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 94
+nargs: 1
+format: loc_alert_cause=0x%0h
+str_arg_idx: 
+addr: 10784
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 96
+nargs: 0
+format: alert_cause bits set:
+str_arg_idx: 
+addr: 10798
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 101
+nargs: 1
+format: alert_cause[%0d] = 1
+str_arg_idx: 
+addr: 107ac
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 106
+nargs: 0
+format: No bits set
+str_arg_idx: 
+addr: 107c0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 107d4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 107e8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 107fc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10810
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10824
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10838
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 31
+nargs: 0
+format: CHECK-fail: num_bits <= 32
+str_arg_idx: 
+addr: 1084c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 32
+nargs: 0
+format: CHECK-fail: *bit_index < 32
+str_arg_idx: 
+addr: 10860
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10874
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10888
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 1089c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_otbn_ecdsa_op_irq_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otbn_ecdsa_op_irq_test",
+  "images": [
+    {
+      "image_base": "otbn_ecdsa_op_irq_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otbn_ecdsa_op_irq_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.32.vmem",
+      "size_bytes": 63694,
+      "sha256": "895cb5b25e0747cf40d3529350865e5ee7e31877efc175db03254a06cd410a98",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.64.scr.vmem",
+      "size_bytes": 68669,
+      "sha256": "498c8c054fd5d8313c125ad03a44643630cb27182fd641dfe2c25a11e8175173",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.64.vmem",
+      "size_bytes": 59552,
+      "sha256": "69528fd4b3d1f262e0de4f2381206bc448b41293e3bcc7665912eec1bfb38c0d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.bash"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.bin",
+      "size_bytes": 24416,
+      "sha256": "1aa9915f12a227b2a75421eeb08a6158337fd1827993db48352d986c805e6cd2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.bin"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.dis",
+      "size_bytes": 688194,
+      "sha256": "1afb267d92b908682a4b49ef136dff16188dba810253610c49651a3fa82ebd6d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.dis"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.elf",
+      "size_bytes": 358100,
+      "sha256": "c3735f063bbccfb022c9e426aa5028f58e401edd74efd960db17e8089680ae20",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.elf"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.logs.txt",
+      "size_bytes": 9201,
+      "sha256": "1f89e8a9012e8242e62220b8f7aed2207805fb0337a3e9d5d173f7cfc2917957",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.map",
+      "size_bytes": 243008,
+      "sha256": "2931efbe04c043f2ac1dcbda5190ed1eeeab3b4972506d1c107896ea4f19b76d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.map"
+    },
+    {
+      "file": "otbn_ecdsa_op_irq_test_sim_dv.rodata.txt",
+      "size_bytes": 89153,
+      "sha256": "a61a6c27bc0843d16497e17b669e3a0e981430257791d197e35c1ee9fd947d60",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_ecdsa_op_irq_test_sim_dv.rodata.txt"
+    }
+  ]
+}

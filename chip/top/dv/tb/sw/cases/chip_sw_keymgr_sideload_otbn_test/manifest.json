@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_keymgr_sideload_otbn_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_keymgr_sideload_otbn_test",
+  "images": [
+    {
+      "image_base": "keymgr_sideload_otbn_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:keymgr_sideload_otbn_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.32.vmem",
+      "size_bytes": 81853,
+      "sha256": "3fdbe909d14dba1b4afbcdf5d1ddf2ecf798578acbbeedf1c282da688350b559",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.64.scr.vmem",
+      "size_bytes": 88269,
+      "sha256": "b76232b5a3490340ea70177e8ea07036d3e1d8bb69bd38fa8481ec4e0363f6c7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.64.vmem",
+      "size_bytes": 76539,
+      "sha256": "959194bc6ade5c5fb9e83ba3faa601fce5fa57b2c2b96707262a8d5612f0f8f4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.bash"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.bin",
+      "size_bytes": 31380,
+      "sha256": "a6830d78defd45b7159f3d303021c2993dc9755d2eb3347d07276deed25e2e5d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.bin"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.dis",
+      "size_bytes": 1188634,
+      "sha256": "8662391e516714dbbced13274e89f08b8bcb9fbb1c301b3f7ede9829ecda1ac5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.dis"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.elf",
+      "size_bytes": 491276,
+      "sha256": "67c90088ee436aa2aba45749d543c0432939a3299da395876f13ce16d1c4f742",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.elf"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.logs.txt",
+      "size_bytes": 12804,
+      "sha256": "d8233ab3e2c7465c431aaaf849a300e2f8d046933fe50ff82a1522053eb2dbaa",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.map",
+      "size_bytes": 358985,
+      "sha256": "6b4cc205456e591f8f25509e30263312676e195a76bbf0ad6e0d7bca895ad05e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.map"
+    },
+    {
+      "file": "keymgr_sideload_otbn_test_sim_dv.rodata.txt",
+      "size_bytes": 110985,
+      "sha256": "3adb850f380f73a49e4f8deec8252f9aa446192846e2ca7dccda2cd0b01cdc48",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/keymgr_sideload_otbn_test_sim_dv.rodata.txt"
+    }
+  ]
+}

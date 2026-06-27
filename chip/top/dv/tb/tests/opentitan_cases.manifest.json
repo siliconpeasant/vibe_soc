@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "description": "OpenTitan Earlgrey case index shards consumed by vibe_soc chip/top Makefile.",
+  "case_files": [
+    "opentitan_chip_sw_cases.json",
+    "opentitan_rom_e2e_cases.json",
+    "opentitan_ate_cases.json",
+    "opentitan_pure_dv_cases.json"
+  ],
+  "overrides": "opentitan_case_overrides.yml"
+}

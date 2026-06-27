@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_alert_handler_entropy_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_alert_handler_entropy_test",
+  "images": [
+    {
+      "image_base": "alert_handler_entropy_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:alert_handler_entropy_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "alert_handler_entropy_test_sim_dv.32.vmem",
+      "size_bytes": 32332,
+      "sha256": "a1a5e36672b92a055a4258d271d2bef9620441880e1850b3de330f0441741742",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.64.scr.vmem",
+      "size_bytes": 34829,
+      "sha256": "6c5ec8391ad1cda4f4c6467656a9e7347fdf26e87952aafa3901bca6ed52b903",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.64.vmem",
+      "size_bytes": 30224,
+      "sha256": "0031d9a4a6f5f2b85022e1f1913f223e43284320697a7018a54725bb66618f39",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.bash"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.bin",
+      "size_bytes": 12384,
+      "sha256": "8e67d345e02928c16fccd5f96e5d3af1a1f6711467764b37f389ab74507e960a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.bin"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.dis",
+      "size_bytes": 471666,
+      "sha256": "3caf418a4564f4da0abd785fa869338a59b563f1d235fc1b6395225a7e5763e6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.dis"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.elf",
+      "size_bytes": 254640,
+      "sha256": "e1c8b2b93ea65704114770d795828ded069f5edef27db1c96f68574c4d61bd5a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.elf"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.logs.txt",
+      "size_bytes": 3721,
+      "sha256": "9c70a18687edf629338c5354e0f0f92573947eeed593e374c1fb6a9c6d6fe4cf",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.map",
+      "size_bytes": 155849,
+      "sha256": "ccfb5a561c8e35562db4e947e52656ca7ee45acd888104e62adf069964484b48",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.map"
+    },
+    {
+      "file": "alert_handler_entropy_test_sim_dv.rodata.txt",
+      "size_bytes": 41873,
+      "sha256": "ac076d69d3fc580576562909cd65c48341a52c369410dd8efe3fe1bda5d75b85",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_entropy_test_sim_dv.rodata.txt"
+    }
+  ]
+}

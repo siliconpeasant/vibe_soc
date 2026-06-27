@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_clkmgr_external_clk_src_for_sw_slow_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_clkmgr_external_clk_src_for_sw_slow_test",
+  "images": [
+    {
+      "image_base": "clkmgr_external_clk_src_for_sw_slow_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:clkmgr_external_clk_src_for_sw_slow_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.32.vmem",
+      "size_bytes": 43601,
+      "sha256": "4e947f1c49b0df0def8eac6ab24a43c10a1984de7924507296799c46212d81fb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.64.scr.vmem",
+      "size_bytes": 47009,
+      "sha256": "6b20b2ee9b4fc65d45c2a49d899592ee9278c9ae9e368b60df6e3494e9c5b01e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.64.vmem",
+      "size_bytes": 40781,
+      "sha256": "781b0934fc89c4e6bb9472427037b69ba3dfea6ba08a4e0d0fbf686b78249b38",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.bash"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.bin",
+      "size_bytes": 16708,
+      "sha256": "e3abe91c4a63278d6cc28553c8a88db7f8fc7b94cf854f5bcb480c322c9fbe34",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.bin"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.dis",
+      "size_bytes": 596370,
+      "sha256": "64463103a2c2589ba668c862df4a93d4f7bdead815dc09b6b678cf39375cc649",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.dis"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.elf",
+      "size_bytes": 306072,
+      "sha256": "2fb673d4184e323ff670b4f9055db8b7679e6c36ea4516416b33101410b039c1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.elf"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.logs.txt",
+      "size_bytes": 7897,
+      "sha256": "5c4a260171da6e3db79579963246c9ea367a22a27417e054dfa679137e094d32",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.map",
+      "size_bytes": 205019,
+      "sha256": "572b5296a4d098d9c81b08489f96fa99c3856e7c9595b480408b9281e99d1ecf",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.map"
+    },
+    {
+      "file": "clkmgr_external_clk_src_for_sw_slow_test_sim_dv.rodata.txt",
+      "size_bytes": 55982,
+      "sha256": "86dd8b90ebfdeca8b2d263299c209a2d228b7ce35fd192b4b65f5d31b90e7046",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_external_clk_src_for_sw_slow_test_sim_dv.rodata.txt"
+    }
+  ]
+}

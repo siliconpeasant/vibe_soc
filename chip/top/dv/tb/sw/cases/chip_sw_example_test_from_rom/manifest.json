@@ -1,0 +1,65 @@
+{
+  "case": "chip_sw_example_test_from_rom",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_example_test_from_rom",
+  "images": [
+    {
+      "image_base": "example_test_from_rom",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:example_test_from_rom"
+    }
+  ],
+  "files": [
+    {
+      "file": "example_test_from_rom_sim_dv.32.vmem",
+      "size_bytes": 85175,
+      "sha256": "2b45a836e8767de487d1bc391d9df8bcd0871697a7ceb357adf7220491e3acce",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.32.vmem"
+    },
+    {
+      "file": "example_test_from_rom_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.bash"
+    },
+    {
+      "file": "example_test_from_rom_sim_dv.bin",
+      "size_bytes": 32652,
+      "sha256": "dca1c7fa99d11794226071b542a9aef2c82a63e76bc6e7e8ce0dda8b6c0b5d22",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.bin"
+    },
+    {
+      "file": "example_test_from_rom_sim_dv.dis",
+      "size_bytes": 218278,
+      "sha256": "0ed0e38b0773a7270865ba6363e7de9878fe3cf1c27f18794dc9d1f7d4845503",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.dis"
+    },
+    {
+      "file": "example_test_from_rom_sim_dv.elf",
+      "size_bytes": 186136,
+      "sha256": "475bef6fdb4f654721aecea126423359e7b5395d0b3ecbf2497be3890daae3bd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.elf"
+    },
+    {
+      "file": "example_test_from_rom_sim_dv.logs.txt",
+      "size_bytes": 2233,
+      "sha256": "2b7544614b33765373502464b408952a848b3401055851a9933d8ec95d6cff75",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.logs.txt"
+    },
+    {
+      "file": "example_test_from_rom_sim_dv.map",
+      "size_bytes": 68752,
+      "sha256": "ecf4d27fa65c4d84dd06590a8c3de3412cb7df784b7ccf023ee5c75dbd7359b9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.map"
+    },
+    {
+      "file": "example_test_from_rom_sim_dv.rodata.txt",
+      "size_bytes": 16180,
+      "sha256": "7a04074819442e41339d70dee70a6493a12566df0ef6357d0fcc68a40eeb8b13",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_test_from_rom_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,364 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/pwrmgr_normal_sleep_all_wake_ups.c
+line: 31
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10018
+severity: 0
+file: sw/device/tests/pwrmgr_normal_sleep_all_wake_ups.c
+line: 32
+nargs: 0
+format: POR reset
+str_arg_idx: 
+addr: 1002c
+severity: 0
+file: sw/device/tests/pwrmgr_normal_sleep_all_wake_ups.c
+line: 40
+nargs: 1
+format: Woke up by source %0d
+str_arg_idx: 
+addr: 10040
+severity: 0
+file: sw/device/tests/pwrmgr_normal_sleep_all_wake_ups.c
+line: 42
+nargs: 1
+format: clean up done source %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/pwrmgr_normal_sleep_all_wake_ups.c
+line: 46
+nargs: 0
+format: Unexpected wake up reason
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 405
+nargs: 3
+format: unable to test wakeup source %0d (inst_id=%0d, wkup=%0d)
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 425
+nargs: 0
+format: CHECK-fail: cannot execute test
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 428
+nargs: 2
+format: Skip %0d (%0s)
+str_arg_idx: 1
+addr: 100a4
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 433
+nargs: 2
+format: Test %0d begin (%0s)
+str_arg_idx: 1
+addr: 100b8
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 445
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 446
+nargs: 1
+format: Issue WFI to enter sleep %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 454
+nargs: 0
+format: CHECK-fail: cannot execute test
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 457
+nargs: 1
+format: DIF-fail: dif_pwrmgr_wakeup_reason_get(&pwrmgr, &wakeup_reason) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 458
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 459
+nargs: 2
+format: CHECK-fail: wakeup reason wrong exp:%0h  obs:%0h
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 474
+nargs: 0
+format: CHECK-fail: cannot execute test
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 479
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for !get_wakeup_status()
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 74
+nargs: 1
+format: DIF-fail: dif_sysrst_ctrl_input_change_detect_configure(&sysrst_ctrl, config) returns %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 80
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInSysrstCtrlAonPwrbIn, kDeviceType == kDeviceSimDV ? kTopEarlgreyPinmuxInselIor13 : kTopEarlgreyPinmuxInselIoc0) returns %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 88
+nargs: 0
+format: CHECK-fail: Expected sysrst_ctrl wakeup to be set
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 100
+nargs: 1
+format: DIF-fail: dif_sysrst_ctrl_input_change_detect_configure(&sysrst_ctrl, config) returns %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 135
+nargs: 1
+format: IF-fail: dif_adc_ctrl_configure_filter(&adc_ctrl, kDifAdcCtrlChannel0, filter_cfg, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 137
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_configure_filter(&adc_ctrl, kDifAdcCtrlChannel1, filter_cfg, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 151
+nargs: 3
+format: CHECK-fail: Expected bits %0d and %0d set in filter status, got status 0x%0h
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 196
+nargs: 1
+format: DIF-fail: dif_pinmux_wakeup_detector_enable(&pinmux, kPinmuxWkupDetector5, detector_cfg) returns %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 204
+nargs: 0
+format: CHECK-fail: Expected pinmux wakeup cause 5
+str_arg_idx: 
+addr: 1020c
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 234
+nargs: 0
+format: usb_wakeup_config: wait 20us (usb)
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 263
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10234
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 270
+nargs: 0
+format: CHECK-fail: Expected aontimer wakeup cause to be enabled
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 291
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_en(&sensor_ctrl, k, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 303
+nargs: 0
+format: CHECK-fail: Expected event trigger enabled
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 306
+nargs: 1
+format: CHECK-fail: Expected bit %0d to be set
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 319
+nargs: 0
+format: CHECK-fail: Expected event trigger disabled
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_all_wake_ups_impl.c
+line: 323
+nargs: 1
+format: CHECK-fail: Expected recoverable events to be clear, got 0x%0h
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 69
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 102fc
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10310
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10400
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

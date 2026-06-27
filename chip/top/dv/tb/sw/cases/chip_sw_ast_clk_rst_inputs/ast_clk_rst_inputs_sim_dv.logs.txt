@@ -1,0 +1,532 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 283
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_configure_filter( &adc_ctrl, kDifAdcCtrlChannel0, (dif_adc_ctrl_filter_config_t){.filter = kDifAdcCtrlFilter0, .generate_irq_on_match = true, .generate_wakeup_on_match = true, .in_range = true, .max_voltage = channel0_filter0_max, .min_voltage = channel0_filter0_min}, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 292
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_configure_filter( &adc_ctrl, kDifAdcCtrlChannel1, (dif_adc_ctrl_filter_config_t){.filter = kDifAdcCtrlFilter0, .generate_irq_on_match = true, .generate_wakeup_on_match = true, .in_range = true, .max_voltage = channel1_filter0_max, .min_voltage = channel1_filter0_min}, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 296
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_filter_set_enabled( &adc_ctrl, kDifAdcCtrlChannel0, kDifAdcCtrlFilter0, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 298
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_filter_set_enabled( &adc_ctrl, kDifAdcCtrlChannel1, kDifAdcCtrlFilter0, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 325
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeWakeup, dt_adc_ctrl_instance_id(kAdcCtrlDt), kDtAdcCtrlWakeupWkupReq, &adc_ctrl_wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 327
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1007c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 332
+nargs: 1
+format: DIF-fail: dif_entropy_src_set_enabled(&entropy_src, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 333
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 337
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for read_fifo_depth(&entropy_src) > 0
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 350
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 362
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100e0
+severity: 0
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 365
+nargs: 0
+format: Issued WFI to enter sleep.
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 370
+nargs: 0
+format: CHECK-fail: interrupt_serviced
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 375
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 385
+nargs: 1
+format: DIF-fail: dif_entropy_src_set_enabled(&entropy_src, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 386
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10144
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 388
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for read_fifo_depth(&entropy_src) > 0
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 396
+nargs: 2
+format: read_fifo_depth after exit from idle=%0d should be equal/greater than previous read value (%0d)
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 399
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for read_fifo_depth(&entropy_src) > 0
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 410
+nargs: 1
+format: DIF-fail: dif_edn_get_errors(&edn0, &unhealthy_fifos, &errors) returns %0d
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 414
+nargs: 3
+format: edn0: error=0x%0h, unhealthy_fifos=0x%0h, alerts=0x%0h
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 416
+nargs: 1
+format: DIF-fail: dif_edn_get_errors(&edn1, &unhealthy_fifos, &errors) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 420
+nargs: 3
+format: edn1: error=0x%0h, unhealthy_fifos=0x%0h, alerts=0x%0h
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 435
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101e4
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 446
+nargs: 1
+format: DIF-fail: dif_entropy_src_fw_override_configure( &entropy_src, fw_override_config, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 450
+nargs: 1
+format: DIF-fail: dif_csrng_configure(&csrng) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 486
+nargs: 1
+format: DIF-fail: dif_edn_set_auto_mode(&edn0, edn0_params) returns %0d
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 521
+nargs: 1
+format: DIF-fail: dif_edn_set_auto_mode(&edn1, edn1_params) returns %0d
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 525
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10248
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 543
+nargs: 0
+format: CHECK-fail: peripheral == kTopEarlgreyPlicPeripheralAdcCtrlAon
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 544
+nargs: 0
+format: CHECK-fail: adc_ctrl_irq == kDtAdcCtrlIrqMatchPending
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 554
+nargs: 1
+format: DIF-fail: dif_clkmgr_jitter_set_enabled(&clkmgr, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 559
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, kTopEarlgreyAlertIdSensorCtrlAonRecovAlert, kDifAlertHandlerClassA, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 562
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, kTopEarlgreyAlertIdSensorCtrlAonFatalAlert, kDifAlertHandlerClassA, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 564
+nargs: 0
+format: 1 test alert/rng after Deep sleep 1
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 568
+nargs: 0
+format: 2 test alert/rng after regular sleep (usb clk enabled)
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 569
+nargs: 0
+format: force new adc conv set
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 575
+nargs: 0
+format: 3 test alert/rng after regular sleep (all clk disabled in lp)
+str_arg_idx: 
+addr: 102fc
+severity: 0
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 576
+nargs: 0
+format: force new adc conv set
+str_arg_idx: 
+addr: 10310
+severity: 0
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 581
+nargs: 0
+format: c code is finished
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 220
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10338
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 222
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1034c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 232
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_configure( adc_ctrl, (dif_adc_ctrl_config_t){ .mode = kDifAdcCtrlLowPowerScanMode, .num_low_power_samples = kNumLowPowerSamples, .num_normal_power_samples = kNumNormalPowerSamples, .power_up_time_aon_cycles = (uint8_t)power_up_time_aon_cycles + 1, .wake_up_time_aon_cycles = wake_up_time_aon_cycles}) returns %0d
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 168
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_en(&sensor_ctrl, idx, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 171
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_fatal(&sensor_ctrl, idx, fatal) returns %0d
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 177
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for get_events(fatal) > 0
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 182
+nargs: 1
+format: CHECK-fail: Event %0d not observed in AST
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 186
+nargs: 1
+format: CHECK-fail: Event %0d observed in AST when it should not be
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 196
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_en(&sensor_ctrl, idx, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/tests/sim_dv/ast_clk_rst_inputs.c
+line: 147
+nargs: 0
+format: CHECK-fail: Recov alert not correctly observed in alert handler
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 35
+nargs: 1
+format: DIF-fail: dif_entropy_src_configure(&entropy_src, config, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 177
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 40
+nargs: 2
+format: CHECK-fail: Only adc_ctrl IRQ %0d expected to fire. Actual IRQ state = %0h
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 51
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_irq_get_type(adc_ctrl_ctx.adc_ctrl, irq, &type) returns %0d
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10464
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 104a0
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10540
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10554
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 10568
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10590
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 105a4
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 105b8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 105cc
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 105e0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

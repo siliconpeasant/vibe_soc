@@ -1,0 +1,434 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 127
+nargs: 0
+format: The entire entropy complex is stopped
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 136
+nargs: 0
+format: The entire entropy complex is enabled
+str_arg_idx: 
+addr: 1002c
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 141
+nargs: 0
+format: Running KMAC ENTROPY STALL test...
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 164
+nargs: 1
+format: DIF-fail: dif_kmac_customization_string_init( kKmacTestVector.customization_string, kKmacTestVector.customization_string_len, &str_buffer) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 176
+nargs: 1
+format: loop_ctr = %0d
+str_arg_idx: 
+addr: 10068
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 179
+nargs: 0
+format: Disabling entropy complex to trigger a stall
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 192
+nargs: 0
+format: CHECK-fail: kKmacDigestLenMax >= kKmacTestVector.digest_len
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 206
+nargs: 0
+format: CHECK-fail: KMAC not stalling
+str_arg_idx: 
+addr: 100a4
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 207
+nargs: 0
+format: KMAC stalled as expected after disabling entropy complex
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 212
+nargs: 0
+format: CHECK-fail: KMAC not in squeeze state
+str_arg_idx: 
+addr: 100cc
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 213
+nargs: 0
+format: KMAC is is squeeze state after enabling entropy complex
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 220
+nargs: 1
+format: DIF-fail: dif_kmac_end(&kmac, &kmac_operation_state) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 227
+nargs: 0
+format: Running KMAC ENTROPY test...
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 249
+nargs: 1
+format: DIF-fail: dif_kmac_customization_string_init( kKmacTestVector.customization_string, kKmacTestVector.customization_string_len, &str_buffer) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 259
+nargs: 1
+format: loop_ctr = %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 266
+nargs: 1
+format: DIF-fail: dif_kmac_configure(&kmac, config) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 271
+nargs: 1
+format: DIF-fail: dif_kmac_mode_kmac_start( &kmac, &kmac_operation_state, kKmacTestVector.mode, test_digest_len, &kKmacTestVector.key, str_buffer_ptr) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 275
+nargs: 1
+format: DIF-fail: dif_kmac_absorb(&kmac, &kmac_operation_state, kKmacTestVector.message, kKmacTestVector.message_len, NULL) returns %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 277
+nargs: 0
+format: CHECK-fail: kKmacDigestLenMax >= kKmacTestVector.digest_len
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 286
+nargs: 0
+format: CHECK-fail: res == kDifOk || res == kDifError
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 297
+nargs: 0
+format: CHECK-fail: Error other than EDN timeout occurred.
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 298
+nargs: 0
+format: EDN timed out.
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 300
+nargs: 0
+format: EDN seed received before timeout.
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 305
+nargs: 0
+format: CHECK-fail: EDN timeout expectation doesn't match observation.
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 308
+nargs: 1
+format: DIF-fail: dif_kmac_end(&kmac, &kmac_operation_state) returns %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 322
+nargs: 0
+format: CHECK-fail: INTR_STATE is non-zero after timeout clean-up.
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 326
+nargs: 0
+format: CHECK-fail: KMAC still locked after timeout clean-up.
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 333
+nargs: 0
+format: CHECK-fail: Hash counter increment is wrong.
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 334
+nargs: 1
+format: hash_ctr = %0d
+str_arg_idx: 
+addr: 10248
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 343
+nargs: 0
+format: Starting test test_kmac_entropy...
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 343
+nargs: 0
+format: CHECK-fail:
+str_arg_idx: 
+addr: 10270
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 343
+nargs: 3
+format: Successfully finished test test_kmac_entropy in %0d cycles or %0d us @ %0d MHz.
+str_arg_idx: 
+addr: 10284
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 343
+nargs: 2
+format: Successfully finished test test_kmac_entropy in 0x%08h%08h cycles.
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 344
+nargs: 0
+format: Starting test test_kmac_entropy_stall...
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 344
+nargs: 0
+format: CHECK-fail:
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 344
+nargs: 3
+format: Successfully finished test test_kmac_entropy_stall in %0d cycles or %0d us @ %0d MHz.
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/tests/kmac_entropy_test.c
+line: 344
+nargs: 2
+format: Successfully finished test test_kmac_entropy_stall in 0x%08h%08h cycles.
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/kmac_entropy_test.c
+line: 344
+nargs: 1
+format: Finished test test_kmac_entropy_stall: %8h.
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 35
+nargs: 1
+format: DIF-fail: dif_entropy_src_configure(&entropy_src, config, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 177
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10338
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10374
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 1039c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 104a0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 104b4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 104c8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

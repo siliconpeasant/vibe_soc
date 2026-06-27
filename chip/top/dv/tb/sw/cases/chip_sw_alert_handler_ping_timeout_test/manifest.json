@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_alert_handler_ping_timeout_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_alert_handler_ping_timeout_test",
+  "images": [
+    {
+      "image_base": "alert_handler_ping_timeout_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:alert_handler_ping_timeout_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.32.vmem",
+      "size_bytes": 34558,
+      "sha256": "26a61259f5f77d32a7ec3eb3e9f6fcaadc6e730c352381cb5dec8a675af2e9e1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.64.scr.vmem",
+      "size_bytes": 37239,
+      "sha256": "ea2e5d708529fecf01a3cd3ee5b6eb65d1b4bc09bc5c5fb409cf5cf386dde4bd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.64.vmem",
+      "size_bytes": 32313,
+      "sha256": "18d45873adeb88cc8e50434b31009dfe9ae1d00349807b48e5b21a575337a492",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.bash"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.bin",
+      "size_bytes": 13240,
+      "sha256": "d70ed7d8af81636e4205b57417fc2cda76baae413892410e6ac0d4ba8ebea1f2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.bin"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.dis",
+      "size_bytes": 488148,
+      "sha256": "e08a2f9d3e61855084cfb86ffd7f157d5b14b91d4b1806e637eac135ca5ace69",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.dis"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.elf",
+      "size_bytes": 260312,
+      "sha256": "f3125d38b78303f8d6e1fc30f958f297dc29d63d93c0ead0495fbe7c88647899",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.elf"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.logs.txt",
+      "size_bytes": 4873,
+      "sha256": "d1aa0115ddfc9f36c0d1638700db00c2ce4b241b652913cd2803886c19ab86ee",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.map",
+      "size_bytes": 162221,
+      "sha256": "85af2818291911c0cfb035a616be306cad6a3fa0e3724f357aef45e6cb18781a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.map"
+    },
+    {
+      "file": "alert_handler_ping_timeout_test_sim_dv.rodata.txt",
+      "size_bytes": 43939,
+      "sha256": "b2dca75a60bd6ca67d5cc5944fc43579881f1e930a6b89d5d7eefccedd46f8ea",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_ping_timeout_test_sim_dv.rodata.txt"
+    }
+  ]
+}

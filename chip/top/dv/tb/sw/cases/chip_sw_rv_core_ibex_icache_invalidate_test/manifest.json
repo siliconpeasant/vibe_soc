@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rv_core_ibex_icache_invalidate_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rv_core_ibex_icache_invalidate_test",
+  "images": [
+    {
+      "image_base": "rv_core_ibex_icache_invalidate_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rv_core_ibex_icache_invalidate_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.32.vmem",
+      "size_bytes": 31127,
+      "sha256": "ed6b18a424170f9fd036185b21581302d57580453ec315746d22434e643a63b7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.64.scr.vmem",
+      "size_bytes": 33549,
+      "sha256": "38a702501aa924284db8cfe8a7bd92090b74b59e46a4bc677729802c242d54ed",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.64.vmem",
+      "size_bytes": 29115,
+      "sha256": "fbd5b20d28f34fb2220c310b5a6a50a090aedd683ca73a106ed80f7133d3d6e0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.bash"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.bin",
+      "size_bytes": 11924,
+      "sha256": "a854109d0b4b50693b889521b589ba94574993af06b16f8732567c4f5219f721",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.bin"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.dis",
+      "size_bytes": 444152,
+      "sha256": "b42c0e9a8c93a23d92025bf03ad9daccc662d6e547204c85d66dd53dbbdf7a35",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.dis"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.elf",
+      "size_bytes": 246060,
+      "sha256": "d9e51f3c15bda32111e32905b9e5e8d82a56ced1dc1ac460376880ddfcb97b6a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.elf"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.logs.txt",
+      "size_bytes": 3881,
+      "sha256": "acafb4e7389edcf039787363c387afaae1a255107711dff72799ba599e0188d2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.map",
+      "size_bytes": 147249,
+      "sha256": "7deb804be9699d9393ec4be630b2c05cf96e0070a0bd9219e858442383e77d31",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.map"
+    },
+    {
+      "file": "rv_core_ibex_icache_invalidate_test_sim_dv.rodata.txt",
+      "size_bytes": 40597,
+      "sha256": "9d91f552bd982654d5ec3d9375d2d0018019646f50cf65097805e89de53549c4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_icache_invalidate_test_sim_dv.rodata.txt"
+    }
+  ]
+}

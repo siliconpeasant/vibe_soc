@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_otp_ctrl_vendor_test_csr_access_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otp_ctrl_vendor_test_csr_access_test",
+  "images": [
+    {
+      "image_base": "otp_ctrl_vendor_test_csr_access_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otp_ctrl_vendor_test_csr_access_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.32.vmem",
+      "size_bytes": 30762,
+      "sha256": "31bae6d0f77c82df0956911d0005f6ec41e7081dc2e386429a762900795fc086",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.64.scr.vmem",
+      "size_bytes": 33149,
+      "sha256": "5b36848f838d7f2a716a10f494dace566a61483d271b6e57e369377d030b6d72",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.64.vmem",
+      "size_bytes": 28769,
+      "sha256": "0be566575452c6a1b8a86079936af5db0562307001e6e9ff42f922a0035231a2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.bash"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.bin",
+      "size_bytes": 11784,
+      "sha256": "cf0de5e2fd9b65e475a7d339097f27fd95150da3ee7b43e5b7efac6185c2b142",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.bin"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.dis",
+      "size_bytes": 445347,
+      "sha256": "ee1c403e99465c6689e4915bd1ea37d5678a6e265437cb6599f8e4f54ba9bdb4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.dis"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.elf",
+      "size_bytes": 254648,
+      "sha256": "362f06cabc636f451dce5da22bbcea39a490304b299599ddbc14a2dbd14b8662",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.elf"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.logs.txt",
+      "size_bytes": 3906,
+      "sha256": "65178f525de7981a1daff148a21f21bbe3c9ed688ceb7d2ca490b2aeb49d111c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.map",
+      "size_bytes": 146142,
+      "sha256": "729e8ff4930f3227f4984357149cf0b909bb1651ae122034f663131059bae662",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.map"
+    },
+    {
+      "file": "otp_ctrl_vendor_test_csr_access_test_sim_dv.rodata.txt",
+      "size_bytes": 39825,
+      "sha256": "0dc0d0e85a3a206d36ca247edcd530cdc2d197f19990ca2377840c213ba7af09",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_vendor_test_csr_access_test_sim_dv.rodata.txt"
+    }
+  ]
+}

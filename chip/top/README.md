@@ -51,7 +51,9 @@ Key files:
 - `de/rtl/filelist.mk`: canonical ordered dependency assembly for chip/top
 - `de/rtl/fragments/`: top-owned OpenTitan source-order chunks
 - `ip/digital/opentitan_tlul/`, `ip/digital/opentitan_uart/`: first native DE RTL split packages
-- `dv/tb/tests/`: case definitions for `chip_sw_uart_smoketest` and `chip_sw_uart_tx_rx_bootstrap`
+- `dv/tb/tests/`: OpenTitan case index shards consumed by `chip/top/Makefile` (`opentitan_cases.manifest.json` plus categorized JSON files; 274 indexed cases, pure DV entries are indexed-only)
+- `dv/tb/sw/cases/`: migrated prebuilt OpenTitan `sim_dv` software images grouped by case
+- `docs/opentitan_case_migration.md`: migrated case/image inventory
 
 The smoke baseline uses the captured FuseSoC-generated dependency order and has a passing `soc-build.soc_sim`
 log. The current flow preserves that order through `filelist.mk` composition instead of hand-maintaining

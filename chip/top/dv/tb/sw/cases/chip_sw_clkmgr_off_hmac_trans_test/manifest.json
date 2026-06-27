@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_clkmgr_off_hmac_trans_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_clkmgr_off_hmac_trans_test",
+  "images": [
+    {
+      "image_base": "clkmgr_off_hmac_trans_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:clkmgr_off_hmac_trans_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.32.vmem",
+      "size_bytes": 42506,
+      "sha256": "fc02fb2500b30b3f07d5ff556052ac63f5774756a1f71c44c9d1f6212669ac1a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.64.scr.vmem",
+      "size_bytes": 45809,
+      "sha256": "87fff6c9fdd2cb5f46515a4adccf7d1ed1782aed6f4a1d896af480559af18248",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.64.vmem",
+      "size_bytes": 39740,
+      "sha256": "7888ddf843a03d5e17aaa32acf88591ad4293ec584e3b195fabbff7a3b89456e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.bash"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.bin",
+      "size_bytes": 16288,
+      "sha256": "80e1d7b85187de8df63c9c4cbaecc10c4cb37067e83f85a02ca1490cdbc0bf5c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.bin"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.dis",
+      "size_bytes": 584160,
+      "sha256": "2831a5699f6454bfb9895f7d954edd8d2441a59e2b0128fbadcc34ad4b115ba5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.dis"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.elf",
+      "size_bytes": 326076,
+      "sha256": "d91a36555f324cf76e8678b176796b13a4279a9e2032f0f318f565213b5ed18f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.elf"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.logs.txt",
+      "size_bytes": 8434,
+      "sha256": "a55b5b656319639c46f92f361dc77294e6588275ce070a4c6c46880a6e0f8dc9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.map",
+      "size_bytes": 193582,
+      "sha256": "7835c992990121ddd1dcba2374f84e4f50d94d2db3712fadecd0c1577ab17b92",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.map"
+    },
+    {
+      "file": "clkmgr_off_hmac_trans_test_sim_dv.rodata.txt",
+      "size_bytes": 52746,
+      "sha256": "31425fa0ca85a5fca72de8474cafbcaec0f41efa3e99f6f4f52cbed0347c7ede",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_hmac_trans_test_sim_dv.rodata.txt"
+    }
+  ]
+}

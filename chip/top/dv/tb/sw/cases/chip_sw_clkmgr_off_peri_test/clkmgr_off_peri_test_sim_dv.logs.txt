@@ -1,0 +1,455 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 163
+nargs: 1
+format: DIF-fail: dif_rstmgr_cpu_info_set_enabled(&rstmgr, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 164
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1002c
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 165
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10040
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 171
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10054
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 173
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10068
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 174
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1007c
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 175
+nargs: 0
+format: CHECK-fail: value == prev_value + 1
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 178
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 179
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 184
+nargs: 0
+format: This is unreachable since a reset should have been triggered
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 187
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100e0
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 189
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100f4
+severity: 0
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 190
+nargs: 1
+format: Got an expected watchdog reset when reading for clock %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 201
+nargs: 1
+format: DIF-fail: dif_rstmgr_cpu_info_dump_read( &rstmgr, (dif_rstmgr_cpu_info_dump_segment_t *)&crash_dump, sizeof(crash_dump) / sizeof(dif_rstmgr_cpu_info_dump_segment_t), &size_read) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 202
+nargs: 0
+format: CHECK-fail: size_read == actual_size
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 206
+nargs: 2
+format: CHECK-fail: Unexpected hung address for clock %0d, via peripheral %0s
+str_arg_idx: 1
+addr: 10144
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 213
+nargs: 2
+format: CHECK-fail: The crash PC 0x%0h is too far from the expected 0x%0h
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 216
+nargs: 2
+format: Expectations are okay for clock %0d, with peripheral %0s
+str_arg_idx: 1
+addr: 1016c
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 217
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10180
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 220
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 0
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 221
+nargs: 1
+format: Next clock to test %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 223
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101bc
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 228
+nargs: 0
+format: This is unreachable since a reset should have been triggered
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 236
+nargs: 1
+format: Unexpected reset_info 0x%0h
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 98
+nargs: 1
+format: DIF-fail: dif_clkmgr_gateable_clock_set_enabled(clkmgr, clock, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 103
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( pwrmgr, kDifPwrmgrReqTypeReset, dt_aon_timer_instance_id(kDtAonTimerAon), kDtAonTimerResetReqAonTimer, &reset_sources) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 105
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( pwrmgr, kDifPwrmgrReqTypeReset, reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 107
+nargs: 2
+format: Testing peripheral clock %0d, with unit %0s
+str_arg_idx: 1
+addr: 10234
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 113
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10248
+severity: 0
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 114
+nargs: 2
+format: Setting bite reset for %0d us (%0d cycles)
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 118
+nargs: 0
+format: CSR access was okay before disabling the clock
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 122
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10284
+severity: 2
+file: sw/device/tests/clkmgr_off_peri_test.c
+line: 125
+nargs: 1
+format: DIF-fail: dif_clkmgr_gateable_clock_set_enabled(clkmgr, clock, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 67
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 68
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: value != ((void*)0)
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 83
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 84
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 86
+nargs: 0
+format: HECK-fail: value < 4294967295U
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10374
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 104dc
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 104f0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10504
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

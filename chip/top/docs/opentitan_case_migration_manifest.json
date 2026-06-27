@@ -1,0 +1,33 @@
+{
+  "source_image_dir": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "source_case_hjson": [
+    "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_smoketests.hjson",
+    "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_manuf_ate_tests.hjson",
+    "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_rom_tests.hjson"
+  ],
+  "software_case_dirs_total": 188,
+  "missing_migrated_image_dirs": [],
+  "note": "Files were migrated only; compile/regression/simulation was intentionally not run.",
+  "indexed_cases_total": 274,
+  "case_index_files": {
+    "manifest": "chip/top/dv/tb/tests/opentitan_cases.manifest.json",
+    "chip_sw": {
+      "file": "chip/top/dv/tb/tests/opentitan_chip_sw_cases.json",
+      "count": 185
+    },
+    "rom_e2e": {
+      "file": "chip/top/dv/tb/tests/opentitan_rom_e2e_cases.json",
+      "count": 52
+    },
+    "ate": {
+      "file": "chip/top/dv/tb/tests/opentitan_ate_cases.json",
+      "count": 3
+    },
+    "pure_dv": {
+      "file": "chip/top/dv/tb/tests/opentitan_pure_dv_cases.json",
+      "count": 34,
+      "status": "indexed_only"
+    },
+    "overrides": "chip/top/dv/tb/tests/opentitan_case_overrides.yml"
+  }
+}

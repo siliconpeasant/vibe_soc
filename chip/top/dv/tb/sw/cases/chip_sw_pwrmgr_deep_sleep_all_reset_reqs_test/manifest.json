@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_deep_sleep_all_reset_reqs_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_deep_sleep_all_reset_reqs_test",
+  "images": [
+    {
+      "image_base": "pwrmgr_deep_sleep_all_reset_reqs_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_deep_sleep_all_reset_reqs_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.32.vmem",
+      "size_bytes": 59305,
+      "sha256": "677ffa50e669ba4f7552da881880b44c5027d24c5f1b76c49e9ba16a589ee08e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.64.scr.vmem",
+      "size_bytes": 63949,
+      "sha256": "07aa511dfc575af98177e5cb61cbca772cde6dfa5a228d8e66bbdd37c3cbd603",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.64.vmem",
+      "size_bytes": 55462,
+      "sha256": "ccb4e026899122804dc20b000c9d2d03d4f7708452530f84577acfcec9853933",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.bin",
+      "size_bytes": 22732,
+      "sha256": "cefb9ef5c8f320a6c6c8f4efa33eb55476c58504c26aceef29f68341a497fbec",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.dis",
+      "size_bytes": 785842,
+      "sha256": "9f4aee46c8c5b3f856dc3886e7d015e88d674cd5bff3de5db592231674616a21",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.elf",
+      "size_bytes": 388040,
+      "sha256": "2af137413584059fadcb3197dc18b097bb465b4cc41d4ee6d351568054df8fea",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.logs.txt",
+      "size_bytes": 16418,
+      "sha256": "f934eb0c90a26a0122898899492af9402b4405fadb2415005cdc92e3267c201c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.map",
+      "size_bytes": 274745,
+      "sha256": "abb2bcf60fbf65a36dfcc087c679e46e088a53772c2eb22e8ec2e28e718584a8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.rodata.txt",
+      "size_bytes": 72138,
+      "sha256": "2dffc1378b970dcd73472c7f78e8d69bd475ae89f9df74fccb453d0d439d27b6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_deep_sleep_all_reset_reqs_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,814 @@
+{
+  "cases": {
+    "chip_csr_aliasing": {
+      "category": "csr",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_csr_aliasing",
+      "notes": "Expanded from CSR generic {name}_* tests with Earlgrey chip name.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/dv/tools/dvsim/tests/csr_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+csr_aliasing",
+        "+en_scb=0",
+        "+test_timeout_ns=120000000"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_common_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_csr_bit_bash": {
+      "category": "csr",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_csr_bit_bash",
+      "notes": "Expanded from CSR generic {name}_* tests with Earlgrey chip name.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/dv/tools/dvsim/tests/csr_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+csr_bit_bash",
+        "+en_scb=0",
+        "+test_timeout_ns=120000000",
+        "+num_test_csrs=200"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_common_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_csr_hw_reset": {
+      "category": "csr",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_csr_hw_reset",
+      "notes": "Expanded from CSR generic {name}_* tests with Earlgrey chip name.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/dv/tools/dvsim/tests/csr_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+csr_hw_reset",
+        "+en_scb=0"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_common_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_csr_mem_rw_with_rand_reset": {
+      "category": "csr",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_csr_mem_rw_with_rand_reset",
+      "notes": "Expanded from CSR generic {name}_* tests with Earlgrey chip name.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/dv/tools/dvsim/tests/csr_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+run_csr_mem_rw_with_rand_reset",
+        "+en_scb=0",
+        "+test_timeout_ns=10000000000"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_common_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_csr_rw": {
+      "category": "csr",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_csr_rw",
+      "notes": "Expanded from CSR generic {name}_* tests with Earlgrey chip name.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/dv/tools/dvsim/tests/csr_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+csr_rw",
+        "+en_scb=0"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_common_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_jtag_csr_rw": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_jtag_csr_rw",
+      "notes": "JTAG CSR access test.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+en_scb=0",
+        "+csr_rw",
+        "+create_jtag_riscv_map=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_jtag_csr_rw_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_jtag_mem_access": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_jtag_mem_access",
+      "notes": "JTAG memory access test.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+create_jtag_riscv_map=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_jtag_mem_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_padctrl_attributes": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_padctrl_attributes",
+      "notes": "Pad attribute connectivity test; pad_ctrl_test_mode in OpenTitan.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+use_otp_image=OtpTypeLcStProd"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_padctrl_attributes_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_prim_tl_access": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_prim_tl_access",
+      "notes": "Chip-level primitive TL access test.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+en_scb=0",
+        "+en_scb_tl_err_chk=0"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_prim_tl_access_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_rv_dm_lc_disabled": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_rv_dm_lc_disabled",
+      "notes": "RV DM lifecycle-disabled test.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+en_scb=0",
+        "+en_scb_tl_err_chk=0",
+        "+use_jtag_dmi=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_rv_dm_lc_disabled_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_same_csr_outstanding": {
+      "category": "csr",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_same_csr_outstanding",
+      "notes": "Expanded from CSR generic {name}_* tests with Earlgrey chip name.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/dv/tools/dvsim/tests/csr_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+run_same_csr_outstanding",
+        "+en_scb=0",
+        "+test_timeout_ns=120000000"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_common_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_tap_straps_dev": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_tap_straps_dev",
+      "notes": "Tap strap test using OpenTitan strap_tests_mode; indexed only.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+use_otp_image=OtpTypeLcStDev",
+        "+create_jtag_riscv_map=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_tap_straps_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_tap_straps_prod": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_tap_straps_prod",
+      "notes": "Tap strap test using OpenTitan strap_tests_mode; indexed only.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+use_otp_image=OtpTypeLcStProd",
+        "+create_jtag_riscv_map=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_tap_straps_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_tap_straps_rma": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_tap_straps_rma",
+      "notes": "Tap strap test using OpenTitan strap_tests_mode; indexed only.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+create_jtag_riscv_map=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_tap_straps_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_tap_straps_testunlock0": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_tap_straps_testunlock0",
+      "notes": "Tap strap test using OpenTitan strap_tests_mode; indexed only.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+use_otp_image=OtpTypeLcStTestUnlocked0",
+        "+create_jtag_riscv_map=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_tap_straps_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "chip_tl_errors": {
+      "category": "chip_pure_dv",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "chip_tl_errors",
+      "notes": "cover_reg_top/stub_cpu_mode chip-level TL error test.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_sim_cfg.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+run_tl_errors"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_common_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_access_same_device": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_access_same_device",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_access_same_device_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_access_same_device_slow_rsp": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_access_same_device_slow_rsp",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+maxhostreqdelay=10",
+        "+maxhostrspdelay=1000",
+        "+maxdevicereqdelay=1000",
+        "+maxdevicerspdelay=10",
+        "+maxhostvalidlen=2000",
+        "+maxdevicevalidlen=2000",
+        "+maxnumtrans=10"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_access_same_device_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_error_and_unmapped_addr": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_error_and_unmapped_addr",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_unmapped_addr_vseq",
+      "uvm_test": "xbar_error_test",
+      "waves": "fsdb"
+    },
+    "xbar_error_random": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_error_random",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_random_vseq",
+      "uvm_test": "xbar_error_test",
+      "waves": "fsdb"
+    },
+    "xbar_random": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_random",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_random_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_random_large_delays": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_random_large_delays",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+maxhostreqdelay=1000",
+        "+maxhostrspdelay=1000",
+        "+maxdevicereqdelay=1000",
+        "+maxdevicerspdelay=1000",
+        "+maxhostvalidlen=2000",
+        "+maxdevicevalidlen=2000",
+        "+maxnumtrans=10"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_random_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_random_slow_rsp": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_random_slow_rsp",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+maxhostreqdelay=10",
+        "+maxhostrspdelay=1000",
+        "+maxdevicereqdelay=1000",
+        "+maxdevicerspdelay=10",
+        "+maxhostvalidlen=2000",
+        "+maxdevicevalidlen=2000",
+        "+maxnumtrans=10"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_random_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_random_zero_delays": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_random_zero_delays",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+zerodelays=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_random_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_same_source": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_same_source",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_same_source_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_smoke": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_smoke",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_smoke_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_smoke_large_delays": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_smoke_large_delays",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+maxhostreqdelay=1000",
+        "+maxhostrspdelay=1000",
+        "+maxdevicereqdelay=1000",
+        "+maxdevicerspdelay=1000",
+        "+maxhostvalidlen=2000",
+        "+maxdevicevalidlen=2000"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_smoke_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_smoke_slow_rsp": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_smoke_slow_rsp",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+maxhostreqdelay=10",
+        "+maxhostrspdelay=1000",
+        "+maxdevicereqdelay=1000",
+        "+maxdevicerspdelay=10",
+        "+maxhostvalidlen=2000",
+        "+maxdevicevalidlen=2000"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_smoke_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_smoke_zero_delays": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_smoke_zero_delays",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+zerodelays=1"
+      ],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_smoke_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_stress_all": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_stress_all",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_stress_all_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_stress_all_with_error": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_stress_all_with_error",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_stress_all_vseq",
+      "uvm_test": "xbar_error_test",
+      "waves": "fsdb"
+    },
+    "xbar_stress_all_with_rand_reset": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_stress_all_with_rand_reset",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_stress_all_with_rand_reset_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    },
+    "xbar_stress_all_with_reset_error": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_stress_all_with_reset_error",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_stress_all_with_rand_reset_vseq",
+      "uvm_test": "xbar_error_test",
+      "waves": "fsdb"
+    },
+    "xbar_unmapped_addr": {
+      "category": "xbar",
+      "compile_opts": [],
+      "kind": "pure_dv",
+      "name": "xbar_unmapped_addr",
+      "notes": "Indexed from OpenTitan xbar_tests.hjson; not enabled in vibe_soc chip/top simulation flow yet.",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/ip/tlul/generic_dv/xbar_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [],
+      "status": "indexed_only",
+      "sw_collateral": {
+        "images": []
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "xbar_unmapped_addr_vseq",
+      "uvm_test": "xbar_base_test",
+      "waves": "fsdb"
+    }
+  },
+  "kind": "pure_dv",
+  "schema_version": 1,
+  "source": "generated from OpenTitan csr_tests.hjson, xbar_tests.hjson, and chip_sim_cfg.hjson indexed-only entries"
+}

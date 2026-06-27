@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sleep_pin_mio_dio_val_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sleep_pin_mio_dio_val_test",
+  "images": [
+    {
+      "image_base": "sleep_pin_mio_dio_val_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sleep_pin_mio_dio_val_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.32.vmem",
+      "size_bytes": 43400,
+      "sha256": "10bef8b3123a62e96003ef8d6fc030a23e5284e19684a6999c1474e32fe0cb06",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.64.scr.vmem",
+      "size_bytes": 46779,
+      "sha256": "5dd9eb94c8079534ae01ff68013e9e2624b4388b220a5bcf7f2b2bfa0870fbb2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.64.vmem",
+      "size_bytes": 40581,
+      "sha256": "41cc8cedceefe29679bf2692103ad9857daf7e042fd6891f7adcd965986dbcd1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.bash"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.bin",
+      "size_bytes": 16632,
+      "sha256": "e7eff09a4c8082a8517faaca0e4e81b6c8c4e72909c5ade1aa7d2dd29a652e70",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.bin"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.dis",
+      "size_bytes": 573876,
+      "sha256": "09751c19662b68f3476f51ab72b7a887c3730148cf41c463d65b51eaecac1bef",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.dis"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.elf",
+      "size_bytes": 300184,
+      "sha256": "b9a86d0e1bdfd76b4d4af0e8419acb44f40013b02fc72c8573b42b16d6be0d97",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.elf"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.logs.txt",
+      "size_bytes": 8410,
+      "sha256": "abda1dce557aad985750646656522ec1445fb38d288faeeb016a3f5c7e1675b7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.map",
+      "size_bytes": 196786,
+      "sha256": "486f77c4e37e8405d45f89ed36bb187267ae311dc7e6487f2dd28b9db6647b4f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.map"
+    },
+    {
+      "file": "sleep_pin_mio_dio_val_test_sim_dv.rodata.txt",
+      "size_bytes": 55109,
+      "sha256": "ac80154b1f67e104361864a26249536c30ecf6c23aa4a78016e5e5715f8e61ad",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_mio_dio_val_test_sim_dv.rodata.txt"
+    }
+  ]
+}

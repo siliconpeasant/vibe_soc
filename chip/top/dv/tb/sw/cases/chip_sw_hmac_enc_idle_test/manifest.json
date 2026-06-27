@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_hmac_enc_idle_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_hmac_enc_idle_test",
+  "images": [
+    {
+      "image_base": "hmac_enc_idle_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:hmac_enc_idle_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "hmac_enc_idle_test_sim_dv.32.vmem",
+      "size_bytes": 49815,
+      "sha256": "b54a569ca58935f9215e169e09699aa73fdb74f28d711bd0a316a7469f3ecddd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.64.scr.vmem",
+      "size_bytes": 53709,
+      "sha256": "615c499dc5a0d0d370dc0dc63c5d072eafc2ab74d410aab33238a0c166abc1b8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.64.vmem",
+      "size_bytes": 46587,
+      "sha256": "88d7c8c3a56e2ac13115c52c823dc8be583638cf956e288757ee0e77a15b5dc7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.bash"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.bin",
+      "size_bytes": 19092,
+      "sha256": "3cc560d1efa256083517019c1b209737a7dbb53aadfa830d0e7725a2fd42ef17",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.bin"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.dis",
+      "size_bytes": 673854,
+      "sha256": "76a29274ff89b39cc7e93e232e97a01b2f66d4c7a58ceb375e476697e9bdded4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.dis"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.elf",
+      "size_bytes": 331896,
+      "sha256": "56b7fc7dc6df68a23f1ceef7f75d9232007b10588c56bd5de0c8173758d80f01",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.elf"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.logs.txt",
+      "size_bytes": 10432,
+      "sha256": "04b86761900f5af02879721aeca32b688e0e4eaa8e6a91c8749965e1da7e31d1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.map",
+      "size_bytes": 242080,
+      "sha256": "b3334fc44514bcb7255e06118fcb4b5d0ec93b541e71fbdefd8b7545c0ab32ed",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.map"
+    },
+    {
+      "file": "hmac_enc_idle_test_sim_dv.rodata.txt",
+      "size_bytes": 63439,
+      "sha256": "d06957d6c32bee0a6c329990239bcddfc55ca2032b72a22b320472b5ffd5bcfa",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/hmac_enc_idle_test_sim_dv.rodata.txt"
+    }
+  ]
+}

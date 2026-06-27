@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_alert_handler_reverse_ping_in_deep_sleep_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_alert_handler_reverse_ping_in_deep_sleep_test",
+  "images": [
+    {
+      "image_base": "alert_handler_reverse_ping_in_deep_sleep_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:alert_handler_reverse_ping_in_deep_sleep_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.32.vmem",
+      "size_bytes": 68074,
+      "sha256": "ad09cbdbf3cfbbdeb1c8044ca337c3a8a485f006d009883ad310dc0da1bb1299",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.64.scr.vmem",
+      "size_bytes": 73399,
+      "sha256": "8c2c2a46982f47ce4e14f8e8c4897bb48ebb78b471c52f097a9b69158b226eb7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.64.vmem",
+      "size_bytes": 63652,
+      "sha256": "135651952706c53f70e5e5b31eeff428773891868159fa8cf7d7104d737bc5b9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.bash"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.bin",
+      "size_bytes": 26096,
+      "sha256": "542d8b33dbb72b006f7656da2e234fa1be919898a118deff35c4d8eaa8b4cd67",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.bin"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.dis",
+      "size_bytes": 713731,
+      "sha256": "a4a8a5898de0b7a33bf481b741a4636e48bdc3bde59246a21aa9c555f6e418f4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.dis"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.elf",
+      "size_bytes": 385856,
+      "sha256": "daf5f22d356b87019890314084130fcf9f8ce44b64871c0248a6a1e984dc3b5f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.elf"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.logs.txt",
+      "size_bytes": 18105,
+      "sha256": "60502728b7d4866976f224410e021fdbc952ff5032343a731b1b727cba2e9fe4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.map",
+      "size_bytes": 233427,
+      "sha256": "4c91481cc8b9200d361f00a4ba722f895d95a3ef7f1637611e9596f2802f03f1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.map"
+    },
+    {
+      "file": "alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.rodata.txt",
+      "size_bytes": 66374,
+      "sha256": "cf4ed06257f5891d361e4addb28fa179a955f147ee47c6a76143c96ee05dbddc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_reverse_ping_in_deep_sleep_test_sim_dv.rodata.txt"
+    }
+  ]
+}

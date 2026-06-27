@@ -1,0 +1,399 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 94
+nargs: 1
+format: Unexpected interrupt (at I2C): %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 100
+nargs: 1
+format: DIF-fail: dif_i2c_irq_set_enabled(&i2c, i2c_irq, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 168
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInI2c0Scl, kTopEarlgreyPinmuxInselIoa8) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 171
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInI2c0Sda, kTopEarlgreyPinmuxInselIoa7) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 174
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa8, kTopEarlgreyPinmuxOutselI2c0Scl) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 177
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa7, kTopEarlgreyPinmuxOutselI2c0Sda) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 198
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInI2c1Scl, kTopEarlgreyPinmuxInselIob9) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 201
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInI2c1Sda, kTopEarlgreyPinmuxInselIob10) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 204
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob9, kTopEarlgreyPinmuxOutselI2c1Scl) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 207
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob10, kTopEarlgreyPinmuxOutselI2c1Sda) returns %0d
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 228
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInI2c2Scl, kTopEarlgreyPinmuxInselIob11) returns %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 231
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInI2c2Sda, kTopEarlgreyPinmuxInselIob12) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 234
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob11, kTopEarlgreyPinmuxOutselI2c2Scl) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 237
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob12, kTopEarlgreyPinmuxOutselI2c2Sda) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 3
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 240
+nargs: 1
+format: Unsupported i2c index %0d
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 258
+nargs: 2
+format: Loopback %0d bytes with device %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 268
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 269
+nargs: 0
+format: CHECK-fail: !fmt_irq_seen
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 279
+nargs: 0
+format: CHECK-fail: fmt_irq_seen
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 283
+nargs: 0
+format: CHECK-fail: !rx_irq_seen
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 284
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101a8
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 291
+nargs: 0
+format: CHECK-fail: rx_irq_seen
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 299
+nargs: 3
+format: Byte %0d, Expected data 0x%0h, read data 0x%0h
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 302
+nargs: 0
+format: CHECK-fail: done_irq_seen
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 306
+nargs: 1
+format: Testing I2C index %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 342
+nargs: 0
+format: CHECK-fail: !fmt_irq_seen
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 343
+nargs: 0
+format: CHECK-fail: !rx_irq_seen
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 344
+nargs: 0
+format: CHECK-fail: !done_irq_seen
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 138
+nargs: 1
+format: DIF-fail: dif_i2c_irq_set_enabled(i2c, kDifI2cIrqFmtThreshold, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_i2c_irq_set_enabled(i2c, kDifI2cIrqRxThreshold, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 109
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( plic, plic_irqs[i], kTopEarlgreyPlicTargetIbex0, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 113
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority(plic, plic_irqs[i], kDifRvPlicMaxPriority) returns %0d
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/sim_dv/i2c_host_tx_rx_test.c
+line: 131
+nargs: 1
+format: DIF-fail: dif_i2c_irq_set_enabled(i2c, i2c_irqs[i], kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: w/device/lib/testing/i2c_testutils.c
+line: 122
+nargs: 0
+format: CHECK-fail: byte_count > 0
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 424
+nargs: 1
+format: DIF-fail: dif_i2c_irq_get_type(i2c_ctx.i2c, irq, &type) returns %0d
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 426
+nargs: 1
+format: DIF-fail: dif_i2c_irq_acknowledge(i2c_ctx.i2c, irq) returns %0d
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 1043c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10450
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10464
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

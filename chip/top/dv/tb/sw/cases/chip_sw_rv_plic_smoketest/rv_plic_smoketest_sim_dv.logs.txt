@@ -1,0 +1,189 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 79
+nargs: 2
+format: CHECK-fail: Interrupt from incorrect peripheral: (exp: %0d, obs: %0s)
+str_arg_idx: 1
+addr: 10018
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 46
+nargs: 0
+format: CHECK-fail: UART RX overflow IRQ asserted more than once
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 51
+nargs: 0
+format: CHECK-fail: UART TX done IRQ asserted more than once
+str_arg_idx: 
+addr: 10040
+severity: 3
+file: sw/device/tests/rv_plic_smoketest.c
+line: 56
+nargs: 0
+format: ISR is not implemented!
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 60
+nargs: 1
+format: DIF-fail: dif_uart_irq_acknowledge(&uart0, uart_irq) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 89
+nargs: 0
+format: CHECK-fail: kUartBaudrate must fit in uint32_t
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 91
+nargs: 0
+format: CHECK-fail: kClockFreqPeripheralHz must fit in uint32_t
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 108
+nargs: 1
+format: DIF-fail: dif_uart_irq_set_enabled(&uart0, kDifUartIrqRxOverflow, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 110
+nargs: 1
+format: IF-fail: dif_uart_irq_set_enabled(&uart0, kDifUartIrqTxDone, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 149
+nargs: 0
+format: CHECK-fail: RX overflow IRQ has not been handled!
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/rv_plic_smoketest.c
+line: 158
+nargs: 0
+format: CHECK-fail: TX done IRQ has not been handled!
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 100f4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10144
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10158
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 101f8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 1020c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

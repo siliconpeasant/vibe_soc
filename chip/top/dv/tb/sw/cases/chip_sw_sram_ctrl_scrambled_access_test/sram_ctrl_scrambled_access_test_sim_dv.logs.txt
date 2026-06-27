@@ -1,0 +1,490 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 492
+nargs: 2
+format: RET_SRAM addr: %0h MAIN_SRAM addr: %0h
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 493
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1002c
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 494
+nargs: 0
+format: First boot, testing main sram
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 499
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10054
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 500
+nargs: 0
+format: econd boot, checking main sram
+str_arg_idx: 
+addr: 10068
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 504
+nargs: 0
+format: Testing Retention sram
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 508
+nargs: 2
+format: RET_SRAM addr: %0h MAIN_SRAM addr: %0h
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 509
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 516
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 517
+nargs: 0
+format: Checking retention sram
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 410
+nargs: 0
+format: CHECK-fail: kTestPhase == next_phase
+str_arg_idx: 
+addr: 100e0
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 288
+nargs: 3
+format: ut_backdoor: %0h,ut_pattern: %0h,ut_ecc_error_counter: %0h
+str_arg_idx: 
+addr: 100f4
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 291
+nargs: 3
+format: ref_backdoor: %0h,ref_pattern: %0h,ref_ecc_error_counter: %0h
+str_arg_idx: 
+addr: 10108
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 295
+nargs: 0
+format: Preparing test...
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 297
+nargs: 0
+format: Scrambling...
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 255
+nargs: 1
+format: Writing to addr 0x%0h
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 266
+nargs: 1
+format: Checking addr 0x%0h
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 268
+nargs: 1
+format: CHECK-fail: scrambling_frame->pattern %0smatches kRamTestPattern1
+str_arg_idx: 0
+addr: 1016c
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 268
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 10180
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 270
+nargs: 1
+format: Writing to addr 0x%0h
+str_arg_idx: 
+addr: 10194
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 280
+nargs: 1
+format: Checking addr 0x%0h
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 282
+nargs: 1
+format: CHECK-fail: reference_frame->pattern %0smatches kRamTestPattern2
+str_arg_idx: 0
+addr: 101bc
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 282
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 190
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101e4
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 309
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101f8
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 312
+nargs: 1
+format: Checking addr 0x%0h
+str_arg_idx: 
+addr: 1020c
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 317
+nargs: 1
+format: CHECK-fail: (uint32_t *)tmp_buffer %0smatches kRamTestPattern1
+str_arg_idx: 0
+addr: 10220
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 317
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%08h
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 319
+nargs: 1
+format: CHECK-fail: (uint32_t *)tmp_buffer %0smatches kRamTestPattern2
+str_arg_idx: 0
+addr: 10248
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 319
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%08h
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 323
+nargs: 1
+format: Checking ECC error count of %0d
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 324
+nargs: 0
+format: CHECK-fail: reference_frame->ecc_error_counter <= kTestBufferSizeWords
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 334
+nargs: 2
+format: CHECK-fail: Too many expected ECC errors failed to trigger (%0d > %0d)
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 338
+nargs: 1
+format: Passing with remark: %0d words didn't give expected ECC errors
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 345
+nargs: 1
+format: Checking backdoor  0x%0h
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 351
+nargs: 1
+format: CHECK-fail: mem_frame->backdoor %0smatches kBackdoorExpectedWords
+str_arg_idx: 0
+addr: 102d4
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 351
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 359
+nargs: 0
+format: Wiping retention sram...
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 360
+nargs: 1
+format: DIF-fail: dif_sram_ctrl_wipe(&ret_sram) returns %0d
+str_arg_idx: 
+addr: 10310
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 362
+nargs: 0
+format: Preparing test...
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 365
+nargs: 0
+format: Scrambling...
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/tests/sram_ctrl_scrambled_access_test.c
+line: 366
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1034c
+severity: 0
+file: sw/device/lib/testing/sram_ctrl_testutils.c
+line: 56
+nargs: 0
+format: Waiting for SRAM scrambling to finish
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10374
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10540
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10554
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10568
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

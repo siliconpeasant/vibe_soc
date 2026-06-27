@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rstmgr_cpu_info_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rstmgr_cpu_info_test",
+  "images": [
+    {
+      "image_base": "rstmgr_cpu_info_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rstmgr_cpu_info_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.32.vmem",
+      "size_bytes": 42451,
+      "sha256": "9591c734e3d38dd456daa05e046bcc0277071bd772c56c27afdc959407322a3f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.64.scr.vmem",
+      "size_bytes": 45769,
+      "sha256": "04c413245e2ed77007ded6fa11fc54a0babcde034e50951e783a2be0ed855560",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.64.vmem",
+      "size_bytes": 39706,
+      "sha256": "9380550934fa1cf620b915d61232825b0da13587dc5bfcf6366d0b293b850110",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.bash"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.bin",
+      "size_bytes": 16268,
+      "sha256": "1f47a3b3b50ca677a2d7731d0556202b5ab4bbaab1d7c55e770d4aa3b74b40d8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.bin"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.dis",
+      "size_bytes": 568662,
+      "sha256": "a0813b44d06a2024dcbe109bca8d01772a4ca1d145d144dc29d9fec3743ca816",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.dis"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.elf",
+      "size_bytes": 302744,
+      "sha256": "6db0aa5a2b78343750ed87ee8640f9b90e9731fd01e4d455d7a8106d4bfe4e34",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.elf"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.logs.txt",
+      "size_bytes": 9545,
+      "sha256": "b04b023eced9aca0398e7bafaeb58221cc8731391f0b271f998147f3055e0908",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.map",
+      "size_bytes": 190358,
+      "sha256": "384dfb0f42bc0c68f212af22ab208126f40400f3323f101679d131488b7f95a3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.map"
+    },
+    {
+      "file": "rstmgr_cpu_info_test_sim_dv.rodata.txt",
+      "size_bytes": 52474,
+      "sha256": "fbc888d6d4c3572c1ce232b2af9308511f041efa40f916488fbcac537364f6e7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_cpu_info_test_sim_dv.rodata.txt"
+    }
+  ]
+}

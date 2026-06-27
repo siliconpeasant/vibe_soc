@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rv_plic_smoketest",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rv_plic_smoketest",
+  "images": [
+    {
+      "origin_target": "//sw/device/tests:rv_plic_smoketest:1:new_rules",
+      "image_base": "rv_plic_smoketest",
+      "slot": 1,
+      "rule": "new_rules"
+    }
+  ],
+  "files": [
+    {
+      "file": "rv_plic_smoketest_sim_dv.32.vmem",
+      "size_bytes": 33390,
+      "sha256": "2cb7cd0a9933a46ff835807ae82c9ec9fd33f3a57dc8d63dc39370d6f21f18f5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.32.vmem"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.64.scr.vmem",
+      "size_bytes": 35979,
+      "sha256": "3bb676ba7fcaaf6b6e65cc3de51abdf5c9fabb3b5f64e666218a920de644b5e5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.64.vmem",
+      "size_bytes": 31221,
+      "sha256": "ccfde3b953226a4d239d611f861e2c175c0524c48338e545c82ed4de13a07c32",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.64.vmem"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.bash"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.bin",
+      "size_bytes": 12792,
+      "sha256": "f0aff45875fe725c42efdca491089a9084ce33bef4d37a2cc6675ff64fff006e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.bin"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.dis",
+      "size_bytes": 463727,
+      "sha256": "6c448a67610ea09b7200940ce82a08c43b6e8538f75dbd79ee910ae341cbc5e2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.dis"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.elf",
+      "size_bytes": 260760,
+      "sha256": "1be0bf7779823071755577ffb6eae231b8ab6b10f4fe664479842bb25e7da852",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.elf"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.logs.txt",
+      "size_bytes": 4839,
+      "sha256": "ec67f07a4c2c752a96cdb897844fa3a8567a6a8f9c589174fb80db87b0d8583b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.logs.txt"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.map",
+      "size_bytes": 156919,
+      "sha256": "4101242644413457541b9164d411fbc381be33d2297cf34933be2f0870730ed2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.map"
+    },
+    {
+      "file": "rv_plic_smoketest_sim_dv.rodata.txt",
+      "size_bytes": 43161,
+      "sha256": "1711bb96a0d787944cf770ef738a0fdb49ddc537d34a7a29d07a932a4fd81cde",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_plic_smoketest_sim_dv.rodata.txt"
+    }
+  ]
+}

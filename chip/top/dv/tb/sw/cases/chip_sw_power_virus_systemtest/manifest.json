@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_power_virus_systemtest",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_power_virus_systemtest",
+  "images": [
+    {
+      "image_base": "power_virus_systemtest",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:power_virus_systemtest"
+    }
+  ],
+  "files": [
+    {
+      "file": "power_virus_systemtest_sim_dv.32.vmem",
+      "size_bytes": 152344,
+      "sha256": "7e0570675dd75396370f7661b8a637b86498b2c7bb817ad601369ab7098956b3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.32.vmem"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.64.scr.vmem",
+      "size_bytes": 164299,
+      "sha256": "b931594ddbf02ee39bc33cb4913b6e8c604e360423aaa8caa3d7e03c11545bf9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.64.vmem",
+      "size_bytes": 142432,
+      "sha256": "40314747522fdf839743ad239414c7468b674ecfa9e1f136ab2dd7cc639f29a0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.64.vmem"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.bash"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.bin",
+      "size_bytes": 58416,
+      "sha256": "13d4e8d469d26fd1236416698abf137e8f2fbdc4d585bd10217d1c0516052e61",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.bin"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.dis",
+      "size_bytes": 1596471,
+      "sha256": "1350e25a055de836142f55979a6a055a42a9cd7c290843d2cf745fbae82db4f7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.dis"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.elf",
+      "size_bytes": 715860,
+      "sha256": "a02447dd07518c8e6648053d9730834721ec002c29e52607c1008a6dd008f9d6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.elf"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.logs.txt",
+      "size_bytes": 38321,
+      "sha256": "8d13bcbdd8c7767f24d003d29a869f8287ad146d8a95afb6cf1300401f9a4353",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.logs.txt"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.map",
+      "size_bytes": 567289,
+      "sha256": "08b28074515add223501af5549024cfaed7df3d945ca9c3df37133a05adf2ba0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.map"
+    },
+    {
+      "file": "power_virus_systemtest_sim_dv.rodata.txt",
+      "size_bytes": 178990,
+      "sha256": "358656df8c64ee6a5c3ff3d0a67fd22a8682cab7c3e7a04faa952b2be7a95ef2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/power_virus_systemtest_sim_dv.rodata.txt"
+    }
+  ]
+}

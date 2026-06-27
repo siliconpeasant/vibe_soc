@@ -1,0 +1,109 @@
+{
+  "cases": {
+    "ate_bootstrap_disjoint": {
+      "compile_opts": [
+        "+define+DISABLE_ROM_INTEGRITY_CHECK"
+      ],
+      "kind": "ate",
+      "name": "ate_bootstrap_disjoint",
+      "provenance": {
+        "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_manuf_ate_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+sw_test_timeout_ns=160000000",
+        "+use_spi_load_bootstrap=1"
+      ],
+      "status": "migrated_sw_collateral",
+      "sw_collateral": {
+        "common_otp": "dv/tb/sw/common/otp",
+        "images": [
+          {
+            "base": "dv/tb/sw/cases/ate_bootstrap_disjoint/multislot_empty_test",
+            "origin_target": "//sw/device/silicon_creator/manuf/tests:multislot_empty_test:1:new_rules",
+            "rule": "new_rules",
+            "slot": 1
+          }
+        ],
+        "test_rom": {
+          "base": "dv/tb/sw/common/test_rom/test_rom",
+          "slot": 0
+        }
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_sw_ate_bootstrap_disjoint_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "ate_bootstrap_flash_erase": {
+      "compile_opts": [
+        "+define+DISABLE_ROM_INTEGRITY_CHECK"
+      ],
+      "kind": "ate",
+      "name": "ate_bootstrap_flash_erase",
+      "provenance": {
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_manuf_ate_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+sw_test_timeout_ns=160000000"
+      ],
+      "status": "migrated_case_definition",
+      "sw_collateral": {
+        "common_otp": "dv/tb/sw/common/otp",
+        "images": [],
+        "test_rom": {
+          "base": "dv/tb/sw/common/test_rom/test_rom",
+          "slot": 0
+        }
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_sw_ate_bootstrap_flash_erase_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    },
+    "ate_bootstrap_one_frame": {
+      "compile_opts": [
+        "+define+DISABLE_ROM_INTEGRITY_CHECK"
+      ],
+      "kind": "ate",
+      "name": "ate_bootstrap_one_frame",
+      "provenance": {
+        "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+        "source_hjson": "/project/xuanwu9000/user/silicon/opentitan-master/hw/top_earlgrey/dv/chip_manuf_ate_tests.hjson"
+      },
+      "rtl_filelist": "de/rtl/filelist.f",
+      "run_opts": [
+        "+sw_test_timeout_ns=160000000",
+        "+use_spi_load_bootstrap=1"
+      ],
+      "status": "migrated_sw_collateral",
+      "sw_collateral": {
+        "common_otp": "dv/tb/sw/common/otp",
+        "images": [
+          {
+            "base": "dv/tb/sw/cases/ate_bootstrap_one_frame/manuf_scrap_functest_prod",
+            "origin_target": "//sw/device/silicon_creator/manuf/tests:manuf_scrap_functest_prod:1:new_rules",
+            "rule": "new_rules",
+            "slot": 1
+          }
+        ],
+        "test_rom": {
+          "base": "dv/tb/sw/common/test_rom/test_rom",
+          "slot": 0
+        }
+      },
+      "timeout_ns": 160000000,
+      "top_module": "tb",
+      "uvm_sequence": "chip_sw_ate_bootstrap_one_frame_vseq",
+      "uvm_test": "chip_base_test",
+      "waves": "fsdb"
+    }
+  },
+  "kind": "ate",
+  "schema_version": 1,
+  "source": "generated from legacy vibe_soc per-case YAML migration data"
+}

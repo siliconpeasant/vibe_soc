@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sram_ctrl_smoketest",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sram_ctrl_smoketest",
+  "images": [
+    {
+      "origin_target": "//sw/device/tests:sram_ctrl_smoketest:1:new_rules",
+      "image_base": "sram_ctrl_smoketest",
+      "slot": 1,
+      "rule": "new_rules"
+    }
+  ],
+  "files": [
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.32.vmem",
+      "size_bytes": 32286,
+      "sha256": "29712c227c5df33f5827933a1559b346dfd402a0c602e1d848d730b6c142741e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.32.vmem"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.64.scr.vmem",
+      "size_bytes": 34789,
+      "sha256": "1cd16f3436f130eb3b32dbe9258daab6fb8cf68785058b4ba911c7489411bec7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.64.vmem",
+      "size_bytes": 30190,
+      "sha256": "0e4a5deca6d8bb5942dc452c00b988e2d0b9b24f87c99344847c7add3f486aab",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.64.vmem"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.bash"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.bin",
+      "size_bytes": 12368,
+      "sha256": "0b35a95a021b0d56ff7a3c5adb3729c9c46a93decb3260cd5078e64576cf7bcd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.bin"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.dis",
+      "size_bytes": 453429,
+      "sha256": "75569f5dbb1a91efe9d029d04d8a0b78d1fb375ea7b0102773a1a737df100c40",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.dis"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.elf",
+      "size_bytes": 259580,
+      "sha256": "309d6e81c5eb0ad692cb4adb21fd162dc2cec8245dbc3c8b738264e7773fc07c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.elf"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.logs.txt",
+      "size_bytes": 3935,
+      "sha256": "7aedf58c498a637898db535624b5dcab03274223fa427eb2929de0b16722023a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.logs.txt"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.map",
+      "size_bytes": 150441,
+      "sha256": "40144421abac40c8079d208400175465cf4721b67cc0b77bc342b7cf8e3fdddd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.map"
+    },
+    {
+      "file": "sram_ctrl_smoketest_sim_dv.rodata.txt",
+      "size_bytes": 41413,
+      "sha256": "4eca0cb8ac6accb9cbf5b199c4ca2dd80ad24fd89a7aebbd1883c0648ed63ed6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_smoketest_sim_dv.rodata.txt"
+    }
+  ]
+}

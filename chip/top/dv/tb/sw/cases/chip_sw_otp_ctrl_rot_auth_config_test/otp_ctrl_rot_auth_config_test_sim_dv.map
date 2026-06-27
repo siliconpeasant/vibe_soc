@@ -1,0 +1,1623 @@
+     VMA      LMA     Size Align Out     In      Symbol
+       0        0        0     1 
+       0        0        0     1 
+       0        0        0     1 
+       0        0        0     1 
+       0        0        0     1 
+       0        0        0     1 __DYNAMIC = 0
+       0        0        0     1 _exception_frame_size = 128
+       0        0        0     1 _exception_frame_end = ORIGIN ( ram_main ) + LENGTH ( ram_main )
+       0        0        0     1 _exception_frame_start = _exception_frame_end - _exception_frame_size
+       0        0        0     1 _stack_size = 16384 - _exception_frame_size
+       0        0        0     1 _stack_end = _exception_frame_start
+       0        0        0     1 _stack_start = _stack_end - _stack_size
+       0        0        0     1 _static_critical_size = 8168
+       0        0        0     1 _chip_info_size = 128
+       0        0        0     1 _rom_chip_info_end = ORIGIN ( rom ) + LENGTH ( rom )
+       0        0        0     1 _rom_chip_info_start = _rom_chip_info_end - _chip_info_size
+       0        0        0     1 _epmp_reset_rx_size = 2048
+       0        0        0     1 _stack_end = ORIGIN ( ram_main ) + LENGTH ( ram_main )
+       0        0        0     1 _dv_log_offset = 0x10000
+10001fe8 10001fe8     164c     4 .data
+10001fe8 10001fe8        0     1         __global_pointer$ = . + 2048
+10001fe8 10001fe8        0     1         
+10001fe8 10001fe8      13a     2         lto.tmp:(.text.test_main)
+10001fe8 10001fe8        0     1                 
+10001fe8 10001fe8        0     1                 
+10001fe8 10001fe8        0     1                 
+10001fe8 10001fe8      13a     1                 test_main
+10001fea 10001fea        0     1                 
+10001fee 10001fee        0     1                 
+10001ff0 10001ff0        0     1                 
+10001ff0 10001ff0        0     1                 
+10001ff6 10001ff6        0     1                 
+10001ff8 10001ff8        0     1                 
+10001ff8 10001ff8        0     1                 .Lpcrel_hi0
+10001ff8 10001ff8        0     1                 
+1000200e 1000200e        0     1                 
+1000200e 1000200e        0     1                 .Lpcrel_hi1
+1000200e 1000200e        0     1                 
+10002016 10002016        0     1                 
+10002016 10002016        0     1                 
+1000201a 1000201a        0     1                 
+1000201a 1000201a        0     1                 
+1000201c 1000201c        0     1                 
+10002026 10002026        0     1                 
+10002026 10002026        0     1                 
+1000202a 1000202a        0     1                 
+1000202a 1000202a        0     1                 
+10002036 10002036        0     1                 .Lpcrel_hi2
+1000204e 1000204e        0     1                 
+1000204e 1000204e        0     1                 .Lpcrel_hi3
+1000204e 1000204e        0     1                 
+10002058 10002058        0     1                 .Lpcrel_hi4
+10002060 10002060        0     1                 
+10002078 10002078        0     1                 
+10002078 10002078        0     1                 
+1000207e 1000207e        0     1                 
+1000207e 1000207e        0     1                 
+10002086 10002086        0     1                 
+10002086 10002086        0     1                 .Lpcrel_hi5
+10002086 10002086        0     1                 
+1000209c 1000209c        0     1                 
+1000209c 1000209c        0     1                 
+100020a0 100020a0        0     1                 
+100020a0 100020a0        0     1                 
+100020a2 100020a2        0     1                 
+100020ac 100020ac        0     1                 
+100020ac 100020ac        0     1                 
+100020b0 100020b0        0     1                 
+100020b0 100020b0        0     1                 
+100020bc 100020bc        0     1                 .Lpcrel_hi6
+100020d4 100020d4        0     1                 
+100020d4 100020d4        0     1                 .Lpcrel_hi7
+100020d4 100020d4        0     1                 
+100020de 100020de        0     1                 .Lpcrel_hi8
+100020e6 100020e6        0     1                 
+100020fe 100020fe        0     1                 
+100020fe 100020fe        0     1                 
+10002104 10002104        0     1                 
+10002104 10002104        0     1                 
+1000210c 1000210c        0     1                 
+1000210c 1000210c        0     1                 
+10002110 10002110        0     1                 
+10002118 10002118        0     1                 
+10002118 10002118        0     1                 
+1000211e 1000211e        0     1                 
+10002122 10002122        0     1                 
+10002122 10002122        0     1                 
+10002122 10002122        2     1         . = ALIGN ( 4 )
+10002124 10002124      19c     1         <internal>:(.data)
+100022c0 100022c0       b0     4         lto.tmp:(.rodata.kPartitions)
+100022c0 100022c0       b0     1                 kPartitions
+10002370 10002370        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKeyType0Value)
+10002370 10002370        4     1                 kRotCreatorAuthCodesignEcdsaKeyType0Value
+10002374 10002374       40     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKey0Value)
+10002374 10002374       40     1                 kRotCreatorAuthCodesignEcdsaKey0Value
+100023b4 100023b4        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKeyType1Value)
+100023b4 100023b4        4     1                 kRotCreatorAuthCodesignEcdsaKeyType1Value
+100023b8 100023b8       40     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKey1Value)
+100023b8 100023b8       40     1                 kRotCreatorAuthCodesignEcdsaKey1Value
+100023f8 100023f8        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKeyType2Value)
+100023f8 100023f8        4     1                 kRotCreatorAuthCodesignEcdsaKeyType2Value
+100023fc 100023fc       40     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKey2Value)
+100023fc 100023fc       40     1                 kRotCreatorAuthCodesignEcdsaKey2Value
+1000243c 1000243c        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKeyType3Value)
+1000243c 1000243c        4     1                 kRotCreatorAuthCodesignEcdsaKeyType3Value
+10002440 10002440       40     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignEcdsaKey3Value)
+10002440 10002440       40     1                 kRotCreatorAuthCodesignEcdsaKey3Value
+10002480 10002480        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyType0Value)
+10002480 10002480        4     1                 kRotCreatorAuthCodesignSpxKeyType0Value
+10002484 10002484       20     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKey0Value)
+10002484 10002484       20     1                 kRotCreatorAuthCodesignSpxKey0Value
+100024a4 100024a4        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyConfig0Value)
+100024a4 100024a4        4     1                 kRotCreatorAuthCodesignSpxKeyConfig0Value
+100024a8 100024a8        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyType1Value)
+100024a8 100024a8        4     1                 kRotCreatorAuthCodesignSpxKeyType1Value
+100024ac 100024ac       20     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKey1Value)
+100024ac 100024ac       20     1                 kRotCreatorAuthCodesignSpxKey1Value
+100024cc 100024cc        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyConfig1Value)
+100024cc 100024cc        4     1                 kRotCreatorAuthCodesignSpxKeyConfig1Value
+100024d0 100024d0        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyType2Value)
+100024d0 100024d0        4     1                 kRotCreatorAuthCodesignSpxKeyType2Value
+100024d4 100024d4       20     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKey2Value)
+100024d4 100024d4       20     1                 kRotCreatorAuthCodesignSpxKey2Value
+100024f4 100024f4        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyConfig2Value)
+100024f4 100024f4        4     1                 kRotCreatorAuthCodesignSpxKeyConfig2Value
+100024f8 100024f8        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyType3Value)
+100024f8 100024f8        4     1                 kRotCreatorAuthCodesignSpxKeyType3Value
+100024fc 100024fc       20     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKey3Value)
+100024fc 100024fc       20     1                 kRotCreatorAuthCodesignSpxKey3Value
+1000251c 1000251c        4     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignSpxKeyConfig3Value)
+1000251c 1000251c        4     1                 kRotCreatorAuthCodesignSpxKeyConfig3Value
+10002520 10002520       20     4         lto.tmp:(.rodata.kRotCreatorAuthCodesignBlockSha2256HashValue)
+10002520 10002520       20     1                 kRotCreatorAuthCodesignBlockSha2256HashValue
+10002540 10002540      150     4         lto.tmp:(.rodata.kOtpKvRotCreatorAuthCodesign)
+10002540 10002540      150     1                 kOtpKvRotCreatorAuthCodesign
+10002690 10002690        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateEcdsaKey0Value)
+10002690 10002690        4     1                 kRotCreatorAuthStateEcdsaKey0Value
+10002694 10002694        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateEcdsaKey1Value)
+10002694 10002694        4     1                 kRotCreatorAuthStateEcdsaKey1Value
+10002698 10002698        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateEcdsaKey2Value)
+10002698 10002698        4     1                 kRotCreatorAuthStateEcdsaKey2Value
+1000269c 1000269c        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateEcdsaKey3Value)
+1000269c 1000269c        4     1                 kRotCreatorAuthStateEcdsaKey3Value
+100026a0 100026a0        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateSpxKey0Value)
+100026a0 100026a0        4     1                 kRotCreatorAuthStateSpxKey0Value
+100026a4 100026a4        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateSpxKey1Value)
+100026a4 100026a4        4     1                 kRotCreatorAuthStateSpxKey1Value
+100026a8 100026a8        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateSpxKey2Value)
+100026a8 100026a8        4     1                 kRotCreatorAuthStateSpxKey2Value
+100026ac 100026ac        4     4         lto.tmp:(.rodata.kRotCreatorAuthStateSpxKey3Value)
+100026ac 100026ac        4     1                 kRotCreatorAuthStateSpxKey3Value
+100026b0 100026b0       80     4         lto.tmp:(.rodata.kOtpKvRotCreatorAuthState)
+100026b0 100026b0       80     1                 kOtpKvRotCreatorAuthState
+10002730 10002730        0     1         . = ALIGN ( 4 )
+10002730 10002730        0     1         . = ALIGN ( 4 )
+10002730 10002730      5b2     2         lto.tmp:(.text.otp_img_write)
+10002730 10002730      5b2     1                 otp_img_write
+10002730 10002730        0     1                 
+10002730 10002730        0     1                 
+10002730 10002730        0     1                 
+10002732 10002732        0     1                 
+1000274c 1000274c        0     1                 
+1000274e 1000274e        0     1                 
+10002750 10002750        0     1                 
+10002752 10002752        0     1                 
+10002754 10002754        0     1                 
+1000275a 1000275a        0     1                 .Lpcrel_hi9
+10002772 10002772        0     1                 .Lpcrel_hi10
+10002794 10002794        0     1                 
+10002794 10002794        0     1                 
+10002798 10002798        0     1                 
+10002798 10002798        0     1                 
+1000279e 1000279e        0     1                 
+100027a0 100027a0        0     1                 
+100027a8 100027a8        0     1                 
+100027ae 100027ae        0     1                 
+100027ba 100027ba        0     1                 
+100027c6 100027c6        0     1                 
+100027c6 100027c6        0     1                 
+100027c8 100027c8        0     1                 
+100027ce 100027ce        0     1                 
+100027ce 100027ce        0     1                 
+100027d2 100027d2        0     1                 
+100027d6 100027d6        0     1                 
+100027da 100027da        0     1                 
+100027dc 100027dc        0     1                 
+100027dc 100027dc        0     1                 
+100027e0 100027e0        0     1                 
+100027e4 100027e4        0     1                 
+100027e8 100027e8        0     1                 
+100027ea 100027ea        0     1                 
+100027ea 100027ea        0     1                 
+100027ee 100027ee        0     1                 
+100027f0 100027f0        0     1                 
+100027f0 100027f0        0     1                 
+100027f4 100027f4        0     1                 
+10002802 10002802        0     1                 
+10002802 10002802        0     1                 
+10002804 10002804        0     1                 
+10002804 10002804        0     1                 
+10002812 10002812        0     1                 
+10002814 10002814        0     1                 
+1000282a 1000282a        0     1                 
+1000282a 1000282a        0     1                 
+1000282e 1000282e        0     1                 
+1000282e 1000282e        0     1                 
+10002830 10002830        0     1                 
+1000283e 1000283e        0     1                 
+1000283e 1000283e        0     1                 
+10002844 10002844        0     1                 
+10002844 10002844        0     1                 
+10002848 10002848        0     1                 
+10002848 10002848        0     1                 
+1000284c 1000284c        0     1                 
+1000284c 1000284c        0     1                 
+10002856 10002856        0     1                 
+10002856 10002856        0     1                 
+1000285a 1000285a        0     1                 
+1000285a 1000285a        0     1                 
+1000285c 1000285c        0     1                 
+1000285c 1000285c        0     1                 
+10002860 10002860        0     1                 
+10002860 10002860        0     1                 
+10002862 10002862        0     1                 
+10002862 10002862        0     1                 
+10002864 10002864        0     1                 
+10002864 10002864        0     1                 
+10002872 10002872        0     1                 
+10002874 10002874        0     1                 
+1000287e 1000287e        0     1                 .Lpcrel_hi19
+10002890 10002890        0     1                 
+10002890 10002890        0     1                 
+10002894 10002894        0     1                 
+10002894 10002894        0     1                 
+1000289e 1000289e        0     1                 
+1000289e 1000289e        0     1                 
+100028a2 100028a2        0     1                 
+100028a2 100028a2        0     1                 
+100028ac 100028ac        0     1                 
+100028ac 100028ac        0     1                 
+100028b0 100028b0        0     1                 
+100028b0 100028b0        0     1                 
+100028ba 100028ba        0     1                 
+100028ba 100028ba        0     1                 
+100028be 100028be        0     1                 
+100028be 100028be        0     1                 
+100028cc 100028cc        0     1                 
+100028ce 100028ce        0     1                 
+100028ce 100028ce        0     1                 
+100028dc 100028dc        0     1                 
+100028de 100028de        0     1                 
+100028e8 100028e8        0     1                 .Lpcrel_hi24
+100028fa 100028fa        0     1                 
+100028fa 100028fa        0     1                 
+100028fe 100028fe        0     1                 
+100028fe 100028fe        0     1                 
+10002900 10002900        0     1                 
+10002908 10002908        0     1                 
+10002908 10002908        0     1                 
+1000290c 1000290c        0     1                 
+1000290c 1000290c        0     1                 
+10002910 10002910        0     1                 
+10002914 10002914        0     1                 
+10002916 10002916        0     1                 
+10002916 10002916        0     1                 
+10002918 10002918        0     1                 
+1000291a 1000291a        0     1                 
+1000291a 1000291a        0     1                 
+10002920 10002920        0     1                 
+10002922 10002922        0     1                 
+10002922 10002922        0     1                 
+10002924 10002924        0     1                 
+10002924 10002924        0     1                 
+10002932 10002932        0     1                 
+10002934 10002934        0     1                 
+1000293e 1000293e        0     1                 .Lpcrel_hi27
+10002950 10002950        0     1                 
+10002950 10002950        0     1                 
+10002954 10002954        0     1                 
+10002954 10002954        0     1                 
+1000295a 1000295a        0     1                 
+1000295c 1000295c        0     1                 
+1000295e 1000295e        0     1                 
+10002960 10002960        0     1                 
+10002962 10002962        0     1                 
+10002964 10002964        0     1                 
+10002968 10002968        0     1                 
+10002968 10002968        0     1                 
+1000296a 1000296a        0     1                 
+1000296c 1000296c        0     1                 
+10002970 10002970        0     1                 
+10002970 10002970        0     1                 
+10002978 10002978        0     1                 
+10002978 10002978        0     1                 
+1000297e 1000297e        0     1                 
+1000297e 1000297e        0     1                 
+10002982 10002982        0     1                 
+10002982 10002982        0     1                 
+10002986 10002986        0     1                 
+10002986 10002986        0     1                 
+1000298a 1000298a        0     1                 
+1000298a 1000298a        0     1                 
+1000299a 1000299a        0     1                 
+1000299a 1000299a        0     1                 
+1000299e 1000299e        0     1                 
+1000299e 1000299e        0     1                 
+100029a0 100029a0        0     1                 
+100029a0 100029a0        0     1                 
+100029a4 100029a4        0     1                 
+100029a8 100029a8        0     1                 
+100029aa 100029aa        0     1                 
+100029aa 100029aa        0     1                 
+100029b4 100029b4        0     1                 
+100029b4 100029b4        0     1                 
+100029b8 100029b8        0     1                 
+100029b8 100029b8        0     1                 
+100029bc 100029bc        0     1                 
+100029be 100029be        0     1                 
+100029c0 100029c0        0     1                 
+100029c4 100029c4        0     1                 
+100029ca 100029ca        0     1                 
+100029ce 100029ce        0     1                 
+100029d2 100029d2        0     1                 
+100029d2 100029d2        0     1                 
+100029da 100029da        0     1                 
+100029dc 100029dc        0     1                 
+100029dc 100029dc        0     1                 
+100029de 100029de        0     1                 
+100029de 100029de        0     1                 
+100029e0 100029e0        0     1                 
+100029e0 100029e0        0     1                 
+100029e2 100029e2        0     1                 
+100029e2 100029e2        0     1                 
+100029e4 100029e4        0     1                 
+100029e6 100029e6        0     1                 
+100029e6 100029e6        0     1                 
+100029e8 100029e8        0     1                 
+100029ec 100029ec        0     1                 
+100029ec 100029ec        0     1                 
+100029ee 100029ee        0     1                 
+100029ee 100029ee        0     1                 
+100029f0 100029f0        0     1                 
+100029f0 100029f0        0     1                 
+100029fe 100029fe        0     1                 
+10002a00 10002a00        0     1                 
+10002a0a 10002a0a        0     1                 .Lpcrel_hi14
+10002a1c 10002a1c        0     1                 
+10002a1c 10002a1c        0     1                 
+10002a20 10002a20        0     1                 
+10002a20 10002a20        0     1                 
+10002a2a 10002a2a        0     1                 
+10002a2a 10002a2a        0     1                 
+10002a2e 10002a2e        0     1                 
+10002a2e 10002a2e        0     1                 
+10002a38 10002a38        0     1                 
+10002a38 10002a38        0     1                 
+10002a3c 10002a3c        0     1                 
+10002a3c 10002a3c        0     1                 
+10002a4c 10002a4c        0     1                 
+10002a4c 10002a4c        0     1                 
+10002a50 10002a50        0     1                 
+10002a50 10002a50        0     1                 
+10002a52 10002a52        0     1                 
+10002a52 10002a52        0     1                 
+10002a56 10002a56        0     1                 
+10002a5a 10002a5a        0     1                 
+10002a5a 10002a5a        0     1                 
+10002a5c 10002a5c        0     1                 
+10002a5e 10002a5e        0     1                 
+10002a64 10002a64        0     1                 
+10002a64 10002a64        0     1                 .Lpcrel_hi12
+10002a64 10002a64        0     1                 
+10002a6c 10002a6c        0     1                 .Lpcrel_hi13
+10002a84 10002a84        0     1                 
+10002a84 10002a84        0     1                 
+10002a8a 10002a8a        0     1                 
+10002a8a 10002a8a        0     1                 .Lpcrel_hi30
+10002a8a 10002a8a        0     1                 
+10002aa2 10002aa2        0     1                 
+10002aa2 10002aa2        0     1                 
+10002aa6 10002aa6        0     1                 
+10002aa8 10002aa8        0     1                 
+10002aae 10002aae        0     1                 
+10002ab2 10002ab2        0     1                 
+10002ab8 10002ab8        0     1                 .Lpcrel_hi16
+10002ab8 10002ab8        0     1                 
+10002acc 10002acc        0     1                 
+10002ad0 10002ad0        0     1                 
+10002ae0 10002ae0        0     1                 
+10002ae2 10002ae2        0     1                 
+10002ae6 10002ae6        0     1                 
+10002ae6 10002ae6        0     1                 .Lpcrel_hi18
+10002ae6 10002ae6        0     1                 
+10002afc 10002afc        0     1                 
+10002afc 10002afc        0     1                 
+10002afe 10002afe        0     1                 
+10002b02 10002b02        0     1                 
+10002b02 10002b02        0     1                 .Lpcrel_hi20
+10002b02 10002b02        0     1                 
+10002b18 10002b18        0     1                 
+10002b18 10002b18        0     1                 
+10002b1a 10002b1a        0     1                 
+10002b1e 10002b1e        0     1                 
+10002b1e 10002b1e        0     1                 .Lpcrel_hi21
+10002b1e 10002b1e        0     1                 
+10002b34 10002b34        0     1                 
+10002b34 10002b34        0     1                 
+10002b36 10002b36        0     1                 
+10002b3a 10002b3a        0     1                 
+10002b3a 10002b3a        0     1                 .Lpcrel_hi22
+10002b3a 10002b3a        0     1                 
+10002b50 10002b50        0     1                 
+10002b50 10002b50        0     1                 
+10002b52 10002b52        0     1                 
+10002b56 10002b56        0     1                 
+10002b56 10002b56        0     1                 .Lpcrel_hi23
+10002b56 10002b56        0     1                 
+10002b6c 10002b6c        0     1                 
+10002b6c 10002b6c        0     1                 
+10002b6e 10002b6e        0     1                 
+10002b72 10002b72        0     1                 
+10002b72 10002b72        0     1                 .Lpcrel_hi25
+10002b72 10002b72        0     1                 
+10002b88 10002b88        0     1                 
+10002b88 10002b88        0     1                 
+10002b8a 10002b8a        0     1                 
+10002b8e 10002b8e        0     1                 
+10002b8e 10002b8e        0     1                 .Lpcrel_hi26
+10002b8e 10002b8e        0     1                 
+10002ba4 10002ba4        0     1                 
+10002ba4 10002ba4        0     1                 
+10002bac 10002bac        0     1                 
+10002bae 10002bae        0     1                 
+10002bb2 10002bb2        0     1                 
+10002bb2 10002bb2        0     1                 .Lpcrel_hi28
+10002bb2 10002bb2        0     1                 
+10002bc6 10002bc6        0     1                 
+10002bc6 10002bc6        0     1                 
+10002bd0 10002bd0        0     1                 
+10002bd0 10002bd0        0     1                 .Lpcrel_hi29
+10002bd0 10002bd0        0     1                 
+10002be4 10002be4        0     1                 
+10002be4 10002be4        0     1                 
+10002bee 10002bee        0     1                 
+10002bee 10002bee        0     1                 .Lpcrel_hi31
+10002bee 10002bee        0     1                 
+10002c06 10002c06        0     1                 
+10002c06 10002c06        0     1                 
+10002c24 10002c24        0     1                 
+10002c28 10002c28        0     1                 .Lpcrel_hi15
+10002c28 10002c28        0     1                 
+10002c40 10002c40        0     1                 
+10002c44 10002c44        0     1                 
+10002c44 10002c44        0     1                 .Lpcrel_hi17
+10002c44 10002c44        0     1                 
+10002c58 10002c58        0     1                 
+10002c58 10002c58        0     1                 
+10002c60 10002c60        0     1                 
+10002c60 10002c60        0     1                 
+10002c6a 10002c6a        0     1                 
+10002c6c 10002c6c        0     1                 
+10002c74 10002c74        0     1                 
+10002c76 10002c76        0     1                 
+10002c7c 10002c7c        0     1                 
+10002c80 10002c80        0     1                 
+10002c80 10002c80        0     1                 
+10002c82 10002c82        0     1                 
+10002c84 10002c84        0     1                 
+10002c84 10002c84        0     1                 .Lpcrel_hi11
+10002c84 10002c84        0     1                 
+10002c9a 10002c9a        0     1                 
+10002c9a 10002c9a        0     1                 
+10002c9c 10002c9c        0     1                 
+10002ca0 10002ca0        0     1                 .Lpcrel_hi32
+10002ca0 10002ca0        0     1                 
+10002cb8 10002cb8        0     1                 .Lpcrel_hi33
+10002cb8 10002cb8        0     1                 
+10002cce 10002cce        0     1                 
+10002cd6 10002cd6        0     1                 
+10002cda 10002cda        0     1                 
+10002ce2 10002ce2        0     1                 
+10002ce2 10002ce2        0     1                 
+10002ce2 10002ce2      1c8     2         lto.tmp:(.text.lock_otp_partition)
+10002ce2 10002ce2      1c8     1                 lock_otp_partition
+10002ce2 10002ce2        0     1                 
+10002ce2 10002ce2        0     1                 
+10002ce2 10002ce2        0     1                 
+10002ce6 10002ce6        0     1                 
+10002cf8 10002cf8        0     1                 
+10002cfa 10002cfa        0     1                 
+10002cfc 10002cfc        0     1                 
+10002cfc 10002cfc        0     1                 
+10002cfe 10002cfe        0     1                 
+10002d00 10002d00        0     1                 
+10002d04 10002d04        0     1                 
+10002d0a 10002d0a        0     1                 
+10002d0e 10002d0e        0     1                 
+10002d0e 10002d0e        0     1                 
+10002d20 10002d20        0     1                 
+10002d20 10002d20        0     1                 
+10002d24 10002d24        0     1                 
+10002d24 10002d24        0     1                 
+10002d2c 10002d2c        0     1                 
+10002d2c 10002d2c        0     1                 
+10002d30 10002d30        0     1                 .Lpcrel_hi36
+10002d46 10002d46        0     1                 
+10002d4a 10002d4a        0     1                 
+10002d4a 10002d4a        0     1                 
+10002d50 10002d50        0     1                 
+10002d50 10002d50        0     1                 
+10002d58 10002d58        0     1                 
+10002d58 10002d58        0     1                 
+10002d68 10002d68        0     1                 
+10002d68 10002d68        0     1                 
+10002d6c 10002d6c        0     1                 
+10002d6c 10002d6c        0     1                 
+10002d72 10002d72        0     1                 
+10002d72 10002d72        0     1                 
+10002d7c 10002d7c        0     1                 
+10002d7c 10002d7c        0     1                 
+10002d7e 10002d7e        0     1                 
+10002d7e 10002d7e        0     1                 
+10002d80 10002d80        0     1                 
+10002d80 10002d80        0     1                 
+10002d84 10002d84        0     1                 
+10002d86 10002d86        0     1                 
+10002d88 10002d88        0     1                 
+10002d88 10002d88        0     1                 .Lpcrel_hi38
+10002d92 10002d92        0     1                 
+10002d94 10002d94        0     1                 
+10002d94 10002d94        0     1                 
+10002d96 10002d96        0     1                 
+10002d96 10002d96        0     1                 
+10002d9a 10002d9a        0     1                 
+10002d9c 10002d9c        0     1                 
+10002d9e 10002d9e        0     1                 
+10002d9e 10002d9e        0     1                 
+10002da0 10002da0        0     1                 
+10002da0 10002da0        0     1                 
+10002da2 10002da2        0     1                 
+10002da2 10002da2        0     1                 
+10002da4 10002da4        0     1                 
+10002da4 10002da4        0     1                 
+10002da6 10002da6        0     1                 
+10002da6 10002da6        0     1                 
+10002da8 10002da8        0     1                 
+10002da8 10002da8        0     1                 
+10002dae 10002dae        0     1                 
+10002dae 10002dae        0     1                 
+10002db2 10002db2        0     1                 
+10002db2 10002db2        0     1                 
+10002db4 10002db4        0     1                 
+10002db4 10002db4        0     1                 
+10002db6 10002db6        0     1                 
+10002db6 10002db6        0     1                 
+10002dc4 10002dc4        0     1                 
+10002dc8 10002dc8        0     1                 
+10002dd2 10002dd2        0     1                 .Lpcrel_hi39
+10002dec 10002dec        0     1                 
+10002dec 10002dec        0     1                 
+10002df0 10002df0        0     1                 
+10002df0 10002df0        0     1                 
+10002dfa 10002dfa        0     1                 
+10002dfa 10002dfa        0     1                 
+10002dfe 10002dfe        0     1                 
+10002dfe 10002dfe        0     1                 
+10002e02 10002e02        0     1                 
+10002e04 10002e04        0     1                 
+10002e08 10002e08        0     1                 
+10002e08 10002e08        0     1                 .Lpcrel_hi40
+10002e08 10002e08        0     1                 
+10002e20 10002e20        0     1                 
+10002e20 10002e20        0     1                 
+10002e22 10002e22        0     1                 
+10002e24 10002e24        0     1                 
+10002e28 10002e28        0     1                 
+10002e28 10002e28        0     1                 .Lpcrel_hi41
+10002e28 10002e28        0     1                 
+10002e40 10002e40        0     1                 
+10002e40 10002e40        0     1                 
+10002e42 10002e42        0     1                 
+10002e46 10002e46        0     1                 
+10002e46 10002e46        0     1                 .Lpcrel_hi34
+10002e46 10002e46        0     1                 
+10002e54 10002e54        0     1                 
+10002e54 10002e54        0     1                 
+10002e56 10002e56        0     1                 
+10002e5a 10002e5a        0     1                 
+10002e5a 10002e5a        0     1                 .Lpcrel_hi35
+10002e5a 10002e5a        0     1                 
+10002e66 10002e66        0     1                 
+10002e66 10002e66        0     1                 
+10002e72 10002e72        0     1                 
+10002e72 10002e72        0     1                 .Lpcrel_hi37
+10002e72 10002e72        0     1                 
+10002e88 10002e88        0     1                 
+10002e88 10002e88        0     1                 
+10002e90 10002e90        0     1                 
+10002e90 10002e90        0     1                 
+10002ea4 10002ea4        0     1                 
+10002ea4 10002ea4        0     1                 
+10002eaa 10002eaa        0     1                 
+10002eaa 10002eaa        0     1                 
+10002eaa 10002eaa       a4     2         lto.tmp:(.text.hmac_sha256)
+10002eaa 10002eaa       a4     1                 hmac_sha256
+10002eaa 10002eaa        0     1                 
+10002eaa 10002eaa        0     1                 
+10002eaa 10002eaa        0     1                 
+10002eae 10002eae        0     1                 
+10002eae 10002eae        0     1                 
+10002eb2 10002eb2        0     1                 
+10002eb2 10002eb2        0     1                 
+10002eb6 10002eb6        0     1                 
+10002eb6 10002eb6        0     1                 
+10002ebc 10002ebc        0     1                 
+10002ebc 10002ebc        0     1                 
+10002ec0 10002ec0        0     1                 
+10002ec0 10002ec0        0     1                 
+10002ec8 10002ec8        0     1                 
+10002ec8 10002ec8        0     1                 
+10002ecc 10002ecc        0     1                 
+10002ed6 10002ed6        0     1                 
+10002ed8 10002ed8        0     1                 
+10002edc 10002edc        0     1                 
+10002ede 10002ede        0     1                 
+10002ede 10002ede        0     1                 
+10002ee2 10002ee2        0     1                 
+10002ee2 10002ee2        0     1                 
+10002ee4 10002ee4        0     1                 
+10002ee8 10002ee8        0     1                 
+10002eee 10002eee        0     1                 
+10002ef2 10002ef2        0     1                 
+10002ef2 10002ef2        0     1                 
+10002ef4 10002ef4        0     1                 
+10002ef4 10002ef4        0     1                 
+10002ef6 10002ef6        0     1                 
+10002ef6 10002ef6        0     1                 
+10002ef8 10002ef8        0     1                 
+10002ef8 10002ef8        0     1                 
+10002efa 10002efa        0     1                 
+10002efe 10002efe        0     1                 
+10002efe 10002efe        0     1                 
+10002f02 10002f02        0     1                 
+10002f04 10002f04        0     1                 
+10002f08 10002f08        0     1                 
+10002f0a 10002f0a        0     1                 
+10002f0a 10002f0a        0     1                 
+10002f0e 10002f0e        0     1                 
+10002f0e 10002f0e        0     1                 
+10002f10 10002f10        0     1                 
+10002f12 10002f12        0     1                 
+10002f12 10002f12        0     1                 
+10002f18 10002f18        0     1                 
+10002f18 10002f18        0     1                 
+10002f1a 10002f1a        0     1                 
+10002f1a 10002f1a        0     1                 
+10002f1c 10002f1c        0     1                 
+10002f1c 10002f1c        0     1                 
+10002f20 10002f20        0     1                 
+10002f20 10002f20        0     1                 
+10002f22 10002f22        0     1                 
+10002f26 10002f26        0     1                 
+10002f26 10002f26        0     1                 
+10002f28 10002f28        0     1                 
+10002f28 10002f28        0     1                 
+10002f2a 10002f2a        0     1                 
+10002f2a 10002f2a        0     1                 
+10002f2c 10002f2c        0     1                 
+10002f2c 10002f2c        0     1                 
+10002f2e 10002f2e        0     1                 
+10002f3c 10002f3c        0     1                 
+10002f3e 10002f3e        0     1                 
+10002f3e 10002f3e        0     1                 
+10002f40 10002f40        0     1                 
+10002f40 10002f40        0     1                 
+10002f42 10002f42        0     1                 
+10002f42 10002f42        0     1                 
+10002f44 10002f44        0     1                 
+10002f44 10002f44        0     1                 
+10002f4a 10002f4a        0     1                 
+10002f4a 10002f4a        0     1                 
+10002f4c 10002f4c        0     1                 
+10002f4c 10002f4c        0     1                 
+10002f4e 10002f4e        0     1                 
+10002f4e 10002f4e        0     1                 
+10002f4e 10002f4e       9a     2         lto.tmp:(.text.otp_ctrl_testutils_wait_for_dai)
+10002f4e 10002f4e       9a     1                 otp_ctrl_testutils_wait_for_dai
+10002f4e 10002f4e        0     1                 
+10002f4e 10002f4e        0     1                 
+10002f4e 10002f4e        0     1                 
+10002f50 10002f50        0     1                 
+10002f5a 10002f5a        0     1                 
+10002f5c 10002f5c        0     1                 
+10002f5c 10002f5c        0     1                 
+10002f6c 10002f6c        0     1                 
+10002f6c 10002f6c        0     1                 
+10002f74 10002f74        0     1                 
+10002f74 10002f74        0     1                 
+10002f80 10002f80        0     1                 
+10002f80 10002f80        0     1                 
+10002f82 10002f82        0     1                 
+10002f82 10002f82        0     1                 
+10002f86 10002f86        0     1                 
+10002f86 10002f86        0     1                 
+10002f8c 10002f8c        0     1                 
+10002f8c 10002f8c        0     1                 
+10002f8e 10002f8e        0     1                 
+10002f8e 10002f8e        0     1                 
+10002f9e 10002f9e        0     1                 
+10002f9e 10002f9e        0     1                 
+10002fa6 10002fa6        0     1                 
+10002faa 10002faa        0     1                 
+10002faa 10002faa        0     1                 
+10002fac 10002fac        0     1                 
+10002fb6 10002fb6        0     1                 
+10002fb6 10002fb6        0     1                 
+10002fb8 10002fb8        0     1                 .Lpcrel_hi42
+10002fb8 10002fb8        0     1                 
+10002fd6 10002fd6        0     1                 
+10002fd6 10002fd6        0     1                 
+10002fd8 10002fd8        0     1                 
+10002fda 10002fda        0     1                 
+10002fe4 10002fe4        0     1                 
+10002fe4 10002fe4        0     1                 
+10002fe8 10002fe8        0     1                 
+10002fe8 10002fe8        0     1                 
+10002fe8 10002fe8      144     2         lto.tmp:(.text.otp_ctrl_testutils_dai_read32)
+10002fe8 10002fe8      144     1                 otp_ctrl_testutils_dai_read32
+10002fe8 10002fe8        0     1                 
+10002fe8 10002fe8        0     1                 
+10002fe8 10002fe8        0     1                 
+10002fea 10002fea        0     1                 
+10002ff6 10002ff6        0     1                 
+10002ff8 10002ff8        0     1                 
+10002ffa 10002ffa        0     1                 
+10002ffc 10002ffc        0     1                 
+10002ffe 10002ffe        0     1                 
+10002ffe 10002ffe        0     1                 
+10003006 10003006        0     1                 
+10003006 10003006        0     1                 
+1000300a 1000300a        0     1                 
+1000300a 1000300a        0     1                 
+10003018 10003018        0     1                 
+1000301a 1000301a        0     1                 
+1000301a 1000301a        0     1                 
+10003028 10003028        0     1                 
+1000302a 1000302a        0     1                 
+10003034 10003034        0     1                 .Lpcrel_hi44
+1000303c 1000303c        0     1                 
+10003044 10003044        0     1                 
+10003044 10003044        0     1                 
+1000304e 1000304e        0     1                 
+1000304e 1000304e        0     1                 
+10003052 10003052        0     1                 
+10003052 10003052        0     1                 
+10003054 10003054        0     1                 
+1000305c 1000305c        0     1                 
+1000305c 1000305c        0     1                 
+10003060 10003060        0     1                 
+10003060 10003060        0     1                 
+10003064 10003064        0     1                 
+10003064 10003064        0     1                 
+10003068 10003068        0     1                 
+1000306e 1000306e        0     1                 
+10003072 10003072        0     1                 
+10003072 10003072        0     1                 
+10003076 10003076        0     1                 
+10003076 10003076        0     1                 
+1000307a 1000307a        0     1                 
+1000307a 1000307a        0     1                 
+1000307c 1000307c        0     1                 
+1000307c 1000307c        0     1                 
+1000308a 1000308a        0     1                 
+1000308c 1000308c        0     1                 
+10003096 10003096        0     1                 .Lpcrel_hi47
+100030a6 100030a6        0     1                 
+100030b0 100030b0        0     1                 
+100030b0 100030b0        0     1                 
+100030b4 100030b4        0     1                 
+100030b4 100030b4        0     1                 
+100030b8 100030b8        0     1                 
+100030ba 100030ba        0     1                 
+100030bc 100030bc        0     1                 
+100030bc 100030bc        0     1                 .Lpcrel_hi43
+100030bc 100030bc        0     1                 
+100030d2 100030d2        0     1                 
+100030d2 100030d2        0     1                 
+100030d4 100030d4        0     1                 
+100030d6 100030d6        0     1                 
+100030d6 100030d6        0     1                 .Lpcrel_hi45
+100030d6 100030d6        0     1                 
+100030e6 100030e6        0     1                 
+100030e6 100030e6        0     1                 
+100030e8 100030e8        0     1                 
+100030ea 100030ea        0     1                 
+100030ea 100030ea        0     1                 .Lpcrel_hi46
+100030ea 100030ea        0     1                 
+10003100 10003100        0     1                 
+10003100 10003100        0     1                 
+10003102 10003102        0     1                 
+10003104 10003104        0     1                 
+10003104 10003104        0     1                 .Lpcrel_hi48
+10003104 10003104        0     1                 
+10003112 10003112        0     1                 
+10003112 10003112        0     1                 
+1000311a 1000311a        0     1                 
+1000311a 1000311a        0     1                 
+10003124 10003124        0     1                 
+10003128 10003128        0     1                 
+10003128 10003128        0     1                 
+1000312c 1000312c        0     1                 
+1000312c 1000312c        0     1                 
+1000312c 1000312c      13a     2         lto.tmp:(.text.otp_ctrl_testutils_dai_read32_array)
+1000312c 1000312c      13a     1                 otp_ctrl_testutils_dai_read32_array
+1000312c 1000312c        0     1                 
+1000312c 1000312c        0     1                 
+1000312c 1000312c        0     1                 
+1000312e 1000312e        0     1                 
+10003142 10003142        0     1                 
+10003144 10003144        0     1                 
+10003146 10003146        0     1                 
+10003148 10003148        0     1                 
+1000314a 1000314a        0     1                 
+1000314a 1000314a        0     1                 
+1000314c 1000314c        0     1                 
+10003150 10003150        0     1                 
+10003150 10003150        0     1                 
+1000315c 1000315c        0     1                 .Lpcrel_hi49
+1000316c 1000316c        0     1                 
+1000316c 1000316c        0     1                 
+10003170 10003170        0     1                 
+10003170 10003170        0     1                 
+1000317a 1000317a        0     1                 
+1000317a 1000317a        0     1                 
+1000317e 1000317e        0     1                 
+1000317e 1000317e        0     1                 
+1000318c 1000318c        0     1                 
+1000318e 1000318e        0     1                 
+1000318e 1000318e        0     1                 
+1000319c 1000319c        0     1                 
+1000319e 1000319e        0     1                 
+100031b4 100031b4        0     1                 
+100031b4 100031b4        0     1                 
+100031b8 100031b8        0     1                 
+100031b8 100031b8        0     1                 
+100031ba 100031ba        0     1                 
+100031c2 100031c2        0     1                 
+100031c2 100031c2        0     1                 
+100031c6 100031c6        0     1                 
+100031c6 100031c6        0     1                 
+100031c8 100031c8        0     1                 
+100031c8 100031c8        0     1                 
+100031cc 100031cc        0     1                 
+100031d0 100031d0        0     1                 
+100031d0 100031d0        0     1                 
+100031d4 100031d4        0     1                 
+100031d4 100031d4        0     1                 
+100031d8 100031d8        0     1                 
+100031da 100031da        0     1                 
+100031da 100031da        0     1                 
+100031dc 100031dc        0     1                 
+100031dc 100031dc        0     1                 
+100031ea 100031ea        0     1                 
+100031ec 100031ec        0     1                 
+10003202 10003202        0     1                 
+10003202 10003202        0     1                 
+10003206 10003206        0     1                 
+10003206 10003206        0     1                 
+10003208 10003208        0     1                 
+1000320a 1000320a        0     1                 
+1000320e 1000320e        0     1                 
+10003234 10003234        0     1                 .Lpcrel_hi50
+1000324c 1000324c        0     1                 
+1000324c 1000324c        0     1                 
+10003256 10003256        0     1                 
+10003258 10003258        0     1                 
+1000325e 1000325e        0     1                 
+10003262 10003262        0     1                 
+10003266 10003266        0     1                 
+10003266 10003266        0     1                 
+10003266 10003266       c0     2         lto.tmp:(.text.otp_ctrl_dai_write_error_check)
+10003266 10003266       c0     1                 otp_ctrl_dai_write_error_check
+10003266 10003266        0     1                 
+10003266 10003266        0     1                 
+10003266 10003266        0     1                 
+10003268 10003268        0     1                 
+10003268 10003268        0     1                 
+10003268 10003268        0     1                 
+1000326e 1000326e        0     1                 
+10003278 10003278        0     1                 
+1000327a 1000327a        0     1                 
+1000327a 1000327a        0     1                 
+10003288 10003288        0     1                 
+1000328a 1000328a        0     1                 
+10003294 10003294        0     1                 .Lpcrel_hi51
+100032ae 100032ae        0     1                 
+100032ae 100032ae        0     1                 
+100032b2 100032b2        0     1                 
+100032b2 100032b2        0     1                 
+100032b4 100032b4        0     1                 
+100032be 100032be        0     1                 
+100032c4 100032c4        0     1                 
+100032c6 100032c6        0     1                 
+100032c6 100032c6        0     1                 .Lpcrel_hi52
+100032c6 100032c6        0     1                 
+100032dc 100032dc        0     1                 
+100032dc 100032dc        0     1                 
+100032de 100032de        0     1                 
+100032de 100032de        0     1                 .Lpcrel_hi53
+100032de 100032de        0     1                 
+100032e6 100032e6        0     1                 .Lpcrel_hi54
+100032fa 100032fa        0     1                 
+100032fa 100032fa        0     1                 .Lpcrel_hi55
+100032fa 100032fa        0     1                 
+10003318 10003318        0     1                 
+1000331a 1000331a        0     1                 
+10003322 10003322        0     1                 
+10003326 10003326        0     1                 
+10003326 10003326        0     1                 
+10003326 10003326       b8     2         lto.tmp:(.text.dif_otp_ctrl_get_status)
+10003326 10003326       b8     1                 dif_otp_ctrl_get_status
+10003326 10003326        0     1                 
+10003326 10003326        0     1                 
+10003326 10003326        0     1                 
+10003326 10003326        0     1                 
+1000332e 1000332e        0     1                 
+10003334 10003334        0     1                 
+10003338 10003338        0     1                 
+1000333a 1000333a        0     1                 
+1000333a 1000333a        0     1                 
+1000333e 1000333e        0     1                 
+1000333e 1000333e        0     1                 
+10003342 10003342        0     1                 
+10003342 10003342        0     1                 
+10003344 10003344        0     1                 
+10003344 10003344        0     1                 
+1000334a 1000334a        0     1                 
+1000334a 1000334a        0     1                 
+1000334c 1000334c        0     1                 
+10003350 10003350        0     1                 
+10003350 10003350        0     1                 
+10003352 10003352        0     1                 
+10003354 10003354        0     1                 
+10003354 10003354        0     1                 
+10003356 10003356        0     1                 
+10003360 10003360        0     1                 
+10003360 10003360        0     1                 
+10003368 10003368        0     1                 
+10003368 10003368        0     1                 
+1000336a 1000336a        0     1                 
+1000336c 1000336c        0     1                 
+1000336c 1000336c        0     1                 
+1000336e 1000336e        0     1                 
+1000336e 1000336e        0     1                 
+10003370 10003370        0     1                 
+10003370 10003370        0     1                 
+10003372 10003372        0     1                 
+10003372 10003372        0     1                 
+10003374 10003374        0     1                 
+10003376 10003376        0     1                 
+10003376 10003376        0     1                 
+10003378 10003378        0     1                 
+10003378 10003378        0     1                 
+1000337e 1000337e        0     1                 
+1000337e 1000337e        0     1                 
+10003380 10003380        0     1                 
+10003386 10003386        0     1                 
+10003386 10003386        0     1                 
+10003388 10003388        0     1                 
+1000338e 1000338e        0     1                 
+1000338e 1000338e        0     1                 
+10003396 10003396        0     1                 
+10003396 10003396        0     1                 
+10003398 10003398        0     1                 
+1000339a 1000339a        0     1                 
+1000339a 1000339a        0     1                 
+1000339c 1000339c        0     1                 
+1000339c 1000339c        0     1                 
+1000339e 1000339e        0     1                 
+1000339e 1000339e        0     1                 
+100033a0 100033a0        0     1                 
+100033a4 100033a4        0     1                 
+100033a6 100033a6        0     1                 
+100033a6 100033a6        0     1                 
+100033aa 100033aa        0     1                 
+100033aa 100033aa        0     1                 
+100033ac 100033ac        0     1                 
+100033ac 100033ac        0     1                 
+100033b0 100033b0        0     1                 
+100033b0 100033b0        0     1                 
+100033b6 100033b6        0     1                 
+100033ba 100033ba        0     1                 
+100033ba 100033ba        0     1                 
+100033be 100033be        0     1                 
+100033be 100033be        0     1                 
+100033c2 100033c2        0     1                 
+100033c2 100033c2        0     1                 
+100033c4 100033c4        0     1                 
+100033c8 100033c8        0     1                 
+100033c8 100033c8        0     1                 
+100033ca 100033ca        0     1                 
+100033ca 100033ca        0     1                 
+100033cc 100033cc        0     1                 
+100033ce 100033ce        0     1                 
+100033ce 100033ce        0     1                 
+100033d0 100033d0        0     1                 
+100033d0 100033d0        0     1                 
+100033d2 100033d2        0     1                 
+100033d2 100033d2        0     1                 
+100033d4 100033d4        0     1                 
+100033de 100033de        0     1                 
+100033de 100033de        0     1                 
+100033de 100033de        0     1                 
+100033de 100033de       38     2         lto.tmp:(.text.dif_otp_ctrl_dai_read_start)
+100033de 100033de       38     1                 dif_otp_ctrl_dai_read_start
+100033de 100033de        0     1                 
+100033de 100033de        0     1                 
+100033de 100033de        0     1                 
+100033de 100033de        0     1                 
+100033e0 100033e0        0     1                 
+100033e2 100033e2        0     1                 
+100033e2 100033e2        0     1                 .Lpcrel_hi56
+100033ec 100033ec        0     1                 
+100033ee 100033ee        0     1                 
+100033f4 100033f4        0     1                 
+100033f6 100033f6        0     1                 
+100033fa 100033fa        0     1                 
+100033fe 100033fe        0     1                 
+10003400 10003400        0     1                 
+10003402 10003402        0     1                 
+10003404 10003404        0     1                 
+10003404 10003404        0     1                 
+10003406 10003406        0     1                 
+10003406 10003406        0     1                 
+10003408 10003408        0     1                 
+10003408 10003408        0     1                 
+1000340a 1000340a        0     1                 
+1000340c 1000340c        0     1                 
+1000340c 1000340c        0     1                 
+10003410 10003410        0     1                 
+10003410 10003410        0     1                 
+10003412 10003412        0     1                 
+10003412 10003412        0     1                 
+10003416 10003416        0     1                 
+10003416 10003416        0     1                 
+10003416 10003416       8a     2         lto.tmp:(.text.test_status_set)
+10003416 10003416       8a     1                 test_status_set
+10003416 10003416        0     1                 
+10003416 10003416        0     1                 
+10003416 10003416        0     1                 
+10003418 10003418        0     1                 
+1000341e 1000341e        0     1                 
+10003424 10003424        0     1                 
+10003428 10003428        0     1                 
+1000342a 1000342a        0     1                 
+1000342e 1000342e        0     1                 
+10003432 10003432        0     1                 .Lpcrel_hi61
+10003432 10003432        0     1                 
+1000343a 1000343a        0     1                 .Lpcrel_hi62
+10003450 10003450        0     1                 
+10003450 10003450        0     1                 
+10003454 10003454        0     1                 
+10003454 10003454        0     1                 
+10003458 10003458        0     1                 
+10003458 10003458        0     1                 
+1000345c 1000345c        0     1                 
+1000345e 1000345e        0     1                 
+10003462 10003462        0     1                 
+10003462 10003462        0     1                 .Lpcrel_hi59
+10003462 10003462        0     1                 
+10003466 10003466        0     1                 
+1000346a 1000346a        0     1                 .Lpcrel_hi60
+10003474 10003474        0     1                 
+10003474 10003474        0     1                 .Lpcrel_hi57
+10003474 10003474        0     1                 
+1000347c 1000347c        0     1                 .Lpcrel_hi58
+10003484 10003484        0     1                 
+10003484 10003484        0     1                 
+10003490 10003490        0     1                 
+100034a0 100034a0        0     1                 
+100034a0 100034a0        0     1                 
+100034a0 100034a0        0     1                 
+100034a0 100034a0       32     2         lto.tmp:(.text.base_log_internal_dv)
+100034a0 100034a0       32     1                 base_log_internal_dv
+100034a0 100034a0        0     1                 
+100034a0 100034a0        0     1                 
+100034a0 100034a0        0     1                 
+100034a2 100034a2        0     1                 
+100034b2 100034b2        0     1                 
+100034b2 100034b2        0     1                 
+100034b8 100034b8        0     1                 
+100034b8 100034b8        0     1                 
+100034ba 100034ba        0     1                 
+100034ba 100034ba        0     1                 
+100034bc 100034bc        0     1                 
+100034bc 100034bc        0     1                 
+100034be 100034be        0     1                 
+100034be 100034be        0     1                 
+100034c4 100034c4        0     1                 
+100034c4 100034c4        0     1                 
+100034c8 100034c8        0     1                 
+100034c8 100034c8        0     1                 
+100034ca 100034ca        0     1                 
+100034cc 100034cc        0     1                 
+100034ce 100034ce        0     1                 
+100034ce 100034ce        0     1                 
+100034d2 100034d2        0     1                 
+100034d2 100034d2        0     1                 
+100034d2 100034d2       e0     2         lto.tmp:(.text.status_create)
+100034d2 100034d2       e0     1                 status_create
+100034d2 100034d2        0     1                 
+100034d2 100034d2        0     1                 
+100034d2 100034d2        0     1                 
+100034d4 100034d4        0     1                 
+100034d4 100034d4        0     1                 
+100034d6 100034d6        0     1                 
+100034d6 100034d6        0     1                 
+100034d8 100034d8        0     1                 
+100034da 100034da        0     1                 
+100034da 100034da        0     1                 
+100034de 100034de        0     1                 
+100034e0 100034e0        0     1                 
+100034e2 100034e2        0     1                 
+100034e4 100034e4        0     1                 
+100034e4 100034e4        0     1                 
+100034e8 100034e8        0     1                 
+100034ec 100034ec        0     1                 
+100034f0 100034f0        0     1                 
+100034fc 100034fc        0     1                 
+100034fe 100034fe        0     1                 
+10003502 10003502        0     1                 
+10003504 10003504        0     1                 
+10003504 10003504        0     1                 
+10003508 10003508        0     1                 
+1000351e 1000351e        0     1                 
+1000351e 1000351e        0     1                 
+10003526 10003526        0     1                 
+10003526 10003526        0     1                 
+1000352a 1000352a        0     1                 
+1000352a 1000352a        0     1                 
+1000353e 1000353e        0     1                 
+10003540 10003540        0     1                 
+10003546 10003546        0     1                 
+10003546 10003546        0     1                 
+1000354a 1000354a        0     1                 
+1000354e 1000354e        0     1                 
+1000354e 1000354e        0     1                 
+1000355e 1000355e        0     1                 
+10003560 10003560        0     1                 
+10003566 10003566        0     1                 
+10003566 10003566        0     1                 
+1000356e 1000356e        0     1                 
+1000356e 1000356e        0     1                 
+10003588 10003588        0     1                 
+10003588 10003588        0     1                 
+1000358c 1000358c        0     1                 
+1000358e 1000358e        0     1                 
+1000358e 1000358e        0     1                 
+10003592 10003592        0     1                 
+10003594 10003594        0     1                 
+10003596 10003596        0     1                 
+10003596 10003596        0     1                 
+10003598 10003598        0     1                 
+1000359c 1000359c        0     1                 
+1000359c 1000359c        0     1                 
+1000359e 1000359e        0     1                 
+1000359e 1000359e        0     1                 
+100035a0 100035a0        0     1                 
+100035a4 100035a4        0     1                 
+100035a4 100035a4        0     1                 
+100035a6 100035a6        0     1                 
+100035a6 100035a6        0     1                 
+100035ae 100035ae        0     1                 
+100035ae 100035ae        0     1                 
+100035b2 100035b2        0     1                 
+100035b2 100035b2        0     1                 
+100035b2 100035b2       7c     2         lto.tmp:(.text.memcpy)
+100035b2 100035b2        0     1                 
+100035b2 100035b2        0     1                 
+100035b2 100035b2        0     1                 
+100035b2 100035b2        0     1                 
+100035b2 100035b2       7c     1                 memcpy
+100035ba 100035ba        0     1                 
+100035be 100035be        0     1                 
+100035be 100035be        0     1                 
+100035c2 100035c2        0     1                 
+100035c2 100035c2        0     1                 
+100035c6 100035c6        0     1                 
+100035c6 100035c6        0     1                 
+100035cc 100035cc        0     1                 
+100035ce 100035ce        0     1                 
+100035ce 100035ce        0     1                 
+100035d8 100035d8        0     1                 
+100035d8 100035d8        0     1                 
+100035dc 100035dc        0     1                 
+100035e0 100035e0        0     1                 
+100035e0 100035e0        0     1                 
+100035e6 100035e6        0     1                 
+100035e6 100035e6        0     1                 
+100035ea 100035ea        0     1                 
+100035ea 100035ea        0     1                 
+100035ee 100035ee        0     1                 
+100035f2 100035f2        0     1                 
+100035f2 100035f2        0     1                 
+100035f4 100035f4        0     1                 
+100035f8 100035f8        0     1                 
+100035f8 100035f8        0     1                 
+100035fc 100035fc        0     1                 
+100035fc 100035fc        0     1                 
+100035fe 100035fe        0     1                 
+100035fe 100035fe        0     1                 
+10003602 10003602        0     1                 
+10003602 10003602        0     1                 
+10003606 10003606        0     1                 
+10003606 10003606        0     1                 
+10003608 10003608        0     1                 
+10003608 10003608        0     1                 
+1000360c 1000360c        0     1                 
+1000360c 1000360c        0     1                 
+1000360e 1000360e        0     1                 
+1000360e 1000360e        0     1                 
+10003610 10003610        0     1                 
+10003616 10003616        0     1                 
+10003616 10003616        0     1                 
+1000361e 1000361e        0     1                 
+10003622 10003622        0     1                 
+10003626 10003626        0     1                 
+10003628 10003628        0     1                 
+1000362c 1000362c        0     1                 
+1000362c 1000362c        0     1                 
+1000362e 1000362e        0     1                 
+1000362e 1000362e        0     1                 
+1000362e 1000362e        6     2         lto.tmp:(.text.abort)
+1000362e 1000362e        6     1                 abort
+1000362e 1000362e        0     1                 
+1000362e 1000362e        0     1                 
+1000362e 1000362e        0     1                 
+1000362e 1000362e        0     1                 
+10003632 10003632        0     1                 
+10003632 10003632        0     1                 
+10003634 10003634        0     1                 
+10003634 10003634        0     1                 
+10003634 10003634        0     1         . = ALIGN ( 4 )
+10003634 10003634        0     1         . = ALIGN ( 4 )
+       0        0       90     4 .logs.fields
+       0        0        4     1         LONG ( _dv_log_offset )
+       4        4       8c     4         lto.tmp:(.logs.fields)
+       4        4       14     1                 test_main.kLogFields.2
+      18       18       14     1                 test_main.kLogFields.11
+      2c       2c       14     1                 otp_ctrl_testutils_dai_write32.kLogFields
+      40       40       14     1                 otp_ctrl_dai_write_error_check.kLogFields
+      54       54       14     1                 test_status_set.kLogFields
+      68       68       14     1                 test_status_set.kLogFields.2
+      7c       7c       14     1                 test_status_set.kLogFields.5
+       0        0        0     8 __llvm_prf_data
+       0        0        0     1         __llvm_prf_data_start = .
+       0        0        0     1         __llvm_prf_data_end = .
+       0        0        0     1         
+       0        0        0     1 __llvm_prf_names
+       0        0        0     1         __llvm_prf_names_start = .
+       0        0        0     1         __llvm_prf_names_end = .
+       0        0        0     1         
+       0        0        0     8 __llvm_covmap
+       0        0        0     1         
+       0        0        0     8 __llvm_covfun
+       0        0        0     1         
+       0        0     d480     4 .symtab
+       0        0     d480     4         <internal>:(.symtab)
+       0        0      d1c     1 .strtab
+       0        0      d1c     1         <internal>:(.strtab)
+       0        0       ed     1 .shstrtab
+       0        0       ed     1         <internal>:(.shstrtab)
+       0        0       1c     1 .riscv.attributes
+       0        0       1c     1         <internal>:(.riscv.attributes)
+       0        0     8b27     1 .debug_info
+       0        0     8b27     1         lto.tmp:(.debug_info)
+       0        0      727     1 .debug_abbrev
+       0        0      727     1         lto.tmp:(.debug_abbrev)
+       0        0     34cd     1 .debug_line
+       0        0     34cd     1         lto.tmp:(.debug_line)
+       0        0        0     1                 .Lline_table_start0
+     350      350        0     1                 .Lline_table_start1
+     c60      c60        0     1                 .Lline_table_start2
+     d96      d96        0     1                 .Lline_table_start3
+     e09      e09        0     1                 .Lline_table_start4
+     ed9      ed9        0     1                 .Lline_table_start5
+     ef7      ef7        0     1                 .Lline_table_start6
+     f76      f76        0     1                 .Lline_table_start7
+    1029     1029        0     1                 .Lline_table_start8
+    110e     110e        0     1                 .Lline_table_start9
+    127d     127d        0     1                 .Lline_table_start10
+    1390     1390        0     1                 .Lline_table_start11
+    13d6     13d6        0     1                 .Lline_table_start12
+    13f4     13f4        0     1                 .Lline_table_start13
+    1488     1488        0     1                 .Lline_table_start14
+    1715     1715        0     1                 .Lline_table_start15
+    1761     1761        0     1                 .Lline_table_start16
+    177f     177f        0     1                 .Lline_table_start17
+    1c48     1c48        0     1                 .Lline_table_start18
+    1faa     1faa        0     1                 .Lline_table_start19
+    20c5     20c5        0     1                 .Lline_table_start20
+    2182     2182        0     1                 .Lline_table_start21
+    2218     2218        0     1                 .Lline_table_start22
+    22d0     22d0        0     1                 .Lline_table_start23
+    2359     2359        0     1                 .Lline_table_start24
+    2439     2439        0     1                 .Lline_table_start25
+    24da     24da        0     1                 .Lline_table_start26
+    2548     2548        0     1                 .Lline_table_start27
+    25c6     25c6        0     1                 .Lline_table_start28
+    2642     2642        0     1                 .Lline_table_start29
+    26b2     26b2        0     1                 .Lline_table_start30
+    2726     2726        0     1                 .Lline_table_start31
+    2796     2796        0     1                 .Lline_table_start32
+    2806     2806        0     1                 .Lline_table_start33
+    287e     287e        0     1                 .Lline_table_start34
+    2a11     2a11        0     1                 .Lline_table_start35
+    2b55     2b55        0     1                 .Lline_table_start36
+    2bb7     2bb7        0     1                 .Lline_table_start37
+    2dba     2dba        0     1                 .Lline_table_start38
+    2dd8     2dd8        0     1                 .Lline_table_start39
+    3017     3017        0     1                 .Lline_table_start40
+    309a     309a        0     1                 .Lline_table_start41
+    30da     30da        0     1                 .Lline_table_start42
+    313f     313f        0     1                 .Lline_table_start43
+    31b6     31b6        0     1                 .Lline_table_start44
+    31d4     31d4        0     1                 .Lline_table_start45
+    3268     3268        0     1                 .Lline_table_start46
+       0        0     1ee3     1 .debug_loc
+       0        0     1ee3     1         lto.tmp:(.debug_loc)
+       0        0        0     1                 
+      1e       1e        0     1                 
+      31       31        0     1                 
+      44       44        0     1                 
+      57       57        0     1                 
+      78       78        0     1                 
+      96       96        0     1                 
+      a9       a9        0     1                 
+      bc       bc        0     1                 
+      dd       dd        0     1                 
+     10e      10e        0     1                 
+     13f      13f        0     1                 
+     170      170        0     1                 
+     1a1      1a1        0     1                 
+     1c7      1c7        0     1                 
+     1ed      1ed        0     1                 
+     213      213        0     1                 
+     239      239        0     1                 
+     26a      26a        0     1                 
+     291      291        0     1                 
+     2b8      2b8        0     1                 
+     2de      2de        0     1                 
+     2f9      2f9        0     1                 
+     335      335        0     1                 
+     371      371        0     1                 
+     38c      38c        0     1                 
+     3c8      3c8        0     1                 
+     404      404        0     1                 
+     443      443        0     1                 
+     475      475        0     1                 
+     4a7      4a7        0     1                 
+     4d9      4d9        0     1                 
+     4ff      4ff        0     1                 
+     526      526        0     1                 
+     54d      54d        0     1                 
+     57e      57e        0     1                 
+     5af      5af        0     1                 
+     5e0      5e0        0     1                 
+     61c      61c        0     1                 
+     64d      64d        0     1                 
+     67f      67f        0     1                 
+     6a5      6a5        0     1                 
+     6cc      6cc        0     1                 
+     6f3      6f3        0     1                 
+     710      710        0     1                 
+     72b      72b        0     1                 
+     752      752        0     1                 
+     779      779        0     1                 
+     7f3      7f3        0     1                 
+     827      827        0     1                 
+     842      842        0     1                 
+     873      873        0     1                 
+     8a4      8a4        0     1                 
+     8bf      8bf        0     1                 
+     8db      8db        0     1                 
+     901      901        0     1                 
+     927      927        0     1                 
+     94e      94e        0     1                 
+     975      975        0     1                 
+     99c      99c        0     1                 
+     9c3      9c3        0     1                 
+     9de      9de        0     1                 
+     9f9      9f9        0     1                 
+     a42      a42        0     1                 
+     a5d      a5d        0     1                 
+     a88      a88        0     1                 
+     aa4      aa4        0     1                 
+     ac0      ac0        0     1                 
+     add      add        0     1                 
+     af8      af8        0     1                 
+     b1f      b1f        0     1                 
+     b46      b46        0     1                 
+     b61      b61        0     1                 
+     b7c      b7c        0     1                 
+     ba2      ba2        0     1                 
+     bde      bde        0     1                 
+     c15      c15        0     1                 
+     c46      c46        0     1                 
+     c6c      c6c        0     1                 
+     c92      c92        0     1                 
+     cd9      cd9        0     1                 
+     cf4      cf4        0     1                 
+     d0f      d0f        0     1                 
+     d33      d33        0     1                 
+     d59      d59        0     1                 
+     d7f      d7f        0     1                 
+     db0      db0        0     1                 
+     de1      de1        0     1                 
+     dfd      dfd        0     1                 
+     e18      e18        0     1                 
+     e34      e34        0     1                 
+     e5b      e5b        0     1                 
+     e83      e83        0     1                 
+     ea9      ea9        0     1                 
+     ec4      ec4        0     1                 
+     ed7      ed7        0     1                 
+     eea      eea        0     1                 
+     efd      efd        0     1                 
+     f13      f13        0     1                 
+     f26      f26        0     1                 
+     f39      f39        0     1                 
+     f4c      f4c        0     1                 
+     f5f      f5f        0     1                 
+     f72      f72        0     1                 
+     f85      f85        0     1                 
+     f98      f98        0     1                 
+     fc2      fc2        0     1                 
+     fe8      fe8        0     1                 
+    1004     1004        0     1                 
+    102b     102b        0     1                 
+    1052     1052        0     1                 
+    108a     108a        0     1                 
+    10a5     10a5        0     1                 
+    10cc     10cc        0     1                 
+    10f3     10f3        0     1                 
+    110f     110f        0     1                 
+    1135     1135        0     1                 
+    1166     1166        0     1                 
+    1197     1197        0     1                 
+    11bd     11bd        0     1                 
+    11ee     11ee        0     1                 
+    121f     121f        0     1                 
+    1251     1251        0     1                 
+    1277     1277        0     1                 
+    129e     129e        0     1                 
+    12c5     12c5        0     1                 
+    12ec     12ec        0     1                 
+    1313     1313        0     1                 
+    1339     1339        0     1                 
+    135f     135f        0     1                 
+    1385     1385        0     1                 
+    13a0     13a0        0     1                 
+    13bc     13bc        0     1                 
+    13e3     13e3        0     1                 
+    13fe     13fe        0     1                 
+    1424     1424        0     1                 
+    144b     144b        0     1                 
+    1466     1466        0     1                 
+    148d     148d        0     1                 
+    14b4     14b4        0     1                 
+    14db     14db        0     1                 
+    1502     1502        0     1                 
+    151d     151d        0     1                 
+    1544     1544        0     1                 
+    156b     156b        0     1                 
+    1591     1591        0     1                 
+    15ac     15ac        0     1                 
+    15d2     15d2        0     1                 
+    15f8     15f8        0     1                 
+    164d     164d        0     1                 
+    1674     1674        0     1                 
+    1695     1695        0     1                 
+    16b7     16b7        0     1                 
+    16d2     16d2        0     1                 
+    16f4     16f4        0     1                 
+    170f     170f        0     1                 
+    1730     1730        0     1                 
+    1758     1758        0     1                 
+    1773     1773        0     1                 
+    1795     1795        0     1                 
+    17b0     17b0        0     1                 
+    17d2     17d2        0     1                 
+    17ed     17ed        0     1                 
+    1813     1813        0     1                 
+    1839     1839        0     1                 
+    186a     186a        0     1                 
+    1886     1886        0     1                 
+    18ba     18ba        0     1                 
+    18cd     18cd        0     1                 
+    18e0     18e0        0     1                 
+    190b     190b        0     1                 
+    1920     1920        0     1                 
+    1933     1933        0     1                 
+    195c     195c        0     1                 
+    196f     196f        0     1                 
+    198d     198d        0     1                 
+    19a0     19a0        0     1                 
+    19b3     19b3        0     1                 
+    19d0     19d0        0     1                 
+    19e4     19e4        0     1                 
+    1a03     1a03        0     1                 
+    1a1d     1a1d        0     1                 
+    1a3c     1a3c        0     1                 
+    1a4f     1a4f        0     1                 
+    1a6b     1a6b        0     1                 
+    1a86     1a86        0     1                 
+    1aa1     1aa1        0     1                 
+    1abc     1abc        0     1                 
+    1ad7     1ad7        0     1                 
+    1af2     1af2        0     1                 
+    1b11     1b11        0     1                 
+    1b30     1b30        0     1                 
+    1b4b     1b4b        0     1                 
+    1ba5     1ba5        0     1                 
+    1bc0     1bc0        0     1                 
+    1bdb     1bdb        0     1                 
+    1bf6     1bf6        0     1                 
+    1c11     1c11        0     1                 
+    1c2c     1c2c        0     1                 
+    1c47     1c47        0     1                 
+    1ca1     1ca1        0     1                 
+    1cc0     1cc0        0     1                 
+    1cdb     1cdb        0     1                 
+    1cf6     1cf6        0     1                 
+    1d11     1d11        0     1                 
+    1d2c     1d2c        0     1                 
+    1d76     1d76        0     1                 
+    1db4     1db4        0     1                 
+    1e02     1e02        0     1                 
+    1e54     1e54        0     1                 
+    1ea2     1ea2        0     1                 
+       0        0      560     1 .debug_ranges
+       0        0      560     1         lto.tmp:(.debug_ranges)
+       0        0        0     1                 
+      18       18        0     1                 
+      38       38        0     1                 
+      50       50        0     1                 
+      70       70        0     1                 
+      90       90        0     1                 
+      b0       b0        0     1                 
+      d0       d0        0     1                 
+      f0       f0        0     1                 
+     108      108        0     1                 
+     120      120        0     1                 
+     138      138        0     1                 
+     150      150        0     1                 
+     168      168        0     1                 
+     180      180        0     1                 
+     198      198        0     1                 
+     1b0      1b0        0     1                 
+     1c8      1c8        0     1                 
+     1e0      1e0        0     1                 
+     200      200        0     1                 
+     220      220        0     1                 
+     240      240        0     1                 
+     260      260        0     1                 
+     288      288        0     1                 
+     2a8      2a8        0     1                 
+     2c8      2c8        0     1                 
+     2e8      2e8        0     1                 
+     300      300        0     1                 
+     318      318        0     1                 
+     330      330        0     1                 
+     348      348        0     1                 
+     360      360        0     1                 
+     380      380        0     1                 
+     3a0      3a0        0     1                 
+     3c0      3c0        0     1                 
+     3d8      3d8        0     1                 
+     3f0      3f0        0     1                 
+     408      408        0     1                 
+     420      420        0     1                 
+     438      438        0     1                 
+     450      450        0     1                 
+     468      468        0     1                 
+     480      480        0     1                 
+     498      498        0     1                 
+     4b0      4b0        0     1                 
+     4c8      4c8        0     1                 
+     4f0      4f0        0     1                 
+     508      508        0     1                 
+     520      520        0     1                 
+       0        0     b830     1 .debug_str
+       0        0     b830     1         <internal>:(.debug_str)
+       0        0      230     4 .debug_frame
+       0        0      230     4         lto.tmp:(.debug_frame)
+       0        0        0     1                 
+       0        0      b80     4 .ot.status_create_record
+       0        0        0     1         . = .
+       0        0      b80     4         lto.tmp:(.ot.status_create_record)
+       0        0       80     1                 manuf_individualize_device_field_cfg.kOtStatusRecord
+      80       80       80     1                 manuf_individualize_device_flash_data_default_cfg_check.kOtStatusRecord
+     100      100       80     1                 manuf_individualize_device_flash_info_boot_data_cfg_check.kOtStatusRecord
+     180      180       80     1                 manuf_individualize_device_creator_sw_cfg_check.kOtStatusRecord
+     200      200       80     1                 manuf_individualize_device_partition_expected_read.kOtStatusRecord
+     280      280       80     1                 manuf_individualize_device_owner_sw_cfg_check.kOtStatusRecord
+     300      300       80     1                 manuf_individualize_device_rot_creator_auth_codesign_check.kOtStatusRecord
+     380      380       80     1                 manuf_individualize_device_rot_creator_auth_state_check.kOtStatusRecord
+     400      400       80     1                 otp_img_write.kOtStatusRecord
+     480      480       80     1                 otp_img_write.kOtStatusRecord.1
+     500      500       80     1                 manuf_individualize_device_ast_cfg.kOtStatusRecord
+     580      580       80     1                 otp_img_expected_value_read.kOtStatusRecord
+     600      600       80     1                 manuf_util_hash_otp_partition.kOtStatusRecord
+     680      680       80     1                 manuf_util_hash_otp_partition.kOtStatusRecord.3
+     700      700       80     1                 otp_ctrl_testutils_wait_for_dai.kOtStatusRecord
+     780      780       80     1                 otp_ctrl_testutils_dai_write32.kOtStatusRecord
+     800      800       80     1                 otp_ctrl_testutils_dai_write32.kOtStatusRecord.12
+     880      880       80     1                 otp_ctrl_testutils_dai_write64.kOtStatusRecord
+     900      900       80     1                 otp_ctrl_dai_write_error_check.kOtStatusRecord
+     980      980       80     1                 flash_ctrl_testutils_wait_transaction_end.kOtStatusRecord
+     a00      a00       80     1                 flash_ctrl_testutils_wait_transaction_end.kOtStatusRecord.5
+     a80      a80       80     1                 flash_ctrl_testutils_wait_transaction_end.kOtStatusRecord.6
+     b00      b00       80     1                 flash_ctrl_testutils_write.kOtStatusRecord

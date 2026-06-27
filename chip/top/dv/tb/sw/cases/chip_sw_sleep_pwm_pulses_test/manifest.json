@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sleep_pwm_pulses_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sleep_pwm_pulses_test",
+  "images": [
+    {
+      "image_base": "sleep_pwm_pulses_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sleep_pwm_pulses_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.32.vmem",
+      "size_bytes": 63603,
+      "sha256": "89acf5d3544320e2bd14531eb740f42ddda546e16d643affdaf71f1934631c33",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.64.scr.vmem",
+      "size_bytes": 68579,
+      "sha256": "817adbcc3cc1d1940a56cca384128377485501a01e0a2d16606c2adfdb6aaff4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.64.vmem",
+      "size_bytes": 59474,
+      "sha256": "c22161c6ba59a3f2a7c1d5901ce4f78a919bbb0cb36e6c920c55f3d01af8b5ad",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.bash"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.bin",
+      "size_bytes": 24380,
+      "sha256": "27a2d341af36ae788d0cea8c713779e5851676342889e2aa100a10f0d1e756f8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.bin"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.dis",
+      "size_bytes": 589621,
+      "sha256": "e0356e87f48c751b25f6f2681588b6adb44d15f318a8ea21514d081ff0385c51",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.dis"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.elf",
+      "size_bytes": 324520,
+      "sha256": "93481df97907db0d7ec460d31e4436d4e9ac5abe734fb56389dcc6de760cef5c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.elf"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.logs.txt",
+      "size_bytes": 16730,
+      "sha256": "4256ec6d5be4ceabb2ca1ce08654a0f8b42fb7edd172a8c044ac1d74fa8dbf4f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.map",
+      "size_bytes": 200004,
+      "sha256": "2e5a2af87c748e9d46c23d9d10b68818f32bed4a97311c5301a0079de014fdaf",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.map"
+    },
+    {
+      "file": "sleep_pwm_pulses_test_sim_dv.rodata.txt",
+      "size_bytes": 61268,
+      "sha256": "a2efe331930dc9f75fc6dd316e58f596a6009e0418bfc745c92998c12149ff72",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pwm_pulses_test_sim_dv.rodata.txt"
+    }
+  ]
+}

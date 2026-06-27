@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_spi_device_sleep_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_spi_device_sleep_test",
+  "images": [
+    {
+      "image_base": "spi_device_sleep_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:spi_device_sleep_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "spi_device_sleep_test_sim_dv.32.vmem",
+      "size_bytes": 58283,
+      "sha256": "803bd640376be94b41fc8ab4b742eee1491f69a139fadc218cdf91e5c181de97",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.64.scr.vmem",
+      "size_bytes": 62849,
+      "sha256": "7015e6df956af29b34dbc06a115b3c04a769885c9436db91035be429f1434280",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.64.vmem",
+      "size_bytes": 54509,
+      "sha256": "c196dec6d0c5a97b5a581bba192decdd03a8c44cbf823cc0adbb93c4a986a6a1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.bash"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.bin",
+      "size_bytes": 22340,
+      "sha256": "ef63169f72b88b75bfc08c2e78f37aa6bc1c6bea13f255d8f9d6835679f586ed",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.bin"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.dis",
+      "size_bytes": 622891,
+      "sha256": "a0a1e36dc968a4a66b9df17fc3c2ad22e88f2a12b1cc7f263dca6f682ce80693",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.dis"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.elf",
+      "size_bytes": 323196,
+      "sha256": "e5c6ba17dea9ecaa389889f089b7b05b74134130fd545c22c5b330d3f864dd41",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.elf"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.logs.txt",
+      "size_bytes": 14103,
+      "sha256": "bbff269c3c75bcad4f23a0dacb96fd2e58b696d6517deed76f2243a0e3ce7556",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.map",
+      "size_bytes": 212654,
+      "sha256": "135eb4f04851e666597bb00b39027e5cd1f3694d019b235fef9dbfcba812e3c7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.map"
+    },
+    {
+      "file": "spi_device_sleep_test_sim_dv.rodata.txt",
+      "size_bytes": 59638,
+      "sha256": "f80fd576676b0a007863be25494ebcaea6ce2a4d8aa99e70d8bd688427e548ba",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_device_sleep_test_sim_dv.rodata.txt"
+    }
+  ]
+}

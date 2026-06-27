@@ -1,0 +1,259 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 125
+nargs: 1
+format: IRQ detected %0d
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 130
+nargs: 0
+format: Channel 0
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/pattgen_ios_test.c
+line: 135
+nargs: 0
+format: CHECK-fail: is_pending == 1
+str_arg_idx: 
+addr: 10040
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 141
+nargs: 0
+format: Channel 1
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/pattgen_ios_test.c
+line: 145
+nargs: 0
+format: CHECK-fail: is_pending == 1
+str_arg_idx: 
+addr: 10068
+severity: 3
+file: sw/device/tests/pattgen_ios_test.c
+line: 150
+nargs: 1
+format: IRQ: unknown irq %0d
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 163
+nargs: 1
+format: peripheral frequency: %0d
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 185
+nargs: 0
+format: pinmux_init begin
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/pattgen_ios_test.c
+line: 190
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kPinmuxMioOut[i], kPinmuxOutsel[i]) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 193
+nargs: 0
+format: pinmux_init end
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/pattgen_ios_test.c
+line: 233
+nargs: 1
+format: DIF-fail: dif_pattgen_configure_channel(&pattgen, kDifPattgenChannel0, patt_cfg) returns %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/pattgen_ios_test.c
+line: 246
+nargs: 1
+format: IF-fail: dif_pattgen_configure_channel(&pattgen, kDifPattgenChannel1, patt_cfg) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 249
+nargs: 0
+format: Channels configured
+str_arg_idx: 
+addr: 10108
+severity: 0
+file: sw/device/tests/pattgen_ios_test.c
+line: 277
+nargs: 0
+format: TEST DONE
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10180
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_console_uart.c
+line: 153
+nargs: 0
+format: CHECK-fail: console->type == kOttfConsoleUart
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_console_uart.c
+line: 117
+nargs: 0
+format: CHECK-fail: console->type == kOttfConsoleUart
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 101bc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

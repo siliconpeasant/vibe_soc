@@ -1,0 +1,1358 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 340
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 343
+nargs: 1
+format: CHECK-fail: Unexpected IRQ fired with ID: %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1029
+nargs: 1
+format: DIF-fail: dif_pattgen_configure_channel( &pattgen, pattgen_channels[i], (dif_pattgen_channel_config_t){ .polarity = kDifPattgenPolarityHigh, .clock_divisor = kPattgenClockDivisor, .seed_pattern_lower_word = kPattgenSeedPatternLowerWord, .seed_pattern_upper_word = kPattgenSeedPatternUpperWord, .seed_pattern_length = kPattgenSeedPatternLength, .num_pattern_repetitions = kPattgenNumPatternRepetitions, .inactive_level_pda = false, .inactive_level_pcl = false, }) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1038
+nargs: 1
+format: DIF-fail: dif_pwm_configure(&pwm, (dif_pwm_config_t){ .clock_divisor = kPwmClockDivisor, .beats_per_pulse_cycle = kPwmBeatsPerCycle, }) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1040
+nargs: 1
+format: DIF-fail: dif_pwm_channels_set_enabled( &pwm, (1u << PWM_PARAM_N_OUTPUTS) - 1, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1052
+nargs: 1
+format: DIF-fail: dif_pwm_configure_channel(&pwm, i, (dif_pwm_channel_config_t){ .duty_cycle_a = kPwmOnBeats, .duty_cycle_b = 0, .phase_delay = kPwmPhaseDelayBeats, .mode = kDifPwmModeFirmware, .polarity = kDifPwmPolarityActiveHigh, .blink_parameter_x = 0, .blink_parameter_y = 0, }) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1059
+nargs: 1
+format: DIF-fail: dif_pwm_channels_set_enabled( &pwm, (1u << PWM_PARAM_N_OUTPUTS) - 1, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1494
+nargs: 0
+format: Computed peripheral clock period.
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1533
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1536
+nargs: 0
+format: All IPs configured.
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1549
+nargs: 0
+format: CHECK-fail: ottf_task_create(crypto_data_load_task, "CryptoDataLoadTask", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1551
+nargs: 0
+format: CHECK-fail: ottf_task_create(comms_data_load_task, "CommsDataLoadTask", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1553
+nargs: 0
+format: CHECK-fail: ottf_task_create(max_power_task, "MaxPowerTask", kOttfFreeRtosMinStackSize, 1)
+str_arg_idx: 
+addr: 10108
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1561
+nargs: 0
+format: Yielding execution to another task.
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 295
+nargs: 0
+format: Entropy source health test failure encountered.
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 296
+nargs: 1
+format: Total Fails: %0d
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 300
+nargs: 1
+format: Fails (Repetition Count): %0d
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 303
+nargs: 1
+format: Fails (Repetition Symbol Count): %0d
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 306
+nargs: 1
+format: High Fails (Adaptive Proportion): %0d
+str_arg_idx: 
+addr: 10180
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 307
+nargs: 1
+format: Low Fails (Adaptive Proportion): %0d
+str_arg_idx: 
+addr: 10194
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 310
+nargs: 1
+format: Fails (Bucket): %0d
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 313
+nargs: 1
+format: High Fails (Markov): %0d
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 314
+nargs: 1
+format: Low Fails (Markov): %0d
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 317
+nargs: 1
+format: High Fails (Mailbox): %0d
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 318
+nargs: 1
+format: Low Fails (Mailbox): %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 415
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob8, kTopEarlgreyPinmuxOutselGpioGpio0) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 422
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInUart1Rx, kTopEarlgreyPinmuxInselIoa4) returns %0d
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 424
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa4, kTopEarlgreyPinmuxOutselConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 426
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa5, kTopEarlgreyPinmuxOutselUart1Tx) returns %0d
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 449
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInUart3Rx, kTopEarlgreyPinmuxInselIoa0) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 451
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa0, kTopEarlgreyPinmuxOutselConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 453
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa1, kTopEarlgreyPinmuxOutselUart3Tx) returns %0d
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 460
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInI2c0Scl, kTopEarlgreyPinmuxInselIoa8) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 463
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInI2c0Sda, kTopEarlgreyPinmuxInselIoa7) returns %0d
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 465
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa8, kTopEarlgreyPinmuxOutselI2c0Scl) returns %0d
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 467
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIoa7, kTopEarlgreyPinmuxOutselI2c0Sda) returns %0d
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 474
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInI2c1Scl, kTopEarlgreyPinmuxInselIob9) returns %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 477
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInI2c1Sda, kTopEarlgreyPinmuxInselIob10) returns %0d
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 479
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob9, kTopEarlgreyPinmuxOutselI2c1Scl) returns %0d
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 481
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob10, kTopEarlgreyPinmuxOutselI2c1Sda) returns %0d
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 488
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInI2c2Scl, kTopEarlgreyPinmuxInselIob11) returns %0d
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 491
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInI2c2Sda, kTopEarlgreyPinmuxInselIob12) returns %0d
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 493
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob11, kTopEarlgreyPinmuxOutselI2c2Scl) returns %0d
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 495
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob12, kTopEarlgreyPinmuxOutselI2c2Sda) returns %0d
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 503
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor0, kTopEarlgreyPinmuxOutselPattgenPda0Tx) returns %0d
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 505
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor1, kTopEarlgreyPinmuxOutselPattgenPcl0Tx) returns %0d
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 507
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor2, kTopEarlgreyPinmuxOutselPattgenPda1Tx) returns %0d
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 509
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor3, kTopEarlgreyPinmuxOutselPattgenPcl1Tx) returns %0d
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 525
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob2, kTopEarlgreyPinmuxOutselPwmAonPwm1) returns %0d
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 527
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor5, kTopEarlgreyPinmuxOutselPwmAonPwm2) returns %0d
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 529
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor6, kTopEarlgreyPinmuxOutselPwmAonPwm3) returns %0d
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 531
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor7, kTopEarlgreyPinmuxOutselPwmAonPwm4) returns %0d
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 533
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor10, kTopEarlgreyPinmuxOutselPwmAonPwm5) returns %0d
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 642
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob1, kTopEarlgreyPinmuxOutselSpiHost1Csb) returns %0d
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 644
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob0, kTopEarlgreyPinmuxOutselSpiHost1Sck) returns %0d
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 646
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob3, kTopEarlgreyPinmuxOutselSpiHost1Sd0) returns %0d
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 648
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob4, kTopEarlgreyPinmuxOutselSpiHost1Sd1) returns %0d
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 650
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob5, kTopEarlgreyPinmuxOutselSpiHost1Sd2) returns %0d
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 652
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIob6, kTopEarlgreyPinmuxOutselSpiHost1Sd3) returns %0d
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 655
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInSpiHost1Sd0, kTopEarlgreyPinmuxInselIob3) returns %0d
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 658
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInSpiHost1Sd1, kTopEarlgreyPinmuxInselIob4) returns %0d
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 661
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInSpiHost1Sd2, kTopEarlgreyPinmuxInselIob5) returns %0d
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 664
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInSpiHost1Sd3, kTopEarlgreyPinmuxInselIob6) returns %0d
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 674
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInUart2Rx, kTopEarlgreyPinmuxInselIor12) returns %0d
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 676
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor12, kTopEarlgreyPinmuxOutselConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 678
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor13, kTopEarlgreyPinmuxOutselUart2Tx) returns %0d
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 686
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kTopEarlgreyPinmuxMioOutIor11, kTopEarlgreyPinmuxOutselPwmAonPwm0) returns %0d
+str_arg_idx: 
+addr: 10540
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 693
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10554
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 735
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10568
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 742
+nargs: 1
+format: entropy_src - clearing recoverable alerts: %0h
+str_arg_idx: 
+addr: 1057c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 744
+nargs: 1
+format: DIF-fail: dif_entropy_src_clear_recoverable_alerts(&entropy_src, recoverable_alerts) returns %0d
+str_arg_idx: 
+addr: 10590
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 749
+nargs: 1
+format: csrng - clearing recoverable alerts: %0h
+str_arg_idx: 
+addr: 105a4
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 755
+nargs: 1
+format: edn_0 - clearing recoverable alerts: %0h
+str_arg_idx: 
+addr: 105b8
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 761
+nargs: 1
+format: edn_1 - clearing recoverable alerts: %0h
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 779
+nargs: 1
+format: DIF-fail: dif_entropy_src_health_test_configure( &entropy_src, (dif_entropy_src_health_test_config_t){ .test_type = kDifEntropySrcTestRepetitionCount, .high_threshold = 0xf, .low_threshold = 0}) returns %0d
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 784
+nargs: 1
+format: DIF-fail: dif_entropy_src_health_test_configure( &entropy_src, (dif_entropy_src_health_test_config_t){ .test_type = kDifEntropySrcTestRepetitionCountSymbol, .high_threshold = 0xf, .low_threshold = 0}) returns %0d
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 792
+nargs: 1
+format: DIF-fail: dif_entropy_src_health_test_configure( &entropy_src, (dif_entropy_src_health_test_config_t){ .test_type = kDifEntropySrcTestAdaptiveProportion, .high_threshold = kEntropySrcAdaptiveProportionHealthTestHighThreshold, .low_threshold = kEntropySrcAdaptiveProportionHealthTestLowThreshold}) returns %0d
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 797
+nargs: 1
+format: DIF-fail: dif_entropy_src_health_test_configure( &entropy_src, (dif_entropy_src_health_test_config_t){ .test_type = kDifEntropySrcTestBucket, .high_threshold = 0xff, .low_threshold = 0}) returns %0d
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 802
+nargs: 1
+format: DIF-fail: dif_entropy_src_health_test_configure( &entropy_src, (dif_entropy_src_health_test_config_t){ .test_type = kDifEntropySrcTestMarkov, .high_threshold = 0xff, .low_threshold = 0}) returns %0d
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 809
+nargs: 1
+format: DIF-fail: dif_entropy_src_fw_override_configure( &entropy_src, (dif_entropy_src_fw_override_config_t){ .entropy_insert_enable = false, .buffer_threshold = ENTROPY_SRC_OBSERVE_FIFO_THRESH_REG_RESVAL, }, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 822
+nargs: 1
+format: DIF-fail: dif_entropy_src_configure( &entropy_src, (dif_entropy_src_config_t){ .fips_enable = true, .fips_flag = true, .rng_fips = true, .route_to_firmware = false, .bypass_conditioner = false, .single_bit_mode = kDifEntropySrcSingleBitModeDisabled, .health_test_threshold_scope = false, .health_test_window_size = kEntropySrcHealthTestWindowSize, .alert_threshold = UINT16_MAX}, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 826
+nargs: 1
+format: DIF-fail: dif_csrng_configure(&csrng) returns %0d
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 872
+nargs: 1
+format: DIF-fail: dif_edn_set_auto_mode(&edn_0, edn_auto_params) returns %0d
+str_arg_idx: 
+addr: 10680
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 876
+nargs: 1
+format: DIF-fail: dif_edn_set_auto_mode(&edn_1, edn_auto_params) returns %0d
+str_arg_idx: 
+addr: 10694
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 877
+nargs: 1
+format: DIF-fail: dif_edn_configure(&edn_0) returns %0d
+str_arg_idx: 
+addr: 106a8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 878
+nargs: 1
+format: DIF-fail: dif_edn_configure(&edn_1) returns %0d
+str_arg_idx: 
+addr: 106bc
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1063
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 106d0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 954
+nargs: 0
+format: CHECK-fail: kUartBaudrate must fit in uint32_t
+str_arg_idx: 
+addr: 106e4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 956
+nargs: 0
+format: CHECK-fail: kClockFreqPeripheralHz must fit in uint32_t
+str_arg_idx: 
+addr: 106f8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 965
+nargs: 1
+format: DIF-fail: dif_uart_configure( uart, (dif_uart_config_t){ .baudrate = (uint32_t)kUartBaudrate, .clk_freq_hz = (uint32_t)kClockFreqPeripheralHz, .parity_enable = kDifToggleEnabled, .parity = kDifUartParityEven, .tx_enable = kDifToggleDisabled, .rx_enable = kDifToggleDisabled, }) returns %0d
+str_arg_idx: 
+addr: 1070c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 967
+nargs: 1
+format: DIF-fail: dif_uart_loopback_set(uart, kDifUartLoopbackSystem, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10720
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 982
+nargs: 1
+format: DIF-fail: dif_i2c_configure(i2c, config) returns %0d
+str_arg_idx: 
+addr: 10734
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 985
+nargs: 1
+format: DIF-fail: dif_i2c_set_device_id(i2c, &id_0, &id_1) returns %0d
+str_arg_idx: 
+addr: 10748
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 986
+nargs: 1
+format: DIF-fail: dif_i2c_line_loopback_set_enabled(i2c, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1075c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 991
+nargs: 0
+format: CHECK-fail: kClockFreqHiSpeedPeripheralHz must fit in uint32_t
+str_arg_idx: 
+addr: 10770
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1004
+nargs: 1
+format: DIF-fail: dif_spi_host_configure( spi_host, (dif_spi_host_config_t){ .spi_clock = (uint32_t)kClockFreqHiSpeedPeripheralHz / 2, .peripheral_clock_freq_hz = (uint32_t)kClockFreqHiSpeedPeripheralHz, .chip_select = { .idle = 2, .trail = 2, .lead = 2, }, }) returns %0d
+str_arg_idx: 
+addr: 10784
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1005
+nargs: 1
+format: DIF-fail: dif_spi_host_output_set_enabled(spi_host, enable) returns %0d
+str_arg_idx: 
+addr: 10798
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1485
+nargs: 0
+format: CHECK-fail: default_properties.scramble_en == kMultiBitBool4True
+str_arg_idx: 
+addr: 107ac
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1486
+nargs: 0
+format: CHECK-fail: default_properties.ecc_en == kMultiBitBool4True
+str_arg_idx: 
+addr: 107c0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1487
+nargs: 0
+format: CHECK-fail: default_properties.high_endurance_en == kMultiBitBool4False
+str_arg_idx: 
+addr: 107d4
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1165
+nargs: 0
+format: Crypto data load task running ...
+str_arg_idx: 
+addr: 107e8
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1113
+nargs: 0
+format: Loading crypto block FIFOs with data ...
+str_arg_idx: 
+addr: 107fc
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1117
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10810
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1122
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10824
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1123
+nargs: 1
+format: DIF-fail: dif_aes_load_data(&aes, aes_plain_text) returns %0d
+str_arg_idx: 
+addr: 10838
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1127
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1084c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1129
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10860
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1137
+nargs: 1
+format: DIF-fail: dif_kmac_mode_kmac_start( &kmac, &kmac_operation_state, kDifKmacModeKmacLen256, kKmacDigestLength, &kKmacKey, &kmac_customization_string) returns %0d
+str_arg_idx: 
+addr: 10874
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1139
+nargs: 1
+format: DIF-fail: dif_kmac_absorb(&kmac, &kmac_operation_state, kKmacMessage, kKmacMessageLength, NULL) returns %0d
+str_arg_idx: 
+addr: 10888
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1143
+nargs: 0
+format: CHECK-fail: !kmac_operation_state.squeezing
+str_arg_idx: 
+addr: 1089c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 924
+nargs: 1
+format: DIF-fail: dif_hmac_mode_sha256_start(&hmac, hmac_transaction_cfg) returns %0d
+str_arg_idx: 
+addr: 108b0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 926
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 108c4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 928
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 108d8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 931
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 108ec
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 935
+nargs: 1
+format: DIF-fail: dif_hmac_mode_hmac_start( &hmac, (uint8_t *)&hmac_key_digest.digest[0], hmac_transaction_cfg) returns %0d
+str_arg_idx: 
+addr: 10900
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 950
+nargs: 1
+format: DIF-fail: dif_kmac_configure(&kmac, kmac_cfg) returns %0d
+str_arg_idx: 
+addr: 10914
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 914
+nargs: 1
+format: DIF-fail: dif_aes_start(&aes, &aes_transaction_cfg, &aes_key, &aes_iv) returns %0d
+str_arg_idx: 
+addr: 10928
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1176
+nargs: 0
+format: Loading communication block FIFOs with data ...
+str_arg_idx: 
+addr: 1093c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1178
+nargs: 0
+format: CHECK-fail: (sizeof(kUartMessage) / sizeof(kUartMessage[0])) == kUartFifoDepth
+str_arg_idx: 
+addr: 10950
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1179
+nargs: 0
+format: CHECK-fail: (sizeof(kI2cMessage) / sizeof(kI2cMessage[0])) == (64 - 1)
+str_arg_idx: 
+addr: 10964
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1186
+nargs: 0
+format: CHECK-fail: bytes_written == (sizeof(kUartMessage) / sizeof(kUartMessage[0]))
+str_arg_idx: 
+addr: 10978
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1194
+nargs: 1
+format: Loading I2C FIFO %0d with data ...
+str_arg_idx: 
+addr: 1098c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1197
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 109a0
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1236
+nargs: 0
+format: Starting the max power task ...
+str_arg_idx: 
+addr: 109b4
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1296
+nargs: 0
+format: Entering max power epoch ...
+str_arg_idx: 
+addr: 109c8
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1316
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 109dc
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1375
+nargs: 0
+format: Exited max power epoch.
+str_arg_idx: 
+addr: 109f0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1382
+nargs: 1
+format: DIF-fail: dif_aes_read_output(&aes, &aes_cipher_text) returns %0d
+str_arg_idx: 
+addr: 10a04
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1384
+nargs: 1
+format: CHECK-fail: (uint8_t *)aes_cipher_text.data %0smatches kAesModesCipherTextCbc256
+str_arg_idx: 0
+addr: 10a18
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1384
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%02h; want: 0x%02h
+str_arg_idx: 
+addr: 10a2c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1388
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10a40
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1393
+nargs: 0
+format: CHECK-fail: kKmacDigestLength == (sizeof(kKmacDigest) / sizeof(kKmacDigest[0]))
+str_arg_idx: 
+addr: 10a54
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1394
+nargs: 1
+format: CHECK-fail: kmac_digest %0smatches kKmacDigest
+str_arg_idx: 0
+addr: 10a68
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1394
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 10a7c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1400
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10a90
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1402
+nargs: 1
+format: CHECK-fail: rsa_recovered_message %0smatches kRsa2KEncodedMessage
+str_arg_idx: 0
+addr: 10aa4
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1402
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 10ab8
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1417
+nargs: 1
+format: CHECK-fail: received_uart_data %0smatches kUartMessage
+str_arg_idx: 0
+addr: 10acc
+severity: 0
+file: sw/device/tests/power_virus_systemtest.c
+line: 1417
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%02h; want: 0x%02h
+str_arg_idx: 
+addr: 10ae0
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1439
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10af4
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1456
+nargs: 0
+format: CHECK-fail: kI2cMessage[jj] == byte
+str_arg_idx: 
+addr: 10b08
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1069
+nargs: 0
+format: CHECK-fail: mmio_region_get_bit32(csrng.base_addr, 0x2c, 1)
+str_arg_idx: 
+addr: 10b1c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1071
+nargs: 0
+format: CHECK-fail: aes_testutils_get_status(&aes, kDifAesStatusIdle)
+str_arg_idx: 
+addr: 10b30
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1076
+nargs: 0
+format: CHECK-fail: kmac_status.sha3_state == kDifKmacSha3StateAbsorbing
+str_arg_idx: 
+addr: 10b44
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1080
+nargs: 0
+format: CHECK-fail: otbn_status == kDifOtbnStatusIdle
+str_arg_idx: 
+addr: 10b58
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1085
+nargs: 1
+format: DIF-fail: dif_kmac_poll_status(&kmac, KMAC_STATUS_SHA3_SQUEEZE_BIT) returns %0d
+str_arg_idx: 
+addr: 10b6c
+severity: 2
+file: sw/device/tests/power_virus_systemtest.c
+line: 1099
+nargs: 1
+format: DIF-fail: dif_kmac_end(&kmac, &kmac_operation_state) returns %0d
+str_arg_idx: 
+addr: 10b80
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 177
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10b94
+severity: 2
+file: sw/device/lib/testing/hmac_testutils.c
+line: 74
+nargs: 4
+format: CHECK-fail: Message length mismatch. Expected 0x%08h%08h bits but got 0x%08h%08h bits.
+str_arg_idx: 
+addr: 10ba8
+severity: 2
+file: sw/device/lib/testing/hmac_testutils.c
+line: 110
+nargs: 0
+format: CHECK-fail: memcmp(&digest.digest, &expected->digest, sizeof(digest.digest)) == 0
+str_arg_idx: 
+addr: 10bbc
+severity: 2
+file: sw/device/lib/testing/hmac_testutils.c
+line: 122
+nargs: 1
+format: CHECK-fail: HMAC error = %0d
+str_arg_idx: 
+addr: 10bd0
+severity: 2
+file: sw/device/lib/testing/hmac_testutils.h
+line: 57
+nargs: 0
+format: CHECK-fail: timeout must fit in uint32_t
+str_arg_idx: 
+addr: 10be4
+severity: 2
+file: sw/device/lib/testing/i2c_testutils.c
+line: 122
+nargs: 0
+format: CHECK-fail: byte_count > 0
+str_arg_idx: 
+addr: 10bf8
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 40
+nargs: 1
+format: CHECK-fail: OTBN is locked. Error bits: 0x%08h
+str_arg_idx: 
+addr: 10c0c
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 47
+nargs: 3
+format: CHECK-fail: OTBN error bits: got: 0x%08h, expected: 0x%08h.Instruction count: 0x%08h
+str_arg_idx: 
+addr: 10c20
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: imem_size % sizeof(uint32_t) == 0
+str_arg_idx: 0
+addr: 10c34
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: data_size % sizeof(uint32_t) == 0
+str_arg_idx: 0
+addr: 10c48
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 63
+nargs: 0
+format: CHECK-fail: app->imem_end > app->imem_start
+str_arg_idx: 
+addr: 10c5c
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 65
+nargs: 0
+format: CHECK-fail: app->dmem_data_end >= app->dmem_data_start
+str_arg_idx: 
+addr: 10c70
+severity: 0
+file: sw/device/lib/testing/spi_host_testutils.c
+line: 32
+nargs: 0
+format: Specified slew rate not supported, trying supported slew rate
+str_arg_idx: 
+addr: 10c84
+severity: 0
+file: sw/device/lib/testing/spi_host_testutils.c
+line: 38
+nargs: 0
+format: Specified drive strength not supported, trying supported drive strength
+str_arg_idx: 
+addr: 10c98
+severity: 2
+file: sw/device/lib/testing/spi_host_testutils.c
+line: 42
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, pad, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 10cac
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 48
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10cc0
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 51
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10cd4
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 54
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10ce8
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 59
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10cfc
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10d10
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 77
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kPadUart0Rx, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 10d24
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 85
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10d38
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 89
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10d4c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 110
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDp, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 10d60
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 112
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDn, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 10d74
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 117
+nargs: 1
+format: DIF-fail: dif_pinmux_mio_select_output(pinmux, kDtPadIoc7, kDtPeriphIoConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 10d88
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 258
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_get_attrs_dt(pinmux, attrs[i].pad, &desired_attr) returns %0d
+str_arg_idx: 
+addr: 10d9c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 261
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, attrs[i].pad, desired_attr, &actual_attr) returns %0d
+str_arg_idx: 
+addr: 10db0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10dc4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10dd8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10dec
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10e00
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 20
+nargs: 1
+format: %0s
+str_arg_idx: 0
+addr: 10e14
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10e28
+severity: 0
+file: sw/device/lib/testing/spi_device_testutils.c
+line: 378
+nargs: 0
+format: Specified slew rate not supported, trying supported slew rate
+str_arg_idx: 
+addr: 10e3c
+severity: 0
+file: sw/device/lib/testing/spi_device_testutils.c
+line: 384
+nargs: 0
+format: Specified drive strength not supported, trying supported drive strength
+str_arg_idx: 
+addr: 10e50
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10e64
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10e78
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10e8c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10ea0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10eb4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10ec8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10edc
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10ef0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10f04
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10f18
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

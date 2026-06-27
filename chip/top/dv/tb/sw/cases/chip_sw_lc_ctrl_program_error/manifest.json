@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_lc_ctrl_program_error",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_lc_ctrl_program_error",
+  "images": [
+    {
+      "image_base": "lc_ctrl_program_error",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:lc_ctrl_program_error"
+    }
+  ],
+  "files": [
+    {
+      "file": "lc_ctrl_program_error_sim_dv.32.vmem",
+      "size_bytes": 57781,
+      "sha256": "3945a6dcedd296171f9ea02a9b673746c03aacc2ec116ab05c8ade12ec356049",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.32.vmem"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.64.scr.vmem",
+      "size_bytes": 62309,
+      "sha256": "cb6139244bbe133578f4cc65b1d9cfaf5b7f73c8eb138a5d80dc6bc791f2e03a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.64.vmem",
+      "size_bytes": 54041,
+      "sha256": "63d7b574674a947c47a32d4667191870fad0940a0640e1815950711a99965240",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.64.vmem"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.bash"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.bin",
+      "size_bytes": 22148,
+      "sha256": "ae0be7bb70db4b60f3e8a84876c115bb5cab3f29efdc457eef46c23c48f5d64e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.bin"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.dis",
+      "size_bytes": 740698,
+      "sha256": "cbcae823875a069008518c3c59538539ae4c48883a4ac3718bd90258824fed7a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.dis"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.elf",
+      "size_bytes": 359760,
+      "sha256": "45728e5a8251b4edbe2016d438f8f8d944daa36592823ef49bd1dcfcc63f06a2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.elf"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.logs.txt",
+      "size_bytes": 18393,
+      "sha256": "c47d7509f7092ebb0e3e8defd79c72965304ed93b926cb48c6729349da6fdccc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.logs.txt"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.map",
+      "size_bytes": 267801,
+      "sha256": "0574c496fd683c920bebc89efe765c2e73c81f6cf6634f9fb386ab24e3605847",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.map"
+    },
+    {
+      "file": "lc_ctrl_program_error_sim_dv.rodata.txt",
+      "size_bytes": 71389,
+      "sha256": "54dc07551c336abe54c4e8b81c0c0bbc4923b0e5c8225efe8a705415a2589320",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_program_error_sim_dv.rodata.txt"
+    }
+  ]
+}

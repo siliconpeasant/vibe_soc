@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_otbn_mem_scramble_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otbn_mem_scramble_test",
+  "images": [
+    {
+      "image_base": "otbn_mem_scramble_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otbn_mem_scramble_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.32.vmem",
+      "size_bytes": 38455,
+      "sha256": "a89518886518cb9a9f5a863925a0e177a9ab513ba2f71bd6ebfb20c485f713bb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.64.scr.vmem",
+      "size_bytes": 41449,
+      "sha256": "c0d31be7a5609b264089b5256b612b8ac18315db8d3d28d3b5bf39480ec9567e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.64.vmem",
+      "size_bytes": 35962,
+      "sha256": "4f60d27c44c475f24ec90087f71bb1830e92c4b867346b255517669343d43e08",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.bash"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.bin",
+      "size_bytes": 14732,
+      "sha256": "51499b8f54d2cecfa79c698589088dcd5c1f31bbf6ffe312ad4663d245d466df",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.bin"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.dis",
+      "size_bytes": 541897,
+      "sha256": "e12e404c42839f787be43031c8c8adb590a72448d4353d4bc104ac0c7c235328",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.dis"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.elf",
+      "size_bytes": 285208,
+      "sha256": "7ee25a3eed2904eb97021f41f9c5159e2d68a48642e351aa00adfbf2f124a8e7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.elf"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.logs.txt",
+      "size_bytes": 5871,
+      "sha256": "a157bf8833c006b6592202760a3868bac43c2545e684f989e755c4c0aa0c804a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.map",
+      "size_bytes": 187623,
+      "sha256": "72de1182d6c1fa51b6b57f1ce1e9aa5c223a4dbdf28bfbb804a802f1aab2ee92",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.map"
+    },
+    {
+      "file": "otbn_mem_scramble_test_sim_dv.rodata.txt",
+      "size_bytes": 49491,
+      "sha256": "54b5406a65770e10714b84e329aee7d09ec8d6b50bde7ead715ee1d765d61b20",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_mem_scramble_test_sim_dv.rodata.txt"
+    }
+  ]
+}

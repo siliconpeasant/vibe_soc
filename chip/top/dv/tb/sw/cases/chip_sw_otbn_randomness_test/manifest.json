@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_otbn_randomness_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otbn_randomness_test",
+  "images": [
+    {
+      "image_base": "otbn_randomness_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otbn_randomness_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otbn_randomness_test_sim_dv.32.vmem",
+      "size_bytes": 47078,
+      "sha256": "a8825581de1a2e73d7c32ef1a1a7123c2e6a62cf625c0649be85ad65bafbae0a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.64.scr.vmem",
+      "size_bytes": 50739,
+      "sha256": "f7e08560eb39338e3c39b2fd9351425c8f5effbdda690d1591d4e2e2b14a9f81",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.64.vmem",
+      "size_bytes": 44013,
+      "sha256": "8b98f87e106574bd8e62b7f546a01f8b54e010c51bc665b64f17233c63ab7bd5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.bash"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.bin",
+      "size_bytes": 18040,
+      "sha256": "8a9bac8ce9e168783e3605ab4467f45509415eab1bb9ca787772d11d9a5d1c4f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.bin"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.dis",
+      "size_bytes": 667157,
+      "sha256": "23d500ae6af36852174591141f9e5c9f1872f611f0ed793d2980c78c7540cb7f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.dis"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.elf",
+      "size_bytes": 350012,
+      "sha256": "f972f48100c29e69ac333f2f9e21c6db2fb3018d48f95f0cccc54f7d648a02d7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.elf"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.logs.txt",
+      "size_bytes": 8501,
+      "sha256": "a1adc61be8709911a3576173d1c152df05ab4c8c8e1c43fcfd22fed0012fd050",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.map",
+      "size_bytes": 233031,
+      "sha256": "864787c2b0e9db4893fb8ee3bb7b074f1e8c22462490b626aa47bd0ce87d99a4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.map"
+    },
+    {
+      "file": "otbn_randomness_test_sim_dv.rodata.txt",
+      "size_bytes": 60621,
+      "sha256": "44a55d3b1b37c0fd6bf9ad917d4e401d80547329210ba4e4e32fb07c8bec89a7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otbn_randomness_test_sim_dv.rodata.txt"
+    }
+  ]
+}

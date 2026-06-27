@@ -1,0 +1,357 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 153
+nargs: 1
+format: DIF-fail: dif_pinmux_wakeup_detector_enable(&pinmux, detector, wakeup_cfg) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/tests/spi_device_sleep_test.c
+line: 156
+nargs: 0
+format: Setting SPI_DIO1 to high when sleeping
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 159
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd0, kDifPinmuxPadKindDio, kDifPinmuxSleepModeHigh) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 162
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd1, kDifPinmuxPadKindDio, kDifPinmuxSleepModeHigh) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 165
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd2, kDifPinmuxPadKindDio, kDifPinmuxSleepModeHigh) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 168
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd3, kDifPinmuxPadKindDio, kDifPinmuxSleepModeHigh) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/tests/spi_device_sleep_test.c
+line: 169
+nargs: 0
+format: Use IOA7 to let host know when sleep is active.
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 172
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select(&pinmux, kTopEarlgreyPinmuxPeripheralInGpioGpio0, kTopEarlgreyPinmuxInselIoa8) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 175
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable(&pinmux, kTopEarlgreyMuxedPadsIoa7, kDifPinmuxPadKindMio, kDifPinmuxSleepModeLow) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 0
+file: sw/device/tests/spi_device_sleep_test.c
+line: 180
+nargs: 0
+format: Setting SPI_DIO1 to low when sleeping
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 183
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd0, kDifPinmuxPadKindDio, kDifPinmuxSleepModeLow) returns %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 186
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd1, kDifPinmuxPadKindDio, kDifPinmuxSleepModeLow) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 189
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd2, kDifPinmuxPadKindDio, kDifPinmuxSleepModeLow) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 192
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd3, kDifPinmuxPadKindDio, kDifPinmuxSleepModeLow) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 196
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_enable(&pinmux, kTopEarlgreyMuxedPadsIoa7, kDifPinmuxPadKindMio, kDifPinmuxSleepModeLow) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 204
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_disable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd0, kDifPinmuxPadKindDio) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 208
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_disable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd1, kDifPinmuxPadKindDio) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 212
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_disable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd2, kDifPinmuxPadKindDio) returns %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 216
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_sleep_disable( &pinmux, kTopEarlgreyDirectPadsSpiDeviceSd3, kDifPinmuxPadKindDio) returns %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 227
+nargs: 1
+format: DIF-fail: dif_pinmux_wakeup_detector_enable(&pinmux, detector, wakeup_cfg) returns %0d
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 230
+nargs: 1
+format: DIF-fail: dif_pinmux_wakeup_detector_disable(&pinmux, detector) returns %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 65
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeWakeup, dt_pinmux_instance_id(kPinmuxDt), kDtPinmuxWakeupPinWkupReq, &wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/tests/spi_device_sleep_test.c
+line: 68
+nargs: 0
+format: SYNC: Sleeping
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 73
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101e4
+severity: 2
+file: sw/device/tests/spi_device_sleep_test.c
+line: 73
+nargs: 0
+format: CHECK-fail: ({ status_t status_ = pwrmgr_testutils_is_wakeup_reason(&pwrmgr, wakeup_sources); if (!status_ok(status_)) { if (device_log_bypass_uart_address()) { do { status_t status_ = status_; const char *msg; char mod_id[3] = {0}; int line; if (status_extract(status_, &msg, &line, mod_id)) { do { do { do { _Static_assert(_Generic((mod_id[0]), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "mod_id[0]" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "mod_id[0]" "'?"); } while (0); do { _Static_assert(_Generic((mod_id[1]), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "mod_id[1]" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "mod_id[1]" "'?"); } while (0); do { _Static_assert(_Generic((mod_id[2]), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "mod_id[2]" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "mod_id[2]" "'?"); } while (0); do { _Static_assert(_Generic((line), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "line" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "line" "'?"); } while (0); do { _Static_assert(_Generic((msg), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "msg" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "msg" "'?"); } while (0); } while (0); if (device_log_bypass_uart_address() != 0) { __attribute__((section(".logs.fields"))) static const log_fields_t kLogFields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/spi_device_sleep_test.c" "", .line = 73, .nargs = 5, .format = "CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s", }; base_log_internal_dv((const log_fields_t*)((char*)&kLogFields + (uintptr_t)&_dv_log_offset), 5, mod_id[0], mod_id[1], mod_id[2], line, msg); } else { static const log_fields_t log_fields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/spi_device_sleep_test.c" "", .line = 73, .nargs = 5, .format = "CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s", }; base_log_internal_core(&log_fields, mod_id[0], mod_id[1], mod_id[2], line, msg); } } while (0); } else { do { do { do { _Static_assert(_Generic((status_), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "status_" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "status_" "'?"); } while (0); } while (0); if (device_log_bypass_uart_address() != 0) { __attribute__((section(".logs.fields"))) static const log_fields_t kLogFields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/spi_device_sleep_test.c" "", .line = 73, .nargs = 1, .format = "CHECK-STATUS-fail: 0x%08h", }; base_log_internal_dv((const log_fields_t*)((char*)&kLogFields + (uintptr_t)&_dv_log_offset), 1, status_); } else { static const log_fields_t log_fields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/spi_device_sleep_test.c" "", .line = 73, .nargs = 1, .format = "CHECK-STATUS-fail: 0x%08h", }; base_log_internal_core(&log_fields, status_); } } while (0); } } while (0); } else { do { do { do { _Static_assert(_Generic((status_), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "status_" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "status_" "'?"); } while (0); } while (0); if (device_log_bypass_uart_address() != 0) { __attribute__((section(".logs.fields"))) static const log_fields_t kLogFields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/spi_device_sleep_test.c" "", .line = 73, .nargs = 1, .format = "CHECK-STATUS-fail: %8h", }; base_log_internal_dv((const log_fields_t*)((char*)&kLogFields + (uintptr_t)&_dv_log_offset), 1, status_); } else { static const log_fields_t log_fields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/spi_device_sleep_test.c" "", .line = 73, .nargs = 1, .format = "CHECK-STATUS-fail: %8h", }; base_log_internal_core(&log_fields, status_); } } while (0); } test_status_set(kTestStatusFailed); } status_.value; })
+str_arg_idx: 4 9
+addr: 101f8
+severity: 0
+file: sw/device/tests/spi_device_sleep_test.c
+line: 85
+nargs: 0
+format: SYNC: Awaked
+str_arg_idx: 
+addr: 1020c
+severity: 0
+file: sw/device/tests/spi_device_sleep_test.c
+line: 118
+nargs: 0
+format: SYNC: Flash mode
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10270
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

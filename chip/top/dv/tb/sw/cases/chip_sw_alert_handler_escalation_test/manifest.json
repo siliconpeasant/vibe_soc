@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_alert_handler_escalation_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_alert_handler_escalation_test",
+  "images": [
+    {
+      "image_base": "alert_handler_escalation_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:alert_handler_escalation_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "alert_handler_escalation_test_sim_dv.32.vmem",
+      "size_bytes": 35626,
+      "sha256": "2ed2914ba1c43acfabfdf4069c064160a4ba1ef869dec696b2f389b7484891be",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.64.scr.vmem",
+      "size_bytes": 38389,
+      "sha256": "5999e71c0bdce1c1ff38b4f041dc5bb920802ea03cb16ce609b73b8b6e40e418",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.64.vmem",
+      "size_bytes": 33310,
+      "sha256": "fc96d4eede1bd8b4175d36e319d88ea5e04b1a2020379231cda47da87b9ebf32",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.bash"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.bin",
+      "size_bytes": 13648,
+      "sha256": "1cd21a0917c6a82d69b935ac14db5e8ddc7ca159490b964d495b6d98b1f51063",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.bin"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.dis",
+      "size_bytes": 513741,
+      "sha256": "30d4708f8c3cc2d95266a340886ddfba7e5e3e468dfad5717d237234758424a1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.dis"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.elf",
+      "size_bytes": 324076,
+      "sha256": "a0a365a8693c1bebf8d5a4e7ab6e4513c665715ea4d9d62b849206e6ebadadad",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.elf"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.logs.txt",
+      "size_bytes": 5988,
+      "sha256": "ecad11299b30d10a3e019ba017144a72407f5d599cda38a5c2fc03c4f91b8dc9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.map",
+      "size_bytes": 171675,
+      "sha256": "f46df8a31ec1e95c46e7ed8bbec9cfcf8d160b5d33756199dee4dd0230916e40",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.map"
+    },
+    {
+      "file": "alert_handler_escalation_test_sim_dv.rodata.txt",
+      "size_bytes": 46968,
+      "sha256": "348a900fea4c29e5c4e8a52849183ffb54f830abbd696897435ed9886ad350ed",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_escalation_test_sim_dv.rodata.txt"
+    }
+  ]
+}

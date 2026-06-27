@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_flash_ctrl_clock_freqs_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_flash_ctrl_clock_freqs_test",
+  "images": [
+    {
+      "image_base": "flash_ctrl_clock_freqs_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:flash_ctrl_clock_freqs_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.32.vmem",
+      "size_bytes": 45253,
+      "sha256": "966b0c06579b564be3a1e481b9549ffa4145b990d0677f74e992d831fcba68f0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.64.scr.vmem",
+      "size_bytes": 48779,
+      "sha256": "69b853f65af4658c6d76db5d3bda44afc16b18b5787a6bb4b2a08d370765cee9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.64.vmem",
+      "size_bytes": 42314,
+      "sha256": "14d12e0f854664a481e8ec6269b95e6f2efbb3194f77473dc4d0a66ffcf893de",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.bash"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.bin",
+      "size_bytes": 17340,
+      "sha256": "e92c3667d920ebf934e514dbf2e1abe5820636d4d76c991b72d87bc79e4bac5a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.bin"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.dis",
+      "size_bytes": 660601,
+      "sha256": "39ce09ce81147ef32348c15c348e70e15aea9cb1acf5551b7111e5bc5ec51c44",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.dis"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.elf",
+      "size_bytes": 327460,
+      "sha256": "63893fd03e6fff704845e90b442d01f350ac72a49afcc7363076dedcd3e14674",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.elf"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.logs.txt",
+      "size_bytes": 7183,
+      "sha256": "33214bd681db60a3b0aad635b13d6bc5e382c47635c15f5e07bbd91ae80823ff",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.map",
+      "size_bytes": 232252,
+      "sha256": "e3b6491a20518a28912c3d7f7b636e59e0dd3952dfc03cb9846d03c82af60433",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.map"
+    },
+    {
+      "file": "flash_ctrl_clock_freqs_test_sim_dv.rodata.txt",
+      "size_bytes": 58910,
+      "sha256": "34e2071ecde783a6399f39a28b653ec372ab512de426fbddc1726970927a0a58",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_clock_freqs_test_sim_dv.rodata.txt"
+    }
+  ]
+}

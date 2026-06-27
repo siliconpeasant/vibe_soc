@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_aon_timer_wdog_lc_escalate_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_aon_timer_wdog_lc_escalate_test",
+  "images": [
+    {
+      "image_base": "aon_timer_wdog_lc_escalate_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:aon_timer_wdog_lc_escalate_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.32.vmem",
+      "size_bytes": 41548,
+      "sha256": "eae87f71e23ee7c678006bf6d023eba566783908134722cae5b2af158d59b005",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.64.scr.vmem",
+      "size_bytes": 44779,
+      "sha256": "c168b3466611dbd8d8f1ae30161b8ea755cbdbb844e23540d07a573fcab9741a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.64.vmem",
+      "size_bytes": 38848,
+      "sha256": "1dcd8e7fd82b9bd71eb97372d3e30855a64ec383b3bbb3b6523d1fc610d7ff08",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.bash"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.bin",
+      "size_bytes": 15920,
+      "sha256": "d89c4f98c84f54e5e1d268d18cf62282aa939335e169ca451844b88f31757439",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.bin"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.dis",
+      "size_bytes": 586111,
+      "sha256": "2dbbeb7e67232186e13dab9a7c97cd26d22ca323a8911eea70b8312fbc7ea14e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.dis"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.elf",
+      "size_bytes": 301908,
+      "sha256": "a88016304413634e673fa42e370e6d337fc2714afd05cdcf334dd10b2ba9c92d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.elf"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.logs.txt",
+      "size_bytes": 7683,
+      "sha256": "8619fcb2b41d9231929b33e74396df0080c94faef9c6036dec0414ccb97cef22",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.map",
+      "size_bytes": 197096,
+      "sha256": "ff5f9e482f07e6c84a7a9dca31c15f024a3ebad6211c341718ee1cb6608f3162",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.map"
+    },
+    {
+      "file": "aon_timer_wdog_lc_escalate_test_sim_dv.rodata.txt",
+      "size_bytes": 52840,
+      "sha256": "0a6d265a2ce176286b84f5ecbd102406e6d4c938204f692c563ad61888094d92",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_wdog_lc_escalate_test_sim_dv.rodata.txt"
+    }
+  ]
+}

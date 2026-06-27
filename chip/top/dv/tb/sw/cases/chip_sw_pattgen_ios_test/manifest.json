@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pattgen_ios_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pattgen_ios_test",
+  "images": [
+    {
+      "image_base": "pattgen_ios_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pattgen_ios_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pattgen_ios_test_sim_dv.32.vmem",
+      "size_bytes": 36301,
+      "sha256": "6ce09e223c36b178ed0af33990e950c39dc69218b29391efe7cd41229bf55fbc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.64.scr.vmem",
+      "size_bytes": 39129,
+      "sha256": "156a450b3086aba9149f1c997d34635bfb72e4321b440924efbb05af968eeffd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.64.vmem",
+      "size_bytes": 33951,
+      "sha256": "a116cdcbde175c056de1896eb89b38cdfaf7cc054b04dad91a0efa07462afccf",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.bash"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.bin",
+      "size_bytes": 13908,
+      "sha256": "99b434c75993f32b7634e17e7b971871cb36b8f472b6525dc6e117e7adcaf913",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.bin"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.dis",
+      "size_bytes": 561754,
+      "sha256": "1bdcce23a2ded3e833550956091623ae72a183514b53f2c7e0f36170d3044506",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.dis"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.elf",
+      "size_bytes": 310108,
+      "sha256": "750623c7624d0df8bcdd219e658ab9b5e6c0ebc6689047bd7661e7317de9c3dc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.elf"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.logs.txt",
+      "size_bytes": 6055,
+      "sha256": "1b4ee473e70b1d71261d9a370e7ca06097246371fd2acc9fb6b4909dcca297ba",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.map",
+      "size_bytes": 190109,
+      "sha256": "f6c13c8db49ee91176de0a9aacd194663ad9a5467c3ccc6588e73431d931badd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.map"
+    },
+    {
+      "file": "pattgen_ios_test_sim_dv.rodata.txt",
+      "size_bytes": 46821,
+      "sha256": "2b096692672c5155e77770056d5dbe4cbf777269ae49e3351ea170628b743a1e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pattgen_ios_test_sim_dv.rodata.txt"
+    }
+  ]
+}

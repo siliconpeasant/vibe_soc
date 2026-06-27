@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_plic_all_irqs_test_0",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_plic_all_irqs_test_0",
+  "images": [
+    {
+      "image_base": "plic_all_irqs_test_0",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:plic_all_irqs_test_0"
+    }
+  ],
+  "files": [
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.32.vmem",
+      "size_bytes": 62846,
+      "sha256": "e2bb1c34c88323c61a1d8a9412b3ba26e45f2bdeff10e6d874266d1e6522d15c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.32.vmem"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.64.scr.vmem",
+      "size_bytes": 67749,
+      "sha256": "f214ebd5268941c1288ad4f9fdc95a7377e8e3208a82f741cf0fe4c37dff7889",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.64.vmem",
+      "size_bytes": 58755,
+      "sha256": "1a863fd2cef4c45a6cd2820400eff6d43368b027ff000b220803b30674cb6031",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.64.vmem"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.bash"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.bin",
+      "size_bytes": 24088,
+      "sha256": "a5d864cb6bf2f391f561102f9e235f0922c68e8b491dcb5944755e026ed9c722",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.bin"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.dis",
+      "size_bytes": 867987,
+      "sha256": "499fb80dc349c9ea1c9ba4f527e9cdbcfcedb532da3bf1226cab3b0c6f42c696",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.dis"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.elf",
+      "size_bytes": 369804,
+      "sha256": "85a9ebcad8c4b8ad2ef703653706e3a31d19206036fbd75b3a58e15f751099a4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.elf"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.logs.txt",
+      "size_bytes": 19955,
+      "sha256": "cdf9a2ce0baaf76bd6030fca6aeaabdc88e9863eeae12c7d9ca6bab00018b7ef",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.logs.txt"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.map",
+      "size_bytes": 256304,
+      "sha256": "37a498a25a3545b1da44c2ad3f156248671b2ebc7a20f6a53de2ece259ea0537",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.map"
+    },
+    {
+      "file": "plic_all_irqs_test_0_sim_dv.rodata.txt",
+      "size_bytes": 73975,
+      "sha256": "18cdf4b202c6a498f9e4df1b5f7889359d4b6924e6b057abda4e131195437a10",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_0_sim_dv.rodata.txt"
+    }
+  ]
+}

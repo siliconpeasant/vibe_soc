@@ -1,0 +1,357 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 100
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeWakeup, dt_pinmux_instance_id(kPinmuxDt), kDtPinmuxWakeupPinWkupReq, &wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 111
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1002c
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 118
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10040
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 119
+nargs: 0
+format: Test in POR phase
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 130
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10068
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 132
+nargs: 1
+format: detector %0d is selected
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 139
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs(&pinmux, kTopEarlgreyMuxedPadsIoc3, kDifPinmuxPadKindMio, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 145
+nargs: 0
+format: pinmux_init end
+str_arg_idx: 
+addr: 100a4
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 177
+nargs: 2
+format: Pad Selection: %0d / %0d
+str_arg_idx: 
+addr: 100b8
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 187
+nargs: 2
+format: Pad Selection: %0d / %0d
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 195
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select( &pinmux, pad_sel - 2, kTopEarlgreyPinmuxOutselConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 207
+nargs: 1
+format: DIF-fail: dif_pinmux_wakeup_detector_enable( &pinmux, wakeup_detector_selected, wakeup_cfg) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 220
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10108
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 222
+nargs: 0
+format: Entering low power mode.
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 226
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10130
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 227
+nargs: 0
+format: Test in post-sleep pin wakeup phase
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 239
+nargs: 3
+format: wakeup_cause: %0h %0d %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 240
+nargs: 0
+format: CHECK-fail: wakeup_cause == 1 << wakeup_detector_selected
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 242
+nargs: 1
+format: DIF-fail: dif_pinmux_wakeup_detector_disable(&pinmux, wakeup_detector_selected) returns %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 248
+nargs: 1
+format: DIF-fail: dif_pwrmgr_wakeup_reason_get(&pwrmgr, &wakeup_reason) returns %0d
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/sleep_pin_wake_test.c
+line: 250
+nargs: 2
+format: Unexpected wakeup detected: type = %0d, request_source = %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10248
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/rv_plic_testutils.c
+line: 21
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority(plic, irq_id, priority) returns %0d
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

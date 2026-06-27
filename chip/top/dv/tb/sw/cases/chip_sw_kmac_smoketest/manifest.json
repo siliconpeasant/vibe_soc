@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_kmac_smoketest",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_kmac_smoketest",
+  "images": [
+    {
+      "origin_target": "//sw/device/tests:kmac_smoketest:1:new_rules",
+      "image_base": "kmac_smoketest",
+      "slot": 1,
+      "rule": "new_rules"
+    }
+  ],
+  "files": [
+    {
+      "file": "kmac_smoketest_sim_dv.32.vmem",
+      "size_bytes": 45408,
+      "sha256": "46b1eedf89eaba29652571edd88cdd9b4b41a6bf0f0affa8babb70e6bf77b120",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.32.vmem"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.64.scr.vmem",
+      "size_bytes": 48939,
+      "sha256": "f3aa11af7a16650e0cff38c30028bfab4acaf84c68fb8085121ccf57d54da141",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.64.vmem",
+      "size_bytes": 42453,
+      "sha256": "0f15295bb1737bdb75e22ad3489f55c4f2dbdea1785ffb5dd0a1fb7c26b6d631",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.64.vmem"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.bash"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.bin",
+      "size_bytes": 17400,
+      "sha256": "9c295218a122b7f643088cc67029d12db7d8d57dceb5d7cb8c1c62c267594923",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.bin"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.dis",
+      "size_bytes": 569924,
+      "sha256": "05e5bb29ad734907552269540e00315f758459e1def97ad4d4551dcccee4fcd6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.dis"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.elf",
+      "size_bytes": 291292,
+      "sha256": "e40425273be0006647a722a12fb8ffffc6fdea9eb5f6b20848d256dce97f5215",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.elf"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.logs.txt",
+      "size_bytes": 9214,
+      "sha256": "16406828dfb575c12632e5bd6a0360e260a3be9a99bedc70bec15c411c29eda5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.logs.txt"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.map",
+      "size_bytes": 190400,
+      "sha256": "e6c6655082d653b12f2a27ef7fdcbced9d47f82cb119aa0e8472d75de3ad5f66",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.map"
+    },
+    {
+      "file": "kmac_smoketest_sim_dv.rodata.txt",
+      "size_bytes": 53342,
+      "sha256": "aee71c761e1d345a58a23c162bef9a01f20795e5a25724e4fc09b2cbd9586208",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_smoketest_sim_dv.rodata.txt"
+    }
+  ]
+}

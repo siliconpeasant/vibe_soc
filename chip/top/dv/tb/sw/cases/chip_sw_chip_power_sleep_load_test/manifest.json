@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_chip_power_sleep_load_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_chip_power_sleep_load_test",
+  "images": [
+    {
+      "image_base": "chip_power_sleep_load_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:chip_power_sleep_load_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.32.vmem",
+      "size_bytes": 45901,
+      "sha256": "0c1fd396106755df4097acbf4b35a541201ca4a8af1249682deb4c922979061f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.64.scr.vmem",
+      "size_bytes": 49479,
+      "sha256": "1acc25a0de9b91f39b376f4844ccae4bffac488e67440c47bf239aba5e563430",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.64.vmem",
+      "size_bytes": 42921,
+      "sha256": "0c6c7a58f65e541887f5a27eb2c10375303ae8502af6ba119fe906a21cfd8f7e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.bash"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.bin",
+      "size_bytes": 17588,
+      "sha256": "a2032342fe22425a663ffa9c70ef117a4a06ceec5473fcde2e1baf377736e17a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.bin"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.dis",
+      "size_bytes": 644567,
+      "sha256": "1744fe29f634b75f75e7e7909267f0757ef4336edd8ad8c339b0a63dd7efff8c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.dis"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.elf",
+      "size_bytes": 340108,
+      "sha256": "3a4a296bf58934336830bb14a91eae14fe4f2a215a21911eb817bd0ed2b9c7f6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.elf"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.logs.txt",
+      "size_bytes": 11486,
+      "sha256": "c579d97c2b851887170caae7b59c96c50608df3f77a9f2eb02960db944e090b0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.map",
+      "size_bytes": 215555,
+      "sha256": "de026de17e29c84ded8bab817c6553b75b8ca1dea57227d0a27233e67bdcf148",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.map"
+    },
+    {
+      "file": "chip_power_sleep_load_test_sim_dv.rodata.txt",
+      "size_bytes": 53476,
+      "sha256": "88c0b5e6feb0eb71c3b294ba8d290cb5e8d7f8dbe3f8af639ccfaf1040397b69",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/chip_power_sleep_load_test_sim_dv.rodata.txt"
+    }
+  ]
+}

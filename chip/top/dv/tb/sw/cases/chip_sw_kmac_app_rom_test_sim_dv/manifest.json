@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_kmac_app_rom_test_sim_dv",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_kmac_app_rom_test_sim_dv",
+  "images": [
+    {
+      "image_base": "kmac_app_rom_test_sim_dv",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:kmac_app_rom_test_sim_dv"
+    }
+  ],
+  "files": [
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.32.vmem",
+      "size_bytes": 32569,
+      "sha256": "3020d24bd4772ada37cdc4d9d2721512c25cf4ec6a3823030fe9be5ab87c64c0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.32.vmem"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.64.scr.vmem",
+      "size_bytes": 35099,
+      "sha256": "c8bec1640985122ca46e1c22ee2f9fde1de0f218f660c244150f0fdf9b02f706",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.64.vmem",
+      "size_bytes": 30458,
+      "sha256": "5c6fde41fac6352ad11f39e8a68607bad05e11d563de82aafd0cb2125284989a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.64.vmem"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.bash"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.bin",
+      "size_bytes": 12476,
+      "sha256": "1ffcaaf10ef06348176a688e092d7f571f0755622c5abc8eeea7ace6d133d516",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.bin"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.dis",
+      "size_bytes": 463551,
+      "sha256": "28033051bb8db12bdc08237d765feaaaa3706ab2d155fd62000a5ba6fa6f4c8a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.dis"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.elf",
+      "size_bytes": 258968,
+      "sha256": "f2d9cce438cd9a39a2d61dab5150461bb5b25c0be745c58c78f49e29bc4bfc4a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.elf"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.logs.txt",
+      "size_bytes": 4221,
+      "sha256": "0008725791761c687558686252bc4a5434183dc2e9d48b4b54afd8c30b24e4fc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.logs.txt"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.map",
+      "size_bytes": 155387,
+      "sha256": "c64c4186b5cb6df5ac2a5931460662e46c7c5fbc1d7b8a9ed030330919c4e811",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.map"
+    },
+    {
+      "file": "kmac_app_rom_test_sim_dv_sim_dv.rodata.txt",
+      "size_bytes": 41747,
+      "sha256": "1b30d89aede61d33bc64902e3a75e21b18de773035c0193841f2ea2d1ff2e5ed",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_app_rom_test_sim_dv_sim_dv.rodata.txt"
+    }
+  ]
+}

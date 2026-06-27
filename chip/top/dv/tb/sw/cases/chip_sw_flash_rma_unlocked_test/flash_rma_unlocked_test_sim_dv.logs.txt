@@ -1,0 +1,315 @@
+addr: 4
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 299
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_configure(&otp, otp_config) returns %0d
+str_arg_idx: 
+addr: 18
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 301
+nargs: 1
+format: Test phase %0d
+str_arg_idx: 
+addr: 2c
+severity: 3
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 313
+nargs: 0
+format: Unexpected Test Phase
+str_arg_idx: 
+addr: 40
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 147
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_get_state(&lc, &curr_state) returns %0d
+str_arg_idx: 
+addr: 54
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 148
+nargs: 0
+format: CHECK-fail: curr_state == kSrcLcState
+str_arg_idx: 
+addr: 68
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 171
+nargs: 0
+format: Write data test complete - waiting for TB
+str_arg_idx: 
+addr: 7c
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 89
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 90
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 92
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: a4
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 99
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: b8
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 102
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: cc
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 188
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_get_state(&lc, &curr_state) returns %0d
+str_arg_idx: 
+addr: e0
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 189
+nargs: 0
+format: CHECK-fail: curr_state == kSrcLcState
+str_arg_idx: 
+addr: f4
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 213
+nargs: 0
+format: Enter RMA test complete - waiting for TB
+str_arg_idx: 
+addr: 108
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 111
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 11c
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 115
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 130
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 117
+nargs: 1
+format: CHECK-fail: readback_data %0smatches data
+str_arg_idx: 0
+addr: 144
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 117
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 158
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 119
+nargs: 1
+format: CHECK-fail: readback_data %0smatches data
+str_arg_idx: 0
+addr: 16c
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 119
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%08h
+str_arg_idx: 
+addr: 180
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 130
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 194
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 134
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1a8
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 136
+nargs: 1
+format: CHECK-fail: readback_data %0smatches data
+str_arg_idx: 0
+addr: 1bc
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 136
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 1d0
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 138
+nargs: 1
+format: CHECK-fail: readback_data %0smatches data
+str_arg_idx: 0
+addr: 1e4
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 138
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%08h
+str_arg_idx: 
+addr: 1f8
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 224
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_get_state(&lc, &curr_state) returns %0d
+str_arg_idx: 
+addr: 20c
+severity: 2
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 225
+nargs: 0
+format: CHECK-fail: curr_state == kDifLcCtrlStateRma
+str_arg_idx: 
+addr: 220
+severity: 0
+file: sw/device/tests/sim_dv/flash_rma_unlocked_test.c
+line: 252
+nargs: 0
+format: Wipe test complete - done
+str_arg_idx: 
+addr: 234
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 48
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 248
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 51
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 25c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 54
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 270
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 59
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 284
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 298
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 77
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kPadUart0Rx, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 2ac
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 85
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 2c0
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 89
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 2d4
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 110
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDp, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 2e8
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 112
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDn, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 2fc
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 117
+nargs: 1
+format: DIF-fail: dif_pinmux_mio_select_output(pinmux, kDtPadIoc7, kDtPeriphIoConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 310
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 324
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 338
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 183
+nargs: 1
+format: Unaligned address 0x%0h
+str_arg_idx: 
+addr: 34c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 360
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 374
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_flash_ctrl_idle_low_power_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_flash_ctrl_idle_low_power_test",
+  "images": [
+    {
+      "image_base": "flash_ctrl_idle_low_power_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:flash_ctrl_idle_low_power_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.32.vmem",
+      "size_bytes": 48483,
+      "sha256": "7d4b3bc6f207088c802b45e49ee8e98126dcab44d5fe6c83d2810cbf2887d1e8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.64.scr.vmem",
+      "size_bytes": 52269,
+      "sha256": "4039d3bd3f76ec59aebd1e7c499090765b2fbaf3c2bd3e7fe3c5f2235dcfc925",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.64.vmem",
+      "size_bytes": 45339,
+      "sha256": "a0920ee6cece25f01794b2285ba5ce9c64152f9f707cb5b99c14ec6dcf43f470",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.bash"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.bin",
+      "size_bytes": 18580,
+      "sha256": "f38177d182d7cc5d373cfcd163d116ab538d7aec1733d5ccc0b55cbd8cd23c87",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.bin"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.dis",
+      "size_bytes": 702325,
+      "sha256": "7ba2aae589b670ca61b357ef7d86e26e34dbca520e839c671017fc883da88e3b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.dis"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.elf",
+      "size_bytes": 352428,
+      "sha256": "f18095d4e26868fe78ba59f85bd44e6a827a25ca6815630aaffd8e19a6ee6525",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.elf"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.logs.txt",
+      "size_bytes": 8821,
+      "sha256": "40e78ed6426645c5422a36d7987490e915983b2ace8eed774439822ed23f2f41",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.map",
+      "size_bytes": 238866,
+      "sha256": "b1408b372493f14790290208aad6958f4abe6a7acdcf7c5d23fb6b7de02c0188",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.map"
+    },
+    {
+      "file": "flash_ctrl_idle_low_power_test_sim_dv.rodata.txt",
+      "size_bytes": 59513,
+      "sha256": "20dcbd33be4d08442d1b300ef32dc8e5a1e6d5027720f863e618e37705e69ea5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_idle_low_power_test_sim_dv.rodata.txt"
+    }
+  ]
+}

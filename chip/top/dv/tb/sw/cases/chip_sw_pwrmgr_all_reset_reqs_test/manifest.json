@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_all_reset_reqs_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_all_reset_reqs_test",
+  "images": [
+    {
+      "image_base": "pwrmgr_all_reset_reqs_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_all_reset_reqs_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.32.vmem",
+      "size_bytes": 58630,
+      "sha256": "6536f6af1ef249db2fdcb57632a71c0c21950ab0806e74137057cc28da1c1c29",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.64.scr.vmem",
+      "size_bytes": 63209,
+      "sha256": "6ec6160e3cdb17dabdd501670ce8f0c8c24ebcad4f8bb7f3db335aec4ab2fbbb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.64.vmem",
+      "size_bytes": 54821,
+      "sha256": "5a57c6e1569a25a0c4d81fc857032bbead6023f6ccbaa3303737c43495886220",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.bin",
+      "size_bytes": 22472,
+      "sha256": "1a73c3d71f9f8548a7843841dcebbb8816ec3d08cc83fb6e999991d843ef61cc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.dis",
+      "size_bytes": 794268,
+      "sha256": "5f30b53e03a8b3c318da4318b0f49acde1b8b76b2cd19c4efc3beb8dae480cf9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.elf",
+      "size_bytes": 384976,
+      "sha256": "00307f88cf13b53cdab5ecadec7699937d5fd9c5aa8d8a2b84508e97e1057169",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.logs.txt",
+      "size_bytes": 16527,
+      "sha256": "c10caca3a61a3d0d67a1add4db33a1b9da560c2a6b2fde6d789e00e328f11cde",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.map",
+      "size_bytes": 270428,
+      "sha256": "3e0b6f2c4a5a0a1f593e0fa3b8af6e2c1e9e155345905876c213ce43f1da39c9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_all_reset_reqs_test_sim_dv.rodata.txt",
+      "size_bytes": 72478,
+      "sha256": "f6b84cafd0c491720f673889bf4cab7481601524f70c58d1125d67e3ed4de82f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_all_reset_reqs_test_sim_dv.rodata.txt"
+    }
+  ]
+}

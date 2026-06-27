@@ -1,0 +1,784 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/usbdev_stream_test.c
+line: 184
+nargs: 0
+format: Running USBDEV Stream Test
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 187
+nargs: 0
+format: CHECK-fail: nstreams && nstreams < 12
+str_arg_idx: 
+addr: 1002c
+severity: 0
+file: sw/device/tests/usbdev_stream_test.c
+line: 208
+nargs: 2
+format: - %0d stream(s), 0x%0h bytes each
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 215
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInUsbdevSense, kTopEarlgreyPinmuxInselIoc7) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 239
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10068
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 242
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1007c
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 247
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10090
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 259
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 267
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 278
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 0
+file: sw/device/tests/usbdev_stream_test.c
+line: 284
+nargs: 2
+format: SB sent 0x%0h byte(s), received and checked 0x%0h byte(s)
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 288
+nargs: 0
+format: CHECK-fail: Unexpected count of byte(s) sent to USB host
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/usbdev_stream_test.c
+line: 292
+nargs: 0
+format: CHECK-fail: Unexpected count of byte(s) received from USB host
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 48
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 51
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10130
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 54
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10144
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 59
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1016c
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 77
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kPadUart0Rx, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 85
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 89
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101a8
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 110
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDp, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 112
+nargs: 1
+format: DIF-fail: dif_pinmux_pad_write_attrs_dt(pinmux, kDtPadUsbdevUsbDn, in_attr, &out_attr) returns %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/lib/testing/pinmux_testutils.c
+line: 117
+nargs: 1
+format: DIF-fail: dif_pinmux_mio_select_output(pinmux, kDtPadIoc7, kDtPeriphIoConstantHighZ) returns %0d
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 526
+nargs: 0
+format: CHECK-fail: id < (12 - 1U)
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 583
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 587
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10220
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 597
+nargs: 0
+format: CHECK-fail: id < (12 - 1U)
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 671
+nargs: 3
+format: Stream %0d: %0dth buffer (of 0x%0h byte(s)) awaiting transmission
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 676
+nargs: 0
+format: CHECK-fail: dif_result == kDifUnavailable
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 686
+nargs: 0
+format: CHECK-fail: nstreams <= (12 - 1U)
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 687
+nargs: 0
+format: CHECK-fail: nstreams <= 255U
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 700
+nargs: 0
+format: CHECK-fail: usb_testutils_streams_count_set(ctx, nstreams)
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 781
+nargs: 0
+format: CHECK-fail: ctx->nstreams <= 255U
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 788
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102c0
+severity: 0
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 396
+nargs: 2
+format: strm_tx_done called. %0d (%0d total) buffers(s) are queued
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 399
+nargs: 0
+format: CHECK-fail: nqueued > 0
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 435
+nargs: 0
+format: CHECK-fail: packet_info.endpoint == s->rx_ep
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 438
+nargs: 0
+format: CHECK-fail: !packet_info.is_setup
+str_arg_idx: 
+addr: 10310
+severity: 0
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 442
+nargs: 2
+format: Stream %0d: Received buffer of %0d bytes(s)
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 297
+nargs: 0
+format: CHECK-fail: len <= sizeof(data)
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 314
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_read(usbdev->dev, usbdev->buffer_pool, &buf, data, len, &bytes_read) returns %0d
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 317
+nargs: 0
+format: CHECK-fail: bytes_read == len
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 332
+nargs: 1
+format: CHECK-fail: S%0d: Received packet invalid
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 354
+nargs: 4
+format: CHECK-fail: S%0d: Unexpected received data 0x%02h : (LFSRs 0x%02h 0x%02h)
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 370
+nargs: 0
+format: CHECK-fail: s->xfr_type == kUsbTransferTypeControl
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 377
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_return(usbdev->dev, usbdev->buffer_pool, &buf) returns %0d
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 168
+nargs: 0
+format: buffer_sig_check failed:
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 176
+nargs: 2
+format: buffer_sig_check: sequence number regressed from 0x%0h to 0x%0h
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 212
+nargs: 3
+format: buffer_sig_check: S%0d unexpected host-side LFSR value (0x%0h but expected 0x%0h)
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 225
+nargs: 3
+format: buffer_sig_check: S%0d unexpected packet length (0x%0h but expected 0x%0h)
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 144
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write( ctx->usbdev->dev, buf, (uint8_t *)&sig, sizeof(sig), &bytes_written) returns %0d
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 145
+nargs: 0
+format: CHECK-fail: bytes_written == sizeof(sig)
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 243
+nargs: 0
+format: CHECK-fail: num_bytes <= buf->remaining_bytes
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 244
+nargs: 0
+format: CHECK-fail: num_bytes <= sizeof(data)
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 280
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write(ctx->usbdev->dev, buf, data, num_bytes, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/usb_testutils_streams.c
+line: 281
+nargs: 0
+format: CHECK-fail: bytes_written == num_bytes
+str_arg_idx: 
+addr: 10478
+severity: 0
+file: sw/device/lib/testing/usb_testutils.c
+line: 242
+nargs: 1
+format: USB: Unexpected interrupts: 0x%08h
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 289
+nargs: 0
+format: CHECK-fail: ep < 12
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 338
+nargs: 1
+format: DIF-fail: dif_usbdev_endpoint_iso_enable(ctx->dev, endpoint, iso) returns %0d
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 367
+nargs: 1
+format: DIF-fail: dif_usbdev_endpoint_iso_enable(ctx->dev, endpoint, iso) returns %0d
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 450
+nargs: 0
+format: CHECK-fail: ctx != ((void*)0)
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 78
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ep, &transfer->next_part) returns %0d
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 25
+nargs: 0
+format: CHECK-fail: ctx && transfer && last
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 49
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write(ctx->dev, next_part, &transfer->buffer[transfer->offset], part_len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/usb_testutils.c
+line: 60
+nargs: 0
+format: CHECK-fail: bytes_written < max_packet
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 117
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_request(ctx->dev, ctx->buffer_pool, &buffer) returns %0d
+str_arg_idx: 
+addr: 10540
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 127
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write(ctx->dev, &buffer, kDevDscr, len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 10554
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 128
+nargs: 0
+format: CHECK-fail: bytes_written == len
+str_arg_idx: 
+addr: 10568
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 129
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 146
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_return(ctx->dev, ctx->buffer_pool, &buffer) returns %0d
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 149
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 105a4
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 154
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write( ctx->dev, &buffer, ctctx->cfg_dscr, len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 155
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 165
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 173
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 183
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write( ctx->dev, &buffer, &ctctx->usb_config, len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 184
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 190
+nargs: 1
+format: DIF-fail: dif_usbdev_endpoint_stall_enable(ctx->dev, endpoint, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 192
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 200
+nargs: 1
+format: DIF-fail: dif_usbdev_endpoint_stall_enable(ctx->dev, endpoint, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 203
+nargs: 1
+format: DIF-fail: dif_usbdev_clear_data_toggle(ctx->dev, endpoint.number) returns %0d
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 205
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 10680
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 219
+nargs: 1
+format: DIF-fail: dif_usbdev_endpoint_stall_get(ctx->dev, endpoint, &halted) returns %0d
+str_arg_idx: 
+addr: 10694
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 229
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write(ctx->dev, &buffer, (uint8_t *)&stat, len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 106a8
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 230
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 106bc
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 236
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 106d0
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 247
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write(ctx->dev, &buffer, (uint8_t *)&zero, len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 106e4
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 248
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 106f8
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 259
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write(ctx->dev, &buffer, (uint8_t *)&zero, len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 1070c
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 260
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 10720
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 278
+nargs: 1
+format: DIF-fail: dif_usbdev_buffer_write( ctx->dev, &buffer, ctctx->test_dscr, len, &bytes_written) returns %0d
+str_arg_idx: 
+addr: 10734
+severity: 2
+file: sw/device/lib/testing/usb_testutils_controlep.c
+line: 279
+nargs: 1
+format: DIF-fail: dif_usbdev_send(ctx->dev, ctctx->ep, &buffer) returns %0d
+str_arg_idx: 
+addr: 10748
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 1075c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10770
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10784
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10798
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 107ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 107c0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 107d4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 107e8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 107fc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10810
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10824
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10838
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1084c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10860
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10874
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10888
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 1089c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 108b0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

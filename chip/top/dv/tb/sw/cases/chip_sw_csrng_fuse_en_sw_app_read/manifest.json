@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_csrng_fuse_en_sw_app_read",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_csrng_fuse_en_sw_app_read",
+  "images": [
+    {
+      "image_base": "csrng_fuse_en_sw_app_read",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:csrng_fuse_en_sw_app_read"
+    }
+  ],
+  "files": [
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.32.vmem",
+      "size_bytes": 44824,
+      "sha256": "1fed84e0d20bb2004ffc8ce5b26e2386f2f734263b457eef6dcd10d7fe3ad62c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.32.vmem"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.64.scr.vmem",
+      "size_bytes": 48309,
+      "sha256": "303b0bfad27af29d6d1948f241acb8afbbb9900d7b0db4ba5e5eda193cbda39b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.64.vmem",
+      "size_bytes": 41907,
+      "sha256": "ed6666a8ed0bbbb0e236756d95362e8144e2f9551b25a70474d0c904514271bc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.64.vmem"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.bash"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.bin",
+      "size_bytes": 17176,
+      "sha256": "ffa3b40f85e53e6b111dd514a779217212b1c9aeec0d6f6a7a41e1185f9a2fa7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.bin"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.dis",
+      "size_bytes": 652856,
+      "sha256": "3e8324ee3169d59f737581d51981bd69a72b2afc8d44ee4a06d4e35569b519e8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.dis"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.elf",
+      "size_bytes": 333664,
+      "sha256": "20bbd8cd4541f834e1d0a69fac98b5662ce2e9dc156f4a86393fe66a09d5071c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.elf"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.logs.txt",
+      "size_bytes": 7542,
+      "sha256": "896d24fb82195f31ce6b079b9df48b1a212d25fd9306c3a3cf380a2c9836a9f7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.logs.txt"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.map",
+      "size_bytes": 222357,
+      "sha256": "65433bae1109c2ab54c372d0843b88c815e470b48aec88e7ce055fe60edde389",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.map"
+    },
+    {
+      "file": "csrng_fuse_en_sw_app_read_sim_dv.rodata.txt",
+      "size_bytes": 57384,
+      "sha256": "b6ea515a98e1ed42d02a49c77b1f0483aa88dc1cdb9cfabf1b6f8c2d248c5407",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/csrng_fuse_en_sw_app_read_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_plic_all_irqs_test_10",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_plic_all_irqs_test_10",
+  "images": [
+    {
+      "image_base": "plic_all_irqs_test_10",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:plic_all_irqs_test_10"
+    }
+  ],
+  "files": [
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.32.vmem",
+      "size_bytes": 58365,
+      "sha256": "7887722c7f158c89f39433eee0c5d491b2e83f500548a2fdd9d956380fc16be0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.32.vmem"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.64.scr.vmem",
+      "size_bytes": 62939,
+      "sha256": "87152223f7de1b565c1bce5bf375c904ee45e6cf9dc7241db6b12d74e1007ba5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.64.vmem",
+      "size_bytes": 54587,
+      "sha256": "3c15ca8cd6ffa98a740cea122ca1d4f7473aded971e67559e120e013219edd34",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.64.vmem"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.bash"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.bin",
+      "size_bytes": 22372,
+      "sha256": "21a2dbf65307819fc8cd449d8d7aa30c8d0c14c7797777242e2c6ee6828f4b55",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.bin"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.dis",
+      "size_bytes": 796512,
+      "sha256": "dffd2d10728a66ba3c45cb8a9a7cb4c7c9f431c289013deaedec60214c364b19",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.dis"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.elf",
+      "size_bytes": 361868,
+      "sha256": "0edee3d305578a044a9fe4b765b0f7eea767033b5ec7ec3694430ff5d4dbe8bc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.elf"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.logs.txt",
+      "size_bytes": 17433,
+      "sha256": "d2b41c8cbc6b1c1f84be90aaf4efe52f5d78f027b6430359fb2f8e60204bf5da",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.logs.txt"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.map",
+      "size_bytes": 235963,
+      "sha256": "ecbdf3029def40ebb18ad9c6610838114f599a37abba6783364fce5012c47ba6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.map"
+    },
+    {
+      "file": "plic_all_irqs_test_10_sim_dv.rodata.txt",
+      "size_bytes": 68871,
+      "sha256": "dfd50e4e00c1e493ad8a540a37381e0e181ea88e43bed4708b2acf53a6941c1b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/plic_all_irqs_test_10_sim_dv.rodata.txt"
+    }
+  ]
+}

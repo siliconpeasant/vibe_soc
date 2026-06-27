@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_adc_ctrl_sleep_debug_cable_wakeup_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_adc_ctrl_sleep_debug_cable_wakeup_test",
+  "images": [
+    {
+      "image_base": "adc_ctrl_sleep_debug_cable_wakeup_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:adc_ctrl_sleep_debug_cable_wakeup_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.32.vmem",
+      "size_bytes": 65994,
+      "sha256": "bbffb8a1ee8ae4ba7bea70b75829ffd489fd474682f23081c751bc757b32dcd3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.64.scr.vmem",
+      "size_bytes": 71149,
+      "sha256": "a880807adfc938c9bcb5e21b2d9a45e9940865a8014c616b064c22594f580882",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.64.vmem",
+      "size_bytes": 61702,
+      "sha256": "c32c666aec2162dc5ac96300ac864a4b47e583f6126bff590bc23d366ecfe063",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.bash"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.bin",
+      "size_bytes": 25296,
+      "sha256": "112cbf9141553676483b3dcd4c15446c21e2eb8bf88b92db9930f1334036b08f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.bin"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.dis",
+      "size_bytes": 582457,
+      "sha256": "bff0913207dba252b850b5f1c13e3fd359d60a7519641af5129e7186ac600d9b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.dis"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.elf",
+      "size_bytes": 322980,
+      "sha256": "065884240c3b4b68c2441d89933d1d05584ab88785cc3f492e8c0efe6c5a17df",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.elf"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.logs.txt",
+      "size_bytes": 17863,
+      "sha256": "fc3eb76bb03ebd09070872a01d12bea803b5bcab16376a406b26922452d7c42e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.map",
+      "size_bytes": 200032,
+      "sha256": "3b51a4210c8cfb2605bde551f9440defbc5181b455e77b00779629ac758fcb5e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.map"
+    },
+    {
+      "file": "adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.rodata.txt",
+      "size_bytes": 61939,
+      "sha256": "63b0db5bcafc0c962d1f8f062429b610703c321d4cc9ec8e19cda8697ea32887",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/adc_ctrl_sleep_debug_cable_wakeup_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sysrst_ctrl_reset_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sysrst_ctrl_reset_test",
+  "images": [
+    {
+      "image_base": "sysrst_ctrl_reset_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sysrst_ctrl_reset_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.32.vmem",
+      "size_bytes": 49012,
+      "sha256": "22f646e604d85de6d27d1ea097fcb7638235f0d1d6b8c3f2bba28d6677d3df9b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.64.scr.vmem",
+      "size_bytes": 52829,
+      "sha256": "d3f16303af097c5f2dbb401ca1eedc256fcfc68915574bea23759c8f2b305805",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.64.vmem",
+      "size_bytes": 45824,
+      "sha256": "1f0edfa1994f11931234acce444ed53bbcb5961ea592cafe30361e1e55bb8739",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.bash"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.bin",
+      "size_bytes": 18784,
+      "sha256": "e0ebc449ae8d7e92a7fc313f4d480dfe8cf35d96e3fe8c04ea97779448b9bc1b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.bin"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.dis",
+      "size_bytes": 595756,
+      "sha256": "6734b7dd494f1d51d4ed90654df6acba9c0c44f8ba4b85672868eb783aae1e8b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.dis"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.elf",
+      "size_bytes": 317164,
+      "sha256": "639a8d33a0d43917e9726183f49e9542ff9b38a0cee90d01baeba750cb071762",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.elf"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.logs.txt",
+      "size_bytes": 10195,
+      "sha256": "7d7f2678e157257dd518965920a4a8efa42d6679506634b207a440a65bef569d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.map",
+      "size_bytes": 200937,
+      "sha256": "0cfb6185ce0ce918aab079a2ca97137bf93355f1bf56865faceea63312595b6f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.map"
+    },
+    {
+      "file": "sysrst_ctrl_reset_test_sim_dv.rodata.txt",
+      "size_bytes": 58543,
+      "sha256": "7ccba3c36caaf5f41fe48dfd01df2f0ff2555751f9a4ee517158c855d0aa54ff",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_reset_test_sim_dv.rodata.txt"
+    }
+  ]
+}

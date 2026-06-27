@@ -1,0 +1,651 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 61
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10018
+severity: 2
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1002c
+severity: 2
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 78
+nargs: 1
+format: CHECK-fail: Wrong reset reason %02H
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 81
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10054
+severity: 2
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 82
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10068
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 83
+nargs: 0
+format: New reset event
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 84
+nargs: 1
+format: case %0d, deep sleep mode
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 93
+nargs: 0
+format: Watchdog reset in deep sleep mode
+str_arg_idx: 
+addr: 100a4
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 94
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 95
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 100
+nargs: 0
+format: Rstmgr software reset in deep sleep mode
+str_arg_idx: 
+addr: 100e0
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 101
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 102
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10108
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 103
+nargs: 0
+format: Device reset from sw
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 114
+nargs: 0
+format: Booting and running normal sleep followed by escalation reset
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 115
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 119
+nargs: 0
+format: Last Booting
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/pwrmgr_deep_sleep_all_reset_reqs_test.c
+line: 122
+nargs: 1
+format: Booting for undefined case %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 67
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 68
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: value != ((void*)0)
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 83
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 84
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 86
+nargs: 0
+format: HECK-fail: value < 4294967295U
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10270
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10284
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 102c0
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 121
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( pwrmgr, kDifPwrmgrReqTypeWakeup, dt_aon_timer_instance_id(kAonTimerDt), kDtAonTimerWakeupWkupReq, &aon_timer_wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 125
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( pwrmgr, kDifPwrmgrReqTypeWakeup, dt_sysrst_ctrl_instance_id(kSysrstCtrlDt), kDtSysrstCtrlWakeupWkupReq, &sysrst_ctrl_wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 134
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102fc
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 136
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10310
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 138
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10324
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 139
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10338
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 177
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1034c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 180
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( alert_handler, kDifAlertHandlerIrqClassa, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10360
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 184
+nargs: 0
+format: sysrst enabled
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 190
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( pwrmgr, kDifPwrmgrReqTypeReset, dt_sysrst_ctrl_instance_id(kSysrstCtrlDt), kDtSysrstCtrlResetReqRstReq, &reset_sources) returns %0d
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 192
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( pwrmgr, kDifPwrmgrReqTypeReset, reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1039c
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 193
+nargs: 0
+format: Reset Request SourceOne is set
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 206
+nargs: 1
+format: DIF-fail: dif_sysrst_ctrl_key_combo_detect_configure( sysrst_ctrl_aon, kDifSysrstCtrlKeyCombo0, sysrst_ctrl_key_combo_config) returns %0d
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 218
+nargs: 1
+format: DIF-fail: dif_sysrst_ctrl_input_change_detect_configure( sysrst_ctrl_aon, sysrst_ctrl_input_change_config) returns %0d
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 221
+nargs: 1
+format: DIF-fail: dif_pinmux_input_select( &pinmux, kTopEarlgreyPinmuxPeripheralInSysrstCtrlAonKey0In, pad_pin) returns %0d
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 227
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10400
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 230
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10414
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 233
+nargs: 2
+format: Wdog will bark after %0d microseconds (%0d aon cycles)
+str_arg_idx: 
+addr: 10428
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 235
+nargs: 2
+format: Wdog will bite after %0d microseconds (%0d aon cycles)
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 239
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10450
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 244
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( pwrmgr, kDifPwrmgrReqTypeReset, dt_aon_timer_instance_id(kDtAonTimerAon), kDtAonTimerResetReqAonTimer, &reset_sources) returns %0d
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 246
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( pwrmgr, kDifPwrmgrReqTypeReset, reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 261
+nargs: 0
+format: CHECK-fail: Timeout waiting for escalation to occur.
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 282
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104a0
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 286
+nargs: 0
+format: CHECK-fail: Failed to reset!
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 304
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104c8
+severity: 0
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 308
+nargs: 1
+format: Sysrst reset in %0s sleep mode
+str_arg_idx: 0
+addr: 104dc
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 313
+nargs: 0
+format: CHECK-fail: Failed to reset!
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 322
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_claim(plic, kPlicTarget, &irq_id) returns %0d
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 335
+nargs: 1
+format: DIF-fail: dif_alert_handler_escalation_clear(alert_handler, kDifAlertHandlerClassA) returns %0d
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 336
+nargs: 1
+format: DIF-fail: dif_aon_timer_irq_acknowledge(aon_timer, irq) returns %0d
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 339
+nargs: 0
+format: CHECK-fail: AON Timer Wdog should not bark
+str_arg_idx: 
+addr: 10540
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 346
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_acknowledge(alert_handler, alert) returns %0d
+str_arg_idx: 
+addr: 10554
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 350
+nargs: 1
+format: DIF-fail: dif_alert_handler_get_class_state( alert_handler, kDifAlertHandlerClassA, &state) returns %0d
+str_arg_idx: 
+addr: 10568
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 352
+nargs: 1
+format: CHECK-fail: Wrong phase %0d
+str_arg_idx: 
+addr: 1057c
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 354
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_acknowledge(alert_handler, irq) returns %0d
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: sw/device/tests/pwrmgr_sleep_resets_lib.c
+line: 359
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_complete(plic, kPlicTarget, irq_id) returns %0d
+str_arg_idx: 
+addr: 105a4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 173
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: sw/device/lib/testing/rv_plic_testutils.c
+line: 21
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority(plic, irq_id, priority) returns %0d
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/lib/testing/rv_plic_testutils.c
+line: 23
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled(plic, irq_id, target, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10680
+severity: 2
+file: sw/device/lib/testing/rv_plic_testutils.c
+line: 26
+nargs: 1
+format: DIF-fail: dif_rv_plic_target_set_threshold(plic, target, kDifRvPlicMinPriority) returns %0d
+str_arg_idx: 
+addr: 10694
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 106a8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 106bc
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 106d0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 106e4
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 106f8
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 1070c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10720
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10734
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

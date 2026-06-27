@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_clkmgr_jitter_frequency_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_clkmgr_jitter_frequency_test",
+  "images": [
+    {
+      "image_base": "clkmgr_jitter_frequency_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:clkmgr_jitter_frequency_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.32.vmem",
+      "size_bytes": 54524,
+      "sha256": "3b74c8efea71678388fa2c564ace62b01d65c3aea944ca5cfbc21f6425372fd2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.64.scr.vmem",
+      "size_bytes": 58769,
+      "sha256": "79b15642eaf08c032ae34024b79672e98a4591f2b499994daa39f8f20a6e7360",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.64.vmem",
+      "size_bytes": 50972,
+      "sha256": "a4f4d51243c9b653b56dfa509156624b1f6e1582596b86b0924c4daf04025a43",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.bash"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.bin",
+      "size_bytes": 20896,
+      "sha256": "1c4dfe59c771785dcdf97c7c8e37247396e07b76008492ae338ca9391da31272",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.bin"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.dis",
+      "size_bytes": 594918,
+      "sha256": "a3be473d7ae4956144f4d39842f1aad29bbb759259cfa7d33906e4f158e8dcd6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.dis"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.elf",
+      "size_bytes": 320072,
+      "sha256": "ec49651920526214dd6ee0a21146dcf5e81d7746362714cc0b424c1c65045e2f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.elf"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.logs.txt",
+      "size_bytes": 12699,
+      "sha256": "0ffb26c1e0dee72c19c9f9cd6f9c8b789b1efaa043b7c138599391f8349b1610",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.map",
+      "size_bytes": 207682,
+      "sha256": "115a207cec7cee6bed2f1173d5fedb972162c81ec7f8a585c972dc01e888f2c6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.map"
+    },
+    {
+      "file": "clkmgr_jitter_frequency_test_sim_dv.rodata.txt",
+      "size_bytes": 60786,
+      "sha256": "2448e75a6281610b5b91f5dc96424df45430ab3fd649586d3684db589720a1ab",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_jitter_frequency_test_sim_dv.rodata.txt"
+    }
+  ]
+}

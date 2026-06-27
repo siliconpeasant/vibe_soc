@@ -1,0 +1,964 @@
+addr: 10001fe8
+string: A�"�E*�7@*�
+addr: 10001ffc
+string: �T��E�F�
+addr: 1000200a
+string: 瀠r��
+addr: 10002011
+string: ��%�cM
+addr: 1000201a
+string: ��E�
+addr: 10002022
+string: �@�cP�
+addr: 1000202d
+string: ���}��
+addr: 1000203a
+string: �E!�ui
+addr: 10002042
+string: ��56�
+addr: 1000204a
+string: ��H���e�"��
+addr: 1000205c
+string: ���E
+addr: 10002065
+string: �
+addr: 10002069
+string: 
+addr: 1000206d
+string: �G�
+addr: 10002074
+string: �
+addr: 10002077
+string: C1eժ�
+addr: 10002082
+string: 瀀9
+addr: 1000208a
+string: �b��E�F�
+addr: 10002098
+string: ��icM
+addr: 100020a0
+string: ��E�
+addr: 100020a8
+string: ���cP����p}��
+addr: 100020c0
+string: ���ui
+addr: 100020c8
+string: ��56�
+addr: 100020d0
+string: �`@���E�"��
+addr: 100020e2
+string: �%�E
+addr: 100020eb
+string: �
+addr: 100020ef
+string: 
+addr: 100020f3
+string: �G�
+addr: 100020fa
+string: 瀠:1eժ�
+addr: 10002108
+string: � 1%e5�
+addr: 10002114
+string: �`0E�@"DA��
+addr: 10002124
+string: sw/device/lib/testing/otp_ctrl_testutils.c
+addr: 1000214f
+string: sw/device/silicon_creator/manuf/lib/util.c
+addr: 1000217a
+string: PASS!
+addr: 10002180
+string: ErrorError
+addr: 1000218b
+string: CHECK-STATUS-fail: %c%c%c:%d = %s
+addr: 100021ad
+string: FAIL!
+addr: 100021b3
+string: test_status_set to 0x%x
+addr: 100021cb
+string: sw/device/tests/otp_ctrl_rot_auth_config_test.c
+addr: 100021fb
+string: dai_write_error_check code: 0x%x
+addr: 1000221c
+string: sw/device/lib/testing/test_framework/status.c
+addr: 1000224a
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 10002285
+string: OTP partition: %d addr[0x%x] got: 0x%08x, expected: 0x%08x
+addr: 100022c4
+string: @
+addr: 100022c8
+string: 
+addr: 100022cc
+string: 
+addr: 100022d0
+string: @
+addr: 100022d4
+string: �
+addr: 100022d8
+string: 
+addr: 100022dc
+string: 
+addr: 100022e0
+string: �
+addr: 100022e4
+string: �
+addr: 100022e8
+string: 
+addr: 100022ec
+string: 
+addr: 100022f0
+string: x
+addr: 100022f4
+string: �
+addr: 100022f8
+string: 
+addr: 100022fc
+string: 
+addr: 10002300
+string: P
+addr: 10002304
+string: (
+addr: 10002308
+string: 
+addr: 1000230c
+string: 
+addr: 10002310
+string: x
+addr: 10002314
+string: H
+addr: 10002318
+string: 
+addr: 1000231d
+string: 
+addr: 10002320
+string: �
+addr: 10002324
+string: 
+addr: 10002328
+string: 
+addr: 1000232d
+string: 
+addr: 10002330
+string: �
+addr: 10002334
+string: (
+addr: 10002338
+string: 
+addr: 1000233d
+string: 
+addr: 10002340
+string: �
+addr: 10002344
+string: X
+addr: 10002348
+string: 
+addr: 1000234d
+string: 
+addr: 10002350
+string: P
+addr: 10002354
+string: X
+addr: 10002358
+string: 
+addr: 1000235d
+string: 
+addr: 10002360
+string: �
+addr: 10002364
+string: X
+addr: 10002368
+string: 
+addr: 1000236e
+string: 
+addr: 10002370
+string: ��?���m����{�����$P�=E�[7�7i��f.P~��ީMD�:A<"�*Q�s��ץ��V����q�z����~O���8W�%�B���繇W�e�Яʼ/���)�R@̢߱���K����J�p[K�έ9�C���k��8����%�(
+addr: 1000240d
+string: ��ٙ4�3{U挘w����	�<�m�%a�Ns.<[�o�W~�9�C^T>BQ��x"��V��/ $M 4q�l���j���GuM�z���.-X �����t����Ǳ}����?�*���O�	�s*[� �"��qr��T���ABq�z�L�a���t�Xx�C���
+addr: 100024c1
+string: �����u7Ň@YAB�9�Cn>-�孲�F�Q����{&�	�����P�I�xAB�9�C�Ec��qbIyU���Z�B�>�_�3��V�ȃM��F�ZD��o�^l4-��^o�]�&�};�yg�n�<D
+addr: 10002544
+string: x
+addr: 10002548
+string: 
+addr: 1000254c
+string: p#
+addr: 1000254f
+string: 
+addr: 10002554
+string: |
+addr: 10002558
+string: 
+addr: 1000255c
+string: t#
+addr: 1000255f
+string: 
+addr: 10002564
+string: �
+addr: 10002568
+string: 
+addr: 1000256c
+string: �#
+addr: 1000256f
+string: 
+addr: 10002574
+string: �
+addr: 10002578
+string: 
+addr: 1000257c
+string: �#
+addr: 1000257f
+string: 
+addr: 10002585
+string: 
+addr: 10002588
+string: 
+addr: 1000258c
+string: �#
+addr: 1000258f
+string: 
+addr: 10002594
+string: 
+addr: 10002598
+string: 
+addr: 1000259c
+string: �#
+addr: 1000259f
+string: 
+addr: 100025a4
+string: D
+addr: 100025a8
+string: 
+addr: 100025ac
+string: <$
+addr: 100025af
+string: 
+addr: 100025b4
+string: H
+addr: 100025b8
+string: 
+addr: 100025bc
+string: @$
+addr: 100025bf
+string: 
+addr: 100025c4
+string: �
+addr: 100025c8
+string: 
+addr: 100025cc
+string: �$
+addr: 100025cf
+string: 
+addr: 100025d4
+string: �
+addr: 100025d8
+string: 
+addr: 100025dc
+string: �$
+addr: 100025df
+string: 
+addr: 100025e4
+string: �
+addr: 100025e8
+string: 
+addr: 100025ec
+string: �$
+addr: 100025ef
+string: 
+addr: 100025f4
+string: �
+addr: 100025f8
+string: 
+addr: 100025fc
+string: �$
+addr: 100025ff
+string: 
+addr: 10002604
+string: �
+addr: 10002608
+string: 
+addr: 1000260c
+string: �$
+addr: 1000260f
+string: 
+addr: 10002614
+string: �
+addr: 10002618
+string: 
+addr: 1000261c
+string: �$
+addr: 1000261f
+string: 
+addr: 10002624
+string: �
+addr: 10002628
+string: 
+addr: 1000262c
+string: �$
+addr: 1000262f
+string: 
+addr: 10002634
+string: �
+addr: 10002638
+string: 
+addr: 1000263c
+string: �$
+addr: 1000263f
+string: 
+addr: 10002644
+string: �
+addr: 10002648
+string: 
+addr: 1000264c
+string: �$
+addr: 1000264f
+string: 
+addr: 10002655
+string: 
+addr: 10002658
+string: 
+addr: 1000265c
+string: �$
+addr: 1000265f
+string: 
+addr: 10002664
+string: 
+addr: 10002668
+string: 
+addr: 1000266c
+string: �$
+addr: 1000266f
+string: 
+addr: 10002674
+string: $
+addr: 10002678
+string: 
+addr: 1000267c
+string: %
+addr: 1000267f
+string: 
+addr: 10002684
+string: (
+addr: 10002688
+string: 
+addr: 1000268c
+string: %
+addr: 1000268f
+string: �g��g��g��g��g��g��g��g��
+addr: 100026b4
+string: P
+addr: 100026b8
+string: 
+addr: 100026bc
+string: �&
+addr: 100026bf
+string: 
+addr: 100026c4
+string: T
+addr: 100026c8
+string: 
+addr: 100026cc
+string: �&
+addr: 100026cf
+string: 
+addr: 100026d4
+string: X
+addr: 100026d8
+string: 
+addr: 100026dc
+string: �&
+addr: 100026df
+string: 
+addr: 100026e4
+string: \
+addr: 100026e8
+string: 
+addr: 100026ec
+string: �&
+addr: 100026ef
+string: 
+addr: 100026f4
+string: `
+addr: 100026f8
+string: 
+addr: 100026fc
+string: �&
+addr: 100026ff
+string: 
+addr: 10002704
+string: d
+addr: 10002708
+string: 
+addr: 1000270c
+string: �&
+addr: 1000270f
+string: 
+addr: 10002714
+string: h
+addr: 10002718
+string: 
+addr: 1000271c
+string: �&
+addr: 1000271f
+string: 
+addr: 10002724
+string: l
+addr: 10002728
+string: 
+addr: 1000272c
+string: �&
+addr: 1000272f
+string: q�΢̦�����������^�b�f�j�nֶ���.�*��M�E
+addr: 1000275a
+string: �
+addr: 1000275e
+string: ��e����
+addr: 10002766
+string: ��
+addr: 1000276a
+string: �J
+addr: 1000276e
+string: *��L
+addr: 10002776
+string: ��*�7ui
+addr: 10002780
+string: 56*�7eo
+addr: 1000278a
+string: E77
+addr: 10002791
+string: Ec�}5�M
+addr: 1000279c
+string: N�H@���c�
+addr: 100027a8
+string: �U�H����ɓ��œ��c��
+addr: 100027c6
+string: ��}�!��%
+addr: 100027d2
+string: 鍁ŁL1E%���
+addr: 100027e0
+string: cu�
+addr: 100027e4
+string: �L-E)�2FB��5�
+addr: 100027f4
+string: 3�@�|�
+addr: 100027fc
+string: ���-�*�H,F�
+addr: 1000280e
+string: 瀀�U�5
+addr: 10002818
+string: �����ERF�
+addr: 10002826
+string: �
+addr: 10002829
+string: �cKD@V�j�c�Ec�FD�*�
+addr: 10002844
+string: 3m�!c��b��
+addr: 10002852
+string: �
+addr: 10002855
+string: pcE(Ec
+addr: 10002860
+string: 5E*�H,F�
+addr: 1000286e
+string: 瀀�U�5
+addr: 10002878
+string: �����
+addr: 10002882
+string: �e�څ�
+addr: 1000288c
+string: 瀠�cF&b��
+addr: 1000289a
+string: 瀀kcM&b��
+addr: 100028a8
+string: � �cD(b��
+addr: 100028b6
+string: ��icK(b�ʅf��
+addr: 100028c8
+string: 瀠�*�H,F�
+addr: 100028d8
+string: ���U�5
+addr: 100028e2
+string: �����
+addr: 100028ec
+string: �Ńڅ�
+addr: 100028f6
+string: �
+addr: 100028f9
+string: �cI&b��
+addr: 10002904
+string: ��dc@(c
+addr: 10002910
+string: %
+addr: 10002914
+string: lQ.�(Q*�E�E*�H,F�
+addr: 1000292e
+string: 瀀�U�5
+addr: 10002938
+string: ���������e~څ�
+addr: 1000294c
+string: 瀠�cN$V�HBBrF1�bF��M�c�����JM�L��D�*�
+addr: 1000297e
+string: 3M�!�<
+addr: 10002986
+string: ����4b�ʅf��
+addr: 10002996
+string: �`ecO"W��
+addr: 100029a4
+string: c�U�b��
+addr: 100029b0
+string: � ZcHc1E�2EA���-Ec�"EA↌B�
+addr: 100029da
+string: f��ɈB0͌BE	F���E*�LF�
+addr: 100029fa
+string: ���U�5
+addr: 10002a04
+string: ���U������qڅ�
+addr: 10002a18
+string: ��cEb��
+addr: 10002a26
+string: ��RcBb��
+addr: 10002a34
+string: �`�cO4b�ʅf��
+addr: 10002a48
+string: �@ZcI"U��
+addr: 10002a56
+string: c������9��
+addr: 10002a67
+string: ��Y���\.��EJ�憗
+addr: 10002a80
+string: �@���-�����i5E�pڅ�
+addr: 10002a9e
+string: 瀀��JM�L�_�=����JM�L����f5Eڅ�
+addr: 10002ac8
+string: ���]Ϊ����Di���������t�����c7eo
+addr: 10002af2
+string: �E7������t����%b7eo
+addr: 10002b0e
+string: �E7������t����e`7eo
+addr: 10002b2a
+string: �E7��M���t�����^7eo
+addr: 10002b46
+string: �E7�Y���t�����\7eo
+addr: 10002b62
+string: �E7�`����t����%[7eo
+addr: 10002b7e
+string: �E7������t����eY7eo
+addr: 10002b9a
+string: �E7������0����t����%W7eo
+addr: 10002bbe
+string: �E7��"��
+addr: 10002bcc
+string: 瀠����EU7eo
+addr: 10002bdc
+string: �E7�P"��
+addr: 10002bea
+string: �������e7ui
+addr: 10002bfa
+string: �56�`"������P!����p�����!�������������O�eo
+addr: 10002c34
+string: ��E7�
+addr: 10002c3c
+string: 瀠��������e`�ui
+addr: 10002c50
+string: ��56� �
+addr: 10002c5c
+string: 瀠�&��@fD�DFI�I&J�JK�[b\�\B]�]%a����}������e\�ui
+addr: 10002c90
+string: ��56�����Ec�
+addr: 10002ca0
+string: ����Z7ui
+addr: 10002cac
+string: �561E��!����%Y7ui
+addr: 10002cc4
+string: �565E���
+addr: 10002cd2
+string: �@���a���t�9��#&
+addr: 10002ced
+string: �D�# &#.1.����Ec�E�p	c��E0�@N��
+addr: 10002d1c
+string: �@Ac@(�
+addr: 10002d29
+string: ���`����AED�E�
+addr: 10002d42
+string: �@ycE
+addr: 10002d4a
+string: c�	����t�1��E0�FN��
+addr: 10002d64
+string: ��<cF(�
+addr: 10002d71
+string: 0
+addr: 10002d74
+string: �
+addr: 10002d78
+string: �`2E�E3�
+addr: 10002d84
+string: �	����SJ�BPB·�C6�apːC,ΌC�͈CD�E,��D"Ԩ,F�
+addr: 10002dc0
+string: �`%��5
+addr: 10002dcc
+string: ���%�����%5�eo
+addr: 10002dde
+string: �E7���
+addr: 10002de8
+string: ��ncK
+addr: 10002df0
+string: N��
+addr: 10002df6
+string: ��cD�DA���y�����1� J����
+addr: 10002e1c
+string: 瀠k!���y����%B7ui
+addr: 10002e34
+string: �56�0J�����t�����0�����t����U/�
+addr: 10002e65
+string: "��E�
+addr: 10002e6e
+string: 瀀f����=7ui
+addr: 10002e7e
+string: �56�p"��
+addr: 10002e8c
+string: 瀠d&����
+addr: 10002e98
+string: �E�A�
+addr: 10002ea0
+string: �)�!���AG����}W�� B��G��7A���7�
+addr: 10002ecc
+string: w5
+addr: 10002ed0
+string: 37�
+addr: 10002ed4
+string: }�	��
+addr: 10002edc
+string: �#
+addr: 10002ee0
+string: �
+addr: 10002ee2
+string: �ͷE7Acx�
+addr: 10002ef2
+string: �BÑ��l��7A���
+addr: 10002f08
+string: �#
+addr: 10002f0c
+string: �
+addr: 10002f0e
+string: ���7A�EL�A��
+addr: 10002f20
+string: ��7A�I����E�E!��U�F��A�.������]q�ƢĦ���Nު�s)
+addr: 10002f5f
+string: ��$
+addr: 10002f63
+string: �s%
+addr: 10002f67
+string: ����7E
+addr: 10002f70
+string: $��N��
+addr: 10002f7c
+string: ��:�E5
+addr: 10002f86
+string: �ՅHm�1�s%
+addr: 10002f91
+string: ��%
+addr: 10002f95
+string: �s&
+addr: 10002f99
+string: ����3��@���
+addr: 10002fa6
+string: 3%A��5�
+addr: 10002fb0
+string: 5
+addr: 10002fb4
+string: m�]�����7eo
+addr: 10002fc4
+string: �E7E���
+addr: 10002fd2
+string: �@P�E�@&D�DI�Yaa���"�&�J�N�R�6�����*��
+addr: 10003002
+string: �
+addr: 10003005
+string: �cIR���N��
+addr: 10003014
+string: ��<*��L
+addr: 1000301e
+string: F�
+addr: 10003024
+string: � YE�5
+addr: 1000302e
+string: ����������eo
+addr: 10003040
+string: ��E7΅�
+addr: 1000304a
+string: ��HcBR��
+addr: 10003058
+string: 瀠�cE5
+addr: 10003064
+string: �5
+addr: 10003068
+string: ɍE��%
+addr: 10003072
+string: ,QE# �
+addr: 1000307a
+string: *��L
+addr: 10003080
+string: F�
+addr: 10003086
+string: �
+addr: 10003089
+string: SE�5
+addr: 10003090
+string: �����������eo
+addr: 100030a2
+string: ��E7���
+addr: 100030ac
+string: 瀠BcHD��*�}��������eo
+addr: 100030c8
+string: ��E7����*�}���������΅=�*�}��������eo
+addr: 100030f6
+string: ��E7���*�}�����������
+addr: 10003116
+string: �
+addr: 10003119
+string: <"��@bD�DBI�I"Ja��yq�"�&�J�N�R�V�Z�^�b�2���*��D���&
+addr: 10003150
+string: 5
+addr: 10003154
+string: �5
+addr: 10003158
+string: 3l�
+addr: 1000315c
+string: �����7eo
+addr: 10003168
+string: �E7c�Z��
+addr: 10003176
+string: ���cLZ�΅&��
+addr: 10003188
+string: 瀠%*��L
+addr: 10003192
+string: F�
+addr: 10003198
+string: ��AE�5
+addr: 100031a2
+string: ����օR��
+addr: 100031b0
+string: �`2cCZ��
+addr: 100031be
+string: �@�c@Ec
+addr: 100031cc
+string: %
+addr: 100031d0
+string: ,QE3�
+addr: 100031d8
+string: �*��L
+addr: 100031e0
+string: F�
+addr: 100031e6
+string: �
+addr: 100031e9
+string: =E�5
+addr: 100031f0
+string: ����օR��
+addr: 100031fe
+string: 瀀-cD����D5�*���!�*����*���!�*���u�������eo
+addr: 10003240
+string: ��E7�
+addr: 10003248
+string: ��("��P"T�TY�IbJ�JBK�K"LEa��]q�ƢĦ�,
+addr: 10003270
+string: �
+addr: 10003274
+string: �`*��L
+addr: 1000327e
+string: F�
+addr: 10003284
+string: � 3E�5
+addr: 1000328e
+string: ����������eo
+addr: 100032a0
+string: ��E7���
+addr: 100032aa
+string: ��"cJ
+addr: 100032b2
+string: "Fu&��D��*�}������������
+addr: 100032d8
+string: ��=��
+addr: 100032e1
+string: �%җ����.��E�
+addr: 100032f6
+string: �������7eo
+addr: 10003306
+string: �E75E� 	�
+addr: 10003314
+string: � *�"��@&D�Daa��6
+addr: 1000332a
+string: ��
+addr: 1000332e
+string: юF��#�
+addr: 10003338
+string: A#v
+addr: 10003342
+string: %擆E
+addr: 10003348
+string: -G�#�
+addr: 10003350
+string: �}e��FGHc3�(�wf
+addr: 10003368
+string: �˜A]���A6�|B��3��
+addr: 1000337c
+string: ����E�Fc�
+addr: 1000338e
+string: 3�(3vg
+addr: 10003396
+string: ƐAY������F2����F(G��E
+addr: 100033b4
+string: aG�H�B��3V�H�#�U
+addr: 100033c8
+string: A:�B��Å�����ɒ�����������F3��
+addr: 100033f2
+string: �E��B�Ec|�
+addr: 100033fe
+string: �BA����A�EF0���E.���A�"�&±e��ժc�*��d�c��
+addr: 10003435
+string: �弗��%�.��E"��
+addr: 1000344c
+string: 瀀7A# ��@"D�DA���
+addr: 10003465
+string: �幗���	��
+addr: 10003477
+string: �Ÿ�����.��E�
+addr: 1000348c
+string: 瀀7A# ��
+addr: 1000349c
+string: �`F�B�>�:�6�2�7A#"�(
+addr: 100034b8
+string: *�h
+addr: 100034bc
+string: ��*&��#"����a����i͡鲅��
+addr: 100034de
+string: ���H����c}�
+addr: 100034ec
+string: ������Ǔ�F�����շFcm�
+addr: 10003508
+string: �����
+addr: 10003510
+string: ��
+addr: 10003514
+string: B�U�э)��uu
+addr: 10003522
+string: ��E������v��H}Hc�}G����օ
+addr: 1000354e
+string: �����sc��G�����v��������
+addr: 1000357a
+string: ��w�7�َ�����
+addr: 10003592
+string: ��эV�}���Q�Y�M���)����6
+addr: 100035b6
+string: �
+addr: 100035ba
+string: َ��G��ck�
+addr: 100035c6
+string: �ƥ
+addr: 100035ca
+string: ���²�!���@��3�@x��������c�
+addr: 100035ea
+string: �
+addr: 100035ee
+string: #��
+addr: 100035f2
+string: �����6�c�3��
+addr: 10003606
+string: C��
+addr: 1000360c
+string: �Ñ����3��
+addr: 1000361a
+string: 
+addr: 1000361e
+string: ��
+addr: 10003622
+string: #��
+addr: 10003626
+string: �������s
+addr: 0
+string: csi
+addr: 4
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 80
+string: csi
+addr: 84
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 100
+string: csi
+addr: 104
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 180
+string: csi
+addr: 184
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 200
+string: csi
+addr: 204
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 280
+string: csi
+addr: 284
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 300
+string: csi
+addr: 304
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 380
+string: csi
+addr: 384
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 400
+string: csi
+addr: 404
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 480
+string: csi
+addr: 484
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 500
+string: csi
+addr: 504
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 580
+string: csi
+addr: 584
+string: sw/device/silicon_creator/manuf/lib/individualize_sw_cfg.c
+addr: 600
+string: ����sw/device/silicon_creator/manuf/lib/util.c
+addr: 680
+string: ����sw/device/silicon_creator/manuf/lib/util.c
+addr: 700
+string: tco
+addr: 704
+string: sw/device/lib/testing/otp_ctrl_testutils.c
+addr: 780
+string: tco
+addr: 784
+string: sw/device/lib/testing/otp_ctrl_testutils.c
+addr: 800
+string: tco
+addr: 804
+string: sw/device/lib/testing/otp_ctrl_testutils.c
+addr: 880
+string: tco
+addr: 884
+string: sw/device/lib/testing/otp_ctrl_testutils.c
+addr: 900
+string: tco
+addr: 904
+string: sw/device/lib/testing/otp_ctrl_testutils.c
+addr: 980
+string: tcf
+addr: 984
+string: sw/device/lib/testing/flash_ctrl_testutils.c
+addr: a00
+string: tcf
+addr: a04
+string: sw/device/lib/testing/flash_ctrl_testutils.c
+addr: a80
+string: tcf
+addr: a84
+string: sw/device/lib/testing/flash_ctrl_testutils.c
+addr: b00
+string: tcf
+addr: b04
+string: sw/device/lib/testing/flash_ctrl_testutils.c

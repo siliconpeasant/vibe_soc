@@ -1,0 +1,3 @@
+# vibe_soc-local OpenTitan case overrides.
+# Keep this file small; generated JSON shards remain the main index.
+overrides: {}

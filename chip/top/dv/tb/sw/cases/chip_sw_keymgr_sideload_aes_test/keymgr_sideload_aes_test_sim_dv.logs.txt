@@ -1,0 +1,525 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 66
+nargs: 0
+format: Encrypting with 256-bit AES sideload key in ECB mode.
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 68
+nargs: 0
+format: Decrypting with 256-bit AES sideload key in ECB mode.
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 71
+nargs: 1
+format: DIF-fail: dif_aes_start(&aes, &transaction, NULL, NULL) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 73
+nargs: 1
+format: DIF-fail: dif_aes_load_data(&aes, in_data) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 79
+nargs: 1
+format: DIF-fail: dif_aes_read_output(&aes, out_data) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 82
+nargs: 0
+format: inished operation with AES sideloaded key.
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 83
+nargs: 1
+format: DIF-fail: dif_aes_end(&aes) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 95
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 99
+nargs: 2
+format: Key version %0d is greater than the maximum key version %0d
+str_arg_idx: 
+addr: 100b8
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 101
+nargs: 1
+format: Setting key version to the maximum key version %0d
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 109
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100e0
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 110
+nargs: 1
+format: Keymgr generated HW output for Aes at %0s State
+str_arg_idx: 0
+addr: 100f4
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 124
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10108
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 126
+nargs: 1
+format: CHECK-fail: out_data_cipher.data %0smatches kPlainText
+str_arg_idx: 0
+addr: 1011c
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 126
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%08h
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 133
+nargs: 4
+format: AES Plaintext (HW Core): 0x%08h%08h%08h%08h
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 136
+nargs: 4
+format: AES Ciphertext (HW Core): 0x%08h%08h%08h%08h
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 143
+nargs: 16
+format: AES Expected Ciphertext (from C model): 0x%02h%02h%02h%02h%02h%02h%02h%02h%02h%02h%02h%02h%02h%02h%02h%02h
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 145
+nargs: 1
+format: CHECK-fail: out_data_cipher.data %0smatches (uint32_t *)kAESDigest
+str_arg_idx: 0
+addr: 10180
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 145
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 151
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101a8
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 152
+nargs: 1
+format: CHECK-fail: out_data_plain.data %0smatches kPlainText
+str_arg_idx: 0
+addr: 101bc
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 152
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 155
+nargs: 0
+format: Clearing the sideloaded key.
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 168
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101f8
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 169
+nargs: 1
+format: CHECK-fail: out_data_plain.data %0smatches kPlainText
+str_arg_idx: 0
+addr: 1020c
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 169
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%08h
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 174
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10234
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 175
+nargs: 1
+format: Keymgr generated HW output for Aes at %0s State
+str_arg_idx: 0
+addr: 10248
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 179
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1025c
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 183
+nargs: 1
+format: CHECK-fail: out_data_cipher.data %0smatches out_data_second_cipher.data
+str_arg_idx: 0
+addr: 10270
+severity: 0
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 183
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/tests/keymgr_sideload_aes_test.c
+line: 190
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10298
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 126
+nargs: 0
+format: Keymgr entered CreatorRootKey State
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 132
+nargs: 0
+format: Keymgr generated identity at CreatorRootKey State
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 139
+nargs: 0
+format: Keymgr entered OwnerIntKey State
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 201
+nargs: 0
+format: Powered up for the first time, program flash
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 225
+nargs: 0
+format: Requesting a reset to make OTP partitions accessible to keymgr
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 260
+nargs: 1
+format: CHECK-fail: Unexpected reset reason: %08h
+str_arg_idx: 
+addr: 10310
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 262
+nargs: 0
+format: Initializing entropy complex in Auto mode
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 266
+nargs: 0
+format: Powered up for the second time, actuate keymgr and perform test.
+str_arg_idx: 
+addr: 10338
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 274
+nargs: 0
+format: Keymgr entered Init State
+str_arg_idx: 
+addr: 1034c
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 278
+nargs: 0
+format: Using test_rom, setting inputs and advancing state...
+str_arg_idx: 
+addr: 10360
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 281
+nargs: 0
+format: Using rom, only advancing state...
+str_arg_idx: 
+addr: 10374
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 286
+nargs: 0
+format: Keymgr entered CreatorRootKey State
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 294
+nargs: 0
+format: Keymgr generated identity at CreatorRootKey State
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 311
+nargs: 2
+format: CHECK-fail: Keymgr in unexpected state: %0h, expected to be %0h
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 340
+nargs: 1
+format: CHECK-fail: Unexpected status: %0h
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 352
+nargs: 1
+format: Unexpected keymgr state: 0x%0h
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 379
+nargs: 1
+format: DIF-fail: dif_keymgr_get_state(keymgr, &state) returns %0d
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 71
+nargs: 0
+format: CHECK-fail: memcmp(data->value, readback_data.value, sizeof(data->value)) == 0
+str_arg_idx: 
+addr: 10400
+severity: 0
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 100
+nargs: 2
+format: OTP partition locked. Digest: %0h-%0h
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 35
+nargs: 1
+format: DIF-fail: dif_entropy_src_configure(&entropy_src, config, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 177
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10478
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 104b4
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10540
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10554
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10568
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 105a4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 105b8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 105cc
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

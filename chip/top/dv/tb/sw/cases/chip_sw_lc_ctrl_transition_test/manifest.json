@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_lc_ctrl_transition_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_lc_ctrl_transition_test",
+  "images": [
+    {
+      "image_base": "lc_ctrl_transition_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:lc_ctrl_transition_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.32.vmem",
+      "size_bytes": 36246,
+      "sha256": "19ac662494e43876ffbc2f70b255734c245303aa0d5d039d634a99512b6b657b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.64.scr.vmem",
+      "size_bytes": 39059,
+      "sha256": "884792a6ea4fe50e8add4b8535a9a4e19ff2cc535b928a0bc939ac8c8d784660",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.64.vmem",
+      "size_bytes": 33890,
+      "sha256": "66bf81efbb2694db081ec0abaa2a8a4917471bd8b14d07aab8ff33452a8f4c37",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.bash"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.bin",
+      "size_bytes": 13888,
+      "sha256": "991728afa4de701b4286a9acbcf50099810b5b3f8a5b973dee58c8969e77c63a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.bin"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.dis",
+      "size_bytes": 529523,
+      "sha256": "04e8c6c6e7bc2e08374d7212d2cdcd9449157e9c94d643d027eb6f226b9bf588",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.dis"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.elf",
+      "size_bytes": 270804,
+      "sha256": "7168f99ddaf5c06739f87c9e241980d8e44039ced3e5751f9abcae395e3c80bf",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.elf"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.logs.txt",
+      "size_bytes": 6284,
+      "sha256": "49afaffeb8a21cab30a75ca9000e69461f5647d30675f79d22707f4daa2f375f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.map",
+      "size_bytes": 168704,
+      "sha256": "65de27218e487fe3792e7b2f86c0c16a9643cd2fbef9baff326f85b7b3a87539",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.map"
+    },
+    {
+      "file": "lc_ctrl_transition_test_sim_dv.rodata.txt",
+      "size_bytes": 45265,
+      "sha256": "28ed34fcf9f38f7181b046978367a4d0cb770bb47afc906e9ec8e65847d4d6c4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_ctrl_transition_test_sim_dv.rodata.txt"
+    }
+  ]
+}

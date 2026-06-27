@@ -1,0 +1,658 @@
+addr: 10004
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 340
+nargs: 2
+format: CHECK-fail: Interrupt from incorrect peripheral: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 728
+nargs: 2
+format: CHECK-fail: Incorrect keymgr IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 736
+nargs: 2
+format: HECK-fail: Only keymgr IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 738
+nargs: 1
+format: DIF-fail: dif_keymgr_irq_acknowledge(&keymgr, irq) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 751
+nargs: 2
+format: CHECK-fail: Incorrect kmac IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 759
+nargs: 2
+format: CHECK-fail: Only kmac IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 764
+nargs: 1
+format: DIF-fail: dif_kmac_irq_force(&kmac, irq, false) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 773
+nargs: 1
+format: DIF-fail: dif_kmac_irq_acknowledge(&kmac, irq) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 787
+nargs: 2
+format: CHECK-fail: Incorrect otbn IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 795
+nargs: 2
+format: CHECK-fail: Only otbn IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 797
+nargs: 1
+format: DIF-fail: dif_otbn_irq_acknowledge(&otbn, irq) returns %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 810
+nargs: 2
+format: CHECK-fail: Incorrect otp_ctrl IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 818
+nargs: 2
+format: CHECK-fail: Only otp_ctrl IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 820
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_irq_acknowledge(&otp_ctrl, irq) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 833
+nargs: 2
+format: CHECK-fail: Incorrect pattgen IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 841
+nargs: 2
+format: CHECK-fail: Only pattgen IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 843
+nargs: 1
+format: DIF-fail: dif_pattgen_irq_acknowledge(&pattgen, irq) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 856
+nargs: 2
+format: CHECK-fail: Incorrect pwrmgr_aon IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 864
+nargs: 2
+format: CHECK-fail: Only pwrmgr_aon IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 866
+nargs: 1
+format: DIF-fail: dif_pwrmgr_irq_acknowledge(&pwrmgr_aon, irq) returns %0d
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 879
+nargs: 2
+format: CHECK-fail: Incorrect rv_timer IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 887
+nargs: 2
+format: CHECK-fail: Only rv_timer IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 889
+nargs: 1
+format: DIF-fail: dif_rv_timer_irq_acknowledge(&rv_timer, irq) returns %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 902
+nargs: 2
+format: CHECK-fail: Incorrect sensor_ctrl_aon IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 910
+nargs: 2
+format: CHECK-fail: Only sensor_ctrl_aon IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 912
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_irq_acknowledge(&sensor_ctrl_aon, irq) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 925
+nargs: 2
+format: CHECK-fail: Incorrect spi_device IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 933
+nargs: 2
+format: CHECK-fail: Only spi_device IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 938
+nargs: 1
+format: DIF-fail: dif_spi_device_irq_force(&spi_device, irq, false) returns %0d
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 947
+nargs: 1
+format: DIF-fail: dif_spi_device_irq_acknowledge(&spi_device, irq) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 961
+nargs: 2
+format: CHECK-fail: Incorrect spi_host0 IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 969
+nargs: 2
+format: CHECK-fail: Only spi_host0 IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 974
+nargs: 1
+format: DIF-fail: dif_spi_host_irq_force(&spi_host0, irq, false) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 983
+nargs: 1
+format: DIF-fail: dif_spi_host_irq_acknowledge(&spi_host0, irq) returns %0d
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 997
+nargs: 2
+format: CHECK-fail: Incorrect spi_host1 IRQ triggered: exp = %0d, obs = %0d
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 1005
+nargs: 2
+format: CHECK-fail: Only spi_host1 IRQ %0d expected to fire. Actual interrupt status = %0h
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 1010
+nargs: 1
+format: DIF-fail: dif_spi_host_irq_force(&spi_host1, irq, false) returns %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 1019
+nargs: 1
+format: DIF-fail: dif_spi_host_irq_acknowledge(&spi_host1, irq) returns %0d
+str_arg_idx: 
+addr: 102fc
+severity: 3
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 1242
+nargs: 0
+format: ISR is not implemented!
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2417
+nargs: 0
+format: CHECK-fail: Processor has unexpected HART ID.
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2057
+nargs: 1
+format: Triggering keymgr IRQ %0d.
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2062
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for keymgr_irq_serviced == irq
+str_arg_idx: 
+addr: 1034c
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2063
+nargs: 1
+format: IRQ %0d from keymgr is serviced.
+str_arg_idx: 
+addr: 10360
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2073
+nargs: 1
+format: Triggering kmac IRQ %0d.
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2086
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for kmac_irq_serviced == irq
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2087
+nargs: 1
+format: IRQ %0d from kmac is serviced.
+str_arg_idx: 
+addr: 1039c
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2096
+nargs: 1
+format: Triggering otbn IRQ %0d.
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2101
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for otbn_irq_serviced == irq
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2102
+nargs: 1
+format: IRQ %0d from otbn is serviced.
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2114
+nargs: 1
+format: Triggering otp_ctrl IRQ %0d.
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2119
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for otp_ctrl_irq_serviced == irq
+str_arg_idx: 
+addr: 10400
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2120
+nargs: 1
+format: IRQ %0d from otp_ctrl is serviced.
+str_arg_idx: 
+addr: 10414
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2130
+nargs: 1
+format: Triggering pattgen IRQ %0d.
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2135
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for pattgen_irq_serviced == irq
+str_arg_idx: 
+addr: 1043c
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2136
+nargs: 1
+format: IRQ %0d from pattgen is serviced.
+str_arg_idx: 
+addr: 10450
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2145
+nargs: 1
+format: Triggering pwrmgr_aon IRQ %0d.
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2150
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for pwrmgr_irq_serviced == irq
+str_arg_idx: 
+addr: 10478
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2151
+nargs: 1
+format: IRQ %0d from pwrmgr_aon is serviced.
+str_arg_idx: 
+addr: 1048c
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2160
+nargs: 1
+format: Triggering rv_timer IRQ %0d.
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2165
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for rv_timer_irq_serviced == irq
+str_arg_idx: 
+addr: 104b4
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2166
+nargs: 1
+format: IRQ %0d from rv_timer is serviced.
+str_arg_idx: 
+addr: 104c8
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2175
+nargs: 1
+format: Triggering sensor_ctrl_aon IRQ %0d.
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2180
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for sensor_ctrl_irq_serviced == irq
+str_arg_idx: 
+addr: 104f0
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2181
+nargs: 1
+format: IRQ %0d from sensor_ctrl_aon is serviced.
+str_arg_idx: 
+addr: 10504
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2191
+nargs: 1
+format: Triggering spi_device IRQ %0d.
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2204
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for spi_device_irq_serviced == irq
+str_arg_idx: 
+addr: 1052c
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2205
+nargs: 1
+format: IRQ %0d from spi_device is serviced.
+str_arg_idx: 
+addr: 10540
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2215
+nargs: 1
+format: Triggering spi_host0 IRQ %0d.
+str_arg_idx: 
+addr: 10554
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2228
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for spi_host_irq_serviced == irq
+str_arg_idx: 
+addr: 10568
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2229
+nargs: 1
+format: IRQ %0d from spi_host0 is serviced.
+str_arg_idx: 
+addr: 1057c
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2239
+nargs: 1
+format: Triggering spi_host1 IRQ %0d.
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2252
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for spi_host_irq_serviced == irq
+str_arg_idx: 
+addr: 105a4
+severity: 0
+file: hw/top_earlgrey/sw/autogen/tests/plic_all_irqs_test.c
+line: 2253
+nargs: 1
+format: IRQ %0d from spi_host1 is serviced.
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 105cc
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10608
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10680
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10694
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 106a8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 106bc
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 106d0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 106e4
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 106f8
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 1070c
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10720
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10734
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10748
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

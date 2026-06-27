@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_aes_idle_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_aes_idle_test",
+  "images": [
+    {
+      "image_base": "aes_idle_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:aes_idle_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "aes_idle_test_sim_dv.32.vmem",
+      "size_bytes": 40955,
+      "sha256": "a4c0dc606917efc445605e8ca360a5879f6dc1a0bbefaf21c0b251f69bbb5ed3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.64.scr.vmem",
+      "size_bytes": 44149,
+      "sha256": "a17b94a0b27953636e49429eb551ac27e4769558614c4a81c22296f09f67a8ba",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.64.vmem",
+      "size_bytes": 38302,
+      "sha256": "491d201dde591f365b4cdbb5a45d5e580e4c526e81498dc7d484df579cf0af1f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.bash"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.bin",
+      "size_bytes": 15692,
+      "sha256": "4e9a6b4a204059d9819c1785f96181c40cad737da14b5999ecf6280e72b079fc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.bin"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.dis",
+      "size_bytes": 600794,
+      "sha256": "dfae6d04c8be91e92813db7e471a12b80023850825cca96b84a9bd9198819f3b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.dis"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.elf",
+      "size_bytes": 313408,
+      "sha256": "79a6f26a081bd4ac30b8b0ea117724702a90374db83ae8822c27be8843624080",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.elf"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.logs.txt",
+      "size_bytes": 6714,
+      "sha256": "df6a10a6c30ee9d6e5f7d34347faebc45a9d11b3e480c2d4a11ba651186257bb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.map",
+      "size_bytes": 200818,
+      "sha256": "a3a701018bf5a99b210cc61f4ef517b86a983f865c6151a9e4e87c7e5d79c563",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.map"
+    },
+    {
+      "file": "aes_idle_test_sim_dv.rodata.txt",
+      "size_bytes": 53942,
+      "sha256": "b3495c221387342c8ca3ca5c2d07c8daa1dbaa0b03a7c2d33e6059db0210124f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aes_idle_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_lc_walkthrough_testunlocks_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_lc_walkthrough_testunlocks_test",
+  "images": [
+    {
+      "image_base": "lc_walkthrough_testunlocks_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:lc_walkthrough_testunlocks_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.32.vmem",
+      "size_bytes": 37989,
+      "sha256": "47bf12b9f4163f186ecdf617970c9cb1ceaa01ad57566af5694509b558604dc1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.64.scr.vmem",
+      "size_bytes": 40949,
+      "sha256": "64055c71f0e78a222db3a80bd57471d1e6dde53d5cce94df61e87d024f969370",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.64.vmem",
+      "size_bytes": 35528,
+      "sha256": "4a39d49ce5d5fd5871cd9d90f407e31f8b9f41f0fa572191d980550b23ef2068",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.bash"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.bin",
+      "size_bytes": 14556,
+      "sha256": "e21b1d67110186dfa186a8e7f99ca84a7072bf1cc4b4d03fd638ecaa394974fe",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.bin"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.dis",
+      "size_bytes": 564055,
+      "sha256": "eb8d8cc4bc4e3150822211bef3e3699e171be05422be585e03ea54d96e7123d2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.dis"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.elf",
+      "size_bytes": 291432,
+      "sha256": "ee55818a564e0193aacdf065beaf6cce43c5992b82035db988c0d8d2c4667961",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.elf"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.logs.txt",
+      "size_bytes": 6889,
+      "sha256": "344edee14278a8b1c2e59a81ec4e175c924e5069dcba94e4493c57c614404c8c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.map",
+      "size_bytes": 182058,
+      "sha256": "8ee0879324bc7241bf3a5dd6afac53f2eaca84d7c823773da3031656f5e7ac5a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.map"
+    },
+    {
+      "file": "lc_walkthrough_testunlocks_test_sim_dv.rodata.txt",
+      "size_bytes": 47464,
+      "sha256": "3ab049224396b0482f75b1474a798d611555b0ee4f245bbebe07aeb5127b0631",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/lc_walkthrough_testunlocks_test_sim_dv.rodata.txt"
+    }
+  ]
+}

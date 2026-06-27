@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sram_ctrl_sleep_sram_ret_contents_no_scramble_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sram_ctrl_sleep_sram_ret_contents_no_scramble_test",
+  "images": [
+    {
+      "image_base": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sram_ctrl_sleep_sram_ret_contents_no_scramble_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.32.vmem",
+      "size_bytes": 57800,
+      "sha256": "35e4b125fef7be9245c67f227926b390405ccdf410f2fc5d9aaef520c276d693",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.64.scr.vmem",
+      "size_bytes": 62309,
+      "sha256": "17999b9435ce7753faa79ac84a0d360671a4629f8b9b7a5fc6e1a4cc06a6d0ca",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.64.vmem",
+      "size_bytes": 54041,
+      "sha256": "0af6f674771629b96f6892fbd347f34eb9621f94e85dccaced21a501f4992a5b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.bash"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.bin",
+      "size_bytes": 22152,
+      "sha256": "3c1692e5b0fbf36a798df0935d59e58be4f071dacaf96325d10a4cdc147beeb6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.bin"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.dis",
+      "size_bytes": 655843,
+      "sha256": "cea3765edb98020454c145753f9a134e3fe1082879ec60e1461101b1d932fcd0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.dis"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.elf",
+      "size_bytes": 338944,
+      "sha256": "4614501f01b8b5e0e9fb12e0e93d3c3969b0ba9cc38427fff7b9eb15b84bb306",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.elf"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.logs.txt",
+      "size_bytes": 14109,
+      "sha256": "ae1293edf42664f641878c4b0eadd43dc9e3405aaa16fe41ff5e7379ed8b4c98",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.map",
+      "size_bytes": 220696,
+      "sha256": "7a36084e4d090629aa71fc21a2e6c402b6493fe7967c3b308d18ad527dd880fe",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.map"
+    },
+    {
+      "file": "sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.rodata.txt",
+      "size_bytes": 63084,
+      "sha256": "493dc84c345b692ff00d1f4320c78a3ad425f9400f05216456d162f90961600a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sram_ctrl_sleep_sram_ret_contents_no_scramble_test_sim_dv.rodata.txt"
+    }
+  ]
+}

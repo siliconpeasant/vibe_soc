@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_clkmgr_sleep_frequency_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_clkmgr_sleep_frequency_test",
+  "images": [
+    {
+      "image_base": "clkmgr_sleep_frequency_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:clkmgr_sleep_frequency_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.32.vmem",
+      "size_bytes": 58694,
+      "sha256": "c24d874dbceae1e2b36b15c0eaf1e1a3535233086f28189b9514b3406fd54eec",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.64.scr.vmem",
+      "size_bytes": 63269,
+      "sha256": "bfb69828f1dbabb29c38777cf165abcb7b841794ca6c9434c78f158c3e681ae2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.64.vmem",
+      "size_bytes": 54872,
+      "sha256": "4decd4e01a49580e7090fcad3bbd2ea66273aa0edb7c23f730a819320fe3ed03",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.bash"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.bin",
+      "size_bytes": 22496,
+      "sha256": "cdb807123f58a97e4ee15c0124c07dff2227eb278e466c80f25593aa433639db",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.bin"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.dis",
+      "size_bytes": 667206,
+      "sha256": "3be39b1290eca55079c4e58a7bf453c1f238db8756a9a671b918294a0793096d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.dis"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.elf",
+      "size_bytes": 340992,
+      "sha256": "02ff11390f2090b1dc3e674d10290041e6f15df37b040284058d6fe29df552e3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.elf"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.logs.txt",
+      "size_bytes": 13101,
+      "sha256": "0cbbc615e3757ca4dce9a8fc92df3e27d3546f7a0fcf998121cbe249c1e8f70e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.map",
+      "size_bytes": 225240,
+      "sha256": "2f62d9467db8934ae433155ce9d7d03014b51b58ac2f4770b710e98706227020",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.map"
+    },
+    {
+      "file": "clkmgr_sleep_frequency_test_sim_dv.rodata.txt",
+      "size_bytes": 65135,
+      "sha256": "9ee8749d557029b0c792abcf578635c1f18dee22c8daf3c03fffa7e4892ea566",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_sleep_frequency_test_sim_dv.rodata.txt"
+    }
+  ]
+}

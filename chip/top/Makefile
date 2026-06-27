@@ -6,8 +6,6 @@ LOCAL_CURRENT_DIR := $(if $(SUBDIR),$(SUBDIR),$(notdir $(CURDIR)))
 
 OT_VENDOR := 1
 OT_SMOKE_TESTS := chip_sw_uart_smoketest
-OT_UART_TX_RX_TESTS := chip_sw_uart_tx_rx
-OT_BOOTSTRAP_TESTS := chip_sw_uart_tx_rx_bootstrap
 ifeq ($(TEST),default)
   TEST := chip_sw_uart_smoketest
 endif
@@ -33,6 +31,26 @@ endif
   OT_TEST_ROM_DIR := $(OT_SW_ROOT)/common/test_rom
   OT_CASE_SW_ROOT := $(OT_SW_ROOT)/cases
   OT_CASE_SW_DIR := $(OT_CASE_SW_ROOT)/$(TEST)
+  OT_TEST_CFG := $(OT_TEST_CFG_ROOT)/opentitan_cases.manifest.json
+  OT_TEST_CFG_PY := $(OT_TB_ROOT)/scripts/opentitan_test_cfg.py
+  OT_TEST_CFG_PYTHON_BIN := $(shell for name in python3.12 python3.11 python3.10 python3.9 python3.8; do path=$$(command -v $$name 2>/dev/null); if [ -n "$$path" ]; then echo $$path; break; fi; done)
+  ifeq ($(strip $(OT_TEST_CFG_PYTHON_BIN)),)
+    $(error Python 3.8 or newer is required for OpenTitan test index queries)
+  endif
+  OT_TEST_CFG_PYTHON := env -u PYTHONHOME -u PYTHONPATH TMPDIR=/tmp $(OT_TEST_CFG_PYTHON_BIN)
+  ifeq ($(wildcard $(OT_TEST_CFG)),)
+    $(error Missing OpenTitan test index manifest: $(OT_TEST_CFG))
+  endif
+  OT_CFG = $(shell $(OT_TEST_CFG_PYTHON) $(OT_TEST_CFG_PY) $(OT_TEST_CFG) $(TEST) $(1))
+  OT_TEST_STATUS := $(call OT_CFG,status)
+  ifeq ($(strip $(OT_TEST_STATUS)),)
+    $(error Missing or invalid OpenTitan test in index: $(TEST))
+  endif
+  OT_UVM_TEST := $(call OT_CFG,uvm_test)
+  OT_UVM_TEST_SEQ := $(call OT_CFG,uvm_sequence)
+  OT_RUN_OPTS := $(call OT_CFG,run_opts)
+  OT_COMPILE_OPTS := $(call OT_CFG,compile_opts)
+  OT_SW_IMAGES := $(call OT_CFG,sw_images)
   OT_COPY_SW_COLLATERAL = find $(OT_OTP_DIR) $(OT_TEST_ROM_DIR) $(OT_CASE_SW_DIR) -maxdepth 1 -type f \( -name 'otp_ctrl_img_*.vmem' -o -name '*_sim_dv.logs.txt' -o -name '*_sim_dv.rodata.txt' \) -exec cp -f {} . \;
   OT_CLEAN_WAVES_IF_DISABLED = $(if $(filter 1,$(FSDB)),:,rm -f waves.fsdb wave.fsdb waves.fsdb.* wave.fsdb.* novas_dump.log)
   USER_COMPILE_FLAGS += +define+TOP_LEVEL_DV +define+UVM +define+UVM_NO_DEPRECATED
@@ -77,31 +95,21 @@ endif
   endif
   USER_COMPILE_FLAGS += -lcrypto
   USER_COMPILE_FLAGS += -lutil
-  USER_SIM_FLAGS += +UVM_TESTNAME=chip_base_test
+  USER_COMPILE_FLAGS += $(OT_COMPILE_OPTS)
+  USER_SIM_FLAGS += +UVM_TESTNAME=$(OT_UVM_TEST)
   USER_SIM_FLAGS += +sw_build_device=sim_dv +cdc_instrumentation_enabled=1
   USER_SIM_FLAGS += +UVM_NO_RELNOTES +UVM_VERBOSITY=UVM_LOW
   USER_SIM_FLAGS += -licqueue -ucli -do $(OT_SIM_TCL)
   USER_SIM_FLAGS += -xlrm hier_inst_seed -assert nopostproc
+  USER_SIM_FLAGS += +UVM_TEST_SEQ=$(OT_UVM_TEST_SEQ)
+  USER_SIM_FLAGS += $(OT_RUN_OPTS)
+  ifneq ($(strip $(OT_SW_IMAGES)),)
+    USER_SIM_FLAGS += +sw_images=$(OT_SW_IMAGES)
+  endif
   ifneq (,$(filter $(OT_SMOKE_TESTS),$(TEST)))
-    USER_SIM_FLAGS += +UVM_TEST_SEQ=chip_sw_uart_smoke_vseq
-    USER_SIM_FLAGS += +sw_images=$(OT_CASE_SW_DIR)/uart_smoketest:1:new_rules,$(OT_TEST_ROM_DIR)/test_rom:0
     OT_SMOKE_PREBUILT_SIMV ?= /project/xuanwu9000/user/silicon/opentitan-master/scratch/master/chip_earlgrey_asic-sim-vcs/default/simv
     OT_USE_PREBUILT_SIMV ?= 0
     REGRESS_PASS_REGEX ?= TEST PASSED CHECKS|SW TEST PASSED
-  else ifneq (,$(filter $(OT_UART_TX_RX_TESTS),$(TEST)))
-    USER_COMPILE_FLAGS += +define+DISABLE_ROM_INTEGRITY_CHECK
-    USER_SIM_FLAGS += +UVM_TEST_SEQ=chip_sw_uart_tx_rx_vseq
-    USER_SIM_FLAGS += +uart_idx=0
-    USER_SIM_FLAGS += +calibrate_usb_clk=1
-    USER_SIM_FLAGS += +sw_images=$(OT_CASE_SW_DIR)/uart_tx_rx_test:1:new_rules,$(OT_TEST_ROM_DIR)/test_rom:0
-  else
-    USER_COMPILE_FLAGS += +define+DISABLE_ROM_INTEGRITY_CHECK
-    USER_SIM_FLAGS += +UVM_TEST_SEQ=chip_sw_uart_tx_rx_vseq
-    USER_SIM_FLAGS += +use_spi_load_bootstrap=1
-    USER_SIM_FLAGS += +calibrate_usb_clk=1
-    USER_SIM_FLAGS += +sw_test_timeout_ns=160000000
-    USER_SIM_FLAGS += +test_timeout_ns=160000000
-    USER_SIM_FLAGS += +sw_images=$(OT_CASE_SW_DIR)/uart_tx_rx_test:1:new_rules,$(OT_TEST_ROM_DIR)/test_rom:0
   endif
 include $(PROJECT_ROOT)/scripts/common.mk
 

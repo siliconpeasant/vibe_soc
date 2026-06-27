@@ -1,0 +1,371 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 96
+nargs: 0
+format: CHECK-fail: This point should be unreachable; a reset or another fault should have occured.
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 200
+nargs: 0
+format: Triggering single fault.
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 203
+nargs: 1
+format: DIF-fail: dif_rstmgr_cpu_info_set_enabled(&rstmgr, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 211
+nargs: 0
+format: CHECK-fail: This should be unreachable; a single fault should have occurred.
+str_arg_idx: 
+addr: 10054
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 215
+nargs: 0
+format: Checking CPU info dump after single fault.
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 222
+nargs: 0
+format: CHECK-fail: CPU Info dump shows a double fault after experiencing only a single fault.
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 234
+nargs: 0
+format: Setting up watch dog and triggering a double fault.
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 240
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 243
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 250
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeReset, dt_aon_timer_instance_id(kDtAonTimerAon), kDtAonTimerResetReqAonTimer, &reset_sources) returns %0d
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 252
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( &pwrmgr, kDifPwrmgrReqTypeReset, reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 255
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100f4
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 257
+nargs: 1
+format: DIF-fail: dif_rstmgr_cpu_info_set_enabled(&rstmgr, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 265
+nargs: 0
+format: CHECK-fail: This should be unreachable; a double fault should have occured.
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 269
+nargs: 0
+format: Checking CPU info dump after double fault.
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 274
+nargs: 0
+format: CHECK-fail: CPU Info dump doesn't show a double fault has happened.
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 302
+nargs: 0
+format: CHECK-fail: Device was reset by an unexpected source.
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 111
+nargs: 1
+format: DIF-fail: dif_rstmgr_cpu_info_dump_read( &rstmgr, dump, DIF_RSTMGR_CPU_INFO_MAX_SIZE, &size_read) returns %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 115
+nargs: 2
+format: CHECK-fail: The observed cpu info dump's size was %0d, but it was expected to be %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 119
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_parse_crash_dump(ibex, dump, size_read, &output) returns %0d
+str_arg_idx: 
+addr: 10194
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 137
+nargs: 6
+format: %0s = {	mtval=%08h	mpec=%08h,	mdaa=%08h,	mnpc=%08h,	mcpc=%08h,}
+str_arg_idx: 0
+addr: 101a8
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 138
+nargs: 6
+format: %0s = {	mtval=%08h	mpec=%08h,	mdaa=%08h,	mnpc=%08h,	mcpc=%08h,}
+str_arg_idx: 0
+addr: 101bc
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 142
+nargs: 2
+format: HECK-fail: Last Exception Access Addr: Expected 0x%0h != Observed 0x%0h
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 149
+nargs: 2
+format: CHECK-fail: Current PC: Observed 0x%0h not within 4 bytes of Expected 0x%0h
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 152
+nargs: 2
+format: CHECK-fail: Next PC: Expected 0x%0h != Observed 0x%0h
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 155
+nargs: 2
+format: CHECK-fail: Last Data Access Addr: Expected 0x%0h != Observed 0x%0h
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 158
+nargs: 2
+format: CHECK-fail: The Observed MPEC, 0x%0h, was not in the expected 0x%0h
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 171
+nargs: 3
+format: %0s = {	mtval=%08h	mpec=%08h,}
+str_arg_idx: 0
+addr: 10234
+severity: 0
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 172
+nargs: 3
+format: %0s = {	mtval=%08h	mpec=%08h,}
+str_arg_idx: 0
+addr: 10248
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 175
+nargs: 2
+format: HECK-fail: Last Exception Access Addr: Expected 0x%0h != Observed 0x%0h
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/rstmgr_cpu_info_test.c
+line: 179
+nargs: 2
+format: CHECK-fail: The Observed Previous MPEC, 0x%0h, was not in the expected 0x%0h
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 102fc
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10400
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10414
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_aon_timer_sleep_wdog_sleep_pause_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_aon_timer_sleep_wdog_sleep_pause_test",
+  "images": [
+    {
+      "image_base": "aon_timer_sleep_wdog_sleep_pause_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:aon_timer_sleep_wdog_sleep_pause_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.32.vmem",
+      "size_bytes": 38646,
+      "sha256": "d4a5d07737dee4f47bd7e717ba4a5298bd75316c61c604fa3b86efac995505b0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.64.scr.vmem",
+      "size_bytes": 41649,
+      "sha256": "3f8191429222dd68e8f6d2416ba365bddaa2661f9628fce10a982cefab6f1c3c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.64.vmem",
+      "size_bytes": 36135,
+      "sha256": "1ec2f6bbd1fa2d068b6c5958c495165c95dcbc6490480e3b6a461a52cdfeeee9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.bash"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.bin",
+      "size_bytes": 14808,
+      "sha256": "c625af86296e58b0815548fd3c44e1340f0a4e8768906928604c52f4001fc1da",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.bin"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.dis",
+      "size_bytes": 549437,
+      "sha256": "3a51df34390fbc78f8b483d737b94b4e7fb823bc01532c362487b8fea7569825",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.dis"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.elf",
+      "size_bytes": 299888,
+      "sha256": "53d80dc4af50a7db7c3e0f73c80c79599c5bcea249c942369161efd9d881e3c7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.elf"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.logs.txt",
+      "size_bytes": 6539,
+      "sha256": "e907b46b3208d1249c85e5391a7d6befc191944e94e68d4b460f13c789f15841",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.map",
+      "size_bytes": 185432,
+      "sha256": "8ea523c540e169a297c3b259d95562d4ffd0da5bd5fd1fceedbcd6dafbdc680d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.map"
+    },
+    {
+      "file": "aon_timer_sleep_wdog_sleep_pause_test_sim_dv.rodata.txt",
+      "size_bytes": 49151,
+      "sha256": "ae50dd822c90a55002c80d0b974294a04a4d043db28e5541707434119462b31c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/aon_timer_sleep_wdog_sleep_pause_test_sim_dv.rodata.txt"
+    }
+  ]
+}

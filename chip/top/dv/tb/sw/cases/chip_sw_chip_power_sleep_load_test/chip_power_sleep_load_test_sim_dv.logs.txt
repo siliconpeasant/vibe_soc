@@ -1,0 +1,455 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 70
+nargs: 0
+format: got external IRQ
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 146
+nargs: 0
+format: Running CHIP Power Sleep Load test
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 156
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, (kTopEarlgreyPinmuxMioOutIoa0 + 2), (kTopEarlgreyPinmuxOutselGpioGpio0 + 2)) returns %0d
+str_arg_idx: 
+addr: 10040
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 164
+nargs: 0
+format: GPIO active
+str_arg_idx: 
+addr: 10054
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 171
+nargs: 2
+format: wakeup type:%0d. wakeup reason: 0x%02H
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 176
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeWakeup, dt_aon_timer_instance_id(kAonTimerDt), kDtAonTimerWakeupWkupReq, &pwrmgr_aon_timer_wakeups) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 188
+nargs: 2
+format: unexpected wakeup reason! type=0x%0h, source=0x%0h
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 204
+nargs: 1
+format: DIF-fail: dif_rv_timer_approximate_tick_params( kClockFreqPeripheralHz, kTickFreqHz, &rv_timer_tick_params) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 216
+nargs: 0
+format: RV Timer active
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 268
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 274
+nargs: 0
+format: CHECK-fail: Expected alerts to be locked
+str_arg_idx: 
+addr: 100e0
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 276
+nargs: 0
+format: Alert ping is active
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 311
+nargs: 1
+format: DIF-fail: dif_pwm_configure(&pwm, kConfig_) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 317
+nargs: 1
+format: DIF-fail: dif_pwm_channels_set_enabled(&pwm, 1 << i, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 319
+nargs: 1
+format: DIF-fail: dif_pwm_configure_channel(&pwm, i, channel_config_) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 320
+nargs: 1
+format: DIF-fail: dif_pwm_channels_set_enabled(&pwm, 1 << i, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 324
+nargs: 1
+format: DIF-fail: dif_pwm_phase_cntr_set_enabled(&pwm, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 329
+nargs: 1
+format: DIF-fail: dif_pinmux_output_select(&pinmux, kPinmuxMioOut[i], kPinmuxOutsel[i]) returns %0d
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 332
+nargs: 0
+format: PWM active
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 347
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_configure(&otp_ctrl, kOtpCtrlConfig) returns %0d
+str_arg_idx: 
+addr: 10194
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 349
+nargs: 0
+format: OTP periodic checks active
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 357
+nargs: 1
+format: DIF-fail: dif_aon_timer_watchdog_stop(&aon_timer) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 366
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101d0
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 371
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101e4
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 379
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101f8
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 381
+nargs: 0
+format: AON Timer active
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 392
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10220
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 395
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10234
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 401
+nargs: 0
+format: CHECK-fail: power_up_time_aon_cycles must fit into uint8_t
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 409
+nargs: 1
+format: DIF-fail: dif_adc_ctrl_configure( &adc_ctrl, (dif_adc_ctrl_config_t){ .mode = kDifAdcCtrlLowPowerScanMode, .num_low_power_samples = kNumLowPowerSamples, .num_normal_power_samples = kNumNormalPowerSamples, .power_up_time_aon_cycles = (uint8_t)power_up_time_aon_cycles + 1, .wake_up_time_aon_cycles = wake_up_time_aon_cycles}) returns %0d
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 412
+nargs: 0
+format: ADC Controller active
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 429
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10284
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 430
+nargs: 0
+format: Power Manage configured
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 433
+nargs: 0
+format: all HW is active
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 446
+nargs: 0
+format: CHECK-fail: Software IRQ unexpectedly not pending after WFI
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 450
+nargs: 0
+format: CHECK-fail: Expected watchdog bark interrupt to be pending
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 455
+nargs: 2
+format: CHECK-fail: WDOG NMI state check1 not expected! wdog_enable:%0h, wdog_raised:%0h
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 462
+nargs: 2
+format: CHECK-fail: WDOG NMI state check2 not expected! wdog_enable:%0h wdog_raised:%0h
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 108
+nargs: 1
+format: DIF-fail: dif_pwm_phase_cntr_set_enabled(&pwm, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 10310
+severity: 0
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 112
+nargs: 0
+format: Prepare to exit
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 115
+nargs: 0
+format: CHECK-fail: Unexpected external interrupt triggered.
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 117
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1034c
+severity: 2
+file: sw/device/tests/chip_power_sleep_load_test.c
+line: 94
+nargs: 1
+format: DIF-fail: dif_aon_timer_watchdog_stop(&aon_timer) returns %0d
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 69
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 103
+nargs: 0
+format: CHECK-fail: enabled == 0
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 105
+nargs: 0
+format: CHECK-fail: enabled == 0
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10400
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10414
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10428
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 104dc
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 104f0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10504
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

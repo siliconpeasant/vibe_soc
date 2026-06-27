@@ -1,0 +1,392 @@
+addr: 10004
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10018
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10040
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10054
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10068
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10090
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 100a4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 100b8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 100cc
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 100
+nargs: 0
+format: Receive irq in normal sleep
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 116
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100f4
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 128
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10108
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 130
+nargs: 0
+format: Issue WFI to enter normal sleep
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 141
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10130
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 143
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10144
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 146
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 149
+nargs: 0
+format: Issue WFI to enter deep sleep
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 151
+nargs: 0
+format: CHECK-fail: Should have a reset to CPU before this line
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 156
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 160
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeReset, dt_aon_timer_instance_id(kAonTimerDt), kDtAonTimerResetReqAonTimer, &reset_sources) returns %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 162
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( &pwrmgr, kDifPwrmgrReqTypeReset, reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 169
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101d0
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 170
+nargs: 0
+format: wait for reset
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 172
+nargs: 0
+format: CHECK-fail: Should have a reset to CPU and ret_sram before this line
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 187
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeWakeup, dt_aon_timer_instance_id(kAonTimerDt), kDtAonTimerWakeupWkupReq, &aon_timer_wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 192
+nargs: 1
+format: Reset info = %08h
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 195
+nargs: 0
+format: POR reset
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 197
+nargs: 1
+format: Start to test retention sram %0sscrambled
+str_arg_idx: 0
+addr: 10248
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 211
+nargs: 0
+format: Wake up from deep sleep
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 214
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10270
+severity: 2
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 214
+nargs: 0
+format: CHECK-fail: ({ status_t status_ = pwrmgr_testutils_is_wakeup_reason( &pwrmgr, aon_timer_wakeup_sources); if (!status_ok(status_)) { if (device_log_bypass_uart_address()) { do { status_t status_ = status_; const char *msg; char mod_id[3] = {0}; int line; if (status_extract(status_, &msg, &line, mod_id)) { do { do { do { _Static_assert(_Generic((mod_id[0]), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "mod_id[0]" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "mod_id[0]" "'?"); } while (0); do { _Static_assert(_Generic((mod_id[1]), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "mod_id[1]" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "mod_id[1]" "'?"); } while (0); do { _Static_assert(_Generic((mod_id[2]), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "mod_id[2]" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "mod_id[2]" "'?"); } while (0); do { _Static_assert(_Generic((line), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "line" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "line" "'?"); } while (0); do { _Static_assert(_Generic((msg), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "msg" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "msg" "'?"); } while (0); } while (0); if (device_log_bypass_uart_address() != 0) { __attribute__((section(".logs.fields"))) static const log_fields_t kLogFields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c" "", .line = 214, .nargs = 5, .format = "CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s", }; base_log_internal_dv((const log_fields_t*)((char*)&kLogFields + (uintptr_t)&_dv_log_offset), 5, mod_id[0], mod_id[1], mod_id[2], line, msg); } else { static const log_fields_t log_fields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c" "", .line = 214, .nargs = 5, .format = "CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s", }; base_log_internal_core(&log_fields, mod_id[0], mod_id[1], mod_id[2], line, msg); } } while (0); } else { do { do { do { _Static_assert(_Generic((status_), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "status_" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "status_" "'?"); } while (0); } while (0); if (device_log_bypass_uart_address() != 0) { __attribute__((section(".logs.fields"))) static const log_fields_t kLogFields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c" "", .line = 214, .nargs = 1, .format = "CHECK-STATUS-fail: 0x%08h", }; base_log_internal_dv((const log_fields_t*)((char*)&kLogFields + (uintptr_t)&_dv_log_offset), 1, status_); } else { static const log_fields_t log_fields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c" "", .line = 214, .nargs = 1, .format = "CHECK-STATUS-fail: 0x%08h", }; base_log_internal_core(&log_fields, status_); } } while (0); } } while (0); } else { do { do { do { _Static_assert(_Generic((status_), int64_t: 0, uint64_t: 0, default: 1), "Argument '" "status_" "' passed to the " "LOG" " function must be no wider than 32 bits. " "Hint: maybe cast with '(uint32_t) " "status_" "'?"); } while (0); } while (0); if (device_log_bypass_uart_address() != 0) { __attribute__((section(".logs.fields"))) static const log_fields_t kLogFields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c" "", .line = 214, .nargs = 1, .format = "CHECK-STATUS-fail: %8h", }; base_log_internal_dv((const log_fields_t*)((char*)&kLogFields + (uintptr_t)&_dv_log_offset), 1, status_); } else { static const log_fields_t log_fields = { .severity = kLogSeverityError, .file_name = "" "sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c" "", .line = 214, .nargs = 1, .format = "CHECK-STATUS-fail: %8h", }; base_log_internal_core(&log_fields, status_); } } while (0); } test_status_set(kTestStatusFailed); } status_.value; }) == 1
+str_arg_idx: 4 9
+addr: 10284
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 220
+nargs: 0
+format: watchdog reset
+str_arg_idx: 
+addr: 10298
+severity: 3
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 231
+nargs: 0
+format: Unexepected reset type detected.
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 79
+nargs: 1
+format: CHECK-fail: tmp_buffer %0smatches kTestData
+str_arg_idx: 0
+addr: 102c0
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 79
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/tests/sram_ctrl_sleep_sram_ret_contents_impl.c
+line: 84
+nargs: 2
+format: retention ram check with write=%0d and is_equal=%0d succeeded
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 69
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10428
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 1043c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10450
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

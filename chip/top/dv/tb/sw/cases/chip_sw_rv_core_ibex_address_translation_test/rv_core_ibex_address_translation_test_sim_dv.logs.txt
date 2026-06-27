@@ -1,0 +1,322 @@
+addr: 10004
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 120
+nargs: 0
+format: Illegal instruction fault handler
+str_arg_idx: 
+addr: 10018
+severity: 3
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 125
+nargs: 1
+format: Unexpected exception id = 0x%0h
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 126
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_configure_addr_translation( ibex_core, kSlots[slot], bus, mapping) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 155
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_enable_addr_translation(ibex_core, kSlots[slot], bus) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 168
+nargs: 1
+format: DIF-fail: dif_rv_core_ibex_disable_addr_translation(ibex_core, kSlots[slot], bus) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 175
+nargs: 3
+format: CHECK-fail: Strings differ at char %0d, so "%0s" != "%0s".
+str_arg_idx: 1 2
+addr: 10090
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 178
+nargs: 3
+format: CHECK-fail: Strings differ at char %0d, so "%0s" != "%0s".
+str_arg_idx: 1 2
+addr: 100a4
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 192
+nargs: 3
+format: CHECK-fail: Strings differ at char %0d, so "%0s" != "%0s".
+str_arg_idx: 1 2
+addr: 100b8
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 199
+nargs: 3
+format: CHECK-fail: Strings differ at char %0d, so "%0s" != "%0s".
+str_arg_idx: 1 2
+addr: 100cc
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 217
+nargs: 3
+format: CHECK-fail: Strings differ at char %0d, so "%0s" != "%0s".
+str_arg_idx: 1 2
+addr: 100e0
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 229
+nargs: 0
+format: CHECK-fail: !illegal_instr_fault
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 235
+nargs: 0
+format: CHECK-fail: illegal_instr_fault
+str_arg_idx: 
+addr: 10108
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 241
+nargs: 0
+format: CHECK-fail: make_lower_case and get_name are the same!
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 241
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%02h
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 244
+nargs: 0
+format: CHECK-fail: make_lower_case and remapped_function are the same!
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 244
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%02h
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 247
+nargs: 0
+format: CHECK-fail: get_name and remapped_function are the same!
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 247
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%02h
+str_arg_idx: 
+addr: 10180
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 258
+nargs: 0
+format: CHECK-fail: remapped_function is not mapped to make_lower_case!
+str_arg_idx: 
+addr: 10194
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 258
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%02h; want: 0x%02h
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 265
+nargs: 0
+format: CHECK-fail: remapped_function is not mapped to get_name!
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 265
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%02h; want: 0x%02h
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 280
+nargs: 0
+format: CHECK-fail: remapped_function is not mapped to make_lower_case!
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 280
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%02h; want: 0x%02h
+str_arg_idx: 
+addr: 101f8
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 293
+nargs: 0
+format: CHECK-fail: make_lower_case and remapped_function are the same!
+str_arg_idx: 
+addr: 1020c
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 293
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%02h
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 296
+nargs: 0
+format: CHECK-fail: make_lower_case and remapped_function are the same!
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/tests/rv_core_ibex_address_translation_test.c
+line: 296
+nargs: 2
+format: CHECK-fail: [%0d] both equal: 0x%02h
+str_arg_idx: 
+addr: 10248
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10360
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10374
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

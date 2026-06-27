@@ -1,0 +1,24 @@
+// OpenTitan common RTL fragment split from chip/top frozen order.
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_arbiter_fixed.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_arbiter_ppc.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_arbiter_tree.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_arbiter_tree_dup.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_diff_decode.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_edge_detector.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_fifo_async_sram_adapter.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_fifo_async_simple.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_fifo_async.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_fifo_sync.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_fifo_sync_cnt.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim_generic/rtl/prim_clock_div.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim_generic/rtl/prim_rst_sync.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_multibit_sync.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_ram_1p_scr.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_reg_we_check.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg_pkg.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_reg_cdc.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_reg_cdc_arb.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg_arb.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg_ext.sv
+$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg_shadow.sv

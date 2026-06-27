@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_otp_ctrl_descrambling_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otp_ctrl_descrambling_test",
+  "images": [
+    {
+      "image_base": "otp_ctrl_descrambling_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otp_ctrl_descrambling_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.32.vmem",
+      "size_bytes": 38281,
+      "sha256": "7659f5ad46880071f5927590b427ac2863856acbe6f3ec95d3eb88d1f7aeaea7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.64.scr.vmem",
+      "size_bytes": 41269,
+      "sha256": "a9fd0ca775bbe64667c8306ecacb40d989f30d2ebddf332329e357575ea3d5c7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.64.vmem",
+      "size_bytes": 35806,
+      "sha256": "7b538a5c26d916a0d36a893a6242ca5f5ea65dd1c1ff86284040516d0f1c94d1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.bash"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.bin",
+      "size_bytes": 14668,
+      "sha256": "542c708e2bfd5d81c5118b4fb21fa380c35d3e04f8a4d932421b5fc79787174d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.bin"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.dis",
+      "size_bytes": 537900,
+      "sha256": "c326f5c56232cb1a21e7631cc5a2ba26bc2e87285b8ffe09ca740ef596974ee6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.dis"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.elf",
+      "size_bytes": 274584,
+      "sha256": "47da66654a0ab53d7c20c51fed02ac9d0437656836b04534486949cea63ae83a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.elf"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.logs.txt",
+      "size_bytes": 4978,
+      "sha256": "dce313eef1e965182ccfc98802d7e9743f47e862cbe37600794a0031166c7838",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.map",
+      "size_bytes": 169483,
+      "sha256": "8079525390810ab3018c0da2dc025bec13dcf838eeb7d56b31fb13c057768b79",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.map"
+    },
+    {
+      "file": "otp_ctrl_descrambling_test_sim_dv.rodata.txt",
+      "size_bytes": 48781,
+      "sha256": "1b426721689751ba9359f6444075c5dc097ee37c509bf917e87fe2f792f254bd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_descrambling_test_sim_dv.rodata.txt"
+    }
+  ]
+}

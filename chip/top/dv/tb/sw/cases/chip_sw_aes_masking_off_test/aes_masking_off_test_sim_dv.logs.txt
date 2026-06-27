@@ -1,0 +1,336 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 50
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10018
+severity: 0
+file: sw/device/tests/aes_masking_off_test.c
+line: 63
+nargs: 0
+format: Testing AES with masking switched off
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 66
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10040
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 98
+nargs: 1
+format: DIF-fail: dif_aes_start(&aes, &transaction, &key, NULL) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 105
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10068
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 115
+nargs: 0
+format: CHECK-fail: alerts == (1 << kDifEdnRecoverableAlertRepeatedGenBits)
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 118
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10090
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 137
+nargs: 1
+format: DIF-fail: dif_aes_process_data(&aes, plain_text, cipher_text, (size_t)kAesNumBlocks) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 0
+file: sw/device/tests/aes_masking_off_test.c
+line: 141
+nargs: 1
+format: CHECK-fail: (uint8_t *)cipher_text[0].data %0smatches kAesModesCipherTextEcb128
+str_arg_idx: 0
+addr: 100b8
+severity: 0
+file: sw/device/tests/aes_masking_off_test.c
+line: 141
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%02h; want: 0x%02h
+str_arg_idx: 
+addr: 100cc
+severity: 0
+file: sw/device/tests/aes_masking_off_test.c
+line: 155
+nargs: 0
+format: Testing CSRNG SW application interface
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 160
+nargs: 1
+format: DIF-fail: dif_edn_stop(&edn) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 161
+nargs: 1
+format: DIF-fail: dif_csrng_stop(&csrng) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/aes_masking_off_test.c
+line: 164
+nargs: 1
+format: DIF-fail: dif_csrng_configure(&csrng) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/lib/testing/aes_testutils.c
+line: 230
+nargs: 0
+format: CHECK-fail: recov_alerts == kDifCsrngRecoverableAlertRepeatedGenBits
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 77
+nargs: 0
+format: CHECK-fail: cmd_status.kind != kDifCsrngCmdStatusError
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 106
+nargs: 0
+format: CHECK-fail: got.instantiated == expected->instantiated
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 107
+nargs: 0
+format: CHECK-fail: got.reseed_counter == expected->reseed_counter
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 108
+nargs: 0
+format: CHECK-fail: reseed_counter == expected->reseed_counter
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 109
+nargs: 0
+format: CHECK-fail: got.fips_compliance == expected->fips_compliance
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 111
+nargs: 0
+format: CHECK-fail: memcmp(got.v, expected->v, sizeof(expected->v)) == 0
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: memcmp(got.key, expected->key, sizeof(expected->key)) == 0
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/lib/testing/csrng_testutils.c
+line: 121
+nargs: 0
+format: CSRNG KAT instantiate
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/lib/testing/csrng_testutils.c
+line: 142
+nargs: 0
+format: CSRNG KAT generate
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/lib/testing/csrng_testutils.c
+line: 152
+nargs: 0
+format: CHECK-fail: memcmp(got, expected_output, output_len) == 0
+str_arg_idx: 
+addr: 101f8
+severity: 0
+file: sw/device/lib/testing/csrng_testutils.c
+line: 162
+nargs: 0
+format: CSRNG KAT reseed
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10270
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10284
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 1039c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

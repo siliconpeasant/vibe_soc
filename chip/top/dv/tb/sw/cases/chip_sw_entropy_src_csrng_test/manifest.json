@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_entropy_src_csrng_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_entropy_src_csrng_test",
+  "images": [
+    {
+      "image_base": "entropy_src_csrng_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:entropy_src_csrng_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "entropy_src_csrng_test_sim_dv.32.vmem",
+      "size_bytes": 63731,
+      "sha256": "c90c1e1c9762490567ed0bb4cec6e43b835f4c5216f3fa2681eec110fec22e0a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.64.scr.vmem",
+      "size_bytes": 68719,
+      "sha256": "17483471ea80022e718b506c3b1ac7854c2313b185cad3625d47fe8c80ae7c9d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.64.vmem",
+      "size_bytes": 59596,
+      "sha256": "f221314757ba0334f7d5a445cfec396b7867dc9db15ca679107d7528a9ef6533",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.bash"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.bin",
+      "size_bytes": 24428,
+      "sha256": "3cf60e40b499dbcc14825e0df0935c109b6447dcbde505aa0746e9ecb4191ae3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.bin"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.dis",
+      "size_bytes": 860971,
+      "sha256": "eb47a63a0daf2cfd80c56e480a2e45d506139cc09bb45845435fff99d2f40d7d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.dis"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.elf",
+      "size_bytes": 399908,
+      "sha256": "e21261fc8ed20d3214879a7299e9996d027629e8a4d95bf9fcfe6fee16a87cb5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.elf"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.logs.txt",
+      "size_bytes": 15165,
+      "sha256": "a01921eaafcbc45d89acb69c4ad88f9a5caa716662dff2a0ff691d2606acf1bd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.map",
+      "size_bytes": 303580,
+      "sha256": "2d0f8cbb0b3c11a5911dadbfcfc48a8e72094b5671abea79860e682ba3070502",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.map"
+    },
+    {
+      "file": "entropy_src_csrng_test_sim_dv.rodata.txt",
+      "size_bytes": 79089,
+      "sha256": "51e7290311380709cf89f9bd25ae87c5cfbdc846e373fb0f210a154112744e82",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/entropy_src_csrng_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sleep_pin_retention_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sleep_pin_retention_test",
+  "images": [
+    {
+      "image_base": "sleep_pin_retention_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sleep_pin_retention_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sleep_pin_retention_test_sim_dv.32.vmem",
+      "size_bytes": 40061,
+      "sha256": "b8c132f8116cc7406cdb25fbd3fc28efce49f6bbcc84cd8e84f066ec5aab84dc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.64.scr.vmem",
+      "size_bytes": 43179,
+      "sha256": "ae6283ef1fca0858b820509542c8551d693097dbcbffecea9c26feba4dac6580",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.64.vmem",
+      "size_bytes": 37461,
+      "sha256": "7f0748267828078277395b1457c9f565d51644d8c248f62e130a864c63ba5631",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.bash"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.bin",
+      "size_bytes": 15348,
+      "sha256": "d8e4daa1f357e96795e988b348f1344c4b6e3cae057409750bce399a7e41b01c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.bin"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.dis",
+      "size_bytes": 548020,
+      "sha256": "f25ad63930ef2b22fc7d56130d34aa568315990747effe1bc13054d2ab6fc9f3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.dis"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.elf",
+      "size_bytes": 290972,
+      "sha256": "0e2f390f851f2435403891a1b03b7bbc10688c0cf5a6d9912b38998e9ff2da9e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.elf"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.logs.txt",
+      "size_bytes": 6856,
+      "sha256": "2ea02b633844853a6a68900efd5f14b0fccefcd82a97c401d9e097620e4a9d99",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.map",
+      "size_bytes": 184355,
+      "sha256": "b5385b49f2b3cff7f6175e8e88cdf1492680bf451a083aab9e0915ca93e22c25",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.map"
+    },
+    {
+      "file": "sleep_pin_retention_test_sim_dv.rodata.txt",
+      "size_bytes": 49574,
+      "sha256": "c30c0bb0415e308c327b5307ad4cb378919afcd8f7239bcbda35c39686f37c4b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sleep_pin_retention_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_data_integrity_escalation_reset_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_data_integrity_escalation_reset_test",
+  "images": [
+    {
+      "image_base": "data_integrity_escalation_reset_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:data_integrity_escalation_reset_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.32.vmem",
+      "size_bytes": 60920,
+      "sha256": "3c3b4c015e84b09955d5c1c7272adce6986abe1ee65447646ca528f798fed951",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.64.scr.vmem",
+      "size_bytes": 65679,
+      "sha256": "a078ff88795d4deec7fc1d078ffd09aa378a1b19b6a1bf6e3ee8d5710d65990f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.64.vmem",
+      "size_bytes": 56961,
+      "sha256": "d8d9ea3d224339571f92ed4d634890d514b4cd570a9489d539f8331b92098690",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.bash"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.bin",
+      "size_bytes": 23352,
+      "sha256": "9d916b4a01c4fbaa293354cef537c22e6f4bb4b8cb500f88a836038f86441d28",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.bin"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.dis",
+      "size_bytes": 802639,
+      "sha256": "2482d9c17db0893069e8b1569c4763b354a1947e61c39aefec7d5de668054a5a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.dis"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.elf",
+      "size_bytes": 380544,
+      "sha256": "b6a3b643301e58cb41a7ee3062f65c7827a7b4bb102fe02898185a6cf594af84",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.elf"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.logs.txt",
+      "size_bytes": 19493,
+      "sha256": "802ff44e7f82b157a8c0a578c9f97d8941f6f3126cefd261e4b73525930007c8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.map",
+      "size_bytes": 281840,
+      "sha256": "788bded03ed6678bbba9ac85767cd407d877af88a102bf6597907ac0bb0cbdb4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.map"
+    },
+    {
+      "file": "data_integrity_escalation_reset_test_sim_dv.rodata.txt",
+      "size_bytes": 76959,
+      "sha256": "fb8382518c690a0411ab8ec6b300ce49b5977d4d07f2a1da8eb54a10145c66e3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/data_integrity_escalation_reset_test_sim_dv.rodata.txt"
+    }
+  ]
+}

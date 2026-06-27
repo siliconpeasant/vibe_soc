@@ -1,0 +1,588 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 301
+nargs: 1
+format: DIF-fail: dif_lc_ctrl_get_state(&lc, &state) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 302
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1002c
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 310
+nargs: 0
+format: First access test iteration...
+str_arg_idx: 
+addr: 10040
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 325
+nargs: 0
+format: Second access test iteration...
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 333
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10068
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 336
+nargs: 0
+format: Third access test iteration...
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 346
+nargs: 1
+format: Unexpected reset info 0x%02H
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 74
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_configure(&otp, config) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 81
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 154
+nargs: 1
+format: Write test at 0x%0h...
+str_arg_idx: 
+addr: 100cc
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 158
+nargs: 1
+format: ead test at 0x%0h...
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 98
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100f4
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 103
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_dai_program64(&otp, kDifOtpCtrlPartitionSecret2, i, word) returns %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 104
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 105
+nargs: 0
+format: CHECK-fail: address must fit into int32_t
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 107
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10144
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 122
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 126
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_dai_read_start(&otp, kDifOtpCtrlPartitionSecret2, i) returns %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 127
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10180
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 128
+nargs: 0
+format: CHECK-fail: address must fit into int32_t
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 130
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101a8
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 138
+nargs: 3
+format: CHECK-fail: 0x%0h == 0x%0h (got == exp) is not expected at address 0x%0h
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 142
+nargs: 3
+format: CHECK-fail: 0x%0h != 0x%0h (got != exp) is not expected at address 0x%0h
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 235
+nargs: 0
+format: Trying to advance to Creator Root Key and expecting failure...
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 200
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101f8
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 201
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1020c
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 204
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10220
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 208
+nargs: 0
+format: Using test_rom, setting inputs and advancing state...
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 210
+nargs: 0
+format: CHECK-fail: (kDifOk == dif_keymgr_advance_state(&keymgr, &kCreatorParams)) ^ expect_init_fail
+str_arg_idx: 
+addr: 10248
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 212
+nargs: 0
+format: Using rom, only advancing state...
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 213
+nargs: 0
+format: CHECK-fail: (kDifOk == dif_keymgr_advance_state_raw(&keymgr)) ^ expect_init_fail
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 259
+nargs: 0
+format: CHECK-fail: Should have reset before this line
+str_arg_idx: 
+addr: 10284
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 243
+nargs: 0
+format: Trying to advance to Creator Root Key and expecting success...
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 245
+nargs: 0
+format: Check that the Keymgr can generate a key...
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 246
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102c0
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 248
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102d4
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 250
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102e8
+severity: 0
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 221
+nargs: 0
+format: Check that the Keymgr cannot advance...
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 222
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10310
+severity: 2
+file: sw/device/tests/sim_dv/otp_ctrl_lc_signals_test.c
+line: 226
+nargs: 0
+format: CHECK-fail: Keymgr is not expected to be available in this LC state.
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 311
+nargs: 2
+format: CHECK-fail: Keymgr in unexpected state: %0h, expected to be %0h
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 340
+nargs: 1
+format: CHECK-fail: Unexpected status: %0h
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 71
+nargs: 0
+format: CHECK-fail: memcmp(data->value, readback_data.value, sizeof(data->value)) == 0
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 16
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED0
+str_arg_idx: 
+addr: 1039c
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 19
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED1
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 22
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED2
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 25
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED3
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 28
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED4
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 31
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED5
+str_arg_idx: 
+addr: 10400
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 34
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED6
+str_arg_idx: 
+addr: 10414
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 37
+nargs: 0
+format: Life cycle state: TEST_UNLOCKED7
+str_arg_idx: 
+addr: 10428
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 40
+nargs: 0
+format: Life cycle state: DEV
+str_arg_idx: 
+addr: 1043c
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 43
+nargs: 0
+format: Life cycle state: PROD
+str_arg_idx: 
+addr: 10450
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 46
+nargs: 0
+format: Life cycle state: PROD_END
+str_arg_idx: 
+addr: 10464
+severity: 0
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 49
+nargs: 0
+format: Life cycle state: RMA
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/lc_ctrl_testutils.c
+line: 53
+nargs: 1
+format: CPU is executing in locked/invalid life cycle state: %0d
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/otp_ctrl_testutils.c
+line: 39
+nargs: 1
+format: Expected a DAI error for access to 0x%0h
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/otp_ctrl_testutils.c
+line: 43
+nargs: 1
+format: Expected access locked error for access to 0x%0h
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/otp_ctrl_testutils.c
+line: 47
+nargs: 1
+format: No DAI error expected for access to 0x%0h
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/otp_ctrl_testutils.c
+line: 50
+nargs: 1
+format: No DAI error code expected for access to 0x%0h
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 104f0
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 1052c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10540
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10554
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10568
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 1057c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10590
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 105a4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10658
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 1066c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10680
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_lowpower_cancel_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_lowpower_cancel_test",
+  "images": [
+    {
+      "image_base": "pwrmgr_lowpower_cancel_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_lowpower_cancel_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.32.vmem",
+      "size_bytes": 43291,
+      "sha256": "faec2faa07f8d46f9eb42e76156974847c4c4af086ed47b900388b3821a71e62",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.64.scr.vmem",
+      "size_bytes": 46669,
+      "sha256": "e5fd75379243660b553d09b31edc7fbd5d43fb2d0226aaa17cb5b61f6e68a7b9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.64.vmem",
+      "size_bytes": 40486,
+      "sha256": "904abbf20571446f41a01632792d61dfd1db264d13acbf0ca28a01d7dff613fe",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.bin",
+      "size_bytes": 16588,
+      "sha256": "c942694bfd7385aba27842eb0199f9459cae6010df47231369fd5f010f63fd3e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.dis",
+      "size_bytes": 600261,
+      "sha256": "077a521baedcf893bcda4187a69c634471d78773dfa30d6a5e499b3c0d9f472a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.elf",
+      "size_bytes": 312300,
+      "sha256": "bfebb87b03fd630d8f9354a52b20aabb7c9325e1a959eceef339ebaaa3652bad",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.logs.txt",
+      "size_bytes": 8104,
+      "sha256": "903e418695c25de7304da880a04081ba47e2a2a64713a1c474277faa1096dc39",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.map",
+      "size_bytes": 206160,
+      "sha256": "0e8c9c618f3e52a6664c4a37148c7a5b5eec21eb0c70e19544d6be28904268ba",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_lowpower_cancel_test_sim_dv.rodata.txt",
+      "size_bytes": 53831,
+      "sha256": "1eea40234b02b4449e514a565174e3efada2507a16fc45a01d9cbea25cdd7063",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_lowpower_cancel_test_sim_dv.rodata.txt"
+    }
+  ]
+}

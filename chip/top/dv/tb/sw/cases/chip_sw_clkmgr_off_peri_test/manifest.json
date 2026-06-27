@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_clkmgr_off_peri_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_clkmgr_off_peri_test",
+  "images": [
+    {
+      "image_base": "clkmgr_off_peri_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:clkmgr_off_peri_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.32.vmem",
+      "size_bytes": 46977,
+      "sha256": "c5d6b3c117803bc88e4ee6cbd8b3ef8289e1e6a9d7534d1c4cfd4cefb6df4384",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.64.scr.vmem",
+      "size_bytes": 50649,
+      "sha256": "26e7f3b0027c5b5d979dde13cb947987ba15da604a0b3ed60e5129d3e97cdc9b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.64.vmem",
+      "size_bytes": 43935,
+      "sha256": "db7fa878bd76670e85ff0f99ea89407876950da0343324a0a16a2fb7afe5aa37",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.bash"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.bin",
+      "size_bytes": 18004,
+      "sha256": "b74900f7953c6a8230387fbbae647afe3acb3151b8510cebea9c75a2b1a8fbc0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.bin"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.dis",
+      "size_bytes": 650167,
+      "sha256": "dfb368e2e7cfe2e7f7a0c070b920c6d4bc6835ca6019825b734fe89ea4b25737",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.dis"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.elf",
+      "size_bytes": 347604,
+      "sha256": "a1606736ee1b628494d80968f2452ba44028623cb2df104cb3e3526167a87380",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.elf"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.logs.txt",
+      "size_bytes": 11191,
+      "sha256": "3e5e60b4ca60b8653e8913c2ee95f578a5f3d36f5e0b02844cfae885a0b5331e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.map",
+      "size_bytes": 227460,
+      "sha256": "62fa5c4a334d7385e18374b0b84632462c94813d359a563197871681f20a791a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.map"
+    },
+    {
+      "file": "clkmgr_off_peri_test_sim_dv.rodata.txt",
+      "size_bytes": 59815,
+      "sha256": "296ed615a2357266478288636523bfc2b147aae0281a45f238b4f9a255a1460c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/clkmgr_off_peri_test_sim_dv.rodata.txt"
+    }
+  ]
+}

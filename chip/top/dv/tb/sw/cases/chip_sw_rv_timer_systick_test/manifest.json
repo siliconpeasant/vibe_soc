@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rv_timer_systick_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rv_timer_systick_test",
+  "images": [
+    {
+      "image_base": "rv_timer_systick_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rv_timer_systick_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "rv_timer_systick_test_sim_dv.32.vmem",
+      "size_bytes": 40699,
+      "sha256": "d04d8b0cead021f45fc828b8eb4fd76af51eb96880bbe258b8e9c447ff0083ac",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.64.scr.vmem",
+      "size_bytes": 43879,
+      "sha256": "30aa97a698318eda6bd3fb5611ae1f463c950b2534f52be3386fa4acc4c30db2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.64.vmem",
+      "size_bytes": 38068,
+      "sha256": "113d91044551419bd72ce36b24f79f93507d37203732c0ab28f897394b3c9393",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.bash"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.bin",
+      "size_bytes": 15596,
+      "sha256": "2a773b28dedc4afdccd5d4a511ed0ff7a627633efaf368852f7baa4e6c382f55",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.bin"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.dis",
+      "size_bytes": 582668,
+      "sha256": "c00343d3b35e6224015c6a321672d72dc1fdf6d8c413a42791f8181958b8146e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.dis"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.elf",
+      "size_bytes": 289932,
+      "sha256": "91aae216053e1bf915646d3b6b03f847cbea3d53501c8ad974404001fd8fca66",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.elf"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.logs.txt",
+      "size_bytes": 6634,
+      "sha256": "daee40ac6d4b19e567751d7f783bb6200dd5eafbfe92ae5f67749cb31c458595",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.map",
+      "size_bytes": 196177,
+      "sha256": "3d09a3edb1fdcc63c6b3e9273c7ec681558c866fe9d6c412cb021cd2e7b8b66d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.map"
+    },
+    {
+      "file": "rv_timer_systick_test_sim_dv.rodata.txt",
+      "size_bytes": 51762,
+      "sha256": "3a54f9fe4ee48418395e4a932f3396edba1a04e887cefb5e10b3bdf49266140c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_timer_systick_test_sim_dv.rodata.txt"
+    }
+  ]
+}

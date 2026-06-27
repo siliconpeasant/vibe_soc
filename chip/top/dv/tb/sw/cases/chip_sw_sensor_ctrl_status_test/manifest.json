@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sensor_ctrl_status_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sensor_ctrl_status_test",
+  "images": [
+    {
+      "image_base": "sensor_ctrl_status_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sensor_ctrl_status_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.32.vmem",
+      "size_bytes": 34002,
+      "sha256": "4e2cc9492c930478245826d730ff64de9878303bcd87bb63849bd084a7f885d7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.64.scr.vmem",
+      "size_bytes": 36629,
+      "sha256": "fb386816738c851e0d930df9a0dd1f817bbce0a82035d916d896a2f612989b4d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.64.vmem",
+      "size_bytes": 31784,
+      "sha256": "735fcbb9cf8877e4cf7aee7efb456e52ea530d3b0f24cbcfd7b12fbf9f8a2b80",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.bash"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.bin",
+      "size_bytes": 13024,
+      "sha256": "e409fae893ccc04baf6ad8dba4744589e5931a010056754c411c33d2dace72d0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.bin"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.dis",
+      "size_bytes": 517155,
+      "sha256": "76f2aee2e8359d4bc71dce4d6824523814697cb3f912cf23edd67167a27188fe",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.dis"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.elf",
+      "size_bytes": 324964,
+      "sha256": "53472634bd5c0efe1b0b668591d5c693e921c26a6277042a37b566c37bc50728",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.elf"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.logs.txt",
+      "size_bytes": 4919,
+      "sha256": "7e80d1f93e7ee85d7addc77b8688b6f9b13bc0ae44609946080daf0ea474176b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.map",
+      "size_bytes": 161948,
+      "sha256": "e3c6b7f629c134d31c1f88a03c6640b6f61d36730cc94d95e2fca99535863754",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.map"
+    },
+    {
+      "file": "sensor_ctrl_status_test_sim_dv.rodata.txt",
+      "size_bytes": 46364,
+      "sha256": "870f94bf38c4720571954db0131a57dff6acefb0518d2215c1bdcf8e2dc1f162",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sensor_ctrl_status_test_sim_dv.rodata.txt"
+    }
+  ]
+}

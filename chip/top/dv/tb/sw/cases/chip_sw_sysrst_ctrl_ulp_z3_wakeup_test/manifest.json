@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_sysrst_ctrl_ulp_z3_wakeup_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_sysrst_ctrl_ulp_z3_wakeup_test",
+  "images": [
+    {
+      "image_base": "sysrst_ctrl_ulp_z3_wakeup_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:sysrst_ctrl_ulp_z3_wakeup_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.32.vmem",
+      "size_bytes": 43802,
+      "sha256": "89b2958b5e687275a08203ce7a468a388cd9f4d35b4448340e974f7e888ca010",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.64.scr.vmem",
+      "size_bytes": 47209,
+      "sha256": "aab6cc94896b2cf71504294548c2b3b8ec8ab45b23f5f6261a515622b7d1c2dc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.64.vmem",
+      "size_bytes": 40954,
+      "sha256": "e2a226a1685bda1351cb9ac088c09314423103a7a5127f1628933f5d756e497f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.bash"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.bin",
+      "size_bytes": 16784,
+      "sha256": "e48cbfed3b2dab3c77aaf5086c179ba924bc8bade55e7230f4f280223e2796e8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.bin"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.dis",
+      "size_bytes": 591309,
+      "sha256": "f42a1e9be9c156fa7af9466f1944b1afe74c51114a45d2349b51beeb327cd09f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.dis"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.elf",
+      "size_bytes": 318396,
+      "sha256": "3a991acccd27eff0e805afd451518900797cc1c3e6d20dd13b3cef0fed465404",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.elf"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.logs.txt",
+      "size_bytes": 8438,
+      "sha256": "527f122c14132281cff0f0542a613aeafa8840bde1cb0af8fff2c6379f9ef0a9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.map",
+      "size_bytes": 197394,
+      "sha256": "a04148f757e41849a88419e7e5fd9e53c775c3ed340116c489be1ab3f458a202",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.map"
+    },
+    {
+      "file": "sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.rodata.txt",
+      "size_bytes": 55863,
+      "sha256": "0fc3db68bc3c61f6f8fca80ecc87a24f1c8c085b6be0b1de45bc4e2092567cc1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/sysrst_ctrl_ulp_z3_wakeup_test_sim_dv.rodata.txt"
+    }
+  ]
+}

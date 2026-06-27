@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_kmac_entropy_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_kmac_entropy_test",
+  "images": [
+    {
+      "image_base": "kmac_entropy_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:kmac_entropy_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "kmac_entropy_test_sim_dv.32.vmem",
+      "size_bytes": 52626,
+      "sha256": "275461a2687d88bad85bc24d2fe05b9b2d5fe82b306b4d046039949b508b47a1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.64.scr.vmem",
+      "size_bytes": 56729,
+      "sha256": "5de4e4ff5f7c1930ca9f564c3e7ee21de2883a9cccc9752845e20f7931478b17",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.64.vmem",
+      "size_bytes": 49205,
+      "sha256": "8d6f9800965f02fad3ff8192a0172c719719da4bea5442d4ce2f2f36a9c0fa86",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.bash"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.bin",
+      "size_bytes": 20168,
+      "sha256": "d659efe2fec8c9049ccef30ef0d7bb755c74f81a1a007b68ea353735b6ba42cf",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.bin"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.dis",
+      "size_bytes": 740306,
+      "sha256": "e00dcb7e7546782169ff7f8991295e02081d5674bc18db81c416c9fc7f2eb5c3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.dis"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.elf",
+      "size_bytes": 354196,
+      "sha256": "f9c6359cef54fe3d6b31839eb12c0c8478119a24df8083cc2f1f2d0a9595689b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.elf"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.logs.txt",
+      "size_bytes": 10558,
+      "sha256": "d2a65c54ee455ec501f8e651aaf3cd798e448ab57cde030de0d7547129d72bb3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.map",
+      "size_bytes": 244302,
+      "sha256": "8fd707dc26c088b19587575daf590dcb7b4c484187d8611986c23dd21fac4641",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.map"
+    },
+    {
+      "file": "kmac_entropy_test_sim_dv.rodata.txt",
+      "size_bytes": 61294,
+      "sha256": "85adb47f7937ee6f185f08d244d4a215780e56843dd58e5a931c61211332e421",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_entropy_test_sim_dv.rodata.txt"
+    }
+  ]
+}

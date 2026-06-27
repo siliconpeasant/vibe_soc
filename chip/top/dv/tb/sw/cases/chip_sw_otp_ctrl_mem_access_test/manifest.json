@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_otp_ctrl_mem_access_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otp_ctrl_mem_access_test",
+  "images": [
+    {
+      "image_base": "otp_ctrl_mem_access_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otp_ctrl_mem_access_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.32.vmem",
+      "size_bytes": 40070,
+      "sha256": "d71da7ee61cc6db7359625d16ce005bc66c0b9ec82030818a0e7105973dae2c0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.64.scr.vmem",
+      "size_bytes": 43179,
+      "sha256": "36a8b65e3aaba639670dabd2cac05055893053596957ba59a7549a4a973deb1f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.64.vmem",
+      "size_bytes": 37461,
+      "sha256": "7d6fb6816031cf41a912e8d8321ef892fd70a91c001630e60a9b40c3e4739d92",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.bash"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.bin",
+      "size_bytes": 15352,
+      "sha256": "f9d0025c324744799a449c69c34eaca4e77ddd6e928d8477840cfcca16786eff",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.bin"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.dis",
+      "size_bytes": 557435,
+      "sha256": "50787d7ad7fca4221b8cd165d6e1002fa07bda63146c47a66f07e94c6c58a974",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.dis"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.elf",
+      "size_bytes": 298176,
+      "sha256": "c7c992bc4493e42fabb2ca7672f3cb519f0e0b40ad2772660338fd7684dcc2b0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.elf"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.logs.txt",
+      "size_bytes": 7238,
+      "sha256": "bf086fae20a058784d29031bbee4586410f945ac67832e9b10afbef3ad4653f9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.map",
+      "size_bytes": 189326,
+      "sha256": "04d4441e178124447b80760287eed2ae33405a9d33f676b1cf715632b02fec70",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.map"
+    },
+    {
+      "file": "otp_ctrl_mem_access_test_sim_dv.rodata.txt",
+      "size_bytes": 51950,
+      "sha256": "f4babe3df0d8039648cf527d956db4cc65e7b2b4506c7887f390b8d491fc1cc7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_mem_access_test_sim_dv.rodata.txt"
+    }
+  ]
+}

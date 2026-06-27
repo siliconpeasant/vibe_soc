@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_usbdev_aon_pullup_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_usbdev_aon_pullup_test",
+  "images": [
+    {
+      "image_base": "usbdev_aon_pullup_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:usbdev_aon_pullup_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.32.vmem",
+      "size_bytes": 44915,
+      "sha256": "e33105d931a70bcd9f8da3915f6d595b930e38959dda343b4a41fd5272a7f30c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.64.scr.vmem",
+      "size_bytes": 48419,
+      "sha256": "e1dd5f7c4eb3891df1a3346c40bb2c52404df4d6ec016467ee16b952f84b97f6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.64.vmem",
+      "size_bytes": 42002,
+      "sha256": "9f73d3ea79fe65791493ab76398e899112453780b46e7739326d0d86e17b454d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.bash"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.bin",
+      "size_bytes": 17212,
+      "sha256": "6189f3e00dcdf2f33a7712c14e82e10971fa21db2a000261195b36c4f6e8b883",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.bin"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.dis",
+      "size_bytes": 601175,
+      "sha256": "3004774ef2fc79e566f839bb7f816090125db643f8325d65a5c448b8332f0063",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.dis"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.elf",
+      "size_bytes": 310148,
+      "sha256": "25c59db3f18ae9d47d34b3a5cd1d37d194de9c3271bd5d5d66c277fd4aec378f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.elf"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.logs.txt",
+      "size_bytes": 6755,
+      "sha256": "4a8f0987ecb270c67bc3d4f9e922c339e80605fd5aa24e1bcc359f6dcbbb0876",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.map",
+      "size_bytes": 211083,
+      "sha256": "82b27d2109083fcfb2f9c603d4f1d7356a88026ea0e4a62dd61846e6eda9b3ce",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.map"
+    },
+    {
+      "file": "usbdev_aon_pullup_test_sim_dv.rodata.txt",
+      "size_bytes": 60236,
+      "sha256": "4a8d5d7f879383f3a88d982d7b5f3c8e75615af8da5520200f371420774bee92",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_aon_pullup_test_sim_dv.rodata.txt"
+    }
+  ]
+}

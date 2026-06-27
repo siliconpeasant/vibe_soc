@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_flash_ctrl_write_clear_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_flash_ctrl_write_clear_test",
+  "images": [
+    {
+      "image_base": "flash_ctrl_write_clear_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:flash_ctrl_write_clear_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.32.vmem",
+      "size_bytes": 38345,
+      "sha256": "8746a8a5b3f6878f9458be956d7b82b3d01b8883fc3d4fb924fb74509a4e95f7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.64.scr.vmem",
+      "size_bytes": 41339,
+      "sha256": "280b2a0fd0ac4d7f60aeab2a6e6827c0c25a52b1c20735be47069a5afc9e6d12",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.64.vmem",
+      "size_bytes": 35867,
+      "sha256": "872c96fb52878cf6f67dc23a0e509fb82f4db1d50427b0dadd5a78447a539ec6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.bash"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.bin",
+      "size_bytes": 14692,
+      "sha256": "033e59ee239fb4bbc9ddbef780a58c14195a9c59c231d84aa915c72aea091efa",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.bin"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.dis",
+      "size_bytes": 549980,
+      "sha256": "306e48c1a284f1142cec7c59e8fdf86d03dceced4e93f5ba0f31a5fe3fac95ac",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.dis"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.elf",
+      "size_bytes": 289112,
+      "sha256": "6d4dbaa06a2d6e7ca2dda8528986ff4ca3b15bf89634f9cffd7ef163ec38664d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.elf"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.logs.txt",
+      "size_bytes": 5546,
+      "sha256": "b7344648c15a026904c1bc69cb52de990eb8a46162d87219f7acea01084d5a64",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.map",
+      "size_bytes": 187781,
+      "sha256": "aa5fbd9aed8641189f8d55bb5cf848c8fa92457ba9e22fca58088c7b685cf2cd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.map"
+    },
+    {
+      "file": "flash_ctrl_write_clear_test_sim_dv.rodata.txt",
+      "size_bytes": 49332,
+      "sha256": "d7c3d9dac133fddd7f3b30feb97e9d62abe300e40604ccacbb3ce82ff6f6bcb6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_write_clear_test_sim_dv.rodata.txt"
+    }
+  ]
+}

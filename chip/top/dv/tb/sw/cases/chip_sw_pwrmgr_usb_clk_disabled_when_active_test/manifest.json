@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_pwrmgr_usb_clk_disabled_when_active_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_pwrmgr_usb_clk_disabled_when_active_test",
+  "images": [
+    {
+      "image_base": "pwrmgr_usb_clk_disabled_when_active_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:pwrmgr_usb_clk_disabled_when_active_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.32.vmem",
+      "size_bytes": 40298,
+      "sha256": "3f8f0d126c32f48342da4adf75b317ef1ff6ab0dd4b02eadd28c6471a606c5f8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.64.scr.vmem",
+      "size_bytes": 43429,
+      "sha256": "4346f54548670a414340ac293a21802d6d12cfb3926782d05277e8ef7c1afbcd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.64.vmem",
+      "size_bytes": 37678,
+      "sha256": "cd2953f4ea0d9196d70255f4f6f77772f0b41300b718939aa58802e15483b13c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.bash"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.bin",
+      "size_bytes": 15440,
+      "sha256": "f0f4c2c90d03ccdd9712cb5ec22ce51f062a65a38d39f69c8f8416dca80f629c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.bin"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.dis",
+      "size_bytes": 555242,
+      "sha256": "bc600a231d3a1df75e4d33209955ced3fcfc72bc0dea08d5ef55577ce11e823c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.dis"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.elf",
+      "size_bytes": 304596,
+      "sha256": "f93cbef8894fa9496cb97227e4467f3ee07ed21dc21730f9aa07dff39df83157",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.elf"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.logs.txt",
+      "size_bytes": 8991,
+      "sha256": "6214fa8564ad22dfad0bac87f04e2236d924393642c1ffa2eb2f7eb6d39adeb7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.map",
+      "size_bytes": 187520,
+      "sha256": "29aa12435e481c19c4ce7432bc8d5c2456c677fa1fa26a33648eadba92359ef2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.map"
+    },
+    {
+      "file": "pwrmgr_usb_clk_disabled_when_active_test_sim_dv.rodata.txt",
+      "size_bytes": 50845,
+      "sha256": "ecb94ed54d2ba35f49e6a8f1a0a25c8e2f51e91afe1137cff2983b555d9cbb60",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/pwrmgr_usb_clk_disabled_when_active_test_sim_dv.rodata.txt"
+    }
+  ]
+}

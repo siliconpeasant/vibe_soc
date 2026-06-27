@@ -1,0 +1,350 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 117
+nargs: 0
+format: CHECK-fail: clock_hint_state == kDifToggleEnabled
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 119
+nargs: 2
+format: CHECK-fail: Clock enabled state is (%0d) and not as expected (%0d).
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 127
+nargs: 2
+format: CHECK-fail: Clock hint state is (%0d) and not as requested (%0d).
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 127
+nargs: 2
+format: CHECK-fail: Clock enabled state is (%0d) and not as expected (%0d).
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 132
+nargs: 2
+format: CHECK-fail: Clock hint state is (%0d) and not as requested (%0d).
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 132
+nargs: 2
+format: CHECK-fail: Clock enabled state is (%0d) and not as expected (%0d).
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 140
+nargs: 2
+format: CHECK-fail: Clock hint state is (%0d) and not as requested (%0d).
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 140
+nargs: 2
+format: CHECK-fail: Clock enabled state is (%0d) and not as expected (%0d).
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 145
+nargs: 2
+format: CHECK-fail: Clock enabled state is (%0d) and not as expected (%0d).
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 150
+nargs: 2
+format: CHECK-fail: Clock hint state is (%0d) and not as requested (%0d).
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 150
+nargs: 2
+format: CHECK-fail: Clock enabled state is (%0d) and not as expected (%0d).
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 155
+nargs: 0
+format: CHECK-fail: otbn_randomness_test_end(&otbn, 1)
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 161
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10108
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 162
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 88
+nargs: 2
+format: CHECK-fail: Interrupt from incorrect peripheral: (exp: %0d, obs: %0s)
+str_arg_idx: 1
+addr: 10130
+severity: 2
+file: sw/device/tests/otbn_randomness_test.c
+line: 91
+nargs: 0
+format: CHECK-fail: irq == kDtOtbnIrqDone
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 40
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 48
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1016c
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 49
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10180
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 51
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 59
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101a8
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 63
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101bc
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 64
+nargs: 1
+format: ERROR: Test with index %0d failed.
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/otbn_randomness_impl.c
+line: 33
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101e4
+severity: 0
+file: sw/device/tests/otbn_randomness_impl.c
+line: 35
+nargs: 9
+format: %0s0x%08h%08h%08h%08h%08h%08h%08h%08h
+str_arg_idx: 0
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 35
+nargs: 1
+format: DIF-fail: dif_entropy_src_configure(&entropy_src, config, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/entropy_testutils.c
+line: 177
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10220
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: imem_size % sizeof(uint32_t) == 0
+str_arg_idx: 0
+addr: 10234
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: data_size % sizeof(uint32_t) == 0
+str_arg_idx: 0
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 63
+nargs: 0
+format: CHECK-fail: app->imem_end > app->imem_start
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/otbn_testutils.c
+line: 65
+nargs: 0
+format: CHECK-fail: app->dmem_data_end >= app->dmem_data_start
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10284
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 102c0
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 102fc
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 103d8
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

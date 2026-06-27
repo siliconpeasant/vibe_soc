@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rv_core_ibex_nmi_irq_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rv_core_ibex_nmi_irq_test",
+  "images": [
+    {
+      "image_base": "rv_core_ibex_nmi_irq_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rv_core_ibex_nmi_irq_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.32.vmem",
+      "size_bytes": 39568,
+      "sha256": "9d54ff99f30e0cd4cac35df8ad7aac0cba19d74329d2bfddaca4e823dbd97d71",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.64.scr.vmem",
+      "size_bytes": 42639,
+      "sha256": "3fbeebdddc3e3cfb027a5f9b821e3109d96715c60ce3980c562e094ee5c4d093",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.64.vmem",
+      "size_bytes": 36993,
+      "sha256": "be9b9e84e0df7bb63162234e2741d6626d0d29f34663003520f8593ebed0de18",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.bash"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.bin",
+      "size_bytes": 15160,
+      "sha256": "8950d7c04847c3bb8a2970b6c4bd93cdbb48cb8b888e67cc9f4f1aceba051264",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.bin"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.dis",
+      "size_bytes": 604469,
+      "sha256": "27cec9d054b2db3012d38942682d72b4407f6a7551db99e1f6ce04498d75551c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.dis"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.elf",
+      "size_bytes": 298260,
+      "sha256": "b64d1f931ee9fcf55094f1293069849765b8869a1e95204937cdcbad7c32be51",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.elf"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.logs.txt",
+      "size_bytes": 7617,
+      "sha256": "9213fc2c37cf4884bdc338c36fd67c8e60f9549daccd0b73b36aefc72045bef9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.map",
+      "size_bytes": 200652,
+      "sha256": "bc8edbd875c3a27c5f80eee3c37fe18423b1fe6a8de93fc10eb341569a266bad",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.map"
+    },
+    {
+      "file": "rv_core_ibex_nmi_irq_test_sim_dv.rodata.txt",
+      "size_bytes": 49095,
+      "sha256": "314cc3e882c93751ccc7384a532539b38b48c4252f90632737f19c22c9edf8f3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_nmi_irq_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rstmgr_sw_rst_ctrl_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rstmgr_sw_rst_ctrl_test",
+  "images": [
+    {
+      "image_base": "rstmgr_sw_rst_ctrl_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rstmgr_sw_rst_ctrl_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.32.vmem",
+      "size_bytes": 40681,
+      "sha256": "fd6fe108b5f658a2968ea99974e51e050ec0074104ad5c402ea1f723e98a5d48",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.64.scr.vmem",
+      "size_bytes": 43859,
+      "sha256": "1c37f477bcc4ba55a90d3cb0392b2f2faaa9caf54a6889d78ebae3cb7e196075",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.64.vmem",
+      "size_bytes": 38051,
+      "sha256": "0ad589534b596157ded77d3b974005455f050df7274146c0e6a0ec4ee9723f4a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.bash"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.bin",
+      "size_bytes": 15588,
+      "sha256": "fcca6e2baf61b753858f26bc43165e5876ddb9bcd57e2912fc7e07206e0ad5fc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.bin"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.dis",
+      "size_bytes": 552957,
+      "sha256": "454e82a9400b1f20fcb57f5ce9dca7b732046dc608df9748c17be1eaa48832d0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.dis"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.elf",
+      "size_bytes": 301892,
+      "sha256": "f9ccf02cbbd7a3d081707d579f56262994c716369995cd5e59ca5362b8b07829",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.elf"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.logs.txt",
+      "size_bytes": 6608,
+      "sha256": "40a5430367626f00dfca7ab27fd229f93c74db648e282f385153221635dea229",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.map",
+      "size_bytes": 201755,
+      "sha256": "286126c40fffa87d29750754b0d7d1e5d77f28abb785cda01bdac276dcee13a0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.map"
+    },
+    {
+      "file": "rstmgr_sw_rst_ctrl_test_sim_dv.rodata.txt",
+      "size_bytes": 52877,
+      "sha256": "8112ddb2853a7d8516c30ad0be54343cc575ef942dea720b74a70e90cc49fb25",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rstmgr_sw_rst_ctrl_test_sim_dv.rodata.txt"
+    }
+  ]
+}

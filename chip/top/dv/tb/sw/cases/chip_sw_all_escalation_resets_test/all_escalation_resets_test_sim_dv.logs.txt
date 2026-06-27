@@ -1,0 +1,1183 @@
+addr: 10004
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 631
+nargs: 0
+format: At load access error handler
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 635
+nargs: 2
+format: CHECK-fail: Unexpected mtval: expected 0x%0h, got 0x%0h
+str_arg_idx: 
+addr: 1002c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 639
+nargs: 0
+format: Load access error handler exiting
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 668
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10054
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 672
+nargs: 3
+format: CHECK-fail: For %0s, reset count %0d got too many interrupts (%0d)
+str_arg_idx: 0
+addr: 10068
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 674
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1007c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 685
+nargs: 1
+format: CHECK-fail: Unexpected aon timer interrupt %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 688
+nargs: 0
+format: CHECK-fail: fault_checker.function
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 689
+nargs: 0
+format: CHECK-fail: fault_checker.ip_inst
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 690
+nargs: 0
+format: CHECK-fail: fault_checker.type
+str_arg_idx: 
+addr: 100cc
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 701
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled(&alert_handler, irq, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 706
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled(&plic, irq_id, kPlicTarget, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 725
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10108
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 727
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 737
+nargs: 2
+format: CHECK-fail: Alert handler NMI state not expected:	alert_enable:%0h	alert_raised:%0h
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 741
+nargs: 2
+format: CHECK-fail: Watchdog NMI state not expected:	wdog_enabled:%0h	wdog_barked:%0h
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 746
+nargs: 1
+format: DIF-fail: dif_alert_handler_get_class_state(&alert_handler, alert_class_to_use, &state) returns %0d
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 747
+nargs: 1
+format: CHECK-fail: Wrong phase %0d
+str_arg_idx: 
+addr: 1016c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 752
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause( &alert_handler, kExpectedAlertNumber, &is_cause) returns %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 753
+nargs: 0
+format: CHECK-fail: is_cause
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 757
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_acknowledge(&alert_handler, kExpectedAlertNumber) returns %0d
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1193
+nargs: 1
+format: DIF-fail: dif_rstmgr_alert_info_dump_read( &rstmgr, dump, DIF_RSTMGR_ALERT_INFO_MAX_SIZE, &seg_size) returns %0d
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1195
+nargs: 1
+format: DUMP SIZE %0d
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1197
+nargs: 2
+format: DUMP:%0d: 0x%0h
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1200
+nargs: 0
+format: CHECK-fail: seg_size must fit in int
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1202
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1020c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1203
+nargs: 0
+format: The alert info crash dump:
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1208
+nargs: 1
+format: CHECK-fail: Expected alert cause %0d to be set
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1214
+nargs: 2
+format: Unexpected alert cause %0d, may be triggered by %0d
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1252
+nargs: 1
+format: CHECK-fail: Wrong reset reason %02H
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1255
+nargs: 0
+format: Booting for the first time, starting test
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1257
+nargs: 1
+format: DIF-fail: dif_rstmgr_alert_info_set_enabled(&rstmgr, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1258
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10298
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1259
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102ac
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1260
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102c0
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1266
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102d4
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1267
+nargs: 1
+format: Reset counter value: %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1270
+nargs: 2
+format: CHECK-fail: Ip %0d Got too many resets (%0d)
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1274
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10310
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1278
+nargs: 0
+format: Booting due to escalation reset
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1282
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10338
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1284
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1034c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1286
+nargs: 1
+format: Interrupt count %0d
+str_arg_idx: 
+addr: 10360
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1287
+nargs: 1
+format: NMI count %0d
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1310
+nargs: 0
+format: CHECK-fail: Expected regular ISR should not run for flash_ctrl, lc_ctrl fatal state, or sram_ctrl_main faults
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1313
+nargs: 0
+format: CHECK-fail: Expected nmi should not run for flash_ctrl, lc_ctrl fatal state, or sram_ctrl_main faults
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1315
+nargs: 0
+format: CHECK-fail: Expected exactly one regular interrupt
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1316
+nargs: 0
+format: CHECK-fail: Expected at least one nmi
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1350
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause( &alert_handler, kExpectedAlertNumber, &is_cause) returns %0d
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1351
+nargs: 0
+format: CHECK-fail: !is_cause
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1359
+nargs: 1
+format: Unexpected rst_info=0x%0h
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 271
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10414
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 273
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10428
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 275
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1043c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1106
+nargs: 0
+format: CHECK-fail: Expected alert number larger than the number of alerts?
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1109
+nargs: 0
+format: Unexpected fault
+str_arg_idx: 
+addr: 10464
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1126
+nargs: 2
+format: Expected alert is %0d for %0s
+str_arg_idx: 1
+addr: 10478
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1130
+nargs: 0
+format: Ready for fault injection
+str_arg_idx: 
+addr: 1048c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1136
+nargs: 0
+format: Software fatal alert triggered
+str_arg_idx: 
+addr: 104a0
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1145
+nargs: 0
+format: OTP_CTRL error inject done
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1169
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for alert_irq_seen
+str_arg_idx: 
+addr: 104c8
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1170
+nargs: 0
+format: Alert IRQ seen
+str_arg_idx: 
+addr: 104dc
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1175
+nargs: 0
+format: Check that the retention SRAM blocks accesses
+str_arg_idx: 
+addr: 104f0
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1178
+nargs: 2
+format: Read from address 0x%0h with expected error gets 0x%0h
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1180
+nargs: 0
+format: CHECK-fail: We expect this access to trigger a load access exception
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 1184
+nargs: 0
+format: CHECK-fail: This should not be reached
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 804
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10540
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 806
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10554
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 808
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10568
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 810
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1057c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 832
+nargs: 3
+format: Configuring class %0d with %0d cycles and %0d occurrences
+str_arg_idx: 
+addr: 10590
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 854
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 105a4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 859
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassa, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 105b8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 861
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassb, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 863
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassc, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 865
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassd, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 339
+nargs: 0
+format: CHECK-fail: enable == enable
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 370
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_get_faults(&flash_ctrl_state, &faults) returns %0d
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 375
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10630
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 381
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_get_faults(&flash_ctrl_state, &faults) returns %0d
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 384
+nargs: 0
+format: CHECK-fail: For flash memory_properties err exp 1 get 0
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 385
+nargs: 0
+format: CHECK-fail: For flash read err exp 1 get 0
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 386
+nargs: 0
+format: CHECK-fail: For flash prog_window err exp 1 get 0
+str_arg_idx: 
+addr: 10680
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 387
+nargs: 0
+format: CHECK-fail: For flash prog_type err exp 1 get 0
+str_arg_idx: 
+addr: 10694
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 388
+nargs: 0
+format: CHECK-fail: For flash host_gnt err exp 1 get 0
+str_arg_idx: 
+addr: 106a8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 389
+nargs: 0
+format: CHECK-fail: For flash host_gnt err exp 1 get 0
+str_arg_idx: 
+addr: 106bc
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 391
+nargs: 0
+format: CHECK-fail: For flash register_integrity err exp 1 get 0
+str_arg_idx: 
+addr: 106d0
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 393
+nargs: 0
+format: CHECK-fail: For flash phy_integrity err exp 1 get 0
+str_arg_idx: 
+addr: 106e4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 395
+nargs: 0
+format: CHECK-fail: For flash lifecycle_manager err exp 1 get 0
+str_arg_idx: 
+addr: 106f8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 397
+nargs: 0
+format: CHECK-fail: For flash shadow_storage err exp 1 get 0
+str_arg_idx: 
+addr: 1070c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 418
+nargs: 1
+format: Expected alert %0d keymgr fault check is yet unimplemented
+str_arg_idx: 
+addr: 10720
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 352
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10734
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 460
+nargs: 3
+format: CHECK-fail: For %0s got 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10748
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 470
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 1075c
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 491
+nargs: 1
+format: Expected alert %0d hmac fault check is yet unimplemented
+str_arg_idx: 
+addr: 10770
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 502
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10784
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 523
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10798
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 545
+nargs: 1
+format: Expected alert %0d otbn fault check is yet unimplemented
+str_arg_idx: 
+addr: 107ac
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 559
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_get_status(&otp_ctrl, &status) returns %0d
+str_arg_idx: 
+addr: 107c0
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 567
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 107d4
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 576
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_get_status(&otp_ctrl, &status) returns %0d
+str_arg_idx: 
+addr: 107e8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 579
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 107fc
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 589
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10810
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 602
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10824
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 618
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10838
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 359
+nargs: 1
+format: DIF-fail: dif_sram_ctrl_get_status(sram_ctrl, &codes) returns %0d
+str_arg_idx: 
+addr: 1084c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 362
+nargs: 3
+format: CHECK-fail: For %0s got codes 0x%0h, expected 0x%0h
+str_arg_idx: 0
+addr: 10860
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 264
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10874
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 265
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10888
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 266
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1089c
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 871
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 108b0
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 874
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 108c4
+severity: 0
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 879
+nargs: 4
+format: Wdog will bark after %0d us (%0d cycles) and bite after %0d us (%0d cycles)
+str_arg_idx: 
+addr: 108d8
+severity: 2
+file: w/device/tests/sim_dv/all_escalation_resets_test.c
+line: 884
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 108ec
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 10900
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 10914
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 67
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10928
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 68
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 1093c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10950
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: value != ((void*)0)
+str_arg_idx: 
+addr: 10964
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10978
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 83
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 1098c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 84
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 109a0
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: value < 4294967295U
+str_arg_idx: 
+addr: 109b4
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 100
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 109c8
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 101
+nargs: 0
+format: CHECK-fail: dest != ((void*)0)
+str_arg_idx: 
+addr: 109dc
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 102
+nargs: 0
+format: CHECK-fail: offset + size <= kRetSramTestutilsScratchSizeAsInts
+str_arg_idx: 
+addr: 109f0
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 111
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10a04
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 112
+nargs: 0
+format: CHECK-fail: src != ((void*)0)
+str_arg_idx: 
+addr: 10a18
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: offset + size <= kRetSramTestutilsScratchSizeAsInts
+str_arg_idx: 
+addr: 10a2c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10a40
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 10a54
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10a68
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10a7c
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10a90
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10aa4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 10ab8
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10acc
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10ae0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: word_index < dump_size
+str_arg_idx: 
+addr: 10af4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 78
+nargs: 0
+format: CHECK-fail: word_index < dump_size
+str_arg_idx: 
+addr: 10b08
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 84
+nargs: 0
+format: alert_info:
+str_arg_idx: 
+addr: 10b1c
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 87
+nargs: 4
+format: esc_state [0]=%0h, [1]=%0h, [2]=%0h, [3]=%0h
+str_arg_idx: 
+addr: 10b30
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 90
+nargs: 4
+format: esc_cnt [0]=0x%0h, [1]=0x%0h, [2]=0x%0h, [3]=0x%0h
+str_arg_idx: 
+addr: 10b44
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 93
+nargs: 4
+format: accum_cnt [0]=0x%0h, [1]=0x%0h, [2]=0x%0h, [3]=0x%0h
+str_arg_idx: 
+addr: 10b58
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 94
+nargs: 1
+format: loc_alert_cause=0x%0h
+str_arg_idx: 
+addr: 10b6c
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 96
+nargs: 0
+format: alert_cause bits set:
+str_arg_idx: 
+addr: 10b80
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 101
+nargs: 1
+format: alert_cause[%0d] = 1
+str_arg_idx: 
+addr: 10b94
+severity: 0
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 106
+nargs: 0
+format: No bits set
+str_arg_idx: 
+addr: 10ba8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10bbc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 10bd0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10be4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10bf8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10c0c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10c20
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 173
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 10c34
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 31
+nargs: 0
+format: CHECK-fail: num_bits <= 32
+str_arg_idx: 
+addr: 10c48
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 32
+nargs: 0
+format: CHECK-fail: *bit_index < 32
+str_arg_idx: 
+addr: 10c5c
+severity: 2
+file: sw/device/lib/testing/rv_plic_testutils.c
+line: 21
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority(plic, irq_id, priority) returns %0d
+str_arg_idx: 
+addr: 10c70
+severity: 2
+file: sw/device/lib/testing/rv_plic_testutils.c
+line: 23
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled(plic, irq_id, target, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10c84
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10c98
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 10cac
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 10cc0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10cd4
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10ce8
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10cfc
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10d10
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10d24
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

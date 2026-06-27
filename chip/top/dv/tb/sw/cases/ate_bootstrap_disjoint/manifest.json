@@ -1,0 +1,23 @@
+{
+  "case": "ate_bootstrap_disjoint",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/ate_bootstrap_disjoint",
+  "images": [
+    {
+      "origin_target": "//sw/device/silicon_creator/manuf/tests:multislot_empty_test:1:new_rules",
+      "image_base": "multislot_empty_test",
+      "slot": 1,
+      "rule": "new_rules"
+    }
+  ],
+  "files": [
+    {
+      "file": "multislot_empty_test_sim_dv.64.vmem",
+      "size_bytes": 2555942,
+      "sha256": "e40d33eface1e0c3b4d171399344db88461427f84c44ff1b3bfe802393f40d7e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/multislot_empty_test_sim_dv.64.vmem"
+    }
+  ]
+}

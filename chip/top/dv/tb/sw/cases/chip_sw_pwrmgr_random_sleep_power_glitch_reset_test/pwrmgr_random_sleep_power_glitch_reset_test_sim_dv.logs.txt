@@ -1,0 +1,756 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 127
+nargs: 1
+format: DIF-fail: dif_aon_timer_irq_acknowledge(&aon_timer, irq) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 130
+nargs: 0
+format: CHECK-fail: AON Timer Wdog should not bark
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 143
+nargs: 1
+format: CHECK-fail: Wrong phase %0d
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 145
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_acknowledge(&alert_handler, irq) returns %0d
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 167
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeWakeup, dt_aon_timer_instance_id(kAonTimerDt), kDtAonTimerWakeupWkupReq, &aon_timer_wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 185
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeWakeup, dt_adc_ctrl_instance_id(kAdcCtrlDt), kDtAdcCtrlWakeupWkupReq, &adc_ctrl_wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 188
+nargs: 1
+format: DIF-fail: dif_pwrmgr_find_request_source( &pwrmgr, kDifPwrmgrReqTypeReset, dt_aon_timer_instance_id(kDtAonTimerAon), kDtAonTimerResetReqAonTimer, &wdog_reset_sources) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 190
+nargs: 1
+format: DIF-fail: dif_pwrmgr_get_all_request_sources( &pwrmgr, kDifPwrmgrReqTypeWakeup, &all_wakeup_sources) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 416
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100b8
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 426
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 429
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100e0
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 431
+nargs: 1
+format: Test round %0d
+str_arg_idx: 
+addr: 100f4
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 432
+nargs: 2
+format: RST_IDX[%0d] = %0d
+str_arg_idx: 
+addr: 10108
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 438
+nargs: 1
+format: reset info = %02H
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 462
+nargs: 1
+format: CHECK-fail: Wrong reset reason %02H
+str_arg_idx: 
+addr: 10130
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 467
+nargs: 0
+format: Booting and setting normal sleep followed by glitch reset
+str_arg_idx: 
+addr: 10144
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 468
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 472
+nargs: 0
+format: Booting and setting deep sleep followed by glitch reset
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 473
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 10180
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 479
+nargs: 0
+format: Booting and setting normal sleep followed by hw por
+str_arg_idx: 
+addr: 10194
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 480
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 101a8
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 484
+nargs: 0
+format: Booting and setting deep sleep followed by hw por
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 485
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 493
+nargs: 0
+format: Booting and setting normal sleep mode followed for low_power entry reset
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 494
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 496
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1020c
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 503
+nargs: 0
+format: Booting and setting deep sleep mode followed for low_power entry reset
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 504
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 507
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10248
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 518
+nargs: 0
+format: Booting and setting normal sleep followed by watchdog reset combined with sw_req
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 519
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 521
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10284
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 523
+nargs: 0
+format: Device reset from sw
+str_arg_idx: 
+addr: 10298
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 531
+nargs: 0
+format: Booting and setting deep sleep followed by watchdog reset combined with sw_req
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 532
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 534
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102d4
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 536
+nargs: 0
+format: Device reset from sw
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 543
+nargs: 0
+format: Booting and setting normal sleep followed by watchdog reset
+str_arg_idx: 
+addr: 102fc
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 544
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 546
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10324
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 551
+nargs: 0
+format: Booting and setting deep sleep followed by watchdog reset
+str_arg_idx: 
+addr: 10338
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 552
+nargs: 0
+format: Let SV wait timer reset
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 554
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10360
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 561
+nargs: 0
+format: Last Booting
+str_arg_idx: 
+addr: 10374
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 566
+nargs: 0
+format: Booting and running normal sleep followed by escalation reset
+str_arg_idx: 
+addr: 10388
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 572
+nargs: 0
+format: Booting for undefined case
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 204
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103b0
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 206
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103c4
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 208
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103d8
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 246
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103ec
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 249
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassa, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 296
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10414
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 304
+nargs: 0
+format: CHECK-fail: Timeout waiting for reset!
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 283
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1043c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 384
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( pwrmgr, kDifPwrmgrReqTypeReset, wdog_reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 395
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10464
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 370
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( pwrmgr, kDifPwrmgrReqTypeReset, wdog_reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 374
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1048c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 378
+nargs: 0
+format: CHECK-fail: Fail to enter in low power mode!
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 315
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104b4
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 318
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104c8
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 321
+nargs: 2
+format: Wdog will bark after %0d us and bite after %0d us
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 325
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104f0
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 328
+nargs: 1
+format: DIF-fail: dif_pwrmgr_set_request_sources( pwrmgr, kDifPwrmgrReqTypeReset, wdog_reset_sources, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 362
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10518
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 363
+nargs: 0
+format: Normal sleep set for watchdog
+str_arg_idx: 
+addr: 1052c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 345
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10540
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 346
+nargs: 0
+format: Low power set for watch dog
+str_arg_idx: 
+addr: 10554
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 349
+nargs: 0
+format: CHECK-fail: Fail to enter in low power mode!
+str_arg_idx: 
+addr: 10568
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 259
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1057c
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 263
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10590
+severity: 0
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 269
+nargs: 4
+format: Wdog will bark after %0d/%0d us/cycles and bite after %0d/%0d us/cycles
+str_arg_idx: 
+addr: 105a4
+severity: 2
+file: sw/device/tests/sim_dv/pwrmgr_random_sleep_power_glitch_reset_test.c
+line: 273
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 105b8
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 105cc
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 105e0
+severity: 2
+file: sw/device/lib/testing/nv_counter_testutils.c
+line: 46
+nargs: 0
+format: CHECK-fail: value != ((void*)0)
+str_arg_idx: 
+addr: 105f4
+severity: 2
+file: sw/device/lib/testing/nv_counter_testutils.c
+line: 47
+nargs: 0
+format: CHECK-fail: counter < (sizeof(kNvCounters) / sizeof(kNvCounters[0]))
+str_arg_idx: 
+addr: 10608
+severity: 2
+file: sw/device/lib/testing/nv_counter_testutils.c
+line: 49
+nargs: 0
+format: CHECK-fail: (uint32_t)&_non_volatile_counter_flash_words == kNonVolatileCounterFlashWords
+str_arg_idx: 
+addr: 1061c
+severity: 2
+file: sw/device/lib/testing/nv_counter_testutils.c
+line: 68
+nargs: 1
+format: CHECK-fail: Non-volatile counter %0d is at its maximum
+str_arg_idx: 
+addr: 10630
+severity: 2
+file: sw/device/lib/testing/nv_counter_testutils.c
+line: 72
+nargs: 0
+format: CHECK-fail: Counter increment failed
+str_arg_idx: 
+addr: 10644
+severity: 2
+file: sw/device/lib/testing/nv_counter_testutils.c
+line: 80
+nargs: 3
+format: CHECK-fail: Non-volatile counter %0d new value %0d > max value %0d
+str_arg_idx: 
+addr: 10658
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 1066c
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 10680
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 10694
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 106a8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 106bc
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 106d0
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 106e4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 106f8
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 1070c
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10720
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10734
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10748
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 1075c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10770
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10784
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10798
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 107ac
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 173
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 107c0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 107d4
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 107e8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 107fc
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10810
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10824
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10838
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 1084c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10860
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

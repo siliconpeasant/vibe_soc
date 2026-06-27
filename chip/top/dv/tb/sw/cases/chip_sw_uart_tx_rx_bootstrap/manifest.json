@@ -1,10 +1,76 @@
 {
   "case": "chip_sw_uart_tx_rx_bootstrap",
   "type": "case_sw_image",
-  "status": "placeholder_missing_prebuilt_image",
-  "expected_sw_image_base": "uart_tx_rx_test",
-  "origin": "OpenTitan //sw/device/tests:uart_tx_rx_test for bootstrap-style UART TX/RX case",
+  "status": "migrated_sw_collateral",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest",
   "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_uart_tx_rx_bootstrap",
-  "files": [],
-  "note": "Populate this directory with uart_tx_rx_test_sim_dv artifacts before running this case."
+  "images": [
+    {
+      "image_base": "uart_tx_rx_test",
+      "slot": 1,
+      "rule": "new_rules"
+    }
+  ],
+  "files": [
+    {
+      "file": "uart_tx_rx_test_sim_dv.32.vmem",
+      "size_bytes": 65611,
+      "sha256": "b16aef91f8d23dba7e4a7088268f644c37f003ec3a0b8695c2fd34b8e5be54b6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.64.scr.vmem",
+      "size_bytes": 70739,
+      "sha256": "9f6cbb1b323e8fe789fbe2d94bdd5412446728cef8e573924585e39159255335",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.64.vmem",
+      "size_bytes": 61346,
+      "sha256": "4ead90b1bd72213ddadb269dcc06eb771f9f1edd8c7dde092200ff9ccd1da000",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.bash"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.bin",
+      "size_bytes": 25148,
+      "sha256": "6a47ca0a20ffa3d7c978e3e05d9e5821a9090274b6ced335ae7d3b73511e56bd",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.bin"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.dis",
+      "size_bytes": 897174,
+      "sha256": "3bfae07a51552de7351136670bd871ff76a1310464b7f2972203c65772f78178",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.dis"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.elf",
+      "size_bytes": 380056,
+      "sha256": "08c90459ec458812af3f97b20af3c97e0966e9d8e1f465148542b4c8a0c9b471",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.elf"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.logs.txt",
+      "size_bytes": 15073,
+      "sha256": "e10b144170d5d31927fa568fe21782211be36c066af23b920d79596f103e4ab2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.map",
+      "size_bytes": 276259,
+      "sha256": "36defe103b0b4fb06398be4f79a6183ebc2b1ea0e72550f5b0ab2f5bc0b7bcea",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.map"
+    },
+    {
+      "file": "uart_tx_rx_test_sim_dv.rodata.txt",
+      "size_bytes": 80274,
+      "sha256": "03fb7010981e4a6b529dbb236a7d0b7182c934b247ccc3d9e410d19acdb6c4c5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_dvsim_ubuntu/master/chip_earlgrey_asic-sim-vcs/0.chip_sw_uart_tx_rx_bootstrap/latest/uart_tx_rx_test_sim_dv.rodata.txt"
+    }
+  ]
 }

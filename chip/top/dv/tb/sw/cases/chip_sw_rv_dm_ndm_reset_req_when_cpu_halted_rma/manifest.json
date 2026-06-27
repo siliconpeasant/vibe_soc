@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rv_dm_ndm_reset_req_when_cpu_halted_rma",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rv_dm_ndm_reset_req_when_cpu_halted_rma",
+  "images": [
+    {
+      "image_base": "rv_dm_ndm_reset_req_when_cpu_halted_rma",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rv_dm_ndm_reset_req_when_cpu_halted_rma"
+    }
+  ],
+  "files": [
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.32.vmem",
+      "size_bytes": 32377,
+      "sha256": "a2c24c720470aec0aca4d613bfbfb09af3dc9a2434c7987e203784bbfbcf1f6c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.32.vmem"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.64.scr.vmem",
+      "size_bytes": 34899,
+      "sha256": "28e62c439d5609ebd32a3cea427b960f9c5bd5a700a85a42068efd53ed3f8bbb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.64.vmem",
+      "size_bytes": 30285,
+      "sha256": "9ed3f28db908ccd7e8bacf86a56cdafad82ba47c2303f3493da9b82f04556d43",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.64.vmem"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.bash"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.bin",
+      "size_bytes": 12404,
+      "sha256": "1fae6c36bc1a03ce7fc2a41544f3bfda2f88729165301a6843efba888a545129",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.bin"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.dis",
+      "size_bytes": 463086,
+      "sha256": "9881ccf94e3911f9b4743b2ad8faedb3faeafc1a998c93f75c8cb0e2ecf0d0da",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.dis"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.elf",
+      "size_bytes": 264596,
+      "sha256": "212804472b1a8dcf95a68db4d1f23ab101fa8b1687dfe6e8caff1084b0fd541b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.elf"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.logs.txt",
+      "size_bytes": 4975,
+      "sha256": "2313bd1309d040fbda86cb7248df1e0c289f359bb9246a4a9b8045fffbf9754c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.logs.txt"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.map",
+      "size_bytes": 154136,
+      "sha256": "e3e556229ba4a59247713228c230ad0ee8a6268c315ab5277c754eb87cd3b0be",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.map"
+    },
+    {
+      "file": "rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.rodata.txt",
+      "size_bytes": 42044,
+      "sha256": "9383a15b86236a4d9421411303ee16bbe1d799b5c7ef45a16cf19ac04a0c0995",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_ndm_reset_req_when_cpu_halted_rma_sim_dv.rodata.txt"
+    }
+  ]
+}

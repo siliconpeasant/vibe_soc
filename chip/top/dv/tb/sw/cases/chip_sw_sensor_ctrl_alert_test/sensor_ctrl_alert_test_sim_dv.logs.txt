@@ -1,0 +1,420 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 194
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, kTopEarlgreyAlertIdSensorCtrlAonRecovAlert, kDifAlertHandlerClassA, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 197
+nargs: 1
+format: DIF-fail: dif_alert_handler_configure_alert( &alert_handler, kTopEarlgreyAlertIdSensorCtrlAonFatalAlert, kDifAlertHandlerClassA, kDifToggleEnabled, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 207
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10040
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 208
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10054
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 215
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10068
+severity: 0
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 219
+nargs: 0
+format: Tested all events
+str_arg_idx: 
+addr: 1007c
+severity: 0
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 222
+nargs: 1
+format: Testing event %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 232
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100a4
+severity: 0
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 235
+nargs: 0
+format: Rebooting system
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 169
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 170
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100e0
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 106
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_fatal(&sensor_ctrl, idx, fatal) returns %0d
+str_arg_idx: 
+addr: 100f4
+severity: 0
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 108
+nargs: 1
+format: Testing alert %0d masked off
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 111
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_en(&sensor_ctrl, idx, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 1011c
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 115
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_ast_event_trigger(&sensor_ctrl, idx, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 122
+nargs: 0
+format: CHECK-fail: Event is disabled, so we expect no recoverable faults
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 124
+nargs: 0
+format: CHECK-fail: Event is disabled, so we expect no fatal faults
+str_arg_idx: 
+addr: 10158
+severity: 0
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 126
+nargs: 2
+format: Testing alert %0d %0s masked on
+str_arg_idx: 1
+addr: 1016c
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 129
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_en(&sensor_ctrl, idx, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 132
+nargs: 2
+format: CHECK-fail: Timed out after %0d usec (%0d CPU cycles) waiting for get_events(fatal) > 0
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 137
+nargs: 1
+format: CHECK-fail: Event %0d not observed in AST
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 141
+nargs: 1
+format: CHECK-fail: Event %0d observed in AST when it should not be
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 151
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_alert_en(&sensor_ctrl, idx, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 48
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_set_ast_event_trigger(&sensor_ctrl, idx, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 51
+nargs: 1
+format: DIF-fail: dif_sensor_ctrl_clear_recov_event(&sensor_ctrl, idx) returns %0d
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 82
+nargs: 0
+format: CHECK-fail: Fatal alert not correctly observed in alert handler
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/sensor_ctrl_alerts_test.c
+line: 85
+nargs: 0
+format: CHECK-fail: Recov alert not correctly observed in alert handler
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 67
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 68
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10248
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 74
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 75
+nargs: 0
+format: CHECK-fail: value != ((void*)0)
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 76
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 83
+nargs: 0
+format: CHECK-fail: testing_utilities != ((void*)0)
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 84
+nargs: 0
+format: CHECK-fail: counter < kRetSramTestutilsNumberOfCounters
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/ret_sram_testutils.c
+line: 86
+nargs: 0
+format: HECK-fail: value < 4294967295U
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10310
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10338
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 1034c
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10478
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 1048c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 104a0
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

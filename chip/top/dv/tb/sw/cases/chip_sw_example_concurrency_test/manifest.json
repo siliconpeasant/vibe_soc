@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_example_concurrency_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_example_concurrency_test",
+  "images": [
+    {
+      "image_base": "example_concurrency_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:example_concurrency_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "example_concurrency_test_sim_dv.32.vmem",
+      "size_bytes": 38309,
+      "sha256": "ff7667e1195ee55d2106eccd7cddd6620acfde543d348a1ff275cc371a260d91",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.64.scr.vmem",
+      "size_bytes": 41289,
+      "sha256": "b636f950424756a81f4f969385f56af9ffe92bf773786d2af8885222f4f564b1",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.64.vmem",
+      "size_bytes": 35823,
+      "sha256": "c7a38370f50d03cd5ac80eab148b49a0cdc47f824e9401062a9e103d71abd7bb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.bash"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.bin",
+      "size_bytes": 14676,
+      "sha256": "76d78981d53a54d000004160373984cc6b5f84707df4dcb54f81deb48f17e7c7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.bin"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.dis",
+      "size_bytes": 549959,
+      "sha256": "5dc7418bc4da9faa36694844d89813f820597b4c7de72732c2bf47a5202a9833",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.dis"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.elf",
+      "size_bytes": 278136,
+      "sha256": "27802928fdb97a4c9bd1f86536d0675291e382a7e8fc03589411652926f1efdb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.elf"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.logs.txt",
+      "size_bytes": 5088,
+      "sha256": "6e3e0f40d73588c36d430022a2170ec3f7e239d76b3bf3f04b7f0e0f966450b2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.map",
+      "size_bytes": 190995,
+      "sha256": "8275b5785841402ea9da8e7b6f8940ea68381ebe06aecba178587bd462f393d6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.map"
+    },
+    {
+      "file": "example_concurrency_test_sim_dv.rodata.txt",
+      "size_bytes": 49026,
+      "sha256": "ffaf78535fec144a2f428798b15155633af7b7a3e05c16d70060ff96ae21910a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/example_concurrency_test_sim_dv.rodata.txt"
+    }
+  ]
+}

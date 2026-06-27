@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rv_core_ibex_rnd_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rv_core_ibex_rnd_test",
+  "images": [
+    {
+      "image_base": "rv_core_ibex_rnd_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rv_core_ibex_rnd_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.32.vmem",
+      "size_bytes": 37907,
+      "sha256": "c8dfbf076cede85887640a5747787cd0ac76fbe4870aee94bfce80db587d12ca",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.64.scr.vmem",
+      "size_bytes": 40859,
+      "sha256": "9dc41e7e315420a07fb9648e3c4b3260576d27f9e496f043b353c2829b84c515",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.64.vmem",
+      "size_bytes": 35450,
+      "sha256": "ed0b35180f32cbe98d7fa26ea10e162281a3e283c0f4710dbf4f7a72f26a5b89",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.bash"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.bin",
+      "size_bytes": 14524,
+      "sha256": "63eeb029ab0ea928b60e31bec7e0b8417677ee7e425dd92e66ea28c9218dc361",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.bin"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.dis",
+      "size_bytes": 560480,
+      "sha256": "d674ab6d34861228e40b09823e338b824cf2fd0d05cbb85df0e5fa6a8d2231be",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.dis"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.elf",
+      "size_bytes": 300632,
+      "sha256": "2067ef51e45fd11bbfbd4ce4a44b5b3069b7ab5a20d193616aa3d9410355ebca",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.elf"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.logs.txt",
+      "size_bytes": 5172,
+      "sha256": "6e259ac6e26d7afbb8cb0f198fa8897877110b57bb5f7c4c28af18e363f38b47",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.map",
+      "size_bytes": 185554,
+      "sha256": "8b49711f5c6103db26f7653ce394faf095f0b5efcdbec2989d387e6795c81a90",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.map"
+    },
+    {
+      "file": "rv_core_ibex_rnd_test_sim_dv.rodata.txt",
+      "size_bytes": 48015,
+      "sha256": "091acd543fd1278f0a12f1c09eed8b10767d8279ee380d721e8a8958b65dcead",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_core_ibex_rnd_test_sim_dv.rodata.txt"
+    }
+  ]
+}

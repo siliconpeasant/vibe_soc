@@ -1,0 +1,53 @@
+{
+  "case": "chip_sw_otp_ctrl_rot_auth_config_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otp_ctrl_rot_auth_config_test",
+  "images": [
+    {
+      "image_base": "otp_ctrl_rot_auth_config_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otp_ctrl_rot_auth_config_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otp_ctrl_rot_auth_config_test_sim_dv.32.vmem",
+      "size_bytes": 14921,
+      "sha256": "afec188b8b9b3c40f35446e2c73d0488ebba93ca689f0d24818047d706c99b81",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_rot_auth_config_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otp_ctrl_rot_auth_config_test_sim_dv.dis",
+      "size_bytes": 312686,
+      "sha256": "9728aa4148460784829608357eb47d29d2b8339bae572995296310888f411bce",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_rot_auth_config_test_sim_dv.dis"
+    },
+    {
+      "file": "otp_ctrl_rot_auth_config_test_sim_dv.elf",
+      "size_bytes": 175660,
+      "sha256": "afac96894b5308c05ed32dce47f517d8caf20147250092e2993b8a0a340efc40",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_rot_auth_config_test_sim_dv.elf"
+    },
+    {
+      "file": "otp_ctrl_rot_auth_config_test_sim_dv.logs.txt",
+      "size_bytes": 1022,
+      "sha256": "d279e14518a19ee3e03f41919b02c7225aa127141855b61f21766a60ac979fd5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_rot_auth_config_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otp_ctrl_rot_auth_config_test_sim_dv.map",
+      "size_bytes": 88046,
+      "sha256": "d05c4a3aa0e8f9b868530d3905d46e30ea909ec8657fbbbf9fadba64285aab3f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_rot_auth_config_test_sim_dv.map"
+    },
+    {
+      "file": "otp_ctrl_rot_auth_config_test_sim_dv.rodata.txt",
+      "size_bytes": 20778,
+      "sha256": "da13189936b865980b0fbf7474e47ee1057b38e778dcfde659c283d5663369f3",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_rot_auth_config_test_sim_dv.rodata.txt"
+    }
+  ]
+}

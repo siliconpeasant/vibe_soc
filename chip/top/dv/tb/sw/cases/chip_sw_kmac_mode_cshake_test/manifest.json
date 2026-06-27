@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_kmac_mode_cshake_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_kmac_mode_cshake_test",
+  "images": [
+    {
+      "image_base": "kmac_mode_cshake_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:kmac_mode_cshake_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.32.vmem",
+      "size_bytes": 37369,
+      "sha256": "763dd50582e46be15af001aa45170b3a63bb9b1093531971667e2f5b5291f48d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.64.scr.vmem",
+      "size_bytes": 40279,
+      "sha256": "1b71b60026d9354d645a3a50660bd61adf1b02c274917429bf45d8d0fad449e9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.64.vmem",
+      "size_bytes": 34948,
+      "sha256": "c4739e748a33dffd415ff10fff1748a8f85c9c3af2e56a3d297584df7c65911e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.bash"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.bin",
+      "size_bytes": 14316,
+      "sha256": "f48ac105130a39ad1e407558950ae1492f974006776e8e1481436d1a209d2b3e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.bin"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.dis",
+      "size_bytes": 547544,
+      "sha256": "8fc48a8400498924bb4f67d9c843665dc77d8644814438de96f6b1bf8de73dfb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.dis"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.elf",
+      "size_bytes": 281876,
+      "sha256": "3256aab421c3e9225577134798afd95959bb9d9a0681a2059c142ee5dc557516",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.elf"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.logs.txt",
+      "size_bytes": 5438,
+      "sha256": "68d161d06b93fbd21e547b346612be8bd5df4e9bddd411078b4d2ac9e8d03e26",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.map",
+      "size_bytes": 179248,
+      "sha256": "d15f5713808d94f7502d5ac32ad974d6f5c840841391e9951be796aa337263f7",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.map"
+    },
+    {
+      "file": "kmac_mode_cshake_test_sim_dv.rodata.txt",
+      "size_bytes": 46941,
+      "sha256": "dec5ddc8da2c47c39fdb76503273e11cfc7f7c5bb558da57ec70371920e50a49",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/kmac_mode_cshake_test_sim_dv.rodata.txt"
+    }
+  ]
+}

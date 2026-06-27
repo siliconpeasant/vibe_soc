@@ -1,23 +1,27 @@
 # opentitan_common - RTL Filelist Dependencies
-# 用法: 在其他 Makefile 中 include $(PROJECT_ROOT)/.../de/rtl/filelist.mk
 
 ifndef OPENTITAN_COMMON_FILELIST_MK
 OPENTITAN_COMMON_FILELIST_MK := 1
 
-# 本模块 RTL filelist（自动推导当前目录）
-OPENTITAN_COMMON_FILELIST := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))filelist.f
+OPENTITAN_COMMON_RTL_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+OPENTITAN_COMMON_FILELIST := $(OPENTITAN_COMMON_RTL_DIR)filelist.f
+OPENTITAN_COMMON_FRAGMENT_10_TOP00_PRIM_BLOCK1 := $(OPENTITAN_COMMON_RTL_DIR)fragments/10_top00_prim_block1.f
+OPENTITAN_COMMON_FRAGMENT_20_TOP00_PRIM_BLOCK2 := $(OPENTITAN_COMMON_RTL_DIR)fragments/20_top00_prim_block2.f
+OPENTITAN_COMMON_FRAGMENT_30_TOP10_PRIM_BLOCK1 := $(OPENTITAN_COMMON_RTL_DIR)fragments/30_top10_prim_block1.f
 
-# ---------------------------------------------------------------------------
-# 依赖的子模块：取消注释并添加你依赖的其他模块的 filelist.mk
-# ---------------------------------------------------------------------------
-
-# include $(PROJECT_ROOT)/ip/digital/sub_ip/de/rtl/filelist.mk
-
-# ---------------------------------------------------------------------------
-
-# 注册到全局收集变量（去重：已存在则不重复添加）
+ifneq ($(OPENTITAN_COMMON_NO_AUTO_REGISTER),1)
 ifeq (,$(filter $(OPENTITAN_COMMON_FILELIST),$(MODULE_FILELISTS)))
   MODULE_FILELISTS += $(OPENTITAN_COMMON_FILELIST)
+endif
+ifeq (,$(filter $(OPENTITAN_COMMON_FRAGMENT_10_TOP00_PRIM_BLOCK1),$(MODULE_FILELISTS)))
+  MODULE_FILELISTS += $(OPENTITAN_COMMON_FRAGMENT_10_TOP00_PRIM_BLOCK1)
+endif
+ifeq (,$(filter $(OPENTITAN_COMMON_FRAGMENT_20_TOP00_PRIM_BLOCK2),$(MODULE_FILELISTS)))
+  MODULE_FILELISTS += $(OPENTITAN_COMMON_FRAGMENT_20_TOP00_PRIM_BLOCK2)
+endif
+ifeq (,$(filter $(OPENTITAN_COMMON_FRAGMENT_30_TOP10_PRIM_BLOCK1),$(MODULE_FILELISTS)))
+  MODULE_FILELISTS += $(OPENTITAN_COMMON_FRAGMENT_30_TOP10_PRIM_BLOCK1)
+endif
 endif
 
 endif

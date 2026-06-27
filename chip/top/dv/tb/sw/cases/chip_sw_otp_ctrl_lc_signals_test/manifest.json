@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_otp_ctrl_lc_signals_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_otp_ctrl_lc_signals_test",
+  "images": [
+    {
+      "image_base": "otp_ctrl_lc_signals_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:otp_ctrl_lc_signals_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.32.vmem",
+      "size_bytes": 60327,
+      "sha256": "0c0d06b648df2398e9919e0039091d5c3e7793f22d96012861b86ccb6a2b1530",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.64.scr.vmem",
+      "size_bytes": 65049,
+      "sha256": "17764f64ee9645474a2b3b6c4092113e3184e99133eabd5320fe6ad1f0aa47fa",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.64.vmem",
+      "size_bytes": 56415,
+      "sha256": "df8399d9ac2941879daa38196ace8e234f3ebc1974520447a6201d8be7744717",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.bash"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.bin",
+      "size_bytes": 23124,
+      "sha256": "9973c03b488b9cc02428a727620873ca383c0d80ba0a1aa4a8f79f384f90e561",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.bin"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.dis",
+      "size_bytes": 910931,
+      "sha256": "d60547e96ddc56c4ac33ec7cebbf6f827a855b9943e07ee0765290b479b09306",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.dis"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.elf",
+      "size_bytes": 432820,
+      "sha256": "2e5e5658ee5c4beb5fbbb7459ce4810cf45e652c54a030466073b31fb9615f52",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.elf"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.logs.txt",
+      "size_bytes": 14099,
+      "sha256": "e7d2bc6ffecbdb4db8edf2fa14ee9d012c4836df9a501549b54ec308f34db3c0",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.map",
+      "size_bytes": 304926,
+      "sha256": "a79ae3b754d525166c6717591f99e2c2edb7df8c67b405e54d96e5a51db88a6c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.map"
+    },
+    {
+      "file": "otp_ctrl_lc_signals_test_sim_dv.rodata.txt",
+      "size_bytes": 75015,
+      "sha256": "69dbde0399d743ab30c12166f3aa967deb5cd1210dfe764ffcc0e577886c44d5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/otp_ctrl_lc_signals_test_sim_dv.rodata.txt"
+    }
+  ]
+}

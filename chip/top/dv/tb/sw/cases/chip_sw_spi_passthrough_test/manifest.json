@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_spi_passthrough_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_spi_passthrough_test",
+  "images": [
+    {
+      "image_base": "spi_passthrough_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:spi_passthrough_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "spi_passthrough_test_sim_dv.32.vmem",
+      "size_bytes": 67554,
+      "sha256": "77ac069dffb6dfbd2eb66c588db7bf66ccf71cd602a84106e1835fc89f83b3c8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.64.scr.vmem",
+      "size_bytes": 72839,
+      "sha256": "8156705cd8399a4b6f9164b6ac6d89f0bc1b57900878c14a9dba4c7ca497b97e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.64.vmem",
+      "size_bytes": 63167,
+      "sha256": "c59f17985be77dcf15b5a864fe092dfcde30548446235794e41a1c1d7f0a1ac4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.bash"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.bin",
+      "size_bytes": 25896,
+      "sha256": "a016a299eb67f600fb986b1e985c19e9c1b8a025267589d4dc276a39f6635d6c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.bin"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.dis",
+      "size_bytes": 1031538,
+      "sha256": "8f45195d34016b2cb91e64b275e49aa3e5323bb75110c4dedd6afd4bf8afc07e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.dis"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.elf",
+      "size_bytes": 413776,
+      "sha256": "a7e1949a4ce3e6069d0f3c905a73867afb423f8b21fb4f3fa365a4b1d50d41eb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.elf"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.logs.txt",
+      "size_bytes": 13397,
+      "sha256": "69ebf2c2a99369efe96bf58721cd2718eaa27cfcd0bbe14287c6f71c86dfc47e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.map",
+      "size_bytes": 327276,
+      "sha256": "858c7b2f136f3901f841ab6a03ece280181a6db62c33192e7d287109f66a8a46",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.map"
+    },
+    {
+      "file": "spi_passthrough_test_sim_dv.rodata.txt",
+      "size_bytes": 85011,
+      "sha256": "8dbf3f56a7a7948078b0a3bfa081bf4c08956176dbcc61a6a779e17da2fcade6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/spi_passthrough_test_sim_dv.rodata.txt"
+    }
+  ]
+}

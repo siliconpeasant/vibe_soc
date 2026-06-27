@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rom_ctrl_integrity_check_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rom_ctrl_integrity_check_test",
+  "images": [
+    {
+      "image_base": "rom_ctrl_integrity_check_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rom_ctrl_integrity_check_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.32.vmem",
+      "size_bytes": 33253,
+      "sha256": "d7962f0738d529da8c9a1b5894a8bce1b05186b269c3f311a004e28be625259d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.64.scr.vmem",
+      "size_bytes": 35849,
+      "sha256": "891457df0d2299cad9d13e811ad7ec4d6ee3264189f0fbfff7567b3495483415",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.64.vmem",
+      "size_bytes": 31109,
+      "sha256": "323f05bcc50d643e34c447af13f57a8cf4bf4748858be7d7e8637e763de2cf5d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.bash"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.bin",
+      "size_bytes": 12740,
+      "sha256": "222a05f829819324429f78a7caed4e012efb61b3cdb9b3794a43bbb12fd9b4cb",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.bin"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.dis",
+      "size_bytes": 496498,
+      "sha256": "aece28293db3a312802ac3a1266d31d401249b9c3e843f27393fb9f31ca4c189",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.dis"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.elf",
+      "size_bytes": 263912,
+      "sha256": "97dc1d6afa4a8783d2b479f1ab333d63c2069ecf8cd02fdb44f4868918cfcf03",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.elf"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.logs.txt",
+      "size_bytes": 4414,
+      "sha256": "ff82984de085c13d5fdb90cc644bc28e494eec65b90cf5a3430b324c6b5328e8",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.map",
+      "size_bytes": 156056,
+      "sha256": "3c5ee4508cf54ae6afb068d5ca7e9713ea979a2cc91cd83fe49dd664caf42d92",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.map"
+    },
+    {
+      "file": "rom_ctrl_integrity_check_test_sim_dv.rodata.txt",
+      "size_bytes": 42396,
+      "sha256": "a7f611529a64d73c92c148146af7d3bc7d7fc181893992652197d079ef892ac9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rom_ctrl_integrity_check_test_sim_dv.rodata.txt"
+    }
+  ]
+}

@@ -1,0 +1,483 @@
+addr: 10004
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 138
+nargs: 1
+format: Error at line: %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 152
+nargs: 0
+format: CHECK-fail: Keymgr SW binding should be locked in Reset state.
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 161
+nargs: 1
+format: Error at line: %0d
+str_arg_idx: 
+addr: 10040
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 162
+nargs: 0
+format: Keymgr State: Init
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 165
+nargs: 0
+format: CHECK-fail: Keymgr SW binding should be locked in Initialized state.
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 174
+nargs: 0
+format: CHECK-fail: Keymgr Attestation SW Binding value should be value set by ROM during Initialized state.
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 179
+nargs: 0
+format: CHECK-fail: Keymgr Attestation SW Binding value should be value set by ROM during Initialized state.
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 184
+nargs: 0
+format: CHECK-fail: Keymgr Sealing SW Binding value should be value set by ROM during Initialized state.
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 189
+nargs: 0
+format: CHECK-fail: Keymgr Sealing SW Binding value should be value set by ROM during Initialized state.
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 194
+nargs: 1
+format: Error at line: %0d
+str_arg_idx: 
+addr: 100cc
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 195
+nargs: 0
+format: Keymgr State: CreatorRootKey
+str_arg_idx: 
+addr: 100e0
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 199
+nargs: 0
+format: CHECK-fail: Keymgr SW binding should be unlocked after transitioning to CreatorRootKey state.
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 216
+nargs: 0
+format: CHECK-fail: Keymgr SW binding should be locked before transitioning to OwnerIntermediateKey state.
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 218
+nargs: 1
+format: Error at line: %0d
+str_arg_idx: 
+addr: 1011c
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 219
+nargs: 0
+format: Keymgr State: OwnerIntermediateKey
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 223
+nargs: 0
+format: CHECK-fail: Keymgr SW binding should be unlocked after transitioning to OwnerIntermediateKey state.
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 242
+nargs: 0
+format: CHECK-fail: Keymgr SW binding should be locked before transitioning to OwnerKey state.
+str_arg_idx: 
+addr: 10158
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 248
+nargs: 1
+format: Error at line: %0d
+str_arg_idx: 
+addr: 1016c
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 249
+nargs: 0
+format: Keymgr State: OwnerKey
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 253
+nargs: 0
+format: CHECK-fail: Keymgr SW binding should be unlocked after transitioning to Owner state.
+str_arg_idx: 
+addr: 10194
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 262
+nargs: 0
+format: fail: Keymgr should be in the disabled state.
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 274
+nargs: 0
+format: CHECK-fail: The test is configured to run in RMA mode.
+str_arg_idx: 
+addr: 101bc
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 285
+nargs: 0
+format: Powered up for the first time, program flash
+str_arg_idx: 
+addr: 101d0
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 297
+nargs: 0
+format: Powered up for the second time, actuate keymgr
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 303
+nargs: 0
+format: Starting test keymgr_rom_test...
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 303
+nargs: 0
+format: CHECK-fail:
+str_arg_idx: 
+addr: 1020c
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 303
+nargs: 3
+format: Successfully finished test keymgr_rom_test in %0d cycles or %0d us @ %0d MHz.
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 303
+nargs: 2
+format: Successfully finished test keymgr_rom_test in 0x%08h%08h cycles.
+str_arg_idx: 
+addr: 10234
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 303
+nargs: 1
+format: Finished test keymgr_rom_test: %8h.
+str_arg_idx: 
+addr: 10248
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 304
+nargs: 0
+format: Starting test keymgr_rom_ext_test...
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 304
+nargs: 0
+format: CHECK-fail:
+str_arg_idx: 
+addr: 10270
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 304
+nargs: 3
+format: Successfully finished test keymgr_rom_ext_test in %0d cycles or %0d us @ %0d MHz.
+str_arg_idx: 
+addr: 10284
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 304
+nargs: 2
+format: Successfully finished test keymgr_rom_ext_test in 0x%08h%08h cycles.
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 304
+nargs: 1
+format: Finished test keymgr_rom_ext_test: %8h.
+str_arg_idx: 
+addr: 102ac
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 305
+nargs: 0
+format: Starting test keymgr_disable_test...
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 305
+nargs: 0
+format: CHECK-fail:
+str_arg_idx: 
+addr: 102d4
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 305
+nargs: 3
+format: Successfully finished test keymgr_disable_test in %0d cycles or %0d us @ %0d MHz.
+str_arg_idx: 
+addr: 102e8
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 305
+nargs: 2
+format: Successfully finished test keymgr_disable_test in 0x%08h%08h cycles.
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 305
+nargs: 1
+format: Finished test keymgr_disable_test: %8h.
+str_arg_idx: 
+addr: 10310
+severity: 3
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 308
+nargs: 1
+format: Unexpected reset reason unexpected: %08h
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 123
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_is_digest_computed(otp, kDifOtpCtrlPartitionSecret2, &is_computed) returns %0d
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 127
+nargs: 1
+format: DIF-fail: dif_otp_ctrl_get_digest(otp, kDifOtpCtrlPartitionSecret2, &digest) returns %0d
+str_arg_idx: 
+addr: 1034c
+severity: 0
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 129
+nargs: 2
+format: OTP partition locked. Digest: %0h-%0h
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/silicon_creator/lib/drivers/keymgr_functest.c
+line: 133
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/keymgr_testutils.c
+line: 71
+nargs: 0
+format: CHECK-fail: memcmp(data->value, readback_data.value, sizeof(data->value)) == 0
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 103b0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 103c4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103ec
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10400
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10414
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10428
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: Some statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 1043c
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 142
+nargs: 1
+format: DIF-fail: dif_alert_handler_alert_is_cause(&ottf_alert_handler, alert, &is_cause) returns %0d
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_alerts.c
+line: 172
+nargs: 1
+format: ERROR: Alert %0d is asserted but not expected
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10504
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10518
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 1052c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10540
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 10554
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

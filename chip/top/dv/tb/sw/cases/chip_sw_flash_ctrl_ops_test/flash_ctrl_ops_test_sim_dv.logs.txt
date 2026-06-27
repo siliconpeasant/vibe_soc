@@ -1,0 +1,469 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 124
+nargs: 1
+format: CHECK-fail: Interurpt from unexpected peripheral: %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 153
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( flash_ctrl, kDifFlashCtrlIrqProgEmpty + i, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 192
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10040
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 201
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10054
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 212
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqProgEmpty, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 214
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqProgLvl, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 217
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10090
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 229
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdLvl, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 231
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdFull, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 234
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 100cc
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 238
+nargs: 1
+format: CHECK-fail: readback_data %0smatches test_data
+str_arg_idx: 0
+addr: 100e0
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 238
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 164
+nargs: 1
+format: CHECK-fail: expected IRQ mismatch = %0d
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 271
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 282
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdLvl, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 284
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdFull, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 288
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 180
+nargs: 1
+format: CHECK-fail: host_data %0smatches check_data
+str_arg_idx: 0
+addr: 1016c
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 180
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 317
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 322
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101a8
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 328
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101bc
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 340
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqProgEmpty, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 342
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqProgLvl, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 101e4
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 345
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 101f8
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 357
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdLvl, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 1020c
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 359
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdFull, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10220
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 362
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10234
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 367
+nargs: 1
+format: CHECK-fail: readback_data %0smatches test_data
+str_arg_idx: 0
+addr: 10248
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 367
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 1025c
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 372
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_set_bank_erase_enablement(&flash_state, 1, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10270
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 377
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10284
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 384
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_start(&flash_state, transaction) returns %0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 385
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102ac
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 396
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102c0
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 406
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdLvl, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 408
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled( &flash_ctrl, kDifFlashCtrlIrqRdFull, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 411
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 102fc
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 419
+nargs: 1
+format: CHECK-fail: readback_data %0smatches expected_data
+str_arg_idx: 0
+addr: 10310
+severity: 0
+file: sw/device/tests/flash_ctrl_ops_test.c
+line: 419
+nargs: 3
+format: CHECK-fail: [%0d] got: 0x%08h; want: 0x%08h
+str_arg_idx: 
+addr: 10324
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 38
+nargs: 0
+format: CHECK-fail: dif_result != kDifBadArg
+str_arg_idx: 
+addr: 10338
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 39
+nargs: 0
+format: CHECK-fail: dif_result != kDifError
+str_arg_idx: 
+addr: 1034c
+severity: 2
+file: sw/device/lib/testing/flash_ctrl_testutils.c
+line: 183
+nargs: 1
+format: Unaligned address 0x%0h
+str_arg_idx: 
+addr: 10360
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 301
+nargs: 1
+format: IF-fail: dif_flash_ctrl_irq_get_type(flash_ctrl_ctx.flash_ctrl, irq, &type) returns %0d
+str_arg_idx: 
+addr: 10374
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 304
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_acknowledge(flash_ctrl_ctx.flash_ctrl, irq) returns %0d
+str_arg_idx: 
+addr: 10388
+severity: 2
+file: sw/device/lib/testing/autogen/isr_testutils.c
+line: 307
+nargs: 1
+format: DIF-fail: dif_flash_ctrl_irq_set_enabled(flash_ctrl_ctx.flash_ctrl, irq, kDifToggleDisabled) returns %0d
+str_arg_idx: 
+addr: 1039c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 103b0
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 103c4
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 103d8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 103ec
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10400
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10414
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 10428
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 1043c
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10450
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 10464
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 10478
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 1048c
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 104a0
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 80
+nargs: 0
+format: CHECK-fail: max >= min
+str_arg_idx: 
+addr: 104b4
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 86
+nargs: 0
+format: CHECK-fail: result >= min && result <= max
+str_arg_idx: 
+addr: 104c8
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 53
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 104dc
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 28
+nargs: 0
+format: CHECK-fail: *rnd_data != 0
+str_arg_idx: 
+addr: 104f0
+severity: 2
+file: sw/device/lib/testing/rv_core_ibex_testutils.c
+line: 29
+nargs: 0
+format: CHECK-fail: *rnd_data != 4294967295U
+str_arg_idx: 
+addr: 10504
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10518
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 1052c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:

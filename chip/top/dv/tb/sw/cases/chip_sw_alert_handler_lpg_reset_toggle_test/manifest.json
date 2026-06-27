@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_alert_handler_lpg_reset_toggle_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_alert_handler_lpg_reset_toggle_test",
+  "images": [
+    {
+      "image_base": "alert_handler_lpg_reset_toggle_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:alert_handler_lpg_reset_toggle_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.32.vmem",
+      "size_bytes": 35735,
+      "sha256": "1b193f43b306a82b289d34d72c052322507c42230f5bcb9266ab8dbf1d708d6d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.64.scr.vmem",
+      "size_bytes": 38519,
+      "sha256": "7f49cb884581f2f20febccae9e49aec120784f8b9fce1d0b51003921128b4624",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.64.vmem",
+      "size_bytes": 33422,
+      "sha256": "1c7255380fb6450f2ff55f94a4de5ac7889d8125b55ebb85667f6b151cf1fb7c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.bash"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.bin",
+      "size_bytes": 13692,
+      "sha256": "070f0c4bc1de7bfa40fe7a6837d8cec2f13bef5eb93613eaf24a907f8bf77230",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.bin"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.dis",
+      "size_bytes": 548131,
+      "sha256": "7deb0347911dc71ab7f2b598031dd3c332eab070c922d5f76ffd614c3a543802",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.dis"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.elf",
+      "size_bytes": 298436,
+      "sha256": "6ec3050fa7d5c2000a1fe4f3b42a0f0b953ae3fa03325b2bfbc11d51be35958e",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.elf"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.logs.txt",
+      "size_bytes": 5226,
+      "sha256": "93f3aa08f6bc0e640e096ba2b8734b81a031f1f5fc88e2a11fd523deda2a6c9a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.map",
+      "size_bytes": 180084,
+      "sha256": "728d487776b60329124156afd81a46b85dd857b775d61f994a6605a9d504ec8d",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.map"
+    },
+    {
+      "file": "alert_handler_lpg_reset_toggle_test_sim_dv.rodata.txt",
+      "size_bytes": 45539,
+      "sha256": "b364a217b4d5865b118b578abe1d2cfa580ce90866d1b1dfc0455bd1949d4c06",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/alert_handler_lpg_reset_toggle_test_sim_dv.rodata.txt"
+    }
+  ]
+}

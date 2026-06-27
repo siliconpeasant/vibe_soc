@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_flash_ctrl_mem_protection_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_flash_ctrl_mem_protection_test",
+  "images": [
+    {
+      "image_base": "flash_ctrl_mem_protection_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:flash_ctrl_mem_protection_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.32.vmem",
+      "size_bytes": 41968,
+      "sha256": "2fc92527893d953abba1abf460f9dc9d96791d2105054cf886e5acc04da7c7dc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.64.scr.vmem",
+      "size_bytes": 45229,
+      "sha256": "11347e0e7d389c9e1051ffe58b67da4fdc766e10e5dd8fde67af5718560c33c2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.64.vmem",
+      "size_bytes": 39238,
+      "sha256": "1696ec6d3331d72279fc37deace16402a7c5ea757bdc31082fc3de6145d006b6",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.bash"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.bin",
+      "size_bytes": 16080,
+      "sha256": "0be855aef43ceb78af4a235935e4d23db28bd0e7e7e7f152aeb3c0ff9f862279",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.bin"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.dis",
+      "size_bytes": 593869,
+      "sha256": "bb908a2bc02927ac201ee84b65291b1dd1c207953b62bf558bac3a3d7239e3db",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.dis"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.elf",
+      "size_bytes": 297800,
+      "sha256": "7253f3d69d4a5ad37103f71d40ee60d11aee97b336cc16feadc849f33a4b079c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.elf"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.logs.txt",
+      "size_bytes": 7331,
+      "sha256": "dd816b97028f79034b534cc69758a741dcd9e7aa72a870feb8b3e4e99686fe8f",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.map",
+      "size_bytes": 202917,
+      "sha256": "b387139033ce0b8395fb073365ea6db5c7197f2096f42d6d58977a12ed68d367",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.map"
+    },
+    {
+      "file": "flash_ctrl_mem_protection_test_sim_dv.rodata.txt",
+      "size_bytes": 53569,
+      "sha256": "8c0f4bcf27d3953e0cdd917eb3275894f553cea1c357f5a43e2d93f50bdb1492",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/flash_ctrl_mem_protection_test_sim_dv.rodata.txt"
+    }
+  ]
+}

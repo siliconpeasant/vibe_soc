@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_inject_scramble_seed",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_inject_scramble_seed",
+  "images": [
+    {
+      "image_base": "inject_scramble_seed",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:inject_scramble_seed"
+    }
+  ],
+  "files": [
+    {
+      "file": "inject_scramble_seed_sim_dv.32.vmem",
+      "size_bytes": 44094,
+      "sha256": "180b5cdd0af0a9757d769fb132344afedd09a58dbe8e72c72fa888885c6293fc",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.32.vmem"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.64.scr.vmem",
+      "size_bytes": 47519,
+      "sha256": "c3f59e3f2286e80753337fc0f90123b16e0bd8a144bb35a16c9aae3d911f83c9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.64.vmem",
+      "size_bytes": 41222,
+      "sha256": "a9da0e77729a9ed3929b01f765ec564f415660bba466d76c82b071376ec5f363",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.64.vmem"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.bash"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.bin",
+      "size_bytes": 16896,
+      "sha256": "300671d1283a4a24c3c7eae745776cb3eb83788a49abd956d48ca3919d7f522a",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.bin"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.dis",
+      "size_bytes": 622953,
+      "sha256": "2c358dd31350c70e882eaf04ee6be5237a235aee96a82317b3a0b7ce2fa78d60",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.dis"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.elf",
+      "size_bytes": 324040,
+      "sha256": "00d46407f705429aeaf939f33d0d811fd34f05dfccd63d0f3e1d0fd0383dcbff",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.elf"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.logs.txt",
+      "size_bytes": 8215,
+      "sha256": "24e68d56db72ebd4bf9b27c57e20d14c1b55b0d31bc5e387a68a846e8348f0c9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.logs.txt"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.map",
+      "size_bytes": 213377,
+      "sha256": "6c82fc0afccf6600e02a9046ac0bfbe1aa7119e41724fcef1a080df7dec6d97b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.map"
+    },
+    {
+      "file": "inject_scramble_seed_sim_dv.rodata.txt",
+      "size_bytes": 55709,
+      "sha256": "0c12ba29314838d10cbec5ca98e987e0ad89356a059d8d12fb5cbfcd9c215d74",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/inject_scramble_seed_sim_dv.rodata.txt"
+    }
+  ]
+}

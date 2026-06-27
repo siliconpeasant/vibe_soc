@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_rv_dm_access_after_wakeup_rma",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_rv_dm_access_after_wakeup_rma",
+  "images": [
+    {
+      "image_base": "rv_dm_access_after_wakeup_rma",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:rv_dm_access_after_wakeup_rma"
+    }
+  ],
+  "files": [
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.32.vmem",
+      "size_bytes": 36630,
+      "sha256": "1ba9bd08d9643e569ac39458077170a798d48ed68cba4c4142a2286485a4bf7c",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.32.vmem"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.64.scr.vmem",
+      "size_bytes": 39469,
+      "sha256": "2f5e5632ddc549666aba87ec92c0118654cc15de6334bedb4e10f10d6ab38357",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.64.vmem",
+      "size_bytes": 34246,
+      "sha256": "d438cefc98db859d7f40bdf2f3892c9265565340d225f38e08589279bd8b2282",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.64.vmem"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.bash"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.bin",
+      "size_bytes": 14032,
+      "sha256": "4cd83e624e5195c0ff5275dcedbbaed6ec8038dd9ddb97e36d1cbffba5fd678b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.bin"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.dis",
+      "size_bytes": 554409,
+      "sha256": "4cdb20dde3acdf9187e6e69228e2fffff9365d71a4be0e0fe7379dc53b479c02",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.dis"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.elf",
+      "size_bytes": 313424,
+      "sha256": "97cf2c3b1d423d107e8ab96d9c11e28a63abc2494e2d52a7e643fba5e5e8ce89",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.elf"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.logs.txt",
+      "size_bytes": 6592,
+      "sha256": "a330b29b47066973eea2a28b9a7bc44ddd32a144cc1eb71f83110f055ba36cf4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.logs.txt"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.map",
+      "size_bytes": 182298,
+      "sha256": "b8c460a21406290bda34c50bc3d64050551dd9300727b2c904c176518b8b3204",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.map"
+    },
+    {
+      "file": "rv_dm_access_after_wakeup_rma_sim_dv.rodata.txt",
+      "size_bytes": 46568,
+      "sha256": "6387231448ce77b8cc13a40f1e446a9354492957ee1200572828f7f30be93328",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/rv_dm_access_after_wakeup_rma_sim_dv.rodata.txt"
+    }
+  ]
+}

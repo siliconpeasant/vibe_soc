@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_usbdev_stream_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_usbdev_stream_test",
+  "images": [
+    {
+      "image_base": "usbdev_stream_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:usbdev_stream_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "usbdev_stream_test_sim_dv.32.vmem",
+      "size_bytes": 86945,
+      "sha256": "b7d8b489a145089bc7e94a5ac16321116ca583987e6ca6a0e9d71cb2db22542b",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.64.scr.vmem",
+      "size_bytes": 93759,
+      "sha256": "bd4431ff6d4f28e68586f7219f98f9a804789f57dc88cdad0717dc46e3463ac5",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.64.vmem",
+      "size_bytes": 81297,
+      "sha256": "64d0380bc8f69813091519a2495ab74cc0bc98eb6fc81e2fff57c2d838590aa9",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.bash"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.bin",
+      "size_bytes": 33332,
+      "sha256": "c6879da5dd53a6498952643b6f7fcc9119545110d9ced55adcc2eb8c57728a64",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.bin"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.dis",
+      "size_bytes": 1192824,
+      "sha256": "d2213df3712326d2380301fff82cbe4c683bd616a6ac6eae6442b4b0f1db5983",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.dis"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.elf",
+      "size_bytes": 462412,
+      "sha256": "0e2ebcdee613619bfc8e631b7b7cea4835998093bb0194bbe390d3cd1ced8cb2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.elf"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.logs.txt",
+      "size_bytes": 19898,
+      "sha256": "26d5a15bceb64c7c58c78afe8d62403b6f5728ebb7468fb119e54dd6205ce834",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.map",
+      "size_bytes": 397045,
+      "sha256": "ba3a83232717448dfb405ae1732be405c1252ad38ac68562e87ea46231968744",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.map"
+    },
+    {
+      "file": "usbdev_stream_test_sim_dv.rodata.txt",
+      "size_bytes": 110947,
+      "sha256": "a8e312d092b6d4846d75e278883bc5d1f54cb1aeeff63fce511c3e838136de48",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_stream_test_sim_dv.rodata.txt"
+    }
+  ]
+}

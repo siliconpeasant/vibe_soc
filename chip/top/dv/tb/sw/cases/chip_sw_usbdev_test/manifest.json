@@ -1,0 +1,77 @@
+{
+  "case": "chip_sw_usbdev_test",
+  "type": "case_sw_image",
+  "status": "migrated_sw_collateral_unmapped",
+  "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/chip_sw_usbdev_test",
+  "images": [
+    {
+      "image_base": "usbdev_test",
+      "slot": 1,
+      "rule": "new_rules",
+      "origin_target": "unmapped_prebuilt:usbdev_test"
+    }
+  ],
+  "files": [
+    {
+      "file": "usbdev_test_sim_dv.32.vmem",
+      "size_bytes": 74444,
+      "sha256": "7448b27d308fb0f379f6e31bd3c08668948e274c16037b286c7604ab0d64dcd4",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.32.vmem"
+    },
+    {
+      "file": "usbdev_test_sim_dv.64.scr.vmem",
+      "size_bytes": 80259,
+      "sha256": "7e9ef06f32a05fd86f1a74ec11fb9f70ca6e66134ae87afd6197b17dc83e3630",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.64.scr.vmem"
+    },
+    {
+      "file": "usbdev_test_sim_dv.64.vmem",
+      "size_bytes": 69597,
+      "sha256": "d54d0e6478e0fd5c1dbbddd014c5b3f87fdd794cba33f141d44638c5486627d2",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.64.vmem"
+    },
+    {
+      "file": "usbdev_test_sim_dv.bash",
+      "size_bytes": 130,
+      "sha256": "5bb86f67112abdefafdbb2228e63b4738ae616856916a82b21d0519f42eb7436",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.bash"
+    },
+    {
+      "file": "usbdev_test_sim_dv.bin",
+      "size_bytes": 28536,
+      "sha256": "0ba9cefbb64099be8835174ff3ea23bd480eed377a8b4202a749f17b51584414",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.bin"
+    },
+    {
+      "file": "usbdev_test_sim_dv.dis",
+      "size_bytes": 1050706,
+      "sha256": "eb8a4a7734abb0e9418f68339a94bdedad6de252ab6b8d17609e101b46701924",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.dis"
+    },
+    {
+      "file": "usbdev_test_sim_dv.elf",
+      "size_bytes": 421440,
+      "sha256": "9412764d221e6a8cd2e4c704116f13ef89489ee624f0a853ca0ab0b51a26d8aa",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.elf"
+    },
+    {
+      "file": "usbdev_test_sim_dv.logs.txt",
+      "size_bytes": 13930,
+      "sha256": "f14d6e778f70d4eef3ad193594bb86e40b0675b302c0e35a75ede02e078c3004",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.logs.txt"
+    },
+    {
+      "file": "usbdev_test_sim_dv.map",
+      "size_bytes": 356590,
+      "sha256": "42f6a5cabe0e736a6302443d972cd704811a2600df804aa7472017ac094d3065",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.map"
+    },
+    {
+      "file": "usbdev_test_sim_dv.rodata.txt",
+      "size_bytes": 95907,
+      "sha256": "1f29aaf5e04f169196223e5d4180fa48b4b7f04fa3da3ac06f570fbb9a9d5848",
+      "origin": "/project/xuanwu9000/user/silicon/opentitan-master/scratch/codex_sw_image_build/earlgrey_all/20260627_092415_internal_ubuntu/usbdev_test_sim_dv.rodata.txt"
+    }
+  ]
+}

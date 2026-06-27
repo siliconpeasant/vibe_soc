@@ -1,0 +1,301 @@
+addr: 10004
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 89
+nargs: 1
+format: Unexpected aon timer interrupt %0d
+str_arg_idx: 
+addr: 10018
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 103
+nargs: 1
+format: CHECK-fail: Wrong phase %0d
+str_arg_idx: 
+addr: 1002c
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 111
+nargs: 0
+format: CHECK-fail: is_cause
+str_arg_idx: 
+addr: 10040
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 117
+nargs: 0
+format: CHECK-fail: !is_cause
+str_arg_idx: 
+addr: 10054
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 119
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_acknowledge(&alert_handler, irq) returns %0d
+str_arg_idx: 
+addr: 10068
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 145
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority(&plic, aon_irq_ids[i], 1u) returns %0d
+str_arg_idx: 
+addr: 1007c
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 147
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( &plic, aon_irq_ids[i], kDtRvPlicTargetIbex0, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10090
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 264
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_priority(&plic, alert_irq_ids[i], 1u) returns %0d
+str_arg_idx: 
+addr: 100a4
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 266
+nargs: 1
+format: DIF-fail: dif_rv_plic_irq_set_enabled( &plic, alert_irq_ids[i], kDtRvPlicTargetIbex0, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 100b8
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 278
+nargs: 1
+format: CHECK-fail: Wrong reset reason %02H
+str_arg_idx: 
+addr: 100cc
+severity: 0
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 281
+nargs: 0
+format: Booting for the first time, starting test
+str_arg_idx: 
+addr: 100e0
+severity: 0
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 284
+nargs: 0
+format: Booting for the second time due to escalation reset
+str_arg_idx: 
+addr: 100f4
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 288
+nargs: 1
+format: Unexpected rst_info=0x%0h
+str_arg_idx: 
+addr: 10108
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 207
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1011c
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 210
+nargs: 1
+format: DIF-fail: dif_alert_handler_irq_set_enabled( &alert_handler, kDifAlertHandlerIrqClassa, kDifToggleEnabled) returns %0d
+str_arg_idx: 
+addr: 10130
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 157
+nargs: 0
+format: CHECK-fail: Result of division must fit in uint32_t
+str_arg_idx: 
+addr: 10144
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 219
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10158
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 222
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1016c
+severity: 0
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 227
+nargs: 4
+format: Wdog will bark after %0d/%0d us/cycles and bite after %0d/%0d us/cycles
+str_arg_idx: 
+addr: 10180
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 232
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 10194
+severity: 2
+file: sw/device/tests/aon_timer_wdog_lc_escalate_test.c
+line: 240
+nargs: 0
+format: CHECK-fail: The alert handler failed to escalate
+str_arg_idx: 
+addr: 101a8
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 29
+nargs: 2
+format: CHECK-fail: The value 0x%08h%08h can't fit into the 32 bits timer counter.
+str_arg_idx: 
+addr: 101bc
+severity: 2
+file: sw/device/lib/testing/aon_timer_testutils.c
+line: 88
+nargs: 0
+format: CHECK-fail: !is_pending
+str_arg_idx: 
+addr: 101d0
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 64
+nargs: 0
+format: OTTF currently only supports use of machine-mode ecall for FreeRTOS context switching.
+str_arg_idx: 
+addr: 101e4
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 182
+nargs: 0
+format: Enabling OTTF alert catcher
+str_arg_idx: 
+addr: 101f8
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 184
+nargs: 5
+format: CHECK-STATUS-fail: %0c%0c%0c:%0d = %0s
+str_arg_idx: 4
+addr: 1020c
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 207
+nargs: 0
+format: CHECK-fail: 0
+str_arg_idx: 
+addr: 10220
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 122
+nargs: 0
+format: Status reported by the test:
+str_arg_idx: 
+addr: 10234
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 131
+nargs: 1
+format: - %8h
+str_arg_idx: 
+addr: 10248
+severity: 0
+file: sw/device/lib/testing/test_framework/ottf_main.c
+line: 137
+nargs: 0
+format: ome statuses have been lost due to the limited size of the list.
+str_arg_idx: 
+addr: 1025c
+severity: 0
+file: sw/device/lib/testing/test_framework/freertos_hooks.c
+line: 31
+nargs: 1
+format: FreeRTOS stack overflow. Increase stack size of task: %0s
+str_arg_idx: 0
+addr: 10270
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 105
+nargs: 4
+format: FAULT: %0s. MCAUSE=%08h MEPC=%08h MTVAL=%08h
+str_arg_idx: 0
+addr: 10284
+severity: 2
+file: sw/device/lib/testing/test_framework/ottf_isrs.c
+line: 228
+nargs: 2
+format: unhandled IRQ: plic_id=%0d, instance ID=%0d
+str_arg_idx: 
+addr: 10298
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 113
+nargs: 0
+format: CHECK-fail: alert_handler != ((void*)0)
+str_arg_idx: 
+addr: 102ac
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 114
+nargs: 0
+format: CHECK-fail: dif_is_valid_toggle(locked)
+str_arg_idx: 
+addr: 102c0
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 120
+nargs: 0
+format: CHECK-fail: (config.alerts_len > 0 && config.alerts != ((void*)0) && config.alert_classes != ((void*)0)) || (config.alerts_len == 0 && config.alerts == ((void*)0) && config.alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 102d4
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 124
+nargs: 0
+format: CHECK-fail: (config.local_alerts_len > 0 && config.local_alerts != ((void*)0) && config.local_alert_classes != ((void*)0)) || (config.local_alerts_len == 0 && config.local_alerts == ((void*)0) && config.local_alert_classes == ((void*)0))
+str_arg_idx: 
+addr: 102e8
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 128
+nargs: 0
+format: CHECK-fail: (config.classes_len > 0 && config.classes != ((void*)0) && config.class_configs != ((void*)0)) || (config.classes_len == 0 && config.classes == ((void*)0) && config.class_configs == ((void*)0))
+str_arg_idx: 
+addr: 102fc
+severity: 2
+file: sw/device/lib/testing/alert_handler_testutils.c
+line: 134
+nargs: 0
+format: CHECK-fail: config.ping_timeout <= 0xffffu
+str_arg_idx: 
+addr: 10310
+severity: 2
+file: sw/device/lib/testing/rand_testutils.c
+line: 30
+nargs: 0
+format: CHECK-fail: rv_core_ibex != ((void*)0)
+str_arg_idx: 
+addr: 10324
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 37
+nargs: 0
+format: PASS!
+str_arg_idx: 
+addr: 10338
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 43
+nargs: 0
+format: FAIL!
+str_arg_idx: 
+addr: 1034c
+severity: 0
+file: sw/device/lib/testing/test_framework/status.c
+line: 49
+nargs: 1
+format: test_status_set to 0x%0h
+str_arg_idx:
