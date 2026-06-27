@@ -2,7 +2,7 @@
 
 ## 简介
 
-`chip/top` now uses the OpenTitan Earlgrey vendor-island top as its only top-level path. The canonical RTL filelist is `de/rtl/filelist.f`.
+`chip/top` now uses the OpenTitan Earlgrey vendor-island top as its only top-level path. The canonical RTL dependency order is assembled by `de/rtl/filelist.mk` into generated `de/run/rtl.f` and `dv/sim/<case>/dut.f`.
 
 当前集成范围是 OpenTitan Earlgrey vendor-island top。原生 `core/bus/uart` 最小顶层已从 `chip/top` 移除，后续如果要拆成 vibe_soc 原生模块，应在独立模块目录中逐步接回，而不是作为 `chip/top` 的默认回退路径。
 
@@ -34,7 +34,7 @@ make comp     # 编译 OpenTitan top
 make sim      # 运行指定 TEST
 ```
 
-The previous generated `vibe_soc_top` files have been removed from this module. Future native decomposition should add new module-owned RTL and update `de/rtl/filelist.f` deliberately.
+The previous generated `vibe_soc_top` files have been removed from this module. Future native decomposition should add module-owned RTL and wire dependencies through each module's `de/rtl/filelist.mk`.
 
 ## OpenTitan Vendor Mode
 
@@ -48,12 +48,14 @@ Key files:
 - `docs/opentitan_uart_bootstrap_case.md`: selected OpenTitan UART bootstrap case
 - `docs/opentitan_source_manifest.md`: imported source size and file counts
 - `de/rtl/vendor/opentitan/`: source-level OpenTitan import, excluding local caches and build output
-- `de/rtl/filelist.f`: canonical vibe_soc-owned OpenTitan simulation filelist
+- `de/rtl/filelist.mk`: canonical ordered dependency assembly for chip/top
+- `de/rtl/fragments/`: top-owned OpenTitan source-order chunks
+- `ip/digital/opentitan_tlul/`, `ip/digital/opentitan_uart/`: first native DE RTL split packages
 - `dv/tb/tests/`: case definitions for `chip_sw_uart_smoketest` and `chip_sw_uart_tx_rx_bootstrap`
 
-The smoke baseline uses the captured FuseSoC-generated filelist and has a passing `soc-build.soc_sim`
-log. The bootstrap path should reuse this generated dependency order instead of the earlier hand-written
-OpenTitan filelist.
+The smoke baseline uses the captured FuseSoC-generated dependency order and has a passing `soc-build.soc_sim`
+log. The current flow preserves that order through `filelist.mk` composition instead of hand-maintaining
+inter-module `-f` references in `de/rtl/filelist.f`.
 
 OpenTitan vendor simulations default to `FSDB=0`, which passes `WAVES=none` into the OpenTitan runtime
 TCL and avoids writing `dv/sim/<case>/waves.fsdb` during normal test runs. Use `FSDB=1` only when a debug waveform is needed.

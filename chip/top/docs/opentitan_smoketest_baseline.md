@@ -21,7 +21,8 @@ The upstream log ended with `SW TEST PASSED`, `TEST PASSED CHECKS`, and zero UVM
 Reusable generated inputs were promoted into canonical vibe_soc roots:
 
 ```text
-chip/top/de/rtl/filelist.f
+chip/top/de/rtl/filelist.mk
+chip/top/de/rtl/fragments/
 chip/top/de/rtl/generated/opentitan_fusesoc/
 chip/top/dv/tb/sw/common/otp/
 chip/top/dv/tb/sw/common/test_rom/
@@ -31,7 +32,7 @@ chip/top/dv/tb/tests/chip_sw_uart_smoketest.yml
 
 The copied collateral includes:
 
-- static OpenTitan compile order in `de/rtl/filelist.f`
+- static OpenTitan compile order assembled by `de/rtl/filelist.mk`
 - the small set of FuseSoC-generated SV sources needed outside the vendor tree
 - prebuilt `test_rom_sim_dv` ROM images
 - prebuilt `uart_smoketest_sim_dv` flash images
@@ -45,7 +46,7 @@ The original `simv`, `simv.daidir`, FSDB waveforms, and runtime database files w
 `chip/top/Makefile` selects the OpenTitan vendor path when `TEST=chip_sw_uart_smoketest`.
 For this case it:
 
-- uses `chip/top/de/rtl/filelist.f`
+- uses `chip/top/de/rtl/filelist.mk` to assemble generated `de/run/rtl.f` / `dv/sim/<case>/dut.f`
 - uses a static project-owned expansion of the verified FuseSoC dependency order
 - overrides VCS to the OpenTitan-style one-step build because the filelist includes C/C++ DPI files
 - runs `chip_base_test` with `chip_sw_uart_smoke_vseq`

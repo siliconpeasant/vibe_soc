@@ -1,13 +1,13 @@
-# OpenTitan UART DE filelist package
+# OpenTitan UART DE package
 
-Groups the OpenTitan UART RTL entries used by chip/top and the UART smoke tests. Source files remain under chip/top/de/rtl/vendor/opentitan; this package owns only the vibe_soc DE filelist boundary.
+Owns the OpenTitan UART RTL slice used by `chip/top` and the UART smoke tests as a native vibe_soc DE package. The RTL files are copied under `ip/digital/opentitan_uart/de/rtl/`; the original vendor island copy is kept for now as migration source material until later pruning.
 
 ## Scope
 
-- DE-only split package.
-- Does not move or fork OpenTitan RTL source files.
+- DE RTL split package.
+- Owns copied UART `.sv` files under `de/rtl/`.
+- Exposes `OPENTITAN_UART_FILELIST` through `de/rtl/filelist.mk`.
 - Does not provide an independent DV environment yet.
-- Consumed by `chip/top/de/rtl/filelist.f` through `-f $SOC/ip/digital/opentitan_uart/de/rtl/filelist.f`.
 
 ## Files
 
@@ -16,12 +16,13 @@ opentitan_uart/
 ├── de/
 │   ├── Makefile
 │   └── rtl/
+│       ├── *.sv
 │       ├── filelist.f
 │       └── filelist.mk
 ├── Makefile
 └── README.md
 ```
 
-## Next Step
+## Integration
 
-When this boundary is stable, the package can be promoted from vendor filelist ownership to native RTL ownership by copying or rewriting the selected RTL into `de/rtl/` and adding its own focused `dv/tb/` tests.
+`chip/top/de/rtl/filelist.mk` includes this package `filelist.mk`, disables auto-registration, and inserts `OPENTITAN_UART_FILELIST` at the frozen OpenTitan UART dependency point.

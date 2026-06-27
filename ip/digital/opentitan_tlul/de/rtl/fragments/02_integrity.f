@@ -1,9 +1,9 @@
 // OpenTitan TL-UL ordered DE fragment.
-// Included by chip/top/de/rtl/filelist.f at the original dependency point.
+// Source files are owned by ip/digital/opentitan_tlul/de/rtl.
 
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_data_integ_enc.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_data_integ_dec.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_cmd_intg_gen.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_cmd_intg_chk.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_rsp_intg_gen.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_rsp_intg_chk.sv
+$SOC/ip/digital/opentitan_tlul/de/rtl/tlul_data_integ_enc.sv
+$SOC/ip/digital/opentitan_tlul/de/rtl/tlul_data_integ_dec.sv
+$SOC/ip/digital/opentitan_tlul/de/rtl/tlul_cmd_intg_gen.sv
+$SOC/ip/digital/opentitan_tlul/de/rtl/tlul_cmd_intg_chk.sv
+$SOC/ip/digital/opentitan_tlul/de/rtl/tlul_rsp_intg_gen.sv
+$SOC/ip/digital/opentitan_tlul/de/rtl/tlul_rsp_intg_chk.sv

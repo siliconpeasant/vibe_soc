@@ -3,7 +3,7 @@
   "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/chip/top",
   "mode": "single",
   "created_at": "2026-06-21T10:18:58Z",
-  "last_updated": "2026-06-27T09:17:32Z",
+  "last_updated": "2026-06-27T10:07:39Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -32,26 +32,25 @@
       "name": "RTL设计与编码",
       "agent": "soc-rtl-designer",
       "status": "done",
-      "started_at": "2026-06-27T08:21:05Z",
-      "completed_at": "2026-06-27T08:30:15Z",
+      "started_at": "2026-06-27T09:26:04Z",
+      "completed_at": "2026-06-27T09:40:32Z",
       "artifacts": [
-        "de/rtl/filelist.f",
         "de/run/rtl.f"
       ],
       "check_results": [
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "chip/top/de chip_earlgrey_asic VCS compile passed; 9 filelists, 670 unique entries"
+          "note": "chip/top/de chip_earlgrey_asic VCS compile passed; 2 filelists, 670 unique entries"
         },
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "chip/top/dv tb VCS compile passed; 9 filelists, 860 unique entries"
+          "note": "chip/top/dv tb VCS compile passed; 2 filelists, 860 unique entries"
         }
       ],
-      "notes": "DE-only OpenTitan filelist split: chip/top now references ip/digital/opentitan_tlul ordered fragments and ip/digital/opentitan_uart/de/rtl/filelist.f; vendor RTL source paths unchanged",
-      "last_updated": "2026-06-27T08:30:15Z",
+      "notes": "Moved OpenTitan TLUL/UART RTL into native ip/digital DE packages and assembled chip/top order through filelist.mk; generated DE/DV filelists consume local TLUL/UART paths.",
+      "last_updated": "2026-06-27T09:40:32Z",
       "blocked_by": []
     },
     "verif": {
@@ -59,8 +58,8 @@
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
       "status": "done",
-      "started_at": "2026-06-27T09:17:17Z",
-      "completed_at": "2026-06-27T09:17:32Z",
+      "started_at": "2026-06-27T09:58:20Z",
+      "completed_at": "2026-06-27T09:58:38Z",
       "artifacts": [
         "dv/tb/tests/chip_sw_uart_tx_rx.yml",
         "dv/sim/chip_sw_uart_tx_rx/sim.log",
@@ -70,12 +69,12 @@
         {
           "tool": "soc_sim",
           "passed": true,
-          "note": "chip_sw_uart_tx_rx seed 1 FSDB=0 PASS; no FSDB artifacts generated"
+          "note": "chip_sw_uart_tx_rx seed 1 FSDB=0 PASS after native TLUL/UART RTL split; no FSDB artifacts generated"
         }
       ],
-      "notes": "Default OpenTitan simulation now runs with FSDB=0/WAVES=none and clears stale wave files before no-wave runs; chip_sw_uart_tx_rx completed with software PASS.",
+      "notes": "Validated native TLUL/UART RTL split through chip_sw_uart_tx_rx with lightweight FSDB=0 simulation.",
       "blocked_by": [],
-      "last_updated": "2026-06-27T09:17:32Z"
+      "last_updated": "2026-06-27T09:58:38Z"
     },
     "syn": {
       "step_id": "syn",
@@ -86,9 +85,9 @@
       "completed_at": null,
       "artifacts": [],
       "check_results": [],
-      "notes": "Pending synthesis after DE-only OpenTitan TLUL/UART filelist split and no-wave verification.",
+      "notes": "Pending synthesis after native OpenTitan TLUL/UART RTL split and passing lightweight UART verification; deferred per user request.",
       "blocked_by": [],
-      "last_updated": "2026-06-27T09:17:32Z"
+      "last_updated": "2026-06-27T10:07:39Z"
     }
   },
   "next_actions": [

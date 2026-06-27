@@ -1,23 +1,22 @@
 # opentitan_tlul - RTL Filelist Dependencies
-# 用法: 在其他 Makefile 中 include $(PROJECT_ROOT)/.../de/rtl/filelist.mk
 
 ifndef OPENTITAN_TLUL_FILELIST_MK
 OPENTITAN_TLUL_FILELIST_MK := 1
 
-# 本模块 RTL filelist（自动推导当前目录）
-OPENTITAN_TLUL_FILELIST := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))filelist.f
+OPENTITAN_TLUL_RTL_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+OPENTITAN_TLUL_FILELIST := $(OPENTITAN_TLUL_RTL_DIR)filelist.f
+OPENTITAN_TLUL_FRAGMENT_01_PKG := $(OPENTITAN_TLUL_RTL_DIR)fragments/01_pkg.f
+OPENTITAN_TLUL_FRAGMENT_02_INTEGRITY := $(OPENTITAN_TLUL_RTL_DIR)fragments/02_integrity.f
+OPENTITAN_TLUL_FRAGMENT_03_FIFO_ASSERT := $(OPENTITAN_TLUL_RTL_DIR)fragments/03_fifo_assert.f
+OPENTITAN_TLUL_FRAGMENT_04_ADAPTERS := $(OPENTITAN_TLUL_RTL_DIR)fragments/04_adapters.f
+OPENTITAN_TLUL_FRAGMENT_05_RACL := $(OPENTITAN_TLUL_RTL_DIR)fragments/05_racl.f
+OPENTITAN_TLUL_FRAGMENT_06_DEBUG := $(OPENTITAN_TLUL_RTL_DIR)fragments/06_debug.f
+OPENTITAN_TLUL_FRAGMENT_07_OPTIONAL_VH := $(OPENTITAN_TLUL_RTL_DIR)fragments/07_optional_vh.f
 
-# ---------------------------------------------------------------------------
-# 依赖的子模块：取消注释并添加你依赖的其他模块的 filelist.mk
-# ---------------------------------------------------------------------------
-
-# include $(PROJECT_ROOT)/ip/digital/sub_ip/de/rtl/filelist.mk
-
-# ---------------------------------------------------------------------------
-
-# 注册到全局收集变量（去重：已存在则不重复添加）
+ifneq ($(OPENTITAN_TLUL_NO_AUTO_REGISTER),1)
 ifeq (,$(filter $(OPENTITAN_TLUL_FILELIST),$(MODULE_FILELISTS)))
   MODULE_FILELISTS += $(OPENTITAN_TLUL_FILELIST)
+endif
 endif
 
 endif
