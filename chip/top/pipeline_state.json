@@ -3,7 +3,7 @@
   "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/chip/top",
   "mode": "single",
   "created_at": "2026-06-21T10:18:58Z",
-  "last_updated": "2026-06-27T00:27:44Z",
+  "last_updated": "2026-06-27T09:17:32Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -32,27 +32,26 @@
       "name": "RTL设计与编码",
       "agent": "soc-rtl-designer",
       "status": "done",
-      "started_at": "2026-06-27T00:08:26Z",
-      "completed_at": "2026-06-27T00:17:15Z",
+      "started_at": "2026-06-27T08:21:05Z",
+      "completed_at": "2026-06-27T08:30:15Z",
       "artifacts": [
         "de/rtl/filelist.f",
-        "de/rtl/filelist.mk",
-        "de/rtl/generated/opentitan_fusesoc/mapping_report.txt",
-        "de/rtl/generated/opentitan_fusesoc/src/lowrisc_dv_chip_ral_pkg_0/chip_ral_pkg.sv",
-        "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_clkmgr_csr_assert_0/clkmgr_csr_assert_fpv.sv",
-        "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_pwrmgr_csr_assert_0/pwrmgr_csr_assert_fpv.sv",
-        "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_rstmgr_csr_assert_0/rstmgr_csr_assert_fpv.sv",
-        "de/rtl/generated/opentitan_fusesoc/src/lowrisc_fpv_spi_host_csr_assert_0/spi_host_csr_assert_fpv.sv"
+        "de/run/rtl.f"
       ],
       "check_results": [
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "de_top_chip_earlgrey_asic_and_dv_tb_compile_passed_with_single_de_rtl_filelist_f"
+          "note": "chip/top/de chip_earlgrey_asic VCS compile passed; 9 filelists, 670 unique entries"
+        },
+        {
+          "tool": "soc_comp",
+          "passed": true,
+          "note": "chip/top/dv tb VCS compile passed; 9 filelists, 860 unique entries"
         }
       ],
-      "notes": "chip/top now uses OpenTitan as the only top; de/rtl/filelist.f is the single canonical filelist",
-      "last_updated": "2026-06-27T00:17:15Z",
+      "notes": "DE-only OpenTitan filelist split: chip/top now references ip/digital/opentitan_tlul ordered fragments and ip/digital/opentitan_uart/de/rtl/filelist.f; vendor RTL source paths unchanged",
+      "last_updated": "2026-06-27T08:30:15Z",
       "blocked_by": []
     },
     "verif": {
@@ -60,31 +59,23 @@
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
       "status": "done",
-      "started_at": "2026-06-27T00:17:28Z",
-      "completed_at": "2026-06-27T00:27:44Z",
+      "started_at": "2026-06-27T09:17:17Z",
+      "completed_at": "2026-06-27T09:17:32Z",
       "artifacts": [
-        "dv/tb/tests/chip_sw_uart_smoketest.yml",
-        "dv/tb/tests/chip_sw_uart_tx_rx_bootstrap.yml",
-        "dv/tb/sw/common/otp/manifest.json",
-        "dv/tb/sw/common/test_rom/manifest.json",
-        "dv/tb/sw/cases/chip_sw_uart_smoketest/manifest.json",
-        "dv/tb/sw/cases/chip_sw_uart_tx_rx_bootstrap/manifest.json",
-        "dv/sim/chip_sw_uart_smoketest/compile.log",
-        "dv/sim/chip_sw_uart_smoketest/sim.log",
-        "dv/sim/chip_sw_uart_smoketest/waves.fsdb",
-        "docs/opentitan_smoketest_baseline.md",
-        "docs/opentitan_uart_bootstrap_bringup_log.md"
+        "dv/tb/tests/chip_sw_uart_tx_rx.yml",
+        "dv/sim/chip_sw_uart_tx_rx/sim.log",
+        "dv/sim/chip_sw_uart_tx_rx/tb.u_sim_sram.u_sim_sram_if.u_sw_logger_if.log"
       ],
       "check_results": [
         {
           "tool": "soc_sim",
           "passed": true,
-          "note": "chip_sw_uart_smoketest_seed_1_single_de_rtl_filelist_f_SW_TEST_PASSED_TEST_PASSED_CHECKS_UVM_ERROR_0_UVM_FATAL_0"
+          "note": "chip_sw_uart_tx_rx seed 1 FSDB=0 PASS; no FSDB artifacts generated"
         }
       ],
-      "notes": "OpenTitan smoke passed after converging chip/top to single de/rtl/filelist.f",
+      "notes": "Default OpenTitan simulation now runs with FSDB=0/WAVES=none and clears stale wave files before no-wave runs; chip_sw_uart_tx_rx completed with software PASS.",
       "blocked_by": [],
-      "last_updated": "2026-06-27T00:27:44Z"
+      "last_updated": "2026-06-27T09:17:32Z"
     },
     "syn": {
       "step_id": "syn",
@@ -95,9 +86,9 @@
       "completed_at": null,
       "artifacts": [],
       "check_results": [],
-      "notes": "Converge chip/top on OpenTitan as the only top and make de/rtl/filelist.f the single canonical filelist",
+      "notes": "Pending synthesis after DE-only OpenTitan TLUL/UART filelist split and no-wave verification.",
       "blocked_by": [],
-      "last_updated": "2026-06-27T00:08:26Z"
+      "last_updated": "2026-06-27T09:17:32Z"
     }
   },
   "next_actions": [

@@ -69,6 +69,8 @@ make comp MODULE=chip/top SIMULATOR=iverilog
 make sim  MODULE=ip/digital/uart SIMULATOR=vcs TEST=uart_all SEED=7
 ```
 
+OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug 波形时显式加 `FSDB=1`。
+
 ## Make 目标
 
 | 目标 | 作用 |

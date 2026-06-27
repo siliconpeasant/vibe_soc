@@ -18,7 +18,7 @@ endif
   else
     TOP_MODULE ?= tb
   endif
-  FSDB ?= 1
+  FSDB ?= 0
   VERDI_HOME ?= /usr/Synopsys/verdi/T-2022.06
   OT_WAVES ?= $(if $(filter 1,$(FSDB)),fsdb,none)
   OT_VENDOR_ROOT := $(PROJECT_ROOT)/chip/top/de/rtl/vendor/opentitan
@@ -34,6 +34,7 @@ endif
   OT_CASE_SW_ROOT := $(OT_SW_ROOT)/cases
   OT_CASE_SW_DIR := $(OT_CASE_SW_ROOT)/$(TEST)
   OT_COPY_SW_COLLATERAL = find $(OT_OTP_DIR) $(OT_TEST_ROM_DIR) $(OT_CASE_SW_DIR) -maxdepth 1 -type f \( -name 'otp_ctrl_img_*.vmem' -o -name '*_sim_dv.logs.txt' -o -name '*_sim_dv.rodata.txt' \) -exec cp -f {} . \;
+  OT_CLEAN_WAVES_IF_DISABLED = $(if $(filter 1,$(FSDB)),:,rm -f waves.fsdb wave.fsdb waves.fsdb.* wave.fsdb.* novas_dump.log)
   USER_COMPILE_FLAGS += +define+TOP_LEVEL_DV +define+UVM +define+UVM_NO_DEPRECATED
   USER_COMPILE_FLAGS += +define+UVM_REGEX_NO_DPI +define+UVM_NO_RELNOTES
   USER_COMPILE_FLAGS += +define+UVM_REG_ADDR_WIDTH=32 +define+UVM_REG_DATA_WIDTH=64
@@ -108,7 +109,7 @@ ifeq ($(OT_USE_PREBUILT_SIMV),1)
 BUILD_OUTPUT = $(SIM_DIR)/.ot_smoke_prebuilt_simv
 COMP_CMD = test -x $(OT_SMOKE_PREBUILT_SIMV) && touch $(BUILD_OUTPUT)
 ELAB_CMD =
-SIM_CMD = $(OT_COPY_SW_COLLATERAL) && \
+SIM_CMD = $(OT_COPY_SW_COLLATERAL) && $(OT_CLEAN_WAVES_IF_DISABLED) && \
           env SIMULATOR=vcs WAVES=$(OT_WAVES) GUI=$(GUI) GUI_DEBUG=0 TB_TOP=tb \
           VERDI_HOME=$(VERDI_HOME) NOVAS_HOME=$(VERDI_HOME) dv_root=$(OT_HW_DV_ROOT) $(OT_SMOKE_PREBUILT_SIMV) $(VCS_SIM_FLAGS) $(USER_SIM_FLAGS)
 else
@@ -117,7 +118,7 @@ COMP_CMD = cd $(BUILD_DIR) && \
            -timescale=$(TIMESCALE) -Mdir=$(BUILD_DIR)/simv.csrc \
            $(OT_BIND_TOPS) -top $(TOP_MODULE) -f $(FILELIST) -o simv -l compile.log
 ELAB_CMD =
-SIM_CMD = $(OT_COPY_SW_COLLATERAL) && \
+SIM_CMD = $(OT_COPY_SW_COLLATERAL) && $(OT_CLEAN_WAVES_IF_DISABLED) && \
           env SIMULATOR=vcs WAVES=$(OT_WAVES) GUI=$(GUI) GUI_DEBUG=0 TB_TOP=tb \
           VERDI_HOME=$(VERDI_HOME) NOVAS_HOME=$(VERDI_HOME) dv_root=$(OT_HW_DV_ROOT) ./simv $(VCS_SIM_FLAGS) $(USER_SIM_FLAGS)
 endif

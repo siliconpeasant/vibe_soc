@@ -85,8 +85,8 @@ Local host compatibility adjustments are kept in `chip/top/Makefile`:
 `chip/top/Makefile` selects `chip_sw_uart_smoketest`, the passing FuseSoC-generated baseline.
 The original generated `vibe_soc_top` flow has been removed from `chip/top`; OpenTitan is now the only top-level path.
 
-For OpenTitan vendor simulations, `FSDB` defaults to `1`, and `WAVES=fsdb` is passed into the
-OpenTitan runtime TCL. The expected waveform output is:
+For normal OpenTitan vendor simulations, `FSDB` defaults to `0`, and `WAVES=none` is passed into the
+OpenTitan runtime TCL to avoid waveform dumping. When debug waveforms are required, run with `FSDB=1`; the expected waveform output is:
 
 ```text
 chip/top/dv/sim/chip_sw_uart_smoketest/waves.fsdb

@@ -55,5 +55,5 @@ The smoke baseline uses the captured FuseSoC-generated filelist and has a passin
 log. The bootstrap path should reuse this generated dependency order instead of the earlier hand-written
 OpenTitan filelist.
 
-OpenTitan vendor simulations default to `FSDB=1`, which passes `WAVES=fsdb` into the OpenTitan runtime
-TCL and writes `dv/sim/<case>/waves.fsdb`. Use `FSDB=0` to run without wave dumping.
+OpenTitan vendor simulations default to `FSDB=0`, which passes `WAVES=none` into the OpenTitan runtime
+TCL and avoids writing `dv/sim/<case>/waves.fsdb` during normal test runs. Use `FSDB=1` only when a debug waveform is needed.

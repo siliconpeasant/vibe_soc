@@ -101,7 +101,7 @@ $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_ram_2p_async_adv.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_rom_adv.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_trivium_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_trivium.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_pkg.sv
+-f $SOC/ip/digital/opentitan_tlul/de/rtl/fragments/01_pkg.f
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/rtl/autogen/testing/lc_ctrl_token_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/rtl/autogen/top_racl_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/alert_handler/rtl/alert_handler_reg_pkg.sv
@@ -159,12 +159,7 @@ $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg_arb.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg_ext.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_subreg_shadow.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/rtl/padring.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_data_integ_enc.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_data_integ_dec.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_cmd_intg_gen.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_cmd_intg_chk.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_rsp_intg_gen.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_rsp_intg_chk.sv
+-f $SOC/ip/digital/opentitan_tlul/de/rtl/fragments/02_integrity.f
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/rstmgr/rtl/rstmgr_reg_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/rstmgr/rtl/rstmgr_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/vendor/lowrisc_ibex/rtl/ibex_register_file_ff.sv
@@ -186,11 +181,7 @@ $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_lc_sender.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_lc_sync.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_racl_error_arb.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip/ast/rtl/ast_pkg.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_fifo_sync.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_fifo_async.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_assert.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_err.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_assert_multiple.sv
+-f $SOC/ip/digital/opentitan_tlul/de/rtl/fragments/03_fifo_assert.f
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/otp_ctrl/rtl/otp_ctrl_top_specific_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/otp_ctrl/rtl/otp_ctrl_part_pkg.sv
@@ -224,16 +215,7 @@ $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_filter_ctr.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_flop_x.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_intr_hw.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_lc_or_hardened.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_adapter_host.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_adapter_reg.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_sram_byte.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_adapter_sram.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_lc_gate.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_request_loopback.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_err_resp.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_socket_1n.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_socket_m1.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/sram2tlul.sv
+-f $SOC/ip/digital/opentitan_tlul/de/rtl/fragments/04_adapters.f
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/flash_ctrl/rtl/flash_ctrl_reg_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/flash_ctrl/rtl/flash_ctrl_top_specific_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/flash_ctrl/rtl/flash_phy_pkg.sv
@@ -248,8 +230,7 @@ $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/usbdev/rtl/usb_fs_tx_mux.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_edn_req.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_clock_meas.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim/rtl/prim_clock_timeout.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_adapter_racl.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_adapter_reg_racl.sv
+-f $SOC/ip/digital/opentitan_tlul/de/rtl/fragments/05_racl.f
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/vendor/pulp_riscv_dbg/debug_rom/debug_rom.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/vendor/pulp_riscv_dbg/debug_rom/debug_rom_one_scratch.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/vendor/pulp_riscv_dbg/src/dm_pkg.sv
@@ -261,9 +242,7 @@ $SOC/chip/top/de/rtl/vendor/opentitan/hw/vendor/pulp_riscv_dbg/src/dmi_jtag.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/vendor/pulp_riscv_dbg/src/dmi_jtag_tap.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/vendor/pulp_riscv_dbg/src/dm_top.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/flash_ctrl/rtl/flash_ctrl_prim_reg_top.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_adapter_dmi.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_adapter_sram_racl.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/tlul/rtl/tlul_jtag_dtm.sv
+-f $SOC/ip/digital/opentitan_tlul/de/rtl/fragments/06_debug.f
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim_generic/rtl/prim_generic_flash_bank.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/prim_generic/rtl/prim_flash.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/top_earlgrey/ip_autogen/alert_handler/rtl/alert_handler_reg_top.sv
@@ -453,12 +432,7 @@ $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/sysrst_ctrl/rtl/sysrst_ctrl_combo.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/sysrst_ctrl/rtl/sysrst_ctrl_ulp.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/sysrst_ctrl/rtl/sysrst_ctrl_intr.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/sysrst_ctrl/rtl/sysrst_ctrl.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/uart/rtl/uart_reg_pkg.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/uart/rtl/uart_reg_top.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/uart/rtl/uart_rx.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/uart/rtl/uart_tx.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/uart/rtl/uart_core.sv
-$SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/uart/rtl/uart.sv
+-f $SOC/ip/digital/opentitan_uart/de/rtl/filelist.f
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/usbdev/rtl/usbdev_reg_pkg.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/usbdev/rtl/usbdev_reg_top.sv
 $SOC/chip/top/de/rtl/vendor/opentitan/hw/ip/usbdev/rtl/usbdev_usbif.sv
