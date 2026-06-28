@@ -1,0 +1,7 @@
+de/run/
+dv/sim/
+dv/cov/
+.pipeline_state.lock
+*.vcd
+*.vpd
+*.log

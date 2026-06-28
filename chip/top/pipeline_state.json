@@ -3,7 +3,7 @@
   "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/chip/top",
   "mode": "single",
   "created_at": "2026-06-21T10:18:58Z",
-  "last_updated": "2026-06-27T15:13:14Z",
+  "last_updated": "2026-06-28T03:57:24Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -32,22 +32,28 @@
       "name": "RTL设计与编码",
       "agent": "soc-rtl-designer",
       "status": "done",
-      "started_at": "2026-06-27T15:01:51Z",
-      "completed_at": "2026-06-27T15:12:56Z",
+      "started_at": "2026-06-28T03:39:11Z",
+      "completed_at": "2026-06-28T03:43:54Z",
       "artifacts": [
+        "de/rtl/filelist.mk",
         "de/rtl/filelist.f",
-        "de/rtl/fragments/00_before_tlul_pkg.f",
-        "de/rtl/fragments/10_after_tlul_pkg.f"
+        "de/rtl/pkg.f",
+        "de/run/rtl.f"
       ],
       "check_results": [
         {
-          "tool": "soc_sim",
+          "tool": "soc_comp",
           "passed": true,
-          "note": "chip_sw_uart_smoketest compiled and passed after fixing case-index Python wrapper"
+          "note": "VCS chip_earlgrey_asic de compile; inherited child filelists via filelist.mk; validated 35 filelists, emitted 670 unique entries; fingerprint f9d1fcb6da29670991893c3272acaa674774c04770076c3b0facc04242166ded"
+        },
+        {
+          "tool": "filelist_equivalence",
+          "passed": true,
+          "note": "generated rtl.f has same 670-entry source set as previous golden"
         }
       ],
-      "notes": "OpenTitan case index and filelist split complete",
-      "last_updated": "2026-06-27T15:12:56Z",
+      "notes": "Let top inherit child module filelist.f entries through included filelist.mk files",
+      "last_updated": "2026-06-28T03:43:54Z",
       "blocked_by": []
     },
     "verif": {
@@ -55,8 +61,8 @@
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
       "status": "done",
-      "started_at": "2026-06-27T15:13:14Z",
-      "completed_at": "2026-06-27T15:13:14Z",
+      "started_at": "2026-06-28T03:45:59Z",
+      "completed_at": "2026-06-28T03:57:24Z",
       "artifacts": [
         "dv/sim/chip_sw_uart_smoketest/compile.log",
         "dv/sim/chip_sw_uart_smoketest/sim.log"
@@ -65,12 +71,17 @@
         {
           "tool": "soc_sim",
           "passed": true,
-          "note": "chip_sw_uart_smoketest SW TEST PASSED and TEST PASSED CHECKS"
+          "note": "called through MCP for chip_sw_uart_smoketest seed 1 top tb; MCP client timed out at 300s but spawned VCS process completed"
+        },
+        {
+          "tool": "dv_sim_log",
+          "passed": true,
+          "note": "sim.log contains SW TEST PASSED, UVM_ERROR 0, UVM_FATAL 0, TEST PASSED CHECKS at 3782.067499 us"
         }
       ],
-      "notes": "Record chip_sw_uart_smoketest smoke result",
+      "notes": "Run DV smoke simulation after inherited filelist.mk refactor",
       "blocked_by": [],
-      "last_updated": "2026-06-27T15:13:14Z"
+      "last_updated": "2026-06-28T03:57:24Z"
     },
     "syn": {
       "step_id": "syn",
@@ -81,9 +92,9 @@
       "completed_at": null,
       "artifacts": [],
       "check_results": [],
-      "notes": "Reopen RTL for OpenTitan case index completion, common RTL package split, and UART standalone metadata refresh",
+      "notes": "Let top inherit child module filelist.f entries through included filelist.mk files",
       "blocked_by": [],
-      "last_updated": "2026-06-27T11:29:10Z"
+      "last_updated": "2026-06-28T03:39:11Z"
     }
   },
   "next_actions": [

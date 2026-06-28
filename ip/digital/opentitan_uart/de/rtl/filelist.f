@@ -1,7 +1,6 @@
-// OpenTitan UART RTL library for vibe_soc.
-// Source files are copied into this native package.
+// opentitan_uart non-package RTL/model filelist
+// Package sources are kept separately in pkg.f.
 
-$SOC/ip/digital/opentitan_uart/de/rtl/uart_reg_pkg.sv
 $SOC/ip/digital/opentitan_uart/de/rtl/uart_reg_top.sv
 $SOC/ip/digital/opentitan_uart/de/rtl/uart_rx.sv
 $SOC/ip/digital/opentitan_uart/de/rtl/uart_tx.sv
