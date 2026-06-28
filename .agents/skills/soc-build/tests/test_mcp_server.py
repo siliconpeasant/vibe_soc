@@ -88,6 +88,33 @@ class SocBuildMcpTest(unittest.TestCase):
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
+    def test_lint_accepts_vc_static(self, run) -> None:
+        SERVER.soc_lint(str(self.module_dir), "vc_static", "uart")
+        run.assert_called_once_with(
+            ["make", "lint", "LINT_TOOL=vc_static", "RTL_TOP=uart"],
+            cwd=str(self.module_dir.resolve()),
+            timeout=120,
+        )
+
+    @patch.object(SERVER, "_detect_gui_variables", return_value={"DISPLAY": ":0", "XAUTHORITY": "/tmp/xauth"})
+    @patch.object(SERVER, "_run", return_value="ok")
+    def test_lint_accepts_gui(self, run, gui_vars) -> None:
+        SERVER.soc_lint(str(self.module_dir), "vc_static", "uart", gui=True)
+        run.assert_called_once_with(
+            [
+                "make",
+                "lint",
+                "LINT_TOOL=vc_static",
+                "RTL_TOP=uart",
+                "GUI=1",
+                "DISPLAY=:0",
+                "XAUTHORITY=/tmp/xauth",
+            ],
+            cwd=str(self.module_dir.resolve()),
+            timeout=120,
+        )
+
+    @patch.object(SERVER, "_run", return_value="ok")
     def test_syn_uses_project_target(self, run) -> None:
         SERVER.soc_syn(str(self.module_dir), "uart")
         run.assert_called_once_with(

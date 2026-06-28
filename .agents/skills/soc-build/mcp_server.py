@@ -11,6 +11,8 @@ SoC Build MCP Server
 """
 
 import argparse
+import glob
+import getpass
 import os
 import re
 import sys
@@ -29,6 +31,7 @@ from mcp_runtime import run_command, run_python
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).parent / "scripts"
 SUPPORTED_SIMULATORS = {"iverilog", "vcs", "verilator", "xcelium"}
+SUPPORTED_LINT_TOOLS = {"iverilog", "vc_static", "verilator"}
 TEST_NAME_RE = re.compile(r"[A-Za-z0-9_.-]+")
 HDL_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_$]*")
 SEED_MATRIX_RE = re.compile(r"\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*")
@@ -124,6 +127,35 @@ def _hdl_identifier(value: str, field: str) -> str:
     return value
 
 
+def _latest_existing(paths: list[str]) -> str:
+    existing = [Path(path) for path in paths if Path(path).exists()]
+    if not existing:
+        return ""
+    return str(max(existing, key=lambda path: path.stat().st_mtime))
+
+
+def _detect_gui_variables() -> dict[str, str]:
+    variables: dict[str, str] = {}
+    display = os.environ.get("DISPLAY", "")
+    if not display:
+        sockets = sorted(Path("/tmp/.X11-unix").glob("X*"))
+        if (Path("/tmp/.X11-unix") / "X0").exists():
+            display = ":0"
+        elif sockets:
+            display = f":{sockets[0].name[1:]}"
+    if display:
+        variables["DISPLAY"] = display
+
+    xauthority = os.environ.get("XAUTHORITY", "")
+    if not xauthority:
+        user = getpass.getuser()
+        xauthority = _latest_existing(glob.glob(f"/run/gdm/auth-for-{user}-*/database"))
+    if xauthority:
+        variables["XAUTHORITY"] = xauthority
+
+    return variables
+
+
 def _make(
     module_dir: str,
     targets: list[str],
@@ -201,19 +233,29 @@ def soc_flist(path: str, output: str = "", recursive: bool = False) -> str:
 
 
 @mcp.tool()
-def soc_lint(module_dir: str, lint_tool: str = "verilator", rtl_top: str = "") -> str:
+def soc_lint(
+    module_dir: str,
+    lint_tool: str = "verilator",
+    rtl_top: str = "",
+    gui: bool = False,
+) -> str:
     """对指定模块执行 lint 检查。
 
     Args:
         module_dir: 包含 Makefile 的模块目录（如 chip/top 或 ip/digital/xxx）
-        lint_tool: lint 工具，可选 verilator 或 iverilog
+        lint_tool: lint 工具，可选 verilator / iverilog / vc_static
         rtl_top: 可选 RTL 顶层模块名
+        gui: 是否在 lint 完成后打开图形界面
     """
-    if lint_tool not in {"verilator", "iverilog"}:
-        raise ValueError("lint_tool must be verilator or iverilog")
+    if lint_tool not in SUPPORTED_LINT_TOOLS:
+        choices = ", ".join(sorted(SUPPORTED_LINT_TOOLS))
+        raise ValueError(f"lint_tool must be one of: {choices}")
     variables = {"LINT_TOOL": lint_tool}
     if rtl_top:
         variables["RTL_TOP"] = _hdl_identifier(rtl_top, "rtl_top")
+    if gui:
+        variables["GUI"] = 1
+        variables.update(_detect_gui_variables())
     return _make(module_dir, ["lint"], variables, timeout=120)
 
 

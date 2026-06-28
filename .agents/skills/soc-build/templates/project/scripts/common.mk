@@ -240,11 +240,48 @@ ifeq ($(LINT_TOOL),verilator)
 	@verilator $(VERILATOR_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),iverilog)
 	@iverilog $(IVERILOG_FLAGS) -s $(RTL_TOP) -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
+else ifeq ($(LINT_TOOL),vc_static)
+	@test -x "$(VC_STATIC_SHELL)" || { echo "[LINT] VC Static shell not found: $(VC_STATIC_SHELL)"; exit 127; }
+	@test -f "$(VC_LINT_SCRIPT)" || { echo "[LINT] VC lint script not found: $(VC_LINT_SCRIPT)"; exit 2; }
+	@mkdir -p "$(LINT_RUN_DIR)"
+	@cd "$(LINT_RUN_DIR)" && \
+	  DISPLAY="$(DISPLAY)" \
+	  XAUTHORITY="$(XAUTHORITY)" \
+	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	  VC_LINT_FILELIST="$(RUN_DIR)/rtl.f" \
+	  VC_LINT_TOP="$(RTL_TOP)" \
+	  VC_LINT_REPORT="$(VC_LINT_REPORT)" \
+	  VC_LINT_MODULE_DIR="$(MODULE_PATH)" \
+	  VC_LINT_SETUP="$(MODULE_PATH)/de/lint/vc_lint_setup.tcl" \
+	  VC_LINT_RULES="$(VC_LINT_RULES)" \
+	  VC_LINT_SEARCH_PATH="$(RTL_PATH) $(MODULE_PATH)" \
+	  VC_LINT_GUI="$(VC_LINT_GUI)" \
+	  VC_LINT_ENABLE_TAGS="$(VC_LINT_ENABLE_TAGS)" \
+	  "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -out_dir "$(VC_STATIC_OUT_DIR)" \
+	    -f "$(VC_LINT_SCRIPT)" -output_log_file "../$(notdir $(VC_STATIC_LOG))" 2>&1 | tee "$(LINT_LOG)"; \
+	  status=$${PIPESTATUS[0]}; \
+	  if [ $$status -eq 11 ]; then echo "[LINT] VC Static completed with warnings"; status=0; fi; \
+	  if [ $$status -ne 0 ]; then exit $$status; fi; \
+	  if [ "$(VC_LINT_GUI)" = "1" ]; then \
+	    if [ -f "$(VC_STATIC_OUT_DIR)/novas.rc" ]; then \
+	      sed -i 's/^thirdpartyIdx[[:space:]]*=.*/thirdpartyIdx = 0/' "$(VC_STATIC_OUT_DIR)/novas.rc"; \
+	    fi; \
+	    echo "[LINT] Opening VC Static GUI: $(VC_STATIC_OUT_DIR)"; \
+	    DISPLAY="$(DISPLAY)" XAUTHORITY="$(XAUTHORITY)" HOME="$(LINT_RUN_DIR)" VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	      nohup "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -gui -restore \
+	        -out_dir "$(VC_STATIC_OUT_DIR)" -output_log_file "../vc_static_gui.log" \
+	        >/dev/null 2>&1 & \
+	  fi
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 	@exit 2
 endif
-	@echo "[LINT] Report: $(RUN_DIR)/lint.log"
+	@if [ "$(LINT_TOOL)" = "vc_static" ]; then \
+		echo "[LINT] Report: $(LINT_LOG)"; \
+		echo "[LINT] VC report: $(VC_LINT_REPORT)"; \
+	else \
+		echo "[LINT] Report: $(RUN_DIR)/lint.log"; \
+	fi
 
 # --- syn: Yosys synthesis ---
 syn: flist

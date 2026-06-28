@@ -51,6 +51,8 @@ export CHIP_PATH="$PROJECT_ROOT/chip"
 export IP_PATH="$PROJECT_ROOT/ip"
 export SIMULATOR=${SIMULATOR:-vcs}
 export LINT_TOOL=${LINT_TOOL:-verilator}
+export VC_STATIC_HOME=${VC_STATIC_HOME:-/usr/Synopsys/vc_static/T-2022.06-SP2}
+export VC_STATIC_SHELL=${VC_STATIC_SHELL:-$VC_STATIC_HOME/bin/vc_static_shell}
 
 # ---------------------------------------------------------------------------
 # 2. 工具链检测
@@ -92,6 +94,9 @@ MISSING=0
 _check_tool make --version || MISSING=$((MISSING + 1))
 _check_tool verilator --version || {
     [ "$LINT_TOOL" != "verilator" ] || MISSING=$((MISSING + 1))
+}
+_check_tool "$VC_STATIC_SHELL" -help || {
+    [ "$LINT_TOOL" != "vc_static" ] || MISSING=$((MISSING + 1))
 }
 _check_iverilog || {
     [ "$SIMULATOR" != "iverilog" ] || MISSING=$((MISSING + 1))

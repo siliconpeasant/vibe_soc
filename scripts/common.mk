@@ -102,7 +102,7 @@ SYN_REPORT    = $(SYN_DIR)/synth.log
 
 .PHONY: setup comp sim run test regress report coverage coverage-regress \
         coverage-report verdi clean debugclean deepclean \
-        flist validate-flist lint syn
+        flist validate-flist lint cdc syn
 
 setup:
 	@echo "[SETUP] vibe_soc environment setup"
@@ -261,11 +261,116 @@ ifeq ($(LINT_TOOL),verilator)
 	@verilator $(VERILATOR_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),iverilog)
 	@iverilog $(IVERILOG_FLAGS) -s $(RTL_TOP) -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
+else ifeq ($(LINT_TOOL),vc_static)
+	@test -x "$(VC_STATIC_SHELL)" || { echo "[LINT] VC Static shell not found: $(VC_STATIC_SHELL)"; exit 127; }
+	@test -f "$(VC_LINT_SCRIPT)" || { echo "[LINT] VC lint script not found: $(VC_LINT_SCRIPT)"; exit 2; }
+	@mkdir -p "$(LINT_RUN_DIR)"
+	@cd "$(LINT_RUN_DIR)" && \
+	  DISPLAY="$(DISPLAY)" \
+	  XAUTHORITY="$(XAUTHORITY)" \
+	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	  VC_LINT_FILELIST="$(RUN_DIR)/rtl.f" \
+	  VC_LINT_TOP="$(RTL_TOP)" \
+	  VC_LINT_REPORT="$(VC_LINT_REPORT)" \
+	  VC_LINT_MODULE_DIR="$(MODULE_PATH)" \
+	  VC_LINT_SETUP="$(MODULE_PATH)/de/lint/vc_lint_setup.tcl" \
+	  VC_LINT_RULES="$(VC_LINT_RULES)" \
+	  VC_LINT_SEARCH_PATH="$(RTL_PATH) $(MODULE_PATH)" \
+	  VC_LINT_GUI="$(VC_LINT_GUI)" \
+	  VC_LINT_ENABLE_TAGS="$(VC_LINT_ENABLE_TAGS)" \
+	  "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -out_dir "$(VC_STATIC_OUT_DIR)" \
+	    -f "$(VC_LINT_SCRIPT)" -output_log_file "../$(notdir $(VC_STATIC_LOG))" 2>&1 | tee "$(LINT_LOG)"; \
+	  status=$${PIPESTATUS[0]}; \
+	  if [ $$status -eq 11 ]; then echo "[LINT] VC Static completed with warnings"; status=0; fi; \
+	  if [ $$status -ne 0 ]; then exit $$status; fi; \
+	  if [ "$(VC_LINT_GUI)" = "1" ]; then \
+	    if [ -f "$(VC_STATIC_OUT_DIR)/novas.rc" ]; then \
+	      sed -i 's/^thirdpartyIdx[[:space:]]*=.*/thirdpartyIdx = 0/' "$(VC_STATIC_OUT_DIR)/novas.rc"; \
+	    fi; \
+	    echo "[LINT] Opening VC Static GUI: $(VC_STATIC_OUT_DIR)"; \
+	    DISPLAY="$(DISPLAY)" XAUTHORITY="$(XAUTHORITY)" HOME="$(LINT_RUN_DIR)" VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	      nohup "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -gui -restore \
+	        -out_dir "$(VC_STATIC_OUT_DIR)" -output_log_file "../vc_static_gui.log" \
+	        >/dev/null 2>&1 & \
+	  fi
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 	@exit 2
 endif
-	@echo "[LINT] Report: $(RUN_DIR)/lint.log"
+	@if [ "$(LINT_TOOL)" = "vc_static" ]; then \
+		echo "[LINT] Report: $(LINT_LOG)"; \
+		echo "[LINT] VC report: $(VC_LINT_REPORT)"; \
+	else \
+		echo "[LINT] Report: $(RUN_DIR)/lint.log"; \
+	fi
+
+
+# --- cdc: CDC check on RTL only ---
+cdc: $(RTL_FLIST)
+	@echo "[CDC] Tool: $(CDC_TOOL) | Top: $(RTL_TOP)"
+ifeq ($(CDC_TOOL),spyglass)
+	@test -x "$(SG_SHELL)" || { echo "[CDC] SpyGlass sg_shell not found: $(SG_SHELL)"; exit 127; }
+	@test -f "$(SG_CDC_GEN)" || { echo "[CDC] SpyGlass CDC generator not found: $(SG_CDC_GEN)"; exit 2; }
+	@mkdir -p "$(CDC_RUN_DIR)"
+	@$(PYTHON_RUN) "$(SG_CDC_GEN)" \
+	  --project-root "$(PROJECT_ROOT)" \
+	  --run-dir "$(CDC_RUN_DIR)" \
+	  --filelist "$(RUN_DIR)/rtl.f" \
+	  --top "$(RTL_TOP)" \
+	  --spyglass-home "$(SG_HOME)" \
+	  --goal "$(SG_CDC_GOAL)" \
+	  --methodology "$(SG_CDC_METHODOLOGY)" \
+	  --clock-port "$(SG_CDC_CLOCK_PORT)" \
+	  --reset-port "$(SG_CDC_RESET_PORT)" \
+	  --reset-value "$(SG_CDC_RESET_VALUE)" \
+	  $(if $(SG_CDC_SGDC),--sgdc "$(SG_CDC_SGDC)")
+	@cd "$(CDC_RUN_DIR)" && \
+	  SPYGLASS_HOME="$(SG_HOME)" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(SG_SHELL)" -tcl run_sg_cdc.tcl -licqueue -shell_log_file "$(CDC_LOG)"
+	@echo "[CDC] Log:      $(CDC_LOG)"
+	@echo "[CDC] Reports:  $(SG_CDC_PROJECT_DIR)/consolidated_reports/cdc_cdc_verify_struct"
+	@if [ "$(SG_CDC_GUI)" = "1" ]; then \
+	  test -n "$(DISPLAY)" || { echo "[CDC] DISPLAY is empty; cannot open SpyGlass GUI"; exit 2; }; \
+	  echo "[CDC] Opening SpyGlass GUI: $(SG_CDC_PROJECT_DIR)"; \
+	  cd "$(CDC_RUN_DIR)" && \
+	    setsid sh -c 'DISPLAY="$(DISPLAY)" XAUTHORITY="$(XAUTHORITY)" SPYGLASS_HOME="$(SG_HOME)" SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" LM_LICENSE_FILE="$(LM_LICENSE_FILE)" nohup "$(SG_HOME)/bin/spyglass" -project "$(notdir $(SG_CDC_PROJECT_DIR))" -disablesplashscreen > "$(SG_CDC_GUI_LOG)" 2>&1 &'; \
+	fi
+else ifeq ($(CDC_TOOL),vc_static)
+	@test -x "$(VC_STATIC_SHELL)" || { echo "[CDC] VC Static shell not found: $(VC_STATIC_SHELL)"; exit 127; }
+	@test -f "$(VC_CDC_SCRIPT)" || { echo "[CDC] VC CDC script not found: $(VC_CDC_SCRIPT)"; exit 2; }
+	@if [ -n "$(CDC_SDC)" ]; then \
+		test -f "$(CDC_SDC)" || { echo "[CDC] SDC not found: $(CDC_SDC)"; exit 2; }; \
+		echo "[CDC] SDC: $(CDC_SDC)"; \
+	else \
+		echo "[CDC] WARNING: No CDC_SDC found; override with CDC_SDC=<path> for clock constraints"; \
+	fi
+	@mkdir -p "$(CDC_RUN_DIR)"
+	@cd "$(CDC_RUN_DIR)" && \
+	  DISPLAY="$(DISPLAY)" \
+	  XAUTHORITY="$(XAUTHORITY)" \
+	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	  VC_CDC_FILELIST="$(RUN_DIR)/rtl.f" \
+	  VC_CDC_TOP="$(RTL_TOP)" \
+	  VC_CDC_SDC="$(CDC_SDC)" \
+	  VC_CDC_REPORT="$(VC_CDC_REPORT)" \
+	  VC_CDC_SUMMARY="$(VC_CDC_SUMMARY)" \
+	  VC_CDC_SETUP="$(MODULE_PATH)/de/cdc/vc_cdc_setup.tcl" \
+	  VC_CDC_SEARCH_PATH="$(RTL_PATH) $(MODULE_PATH)" \
+	  VC_CDC_CHECK_ARGS="$(VC_CDC_CHECK_ARGS)" \
+	  "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -out_dir "$(VC_CDC_OUT_DIR)" \
+	    -f "$(VC_CDC_SCRIPT)" -output_log_file "../$(notdir $(VC_CDC_LOG))" 2>&1 | tee "$(CDC_LOG)"; \
+	  status=$${PIPESTATUS[0]}; \
+	  if [ $$status -eq 11 ]; then echo "[CDC] VC Static completed with warnings"; status=0; fi; \
+	  if [ $$status -ne 0 ]; then exit $$status; fi
+	@echo "[CDC] Log:      $(CDC_LOG)"
+	@echo "[CDC] Summary:  $(VC_CDC_SUMMARY)"
+	@echo "[CDC] Detailed: $(VC_CDC_REPORT)"
+else
+	@echo "[CDC] Unknown CDC_TOOL: $(CDC_TOOL)"
+	@exit 2
+endif
 
 # --- syn: Yosys synthesis ---
 syn: $(RTL_FLIST)

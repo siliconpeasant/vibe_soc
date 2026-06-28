@@ -42,6 +42,19 @@ VVP      ?= vvp
 IVERILOG_FLAGS ?= -g2012
 VVP_FLAGS      ?=
 VERILATOR_FLAGS ?= -Wall
+VC_STATIC_HOME    ?= /usr/Synopsys/vc_static/T-2022.06-SP2
+VC_STATIC_SHELL     ?= $(VC_STATIC_HOME)/bin/vc_static_shell
+VC_STATIC_FLAGS     ?= -mode64 -no_init
+VC_STATIC_GUI_FLAGS ?= $(if $(filter 1 true yes,$(VC_LINT_GUI)),-gui,)
+LINT_RUN_DIR        ?= $(RUN_DIR)/lint
+LINT_LOG          ?= $(LINT_RUN_DIR)/lint.log
+VC_STATIC_LOG     ?= $(LINT_RUN_DIR)/vc_static.log
+VC_STATIC_OUT_DIR ?= $(LINT_RUN_DIR)/vcst_rtdb
+VC_LINT_SCRIPT    ?= $(PROJECT_ROOT)/scripts/lint/vc_lint.tcl
+VC_LINT_RULES     ?= $(PROJECT_ROOT)/scripts/lint/vc_lint_rules.tcl
+VC_LINT_REPORT      ?= $(LINT_RUN_DIR)/vc_lint.rpt
+VC_LINT_GUI         ?= $(GUI)
+VC_LINT_ENABLE_TAGS ?= CONN_NET_UNDRIVEN CODING_WIDTH_UNEQ_SIZE CODING_LATCH_INFER SYN_STMT_UNSYNTH_FOREVER
 VLOG_FLAGS      ?= +systemverilogext+.sv+.svi+.svh+.v \
                    -extinclude \
                    +libext+.vlib+.v+.sv+.svi+.svh+.vt+.vp+.defs \
