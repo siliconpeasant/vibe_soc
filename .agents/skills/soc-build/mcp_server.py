@@ -281,6 +281,7 @@ def soc_sim(
     seed: int = 1,
     test: str = "default",
     top_module: str = "",
+    fsdb: bool = False,
 ) -> str:
     """编译并运行指定模块的一次仿真。
 
@@ -290,6 +291,7 @@ def soc_sim(
         seed: 非负随机种子
         test: 安全的测试名；模块可通过 TEST 变量使用该值
         top_module: 可选 testbench 顶层模块名
+        fsdb: 是否打开 FSDB 波形；映射到 Make 变量 FSDB=1
     """
     variables = {
         "SIMULATOR": _simulator(simulator),
@@ -298,6 +300,8 @@ def soc_sim(
     }
     if top_module:
         variables["TOP_MODULE"] = _hdl_identifier(top_module, "top_module")
+    if fsdb:
+        variables["FSDB"] = 1
     return _make(module_dir, ["comp", "sim"], variables, timeout=600)
 
 

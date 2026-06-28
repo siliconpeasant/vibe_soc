@@ -41,7 +41,25 @@ IVERILOG ?= iverilog
 VVP      ?= vvp
 IVERILOG_FLAGS ?= -g2012
 VVP_FLAGS      ?=
-VERILATOR_FLAGS ?= -Wall
+VERILATOR             ?= verilator
+VERILATOR_BIN         := $(realpath $(shell command -v $(VERILATOR) 2>/dev/null))
+VERILATOR_PREFIX      := $(patsubst %/bin/,%,$(dir $(VERILATOR_BIN)))
+VERILATOR_ROOT        ?= $(VERILATOR_PREFIX)/share/verilator
+VERILATOR_FLAGS        ?= -Wall --language 1800-2012
+VERILATOR_LINT_FLAGS   ?= $(VERILATOR_FLAGS)
+VERILATOR_THREADS      ?=
+VERILATOR_TRACE        ?= 1
+VERILATOR_TRACE_FORMAT ?= vcd
+VERILATOR_MODEL        ?= V$(TOP_MODULE)
+VERILATOR_TRACE_FLAGS  ?= $(if $(filter 1 true yes,$(VERILATOR_TRACE)),--trace $(if $(filter fst,$(VERILATOR_TRACE_FORMAT)),--trace-fst,) --trace-structs --trace-params --trace-max-array 1024,)
+VERILATOR_SIM_FLAGS    ?= $(VERILATOR_FLAGS) -Wno-fatal --unroll-count 512 $(if $(strip $(VERILATOR_THREADS)),--threads $(VERILATOR_THREADS),) $(VERILATOR_TRACE_FLAGS)
+VERILATOR_CFLAGS       ?= -std=c++11 -Wall $(if $(filter fst,$(VERILATOR_TRACE_FORMAT)),-DVM_TRACE_FMT_FST,) -DTOPLEVEL_NAME=$(VERILATOR_MODEL) -DTOPLEVEL_HEADER=$(VERILATOR_MODEL).h
+VERILATOR_EXTRA_LDFLAGS ?=
+VERILATOR_LDFLAGS      ?= -pthread -lutil $(VERILATOR_EXTRA_LDFLAGS)
+VERILATOR_RTL_SRCS     ?= $(filter-out $(TB_FILES),$(FLIST_SRCS))
+VERILATOR_SV_FILES     ?= $(wildcard $(TB_PATH)/*_verilator.sv $(TB_PATH)/*_verilator.v)
+VERILATOR_CPP_FILES    ?= $(wildcard $(TB_PATH)/*_verilator.cc $(TB_PATH)/*_verilator.cpp $(MODULE_PATH)/dv/verif/*_verilator.cc $(MODULE_PATH)/dv/verif/*_verilator.cpp)
+VERILATOR_HARNESS      ?= $(if $(strip $(VERILATOR_CPP_FILES)),$(VERILATOR_CPP_FILES),$(PROJECT_ROOT)/scripts/verilator/generic_main.cpp)
 VC_STATIC_HOME    ?= /usr/Synopsys/vc_static/T-2022.06-SP2
 VC_STATIC_SHELL     ?= $(VC_STATIC_HOME)/bin/vc_static_shell
 VC_STATIC_FLAGS     ?= -mode64 -no_init
@@ -83,11 +101,14 @@ VLOG_FLAGS      ?= +systemverilogext+.sv+.svi+.svh+.v \
                    +libext+.vlib+.v+.sv+.svi+.svh+.vt+.vp+.defs \
                    +vcs+lic+wait +lint=TFIPC-L \
                    +define+VCS +define+RTL_SIM +define+UVM1P2 \
-                   -sverilog -nc -kdb -full64 -lca \
+                   -sverilog -nc -full64 -lca \
                    -xlrm floating_pnt_constraint
-VCS_ELAB_FLAGS  ?= +vcs+lic+wait +notimingcheck -kdb -full64 -lca \
+VCS_KDB         ?= 0
+VCS_KDB_COMPILE_FLAGS ?= $(if $(filter 1 true yes,$(VCS_KDB)),-kdb,)
+VCS_KDB_ELAB_FLAGS    ?= $(if $(filter 1 true yes,$(VCS_KDB)),-kdb -debug_access+pp,)
+VCS_ELAB_FLAGS  ?= +vcs+lic+wait +notimingcheck -full64 -lca \
                    -xlrm floating_pnt_constraint \
-                   +vcs+initreg+random -debug_access+pp
+                   +vcs+initreg+random $(VCS_KDB_ELAB_FLAGS)
 VCS_SIM_FLAGS   ?= +vcs+lic+wait +ntb_random_seed=$(SEED) +vcs+flush+log +vcs+flush+dump
 VCS_HW_ROOT     ?= $(PROJECT_ROOT)
 VCS_UVM_HOME    ?= $(VCS_HOME)/etc/uvm-1.2

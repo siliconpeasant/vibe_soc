@@ -68,5 +68,8 @@ All names, simulators, tests, seeds, and job counts are validated. A nonzero pro
 - Verification agents call `soc_sim` or `soc_regress`; no direct Make/simulator fallback.
 - Synthesis agents call `soc_syn`; Yosys output is not STA evidence.
 - Commercial simulator/license work must remain in the registered MCP process.
+- VC Static lint is run in no-GUI mode by default because the local license set may lack the Verdi plugin features. If GUI is explicitly requested and plugin checkout fails, do not block lint triage on the GUI; use the generated text reports under `de/run/lint/`.
+- When lint reports any real rule violation at error or warning severity, first query the local SoC AI knowledge base (`soc-ai-kb`) using the rule/tag name and diagnostic text. If the knowledge base has no relevant guidance, reason from the tool report, RTL, and local coding rules.
+- Lint fixes are review-gated: propose the root cause, supporting report lines, and a concrete patch plan to the user. Do not apply a final RTL fix, waiver, or severity downgrade until the user confirms. Temporary repro edits must be clearly marked and restored before any commit.
 
 For Verilog code review, read `references/verilog_coding_style.md` and report mandatory, recommended, and advisory findings with file/line evidence.

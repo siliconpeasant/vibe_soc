@@ -88,6 +88,23 @@ class SocBuildMcpTest(unittest.TestCase):
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
+    def test_sim_accepts_fsdb(self, run) -> None:
+        SERVER.soc_sim(str(self.module_dir), "vcs", 1, "smoke", fsdb=True)
+        run.assert_called_once_with(
+            [
+                "make",
+                "comp",
+                "sim",
+                "SIMULATOR=vcs",
+                "SEED=1",
+                "TEST=smoke",
+                "FSDB=1",
+            ],
+            cwd=str(self.module_dir.resolve()),
+            timeout=600,
+        )
+
+    @patch.object(SERVER, "_run", return_value="ok")
     def test_lint_accepts_vc_static(self, run) -> None:
         SERVER.soc_lint(str(self.module_dir), "vc_static", "uart")
         run.assert_called_once_with(

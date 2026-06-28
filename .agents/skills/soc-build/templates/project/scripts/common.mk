@@ -80,7 +80,7 @@ ifeq ($(wildcard $(TOOLCHAIN_MK)),)
 endif
 include $(TOOLCHAIN_MK)
 
-BUILD_METADATA = simulator=$(SIMULATOR)|top=$(TOP_MODULE)|timescale=$(TIMESCALE)|fsdb=$(FSDB)|coverage=$(COVERAGE)|partcomp=$(PARTCOMP)|vlog=$(VLOG_FLAGS)|elab=$(VCS_ELAB_FLAGS)|includes=$(VCS_INCLUDE_FLAGS)|iverilog=$(IVERILOG_FLAGS)|verilator=$(VERILATOR_FLAGS)|user_compile=$(USER_COMPILE_FLAGS)
+BUILD_METADATA = simulator=$(SIMULATOR)|top=$(TOP_MODULE)|timescale=$(TIMESCALE)|fsdb=$(FSDB)|coverage=$(COVERAGE)|partcomp=$(PARTCOMP)|vlog=$(VLOG_FLAGS)|vcs_kdb=$(VCS_KDB)|vcs_kdb_compile=$(VCS_KDB_COMPILE_FLAGS)|elab=$(VCS_ELAB_FLAGS)|includes=$(VCS_INCLUDE_FLAGS)|iverilog=$(IVERILOG_FLAGS)|verilator_bin=$(VERILATOR)|verilator_root=$(VERILATOR_ROOT)|verilator=$(VERILATOR_SIM_FLAGS)|verilator_cflags=$(VERILATOR_CFLAGS)|verilator_ldflags=$(VERILATOR_LDFLAGS)|verilator_harness=$(VERILATOR_HARNESS)|verilator_sv=$(VERILATOR_SV_FILES)|user_compile=$(USER_COMPILE_FLAGS)
 BUILD_CONFIG_DEPS := $(PROJECT_ROOT)/scripts/common.mk $(PROJECT_ROOT)/scripts/config.mk $(TOOLCHAIN_MK) $(MODULE_PATH)/Makefile
 BUILD_EXTRA_DEPS := $(BUILD_CONFIG_DEPS) $(RTL_PATH) $(TB_PATH)
 
@@ -237,7 +237,7 @@ else
 	@sed 's|\$$SOC|$(PROJECT_ROOT)|g' $(RTL_PATH)/filelist.f > $(RUN_DIR)/rtl.f
 endif
 ifeq ($(LINT_TOOL),verilator)
-	@verilator $(VERILATOR_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
+	@verilator $(VERILATOR_LINT_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),iverilog)
 	@iverilog $(IVERILOG_FLAGS) -s $(RTL_TOP) -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),vc_static)

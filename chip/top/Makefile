@@ -69,7 +69,7 @@ endif
   USER_COMPILE_FLAGS += -error=IPDASP -error=CM-HIER-FNF -error=CWUC
   USER_COMPILE_FLAGS += -error=MATN -error=STASKW_NDTAZ1 -error=TMPO
   USER_COMPILE_FLAGS += -error=SV-OHCM -error=ENUMASSIGN -error=TEIF
-  USER_COMPILE_FLAGS += -deraceclockdata -kdb
+  USER_COMPILE_FLAGS += -deraceclockdata $(VCS_KDB_COMPILE_FLAGS)
   USER_COMPILE_FLAGS += -xprop=$(OT_VENDOR_ROOT)/hw/top_earlgrey/dv/vcs_xprop.cfg -xprop=mmsopt
   USER_COMPILE_FLAGS += -Xcflags='-Wno-error=implicit-function-declaration'
   USER_COMPILE_FLAGS += -CFLAGS --std=c99 -CFLAGS -fno-extended-identifiers -CFLAGS -std=c++11

@@ -44,3 +44,5 @@ In multi-module state mode, pass `--module <task_name>` to state updates.
 9. Report the `update_state.py` stdout line and the exact MCP results.
 
 Do not suppress warnings merely to pass lint. Fix the design or document a reviewed project-level waiver.
+
+For lint-driven fixes, use the lint report as evidence and query the local SoC AI knowledge base by rule/tag name before proposing changes. If the knowledge base has no matching guidance, use engineering judgment from the RTL and tool diagnostics. Present the proposed RTL fix, waiver, or constraint change for user review and wait for confirmation before making the final design change.

@@ -23,7 +23,7 @@ ifeq ($(FSDB),1)
   ifeq ($(wildcard $(VERDI_PLI_DIR)/novas.tab),)
     $(error FSDB=1 requires VERDI_HOME/NOVAS_HOME with VCS PLI under $(VERDI_PLI_DIR))
   endif
-  VCS_FSDB_COMPILE_FLAGS += +define+FSDB_DUMP_ON
+  VCS_FSDB_COMPILE_FLAGS += +define+FSDB_DUMP_ON -debug_access+r
   VCS_FSDB_ELAB_FLAGS += -P $(VERDI_PLI_DIR)/novas.tab $(VERDI_PLI_DIR)/pli.a
 endif
 
@@ -58,7 +58,7 @@ COMP_CMD = cd $(BUILD_DIR) && \
            mkdir -p $(VCS_WORK_DIR) && \
            printf 'WORK > $(VCS_WORK_LIB)\n$(VCS_WORK_LIB) : ./work/$(VCS_WORK_LIB)\n' > synopsys_sim.setup && \
            $(VLOG_EXE) $(VCS_DW_FLAGS) $(VLOG_FLAGS) \
-           +define+HW=$(VCS_HW_ROOT) $(VCS_FSDB_COMPILE_FLAGS) \
+           +define+HW=$(VCS_HW_ROOT) $(VCS_FSDB_COMPILE_FLAGS) $(VCS_KDB_COMPILE_FLAGS) \
            $(VCS_INCLUDE_FLAGS) -timescale=$(TIMESCALE) \
            -f $(FILELIST) $(USER_COMPILE_FLAGS) -l compile.log
 ELAB_CMD = cd $(BUILD_DIR) && \
