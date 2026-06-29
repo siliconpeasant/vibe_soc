@@ -104,6 +104,23 @@ make regress MODULE=ip/digital/uart REGRESS_SEEDS=1-10 REGRESS_JOBS=4
 make coverage MODULE=ip/digital/uart TEST=uart_all SEED=7
 ```
 
+### Lint 工具说明
+
+`lint` 默认使用 Verilator，也支持 Iverilog 和 VC Static：
+
+```bash
+make lint MODULE=ip/digital/uart
+make lint MODULE=ip/digital/uart LINT_TOOL=verilator RTL_TOP=uart
+make lint MODULE=ip/digital/uart LINT_TOOL=vc_static RTL_TOP=uart
+```
+
+VC Static 当前分两类能力：
+
+- structural lint：基于 elaboration 后的结构/网表检查连接、未驱动、未连接、黑盒和层次问题，例如 `CONN_NET_UNDRIVEN`。当前 license 可用。
+- native coding/quick-lint：基于 RTL 源码语义检查位宽、锁存器、case、不可综合语句和编码风格，例如 `CODING_WIDTH_UNEQ_SIZE`、`CODING_LATCH_INFER`。T-2022 native flow 需要 `VC-LINT-BASE`；当前 license server 有 `VC-STATIC-LINT`，但没有 `VC-LINT-BASE`，所以 `check_lint/report_lint` 不能作为可用路径。
+
+因此，当前 `LINT_TOOL=vc_static` 可作为 structural lint 入口；coding/quick-lint 类规则需要补齐合法 license 或切换到站点已有 license 对应的 nLint/SpyGlass flow。
+
 ## 工具链
 
 仿真/调试支持：
@@ -179,6 +196,13 @@ python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 
 EDA 阶段必须走注册 MCP 工具：验证调用 `soc-build.soc_sim`，综合调用 `soc-build.soc_syn`，OpenROAD 调用 `soc-openroad.soc_openroad_*`。阶段 agent 不使用直接 `make`、`iverilog`、`vvp`、`yosys`、`openroad` 等 shell fallback。
 
+
+## OpenTitan Vendor Island
+
+`chip/top` 当前以 OpenTitan Earlgrey chip top 为主要顶层，保留 vendor island 结构以便先复用已验证的 FuseSoC 生成顺序和 DV collateral，再逐步拆成 vibe_soc 原生模块。顶层 filelist 通过 `chip/top/de/rtl/filelist.mk` 汇总各 `ip/digital/opentitan_*` 子模块的 `filelist.mk`、`pkg.f` 和 `filelist.f`。
+
+OpenTitan 相关迁移文档位于 `chip/top/docs/`，包括 case manifest、baseline、UART bootstrap bring-up log、vendor migration 和 source manifest。当前 IP 拆分以顶层一起验证为主，子模块先承担源文件组织和 filelist 边界，后续再逐步拆独立验证环境。
+
 ## 顶层集成
 
 顶层位于 `chip/top`。自动集成产物包括：
@@ -209,6 +233,15 @@ make coverage-regress MODULE=ip/digital/uart REGRESS_SEEDS=1-10 REGRESS_JOBS=4
 ```
 
 回归摘要写入模块 `dv/sim/regress/summary.txt` 和 `summary.json`。覆盖率默认指标为 `line+branch+cond+tgl+fsm+assert`，报告位于 `dv/cov/report/`。
+
+
+## CDC
+
+CDC 支持 VC Static CDC 和 SpyGlass CDC 入口，配置位于 `scripts/cdc/`。常用入口：
+
+```bash
+make cdc MODULE=ip/digital/uart RTL_TOP=uart CDC_TOOL=spyglass
+```
 
 ## 综合与 STA
 
@@ -265,6 +298,8 @@ CRG：
 - VCS/Verdi/仿真缓存目录
 - `scripts/local.mk`、`scripts/local.sh`、`scripts/local.csh`
 - `pd/openroad/work/`、`pd/openroad/work_local*/`、`pd/openroad/local/`、`pd/openroad/**/config.local.mk`
+
+贡献者和 agent 操作约定见 `AGENTS.md`，Claude 侧约定见 `CLAUDE.md`。这两个文件只描述协作和执行规则，不替代 README 的项目功能说明。
 
 提交前建议执行：
 
