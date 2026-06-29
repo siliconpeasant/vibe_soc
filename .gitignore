@@ -39,7 +39,9 @@ verdiLog/
 scripts/local.mk
 scripts/local.sh
 scripts/local.csh
-.claude/
+.claude/*
+!.claude/agents
+!.claude/skills
 docs/silicon_crew_intro_article.md
 pd/openroad/work/
 pd/openroad/work_local*/
