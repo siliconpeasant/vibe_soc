@@ -50,7 +50,7 @@ Key files:
 - `de/rtl/vendor/opentitan/`: source-level OpenTitan import, excluding local caches and build output
 - `de/rtl/filelist.mk`: canonical ordered dependency assembly for chip/top
 - `de/rtl/fragments/`: top-owned OpenTitan source-order chunks
-- `ip/digital/opentitan_tlul/`, `ip/digital/opentitan_uart/`: first native DE RTL split packages
+- `ip/digital/tlul/`, `ip/digital/uart_ot/`: first native DE RTL split packages
 - `dv/tb/tests/`: OpenTitan case index shards consumed by `chip/top/Makefile` (`opentitan_cases.manifest.json` plus categorized JSON files; 274 indexed cases, pure DV entries are indexed-only)
 - `dv/tb/sw/cases/`: migrated prebuilt OpenTitan `sim_dv` software images grouped by case
 - `docs/opentitan_case_migration.md`: migrated case/image inventory

@@ -199,7 +199,7 @@ EDA 阶段必须走注册 MCP 工具：验证调用 `soc-build.soc_sim`，综合
 
 ## OpenTitan Vendor Island
 
-`chip/top` 当前以 OpenTitan Earlgrey chip top 为主要顶层，保留 vendor island 结构以便先复用已验证的 FuseSoC 生成顺序和 DV collateral，再逐步拆成 vibe_soc 原生模块。顶层 filelist 通过 `chip/top/de/rtl/filelist.mk` 汇总各 `ip/digital/opentitan_*` 子模块的 `filelist.mk`、`pkg.f` 和 `filelist.f`。
+`chip/top` 当前以 OpenTitan Earlgrey chip top 为主要顶层，保留 vendor island 结构以便先复用已验证的 FuseSoC 生成顺序和 DV collateral，再逐步拆成 vibe_soc 原生模块。顶层 filelist 通过 `chip/top/de/rtl/filelist.mk` 汇总各 `ip/digital/*` 子模块的 `filelist.mk`、`pkg.f` 和 `filelist.f`。
 
 OpenTitan 相关迁移文档位于 `chip/top/docs/`，包括 case manifest、baseline、UART bootstrap bring-up log、vendor migration 和 source manifest。当前 IP 拆分以顶层一起验证为主，子模块先承担源文件组织和 filelist 边界，后续再逐步拆独立验证环境。
 

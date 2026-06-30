@@ -25,9 +25,9 @@ exposes these native package boundaries:
 
 | Package | Status | Current responsibility |
 |---|---:|---|
-| `ip/digital/opentitan_common` | stabilize | Shared OpenTitan primitive filelist fragments, still referencing vendor source |
-| `ip/digital/opentitan_tlul` | stabilize | Copied TL-UL package, integrity, FIFO/assert, adapters, RACL, and debug fragments |
-| `ip/digital/opentitan_uart` | stabilize | Copied OpenTitan UART RTL and UART reg top |
+| `ip/digital/common` | stabilize | Shared OpenTitan primitive filelist fragments, still referencing vendor source |
+| `ip/digital/tlul` | stabilize | Copied TL-UL package, integrity, FIFO/assert, adapters, RACL, and debug fragments |
+| `ip/digital/uart_ot` | stabilize | Copied OpenTitan UART RTL and UART reg top |
 | `chip/top` | vendor island | Remaining Earlgrey packages, autogen top packages, peripherals, security IP, xbars, CPU/debug, boot/ROM, AST, top wrappers |
 
 Generated `de/run/rtl.f` currently expands to mostly `chip/top` vendor-owned entries plus the
@@ -61,22 +61,22 @@ Design-critical blockers before physical implementation:
 ## Integration Architecture
 
 The target architecture keeps `chip/top` as the integration owner and moves reusable IP into
-`ip/digital/opentitan_*` packages.
+short-named `ip/digital/*` packages.
 
 Top-level ownership:
 
 | Area | Owner after split | Notes |
 |---|---|---|
 | Chip wrapper, pad ring, straps, top package glue | `chip/top` | Keep `top_earlgrey`/`chip_earlgrey_asic` integration until replacement top doc stage |
-| Shared primitives and common packages | `ip/digital/opentitan_prim`, `ip/digital/opentitan_common` | `opentitan_common` may remain a compatibility aggregator |
-| TL-UL fabric utilities | `ip/digital/opentitan_tlul` | Existing package remains bus utility owner |
-| Xbar instances | `ip/digital/opentitan_xbar` | Own generated `tl_main_pkg.sv`, `xbar_main.sv`, `tl_peri_pkg.sv`, and `xbar_peri.sv` |
-| Interrupts | `ip/digital/opentitan_rv_plic` | Own IRQ gateway/target/reg/top |
-| CPU subsystem | `ip/digital/opentitan_rv_core_ibex` | Own `rv_core_ibex` wrapper and imported Ibex RTL dependency boundary |
-| Debug | `ip/digital/opentitan_rv_dm` | Own JTAG/DMI/TL-UL debug path |
-| ROM/boot | `ip/digital/opentitan_rom_ctrl`, `ip/digital/opentitan_boot_rom` | Separate ROM controller from ROM image/collateral ownership |
-| Security/entropy | `ip/digital/opentitan_alert_handler`, `opentitan_entropy_src`, `opentitan_edn`, `opentitan_csrng` | Split before broad peripherals because many peripherals emit alerts |
-| Peripherals | `ip/digital/opentitan_<ip>` | One package per IP unless doc stage approves grouping |
+| Shared primitives and common packages | `ip/digital/prim`, `ip/digital/common` | `common` may remain a compatibility aggregator |
+| TL-UL fabric utilities | `ip/digital/tlul` | Existing package remains bus utility owner |
+| Xbar instances | `ip/digital/xbar` | Own generated `tl_main_pkg.sv`, `xbar_main.sv`, `tl_peri_pkg.sv`, and `xbar_peri.sv` |
+| Interrupts | `ip/digital/rv_plic` | Own IRQ gateway/target/reg/top |
+| CPU subsystem | `ip/digital/rv_core_ibex` | Own `rv_core_ibex` wrapper and imported Ibex RTL dependency boundary |
+| Debug | `ip/digital/rv_dm` | Own JTAG/DMI/TL-UL debug path |
+| ROM/boot | `ip/digital/rom_ctrl`, `ip/digital/boot_rom` | Separate ROM controller from ROM image/collateral ownership |
+| Security/entropy | `ip/digital/alert_handler`, `ip/digital/entropy_src`, `ip/digital/edn`, `ip/digital/csrng` | Split before broad peripherals because many peripherals emit alerts |
+| Peripherals | `ip/digital/<ip>` | One package per IP unless doc stage approves grouping |
 
 Primary protocol choices remain TL-UL for register and memory-mapped IP integration. Alert,
 escalation, entropy, LC, RACL, interrupts, and DMI interfaces must be preserved verbatim until the
@@ -115,8 +115,8 @@ Target work:
 Target package ownership:
 
 - `chip/top/de/rtl/fragments/*`: temporary integration fragments only.
-- `ip/digital/opentitan_<module>/de/rtl/filelist.f`: full package manifest.
-- `ip/digital/opentitan_<module>/de/rtl/fragments/*.f`: order-preserving insertion points when a
+- `ip/digital/<module>/de/rtl/filelist.f`: full package manifest.
+- `ip/digital/<module>/de/rtl/fragments/*.f`: order-preserving insertion points when a
   monolithic include would change OpenTitan compile order.
 
 Validation gate:
@@ -134,18 +134,18 @@ Risks:
 
 Target work:
 
-- Keep `ip/digital/opentitan_tlul` as copied-native TL-UL ownership.
-- Keep `ip/digital/opentitan_uart` as copied-native UART ownership.
-- Freeze `ip/digital/opentitan_common` as a compatibility layer before further primitive splitting.
+- Keep `ip/digital/tlul` as copied-native TL-UL ownership.
+- Keep `ip/digital/uart_ot` as copied-native UART ownership.
+- Freeze `ip/digital/common` as a compatibility layer before further primitive splitting.
 - Add or refresh doc-stage handoff for each package before any RTL changes.
 
 Expected ownership:
 
 | Package | Filelist ownership | Validation focus |
 |---|---|---|
-| `opentitan_common` | Common primitive fragments and compatibility include points | Package ordering, primitive dependency closure |
-| `opentitan_tlul` | `tlul_pkg`, integrity helpers, FIFOs, adapters, sockets, assertions | TL-UL type compatibility and adapter elaboration |
-| `opentitan_uart` | UART reg package/top, UART core, RX/TX | TL-UL register interface and chip smoke UART output |
+| `common` | Common primitive fragments and compatibility include points | Package ordering, primitive dependency closure |
+| `tlul` | `tlul_pkg`, integrity helpers, FIFOs, adapters, sockets, assertions | TL-UL type compatibility and adapter elaboration |
+| `uart_ot` | UART reg package/top, UART core, RX/TX | TL-UL register interface and chip smoke UART output |
 
 Validation gate:
 
@@ -161,12 +161,12 @@ Risks:
 
 Target packages:
 
-- `ip/digital/opentitan_prim`
-- `ip/digital/opentitan_prim_generic`
-- `ip/digital/opentitan_prim_alert`
-- `ip/digital/opentitan_prim_lc`
-- `ip/digital/opentitan_prim_reg`
-- `ip/digital/opentitan_common` as a temporary aggregator for top packages and shared generated
+- `ip/digital/prim`
+- `ip/digital/prim_generic`
+- `ip/digital/prim_alert`
+- `ip/digital/prim_lc`
+- `ip/digital/prim_reg`
+- `ip/digital/common` as a temporary aggregator for top packages and shared generated
   constants that are not primitive RTL.
 
 Expected filelist ownership:
@@ -194,10 +194,10 @@ Risks/dependencies:
 
 Target packages:
 
-- `ip/digital/opentitan_alert_handler`
-- `ip/digital/opentitan_entropy_src`
-- `ip/digital/opentitan_edn`
-- `ip/digital/opentitan_csrng`
+- `ip/digital/alert_handler`
+- `ip/digital/entropy_src`
+- `ip/digital/edn`
+- `ip/digital/csrng`
 
 Expected filelist ownership:
 
@@ -225,7 +225,7 @@ Risks/dependencies:
 
 Target package:
 
-- `ip/digital/opentitan_xbar`
+- `ip/digital/xbar`
 
 Expected filelist ownership:
 
@@ -253,16 +253,16 @@ Risks/dependencies:
 
 Target packages:
 
-- Already split/stabilized: `ip/digital/opentitan_uart`
-- Bootstrap priority: `ip/digital/opentitan_spi_device`, `ip/digital/opentitan_flash_ctrl`,
-  `ip/digital/opentitan_flash_mem_model`, `ip/digital/opentitan_gpio`, `ip/digital/opentitan_pinmux`
-- Timer/interrupt support: `ip/digital/opentitan_rv_timer`, `ip/digital/opentitan_rv_plic`,
-  `ip/digital/opentitan_aon_timer`
-- Additional retained peripherals: `ip/digital/opentitan_spi_host`, `ip/digital/opentitan_i2c`,
-  `ip/digital/opentitan_pwm`, `ip/digital/opentitan_usbdev`, `ip/digital/opentitan_adc_ctrl`,
-  `ip/digital/opentitan_hmac`, `ip/digital/opentitan_aes`, `ip/digital/opentitan_kmac`,
-  `ip/digital/opentitan_otbn`, `ip/digital/opentitan_pattgen`, `ip/digital/opentitan_sysrst_ctrl`,
-  `ip/digital/opentitan_sram_ctrl`
+- Already split/stabilized: `ip/digital/uart_ot`
+- Bootstrap priority: `ip/digital/spi_device`, `ip/digital/flash_ctrl`,
+  `ip/digital/flash_mem_model`, `ip/digital/gpio`, `ip/digital/pinmux`
+- Timer/interrupt support: `ip/digital/rv_timer`, `ip/digital/rv_plic`,
+  `ip/digital/aon_timer`
+- Additional retained peripherals: `ip/digital/spi_host`, `ip/digital/i2c`,
+  `ip/digital/pwm`, `ip/digital/usbdev`, `ip/digital/adc_ctrl`,
+  `ip/digital/hmac`, `ip/digital/aes`, `ip/digital/kmac`,
+  `ip/digital/otbn`, `ip/digital/pattgen`, `ip/digital/sysrst_ctrl`,
+  `ip/digital/sram_ctrl`
 
 Expected filelist ownership:
 
@@ -290,15 +290,15 @@ Risks/dependencies:
 
 Target packages:
 
-- `ip/digital/opentitan_ibex`
-- `ip/digital/opentitan_rv_core_ibex`
-- `ip/digital/opentitan_rv_dm`
-- `ip/digital/opentitan_rom_ctrl`
-- `ip/digital/opentitan_boot_rom`
-- `ip/digital/opentitan_lc_ctrl`
-- `ip/digital/opentitan_keymgr`
-- `ip/digital/opentitan_otp_ctrl`
-- `ip/digital/opentitan_otp_macro`
+- `ip/digital/ibex`
+- `ip/digital/rv_core_ibex`
+- `ip/digital/rv_dm`
+- `ip/digital/rom_ctrl`
+- `ip/digital/boot_rom`
+- `ip/digital/lc_ctrl`
+- `ip/digital/keymgr`
+- `ip/digital/otp_ctrl`
+- `ip/digital/otp_macro`
 
 Expected filelist ownership:
 
@@ -334,21 +334,21 @@ Each package must enter the gated module flow only after this handoff is consume
 
 | Module/workspace | Functional responsibility | Required interfaces | Clock/reset | Register/address ownership | Verification focus | Dependencies |
 |---|---|---|---|---|---|---|
-| `ip/digital/opentitan_prim*` | Shared primitive cells | Primitive module APIs | Per primitive | None | Compile closure and representative primitive tests | Process/library decision |
-| `ip/digital/opentitan_tlul` | TL-UL utility fabric | TL-UL H2D/D2H, RACL, DMI adapters | `clk_i`, `rst_ni` plus async FIFO domains | None | Adapter/socket/integrity compile and smoke | `opentitan_prim*` |
-| `ip/digital/opentitan_alert_handler` | Alert collection/escalation | Alert/esc, TL-UL, IRQ | Main/AON as existing OT | Alert handler CSRs | Alert ping/esc sanity | `opentitan_prim_alert`, top alert IDs |
-| `ip/digital/opentitan_entropy_src` | Entropy conditioning | Entropy, TL-UL, alerts, IRQ | Main/entropy domains | Entropy CSRs | Health-test compile/sanity | AST entropy assumption |
-| `ip/digital/opentitan_edn` | Entropy distribution | Entropy req/rsp, TL-UL, alerts, IRQ | Main | EDN CSRs | CSR-driven req/rsp sanity | `entropy_src`, `csrng` |
-| `ip/digital/opentitan_csrng` | CSRNG | CSRNG app, TL-UL, alerts, IRQ | Main | CSRNG CSRs | Instantiate/generate/reseed sanity | AES primitive path |
-| `ip/digital/opentitan_xbar` | Main/peripheral TL-UL interconnects | TL-UL hosts/devices | Main/peripheral | Address decode constants | Decode and routing spot checks | `opentitan_tlul`, address map |
-| `ip/digital/opentitan_uart` | UART peripheral | TL-UL, IRQ, UART pins | Peripheral/core clock | UART CSRs | Chip UART smoke and standalone UART where added | `opentitan_tlul`, `opentitan_prim*` |
-| `ip/digital/opentitan_spi_device` | Bootstrap SPI device | TL-UL, SPI pins, IRQ, alerts | SPI and main domains | SPI device CSRs | Bootstrap ingress sanity | Pinmux, flash, software image |
-| `ip/digital/opentitan_flash_ctrl` | Flash controller | TL-UL, flash macro/model, alerts | Main/flash domains | Flash CSRs and windows | Read/program/erase model sanity | Flash macro/model |
-| `ip/digital/opentitan_rv_plic` | Interrupt controller | IRQ sources/targets, TL-UL | Main | PLIC CSRs | IRQ gateway/target sanity | Peripheral IRQ inventory |
-| `ip/digital/opentitan_rv_core_ibex` | CPU subsystem wrapper | I/D TL-UL, IRQ, debug, alerts | Core/main | Core cfg CSRs | Boot smoke and exception/debug sanity | Ibex, xbar, ROM |
-| `ip/digital/opentitan_rv_dm` | Debug module | JTAG/DMI, TL-UL, CPU debug | JTAG and main domains | Debug CSRs | JTAG/DMI access sanity | CPU, TL-UL |
-| `ip/digital/opentitan_rom_ctrl` | ROM controller | TL-UL, ROM macro/model, alerts | Main | ROM CSRs/windows | ROM fetch and integrity sanity | Boot ROM image |
-| `ip/digital/opentitan_boot_rom` | Boot ROM collateral | ROM image interface | N/A for RTL package unless wrapper needed | ROM image ownership | Image provenance and boot test | SW build/provenance |
+| `ip/digital/prim*` | Shared primitive cells | Primitive module APIs | Per primitive | None | Compile closure and representative primitive tests | Process/library decision |
+| `ip/digital/tlul` | TL-UL utility fabric | TL-UL H2D/D2H, RACL, DMI adapters | `clk_i`, `rst_ni` plus async FIFO domains | None | Adapter/socket/integrity compile and smoke | `opentitan_prim*` |
+| `ip/digital/alert_handler` | Alert collection/escalation | Alert/esc, TL-UL, IRQ | Main/AON as existing OT | Alert handler CSRs | Alert ping/esc sanity | `opentitan_prim_alert`, top alert IDs |
+| `ip/digital/entropy_src` | Entropy conditioning | Entropy, TL-UL, alerts, IRQ | Main/entropy domains | Entropy CSRs | Health-test compile/sanity | AST entropy assumption |
+| `ip/digital/edn` | Entropy distribution | Entropy req/rsp, TL-UL, alerts, IRQ | Main | EDN CSRs | CSR-driven req/rsp sanity | `entropy_src`, `csrng` |
+| `ip/digital/csrng` | CSRNG | CSRNG app, TL-UL, alerts, IRQ | Main | CSRNG CSRs | Instantiate/generate/reseed sanity | AES primitive path |
+| `ip/digital/xbar` | Main/peripheral TL-UL interconnects | TL-UL hosts/devices | Main/peripheral | Address decode constants | Decode and routing spot checks | `opentitan_tlul`, address map |
+| `ip/digital/uart_ot` | UART peripheral | TL-UL, IRQ, UART pins | Peripheral/core clock | UART CSRs | Chip UART smoke and standalone UART where added | `opentitan_tlul`, `opentitan_prim*` |
+| `ip/digital/spi_device` | Bootstrap SPI device | TL-UL, SPI pins, IRQ, alerts | SPI and main domains | SPI device CSRs | Bootstrap ingress sanity | Pinmux, flash, software image |
+| `ip/digital/flash_ctrl` | Flash controller | TL-UL, flash macro/model, alerts | Main/flash domains | Flash CSRs and windows | Read/program/erase model sanity | Flash macro/model |
+| `ip/digital/rv_plic` | Interrupt controller | IRQ sources/targets, TL-UL | Main | PLIC CSRs | IRQ gateway/target sanity | Peripheral IRQ inventory |
+| `ip/digital/rv_core_ibex` | CPU subsystem wrapper | I/D TL-UL, IRQ, debug, alerts | Core/main | Core cfg CSRs | Boot smoke and exception/debug sanity | Ibex, xbar, ROM |
+| `ip/digital/rv_dm` | Debug module | JTAG/DMI, TL-UL, CPU debug | JTAG and main domains | Debug CSRs | JTAG/DMI access sanity | CPU, TL-UL |
+| `ip/digital/rom_ctrl` | ROM controller | TL-UL, ROM macro/model, alerts | Main | ROM CSRs/windows | ROM fetch and integrity sanity | Boot ROM image |
+| `ip/digital/boot_rom` | Boot ROM collateral | ROM image interface | N/A for RTL package unless wrapper needed | ROM image ownership | Image provenance and boot test | SW build/provenance |
 
 ## Replacement and Reuse Policy
 
@@ -377,9 +377,9 @@ Design-critical blockers:
 
 ## Recommended Next Dispatches
 
-1. `soc-doc-engineer` for `ip/digital/opentitan_common`, `ip/digital/opentitan_tlul`, and
-   `ip/digital/opentitan_uart` stabilization docs.
-2. `soc-doc-engineer` for `ip/digital/opentitan_prim*` package docs before any primitive source
+1. `soc-doc-engineer` for `ip/digital/common`, `ip/digital/tlul`, and
+   `ip/digital/uart_ot` stabilization docs.
+2. `soc-doc-engineer` for `ip/digital/prim*` package docs before any primitive source
    promotion.
 3. `soc-doc-engineer` for `opentitan_alert_handler`, `opentitan_entropy_src`, `opentitan_edn`, and
    `opentitan_csrng`.
