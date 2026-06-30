@@ -13,6 +13,7 @@ SUCCESS_PATTERNS = (
     re.compile(r"RESULT:\s*ALL TESTS PASS", re.I),
     re.compile(r"\bALL PASSED\b", re.I),
     re.compile(r"\bTOTAL=\d+\s+PASS=\d+\s+FAIL=0\b", re.I),
+    re.compile(r"^TEST PASSED CHECKS$", re.I | re.M),
 )
 FAIL_PATTERNS = (
     re.compile(r"\[(?:ERROR|FAIL|FATAL)\]", re.I),

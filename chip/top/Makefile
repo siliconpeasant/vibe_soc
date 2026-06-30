@@ -19,6 +19,9 @@ endif
   FSDB ?= 0
   VERDI_HOME ?= /usr/Synopsys/verdi/T-2022.06
   OT_WAVES ?= $(if $(filter 1,$(FSDB)),fsdb,none)
+  ifeq ($(FSDB),1)
+    VCS_KDB ?= 1
+  endif
   OT_VENDOR_ROOT := $(PROJECT_ROOT)/chip/top/de/rtl/vendor/opentitan
   OT_HW_DV_ROOT := $(OT_VENDOR_ROOT)/hw/dv
   OT_SIM_TCL := $(OT_HW_DV_ROOT)/tools/sim.tcl
@@ -112,6 +115,14 @@ endif
     REGRESS_PASS_REGEX ?= TEST PASSED CHECKS|SW TEST PASSED
   endif
 include $(PROJECT_ROOT)/scripts/common.mk
+
+ifeq ($(FSDB),1)
+  # OpenTitan's VCS wave mode uses the KDB/debug build mode and switches dumping at
+  # runtime through WAVES=fsdb. Avoid the generic scaffold FSDB compile/link flags.
+  VCS_FSDB_COMPILE_FLAGS :=
+  VCS_FSDB_ELAB_FLAGS :=
+  VCS_SIM_FLAGS := +vcs+lic+wait +ntb_random_seed=$(SEED)
+endif
 
 ifeq ($(OT_USE_PREBUILT_SIMV),1)
 BUILD_OUTPUT = $(SIM_DIR)/.ot_smoke_prebuilt_simv

@@ -3,7 +3,7 @@ command = "/bin/sh"
 cwd = "/project/xuanwu9000/user/silicon/vibe_soc/.agents"
 args = ["./scripts/run_mcp_python.sh", "./skills/soc-build/mcp_server.py"]
 startup_timeout_sec = 120
-tool_timeout_sec = 300
+tool_timeout_sec = 1800
 
 [mcp_servers.soc-integrate]
 command = "/bin/sh"

@@ -129,7 +129,8 @@ comp: $(FILELIST)
 sim:
 	@echo "[SIM] Running $(TOP_MODULE) ..."
 	@mkdir -p $(SIM_DIR)
-	@cd $(SIM_DIR) && $(SIM_CMD) | tee $(SIM_DIR)/sim.log
+	@cd $(SIM_DIR) && $(SIM_CMD) > $(SIM_DIR)/sim.log 2>&1
+	@cat $(SIM_DIR)/sim.log
 
 run: sim
 

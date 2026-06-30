@@ -49,7 +49,7 @@ class SocBuildMcpTest(unittest.TestCase):
         run.assert_called_once_with(
             ["make", "comp", "sim", "SIMULATOR=vcs", "SEED=7", "TEST=uart_all"],
             cwd=str(self.module_dir.resolve()),
-            timeout=600,
+            timeout=1800,
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
@@ -84,7 +84,7 @@ class SocBuildMcpTest(unittest.TestCase):
                 "TOP_MODULE=tb_uart",
             ],
             cwd=str(self.module_dir.resolve()),
-            timeout=600,
+            timeout=1800,
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
@@ -101,7 +101,7 @@ class SocBuildMcpTest(unittest.TestCase):
                 "FSDB=1",
             ],
             cwd=str(self.module_dir.resolve()),
-            timeout=600,
+            timeout=1800,
         )
 
     @patch.object(SERVER, "_run", return_value="ok")

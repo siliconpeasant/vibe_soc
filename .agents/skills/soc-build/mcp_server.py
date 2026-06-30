@@ -302,7 +302,7 @@ def soc_sim(
         variables["TOP_MODULE"] = _hdl_identifier(top_module, "top_module")
     if fsdb:
         variables["FSDB"] = 1
-    return _make(module_dir, ["comp", "sim"], variables, timeout=600)
+    return _make(module_dir, ["comp", "sim"], variables, timeout=1800)
 
 
 @mcp.tool()
