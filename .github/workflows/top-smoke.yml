@@ -91,7 +91,7 @@ jobs:
           if [[ -n "${OT_SMOKE_PREBUILT_SIMV:-}" ]]; then
             simv_arg=(OT_SMOKE_PREBUILT_SIMV="$OT_SMOKE_PREBUILT_SIMV")
           fi
-          make sim \
+          make comp sim \
             MODULE="$MODULE" \
             SIMULATOR="$SIMULATOR" \
             TEST="$TEST" \
