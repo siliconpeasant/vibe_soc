@@ -1,0 +1,117 @@
+name: top-smoke
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/top-smoke.yml"
+      - "Makefile"
+      - "scripts/**"
+      - "chip/top/**"
+      - "ip/**"
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: "Simulation seed"
+        required: false
+        default: "1"
+      use_prebuilt_simv:
+        description: "Use chip/top prebuilt OpenTitan smoke simv"
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 18 * * *"
+
+concurrency:
+  group: top-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chip-top-smoke:
+    name: chip/top UART smoke
+    runs-on: [self-hosted, linux, eda, vcs]
+    timeout-minutes: 90
+    env:
+      MODULE: chip/top
+      SIMULATOR: vcs
+      LINT_TOOL: none
+      TEST: chip_sw_uart_smoketest
+      SEED: ${{ inputs.seed || '1' }}
+      FSDB: "0"
+      OT_USE_PREBUILT_SIMV: ${{ inputs.use_prebuilt_simv && '1' || vars.OT_USE_PREBUILT_SIMV || '0' }}
+      OT_SMOKE_PREBUILT_SIMV: ${{ vars.OT_SMOKE_PREBUILT_SIMV }}
+      CI_SITE_ENV_SCRIPT: ${{ vars.CI_SITE_ENV_SCRIPT }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          clean: true
+          fetch-depth: 1
+
+      - name: Show runner context
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "runner=$(hostname)"
+          echo "workspace=$GITHUB_WORKSPACE"
+          echo "module=$MODULE test=$TEST seed=$SEED simulator=$SIMULATOR"
+          echo "OT_USE_PREBUILT_SIMV=$OT_USE_PREBUILT_SIMV"
+
+      - name: Check EDA environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CI_SITE_ENV_SCRIPT:-}" ]]; then
+            test -f "$CI_SITE_ENV_SCRIPT"
+            # shellcheck disable=SC1090
+            source "$CI_SITE_ENV_SCRIPT"
+          fi
+          make check-env SIMULATOR="$SIMULATOR" LINT_TOOL="$LINT_TOOL"
+
+      - name: Validate chip/top filelist
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CI_SITE_ENV_SCRIPT:-}" ]]; then
+            # shellcheck disable=SC1090
+            source "$CI_SITE_ENV_SCRIPT"
+          fi
+          make validate-flist MODULE="$MODULE" SIMULATOR="$SIMULATOR" TEST="$TEST"
+
+      - name: Run chip/top smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CI_SITE_ENV_SCRIPT:-}" ]]; then
+            # shellcheck disable=SC1090
+            source "$CI_SITE_ENV_SCRIPT"
+          fi
+          simv_arg=()
+          if [[ -n "${OT_SMOKE_PREBUILT_SIMV:-}" ]]; then
+            simv_arg=(OT_SMOKE_PREBUILT_SIMV="$OT_SMOKE_PREBUILT_SIMV")
+          fi
+          make sim \
+            MODULE="$MODULE" \
+            SIMULATOR="$SIMULATOR" \
+            TEST="$TEST" \
+            SEED="$SEED" \
+            FSDB="$FSDB" \
+            OT_USE_PREBUILT_SIMV="$OT_USE_PREBUILT_SIMV" \
+            "${simv_arg[@]}"
+
+      - name: Upload smoke logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chip-top-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: ignore
+          retention-days: 14
+          path: |
+            chip/top/de/run/compile.log
+            chip/top/de/run/rtl.f
+            chip/top/dv/sim/chip_sw_uart_smoketest/compile.log
+            chip/top/dv/sim/chip_sw_uart_smoketest/elab.log
+            chip/top/dv/sim/chip_sw_uart_smoketest/sim.log
+            chip/top/dv/sim/chip_sw_uart_smoketest/dut.f
+            chip/top/dv/sim/chip_sw_uart_smoketest/dut.canonical.f
