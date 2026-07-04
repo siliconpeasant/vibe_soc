@@ -8,6 +8,11 @@ LM_LICENSE_FILE      := <port>@<general-license-host>
 # Optional DesignWare simulation model path:
 # VCS_DW_SIM_PATH    := /path/to/dw/sim_ver
 
+# Optional Design Compiler Sky130HD setup. Keep real local paths in scripts/local.mk.
+# Prefer a Synopsys .db generated from Liberty with Library Compiler.
+# SKY130HD_DC_DB  := <path-to-sky130_fd_sc_hd__tt_025C_1v80.db>
+# SKY130HD_DC_LIB := <path-to-sky130_fd_sc_hd__tt_025C_1v80.lib>
+
 # Optional OpenROAD-flow-scripts integration. Keep real local paths in scripts/local.mk.
 OPENROAD_FLOW_HOME ?= <path-to-OpenROAD-flow-scripts>/flow
 OPENROAD_EXE       ?= <path-to-openroad>

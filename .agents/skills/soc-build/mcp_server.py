@@ -31,7 +31,9 @@ from mcp_runtime import run_command, run_python
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).parent / "scripts"
 SUPPORTED_SIMULATORS = {"iverilog", "vcs", "verilator", "xcelium"}
-SUPPORTED_LINT_TOOLS = {"iverilog", "vc_static", "verilator"}
+SUPPORTED_LINT_TOOLS = {"spyglass", "verilator"}
+SUPPORTED_CDC_TOOLS = {"spyglass"}
+SUPPORTED_SYN_TOOLS = {"yosys", "dc"}
 TEST_NAME_RE = re.compile(r"[A-Za-z0-9_.-]+")
 HDL_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_$]*")
 SEED_MATRIX_RE = re.compile(r"\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*")
@@ -75,6 +77,13 @@ def _simulator(value: str) -> str:
     if value not in SUPPORTED_SIMULATORS:
         choices = ", ".join(sorted(SUPPORTED_SIMULATORS))
         raise ValueError(f"unsupported simulator '{value}'; choose one of: {choices}")
+    return value
+
+
+def _syn_tool(value: str) -> str:
+    if value not in SUPPORTED_SYN_TOOLS:
+        choices = ", ".join(sorted(SUPPORTED_SYN_TOOLS))
+        raise ValueError(f"unsupported synthesis tool '{value}'; choose one of: {choices}")
     return value
 
 
@@ -243,7 +252,7 @@ def soc_lint(
 
     Args:
         module_dir: 包含 Makefile 的模块目录（如 chip/top 或 ip/digital/xxx）
-        lint_tool: lint 工具，可选 verilator / iverilog / vc_static
+        lint_tool: lint 工具，可选 verilator / spyglass
         rtl_top: 可选 RTL 顶层模块名
         gui: 是否在 lint 完成后打开图形界面
     """
@@ -257,6 +266,33 @@ def soc_lint(
         variables["GUI"] = 1
         variables.update(_detect_gui_variables())
     return _make(module_dir, ["lint"], variables, timeout=120)
+
+
+@mcp.tool()
+def soc_cdc(
+    module_dir: str,
+    cdc_tool: str = "spyglass",
+    rtl_top: str = "",
+    gui: bool = False,
+) -> str:
+    """对指定模块执行 CDC 检查。
+
+    Args:
+        module_dir: 包含 Makefile 的模块目录（如 chip/top 或 ip/digital/xxx）
+        cdc_tool: CDC 工具；当前 MCP 只允许 spyglass
+        rtl_top: 可选 RTL 顶层模块名
+        gui: 是否在 CDC 完成后打开图形界面
+    """
+    if cdc_tool not in SUPPORTED_CDC_TOOLS:
+        choices = ", ".join(sorted(SUPPORTED_CDC_TOOLS))
+        raise ValueError(f"cdc_tool must be one of: {choices}")
+    variables = {"CDC_TOOL": cdc_tool}
+    if rtl_top:
+        variables["RTL_TOP"] = _hdl_identifier(rtl_top, "rtl_top")
+    if gui:
+        variables["GUI"] = 1
+        variables.update(_detect_gui_variables())
+    return _make(module_dir, ["cdc"], variables, timeout=1200)
 
 
 @mcp.tool()
@@ -384,14 +420,15 @@ def soc_coverage(
 
 
 @mcp.tool()
-def soc_syn(module_dir: str, rtl_top: str = "") -> str:
-    """通过项目 Makefile 对指定 RTL 顶层执行 Yosys 综合。
+def soc_syn(module_dir: str, rtl_top: str = "", syn_tool: str = "yosys") -> str:
+    """通过项目 Makefile 对指定 RTL 顶层执行综合。
 
     Args:
         module_dir: 包含 Makefile 和 syn 目标的模块目录
         rtl_top: 可选的 RTL 顶层模块名
+        syn_tool: 综合工具，可选 yosys / dc
     """
-    variables: dict[str, str | int] = {}
+    variables: dict[str, str | int] = {"SYN_TOOL": _syn_tool(syn_tool)}
     if rtl_top:
         variables["RTL_TOP"] = _hdl_identifier(rtl_top, "rtl_top")
     return _make(module_dir, ["syn"], variables, timeout=1200)

@@ -1,0 +1,1530 @@
+{
+  "run_stem": "modelrepair_findings10000_20260704_130000",
+  "created_at": "2026-07-04T14:31:35",
+  "method": "strict live no-kb vs prompt-contained with-kb comparison; shared broken RTL, isolated work branches; each round patches only concrete current SpyGlass file/line/tag findings and reruns SpyGlass until 0 errors / 0 warnings or concrete blocker",
+  "profile": "realistic",
+  "seed": 20260703,
+  "variants": 1260,
+  "holdouts": 0,
+  "per_round_budget": "100-200 modules or 1200-2500 changed lines, unless the current report has fewer local fixes left",
+  "run_root": "ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703",
+  "branches": {
+    "no_kb": "ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work",
+    "with_kb": "ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work"
+  },
+  "baseline_spyglass_summary": {
+    "errors": 4781,
+    "warnings": 5333,
+    "infos": 7,
+    "total_messages": 10121
+  },
+  "baseline_parser": {
+    "no_kb_work": {
+      "report": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/run/lint_spyglass/moresimple.rpt",
+      "format": "spyglass",
+      "unique_tags": 29,
+      "total_violations": 9962,
+      "total_findings": 9969,
+      "info_messages": 7,
+      "tags": [
+        {
+          "tag": "sim_race02",
+          "count": 1264,
+          "severities": {
+            "warning": 1264
+          },
+          "examples": [
+            {
+              "tag": "sim_race02",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12692",
+              "description": "Write-Write Race for signal y (assignments on line 12692 and line 12684)"
+            },
+            {
+              "tag": "sim_race02",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12694",
+              "description": "Write-Write Race for signal y (assignments on line 12694 and line 12684)"
+            },
+            {
+              "tag": "sim_race02",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12695",
+              "description": "Write-Write Race for signal y (assignments on line 12695 and line 12684)"
+            }
+          ]
+        },
+        {
+          "tag": "W240",
+          "count": 1263,
+          "severities": {
+            "warning": 1262,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "W240",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12618",
+              "description": "Input 'sel[1:0]' declared but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0000@lint_lab_live_variant_0000']"
+            },
+            {
+              "tag": "W240",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12646",
+              "description": "Input 'sel[1:0]' declared but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "W240",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12668",
+              "description": "Input 'rst_n' declared but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0002@lint_lab_live_variant_0002']"
+            }
+          ]
+        },
+        {
+          "tag": "W528",
+          "count": 932,
+          "severities": {
+            "warning": 931,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "W528",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12662",
+              "description": "Variable 'signed_narrow_0001_1[3:0]' set but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "W528",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12663",
+              "description": "Variable 'tiny_sum_0001_1[2:0]' set but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "W528",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12721",
+              "description": "Variable 'unused_inverted_0003_0' set but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0003@lint_lab_live_variant_0003']"
+            }
+          ]
+        },
+        {
+          "tag": "ErrorAnalyzeBBox",
+          "count": 714,
+          "severities": {
+            "error": 714
+          },
+          "examples": [
+            {
+              "tag": "ErrorAnalyzeBBox",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1334",
+              "description": "UnsynthesizedDU: Design Unit 'lint_lab_live_variant_0008' (elaborated name 'lint_lab_live_variant_0008') not synthesizable; SYNTH_5191 error(s) found during synthesis"
+            },
+            {
+              "tag": "ErrorAnalyzeBBox",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1438",
+              "description": "UnsynthesizedDU: Design Unit 'lint_lab_live_variant_0021' (elaborated name 'lint_lab_live_variant_0021') not synthesizable; SYNTH_5191 error(s) found during synthesis"
+            },
+            {
+              "tag": "ErrorAnalyzeBBox",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1470",
+              "description": "UnsynthesizedDU: Design Unit 'lint_lab_live_variant_0025' (elaborated name 'lint_lab_live_variant_0025') not synthesizable; SYNTH_5191 error(s) found during synthesis"
+            }
+          ]
+        },
+        {
+          "tag": "W415",
+          "count": 639,
+          "severities": {
+            "error": 638,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "W415",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1300",
+              "description": "Signal 'lint_lab_strict_live.variant_y_0003[7:0]' has multiple simultaneous drivers"
+            },
+            {
+              "tag": "W415",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1308",
+              "description": "Signal 'lint_lab_strict_live.variant_y_0004[7:0]' has multiple simultaneous drivers"
+            },
+            {
+              "tag": "W415",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1332",
+              "description": "Signal 'lint_lab_strict_live.variant_y_0007[7:0]' has multiple simultaneous drivers"
+            }
+          ]
+        },
+        {
+          "tag": "NoAssignX-ML",
+          "count": 521,
+          "severities": {
+            "warning": 521
+          },
+          "examples": [
+            {
+              "tag": "NoAssignX-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12694",
+              "description": "RHS of the assignment contains 'X'"
+            },
+            {
+              "tag": "NoAssignX-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12756",
+              "description": "RHS of the assignment contains 'X'"
+            },
+            {
+              "tag": "NoAssignX-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12802",
+              "description": "RHS of the assignment contains 'X'"
+            }
+          ]
+        },
+        {
+          "tag": "W398",
+          "count": 385,
+          "severities": {
+            "error": 385
+          },
+          "examples": [
+            {
+              "tag": "W398",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12697",
+              "description": "Case '3'b1?1' covered more than once at '3'b1z1'"
+            },
+            {
+              "tag": "W398",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12759",
+              "description": "Case '3'b1?1' covered more than once at '3'b1z1'"
+            },
+            {
+              "tag": "W398",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12908",
+              "description": "Case '3'b1?1' covered more than once at '3'b1z1'"
+            }
+          ]
+        },
+        {
+          "tag": "InferLatch",
+          "count": 314,
+          "severities": {
+            "error": 314
+          },
+          "examples": [
+            {
+              "tag": "InferLatch",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12855",
+              "description": "Latch inferred for signal 'sticky_0007_3' in module 'lint_lab_live_variant_0007'"
+            },
+            {
+              "tag": "InferLatch",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12859",
+              "description": "Latch inferred for signal 'y[7:0]' in module 'lint_lab_live_variant_0007'"
+            },
+            {
+              "tag": "InferLatch",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12927",
+              "description": "Latch inferred for signal 'sticky_0009_3' in module 'lint_lab_live_variant_0009'"
+            }
+          ]
+        },
+        {
+          "tag": "W110",
+          "count": 314,
+          "severities": {
+            "error": 314
+          },
+          "examples": [
+            {
+              "tag": "W110",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12918",
+              "description": "Incompatible width for port 'din'(width 4 in module 'lint_lab_live_leaf_0009_2') on instance 'u_leaf_2'(actual width 8) [Hierarchy: ':lint_lab_strict_live:u_variant_0009@lint_lab_live_variant_0009']"
+            },
+            {
+              "tag": "W110",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12980",
+              "description": "Incompatible width for port 'din'(width 4 in module 'lint_lab_live_leaf_0010_3') on instance 'u_leaf_3'(actual width 8) [Hierarchy: ':lint_lab_strict_live:u_variant_0010@lint_lab_live_variant_0010']"
+            },
+            {
+              "tag": "W110",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13022",
+              "description": "Incompatible width for port 'din'(width 4 in module 'lint_lab_live_leaf_0011_1') on instance 'u_leaf_1'(actual width 8) [Hierarchy: ':lint_lab_strict_live:u_variant_0011@lint_lab_live_variant_0011']"
+            }
+          ]
+        },
+        {
+          "tag": "W287b",
+          "count": 314,
+          "severities": {
+            "warning": 314
+          },
+          "examples": [
+            {
+              "tag": "W287b",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12920",
+              "description": "Instance output port 'ready' is not connected"
+            },
+            {
+              "tag": "W287b",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12982",
+              "description": "Instance output port 'ready' is not connected"
+            },
+            {
+              "tag": "W287b",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13024",
+              "description": "Instance output port 'ready' is not connected"
+            }
+          ]
+        },
+        {
+          "tag": "W336",
+          "count": 314,
+          "severities": {
+            "error": 314
+          },
+          "examples": [
+            {
+              "tag": "W336",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12734",
+              "description": "Blocking assignment 'y = 8'h00;' used inside a 'FlipFlop' inferred sequential block"
+            },
+            {
+              "tag": "W336",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12736",
+              "description": "Blocking assignment 'y = b;' used inside a 'FlipFlop' inferred sequential block"
+            },
+            {
+              "tag": "W336",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12764",
+              "description": "Blocking assignment 'y = 8'h00;' used inside a 'FlipFlop' inferred sequential block"
+            }
+          ]
+        },
+        {
+          "tag": "ParamWidthMismatch-ML",
+          "count": 312,
+          "severities": {
+            "warning": 312
+          },
+          "examples": [
+            {
+              "tag": "ParamWidthMismatch-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12652",
+              "description": "Parameter 'BAD_PARAM_0001_1' width(4) does not match width(8) of value assigned[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "ParamWidthMismatch-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12718",
+              "description": "Parameter 'BAD_PARAM_0003_1' width(4) does not match width(8) of value assigned[Hierarchy: ':lint_lab_strict_live:u_variant_0003@lint_lab_live_variant_0003']"
+            },
+            {
+              "tag": "ParamWidthMismatch-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12751",
+              "description": "Parameter 'BAD_PARAM_0004_2' width(4) does not match width(8) of value assigned[Hierarchy: ':lint_lab_strict_live:u_variant_0004@lint_lab_live_variant_0004']"
+            }
+          ]
+        },
+        {
+          "tag": "W442a",
+          "count": 310,
+          "severities": {
+            "error": 310
+          },
+          "examples": [
+            {
+              "tag": "W442a",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12626",
+              "description": "Asynchronously reset/set always block has missing 'if' statement at the top level"
+            },
+            {
+              "tag": "W442a",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12701",
+              "description": "Asynchronously reset/set always block has missing 'if' statement at the top level"
+            },
+            {
+              "tag": "W442a",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12820",
+              "description": "Asynchronously reset/set always block has missing 'if' statement at the top level"
+            }
+          ]
+        },
+        {
+          "tag": "bothedges",
+          "count": 310,
+          "severities": {
+            "error": 310
+          },
+          "examples": [
+            {
+              "tag": "bothedges",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12625",
+              "description": "Both edges of the same variable ( clk ) are not allowed in the event control list"
+            },
+            {
+              "tag": "bothedges",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12700",
+              "description": "Both edges of the same variable ( clk ) are not allowed in the event control list"
+            },
+            {
+              "tag": "bothedges",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12819",
+              "description": "Both edges of the same variable ( clk ) are not allowed in the event control list"
+            }
+          ]
+        },
+        {
+          "tag": "W123",
+          "count": 308,
+          "severities": {
+            "error": 308
+          },
+          "examples": [
+            {
+              "tag": "W123",
+              "filename": "./lint_lab_strict_live_lint/lint/lint_rtl/spyglass_reports/lint/SignalUsageReport.rpt",
+              "linenumber": "0",
+              "description": "Please refer to 'SignalUsageReport.rpt' for details of violating bits"
+            },
+            {
+              "tag": "W123",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12723",
+              "description": "Variable 'floating_0003_0[7:0]' read but never set.[Hierarchy: ':lint_lab_strict_live:u_variant_0003@lint_lab_live_variant_0003']"
+            },
+            {
+              "tag": "W123",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12851",
+              "description": "Variable 'floating_0007_2[7:0]' read but never set.[Hierarchy: ':lint_lab_strict_live:u_variant_0007@lint_lab_live_variant_0007']"
+            }
+          ]
+        },
+        {
+          "tag": "STARC05-2.3.3.1",
+          "count": 275,
+          "severities": {
+            "error": 275
+          },
+          "examples": [
+            {
+              "tag": "STARC05-2.3.3.1",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12816",
+              "description": "Edges of multiple clocks used in the same always block.[Hierarchy: 'lint_lab_live_variant_0006']"
+            },
+            {
+              "tag": "STARC05-2.3.3.1",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12880",
+              "description": "Edges of multiple clocks used in the same always block.[Hierarchy: 'lint_lab_live_variant_0008']"
+            },
+            {
+              "tag": "STARC05-2.3.3.1",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13108",
+              "description": "Edges of multiple clocks used in the same always block.[Hierarchy: 'lint_lab_live_variant_0013']"
+            }
+          ]
+        },
+        {
+          "tag": "W422",
+          "count": 275,
+          "severities": {
+            "error": 275
+          },
+          "examples": [
+            {
+              "tag": "W422",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12816",
+              "description": "Block might be un-synthesizable by some tool: event control has more than one clock"
+            },
+            {
+              "tag": "W422",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12880",
+              "description": "Block might be un-synthesizable by some tool: event control has more than one clock"
+            },
+            {
+              "tag": "W422",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13108",
+              "description": "Block might be un-synthesizable by some tool: event control has more than one clock"
+            }
+          ]
+        },
+        {
+          "tag": "mixedsenselist",
+          "count": 250,
+          "severities": {
+            "error": 250
+          },
+          "examples": [
+            {
+              "tag": "mixedsenselist",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12654",
+              "description": "Mixed conditions in sensitivity list may not be synthesizable"
+            },
+            {
+              "tag": "mixedsenselist",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12791",
+              "description": "Mixed conditions in sensitivity list may not be synthesizable"
+            },
+            {
+              "tag": "mixedsenselist",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13069",
+              "description": "Mixed conditions in sensitivity list may not be synthesizable"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5191",
+          "count": 194,
+          "severities": {
+            "error": 194
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5191",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12881",
+              "description": "lint_lab_live_variant_0008 -> Invalid condition of if statement inside asynchronous sequential always block"
+            },
+            {
+              "tag": "SYNTH_5191",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13381",
+              "description": "lint_lab_live_variant_0021 -> Invalid condition of if statement inside asynchronous sequential always block"
+            },
+            {
+              "tag": "SYNTH_5191",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13519",
+              "description": "lint_lab_live_variant_0025 -> Invalid condition of if statement inside asynchronous sequential always block"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5035",
+          "count": 173,
+          "severities": {
+            "warning": 173
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5035",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12759",
+              "description": "lint_lab_live_variant_0004 -> Case 3'b1?1 has already been covered. Now ignoring it"
+            },
+            {
+              "tag": "SYNTH_5035",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12908",
+              "description": "lint_lab_live_variant_0009 -> Case 3'b1?1 has already been covered. Now ignoring it"
+            },
+            {
+              "tag": "SYNTH_5035",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13145",
+              "description": "lint_lab_live_variant_0014 -> Case 3'b1?1 has already been covered. Now ignoring it"
+            }
+          ]
+        },
+        {
+          "tag": "CombLoop",
+          "count": 163,
+          "severities": {
+            "error": 162,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "CombLoop",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13015",
+              "description": "Combinational loop exists at 'lint_lab_strict_live.u_variant_0011.loop_a_0011_0-lint_lab_strict_live.u_variant_0011.loop_b_0011_0'"
+            },
+            {
+              "tag": "CombLoop",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13184",
+              "description": "Combinational loop exists at 'lint_lab_strict_live.u_variant_0015.loop_a_0015_1-lint_lab_strict_live.u_variant_0015.loop_b_0015_1'"
+            },
+            {
+              "tag": "CombLoop",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13411",
+              "description": "Combinational loop exists at 'lint_lab_strict_live.u_variant_0022.loop_a_0022_0-lint_lab_strict_live.u_variant_0022.loop_b_0022_0'"
+            }
+          ]
+        },
+        {
+          "tag": "W337",
+          "count": 159,
+          "severities": {
+            "warning": 159
+          },
+          "examples": [
+            {
+              "tag": "W337",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12694",
+              "description": "Illegal value as case item"
+            },
+            {
+              "tag": "W337",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12756",
+              "description": "Illegal value as case item"
+            },
+            {
+              "tag": "W337",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12905",
+              "description": "Illegal value as case item"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5143",
+          "count": 141,
+          "severities": {
+            "warning": 141
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5143",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12961",
+              "description": "lint_lab_live_variant_0010 -> Initial block is ignored for synthesis"
+            },
+            {
+              "tag": "SYNTH_5143",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13339",
+              "description": "lint_lab_live_variant_0020 -> Initial block is ignored for synthesis"
+            },
+            {
+              "tag": "SYNTH_5143",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13674",
+              "description": "lint_lab_live_variant_0029 -> Initial block is ignored for synthesis"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5034",
+          "count": 103,
+          "severities": {
+            "warning": 103
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5034",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12756",
+              "description": "lint_lab_live_variant_0004 -> Comparison with don't care or tristate will be always false"
+            },
+            {
+              "tag": "SYNTH_5034",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12905",
+              "description": "lint_lab_live_variant_0009 -> Comparison with don't care or tristate will be always false"
+            },
+            {
+              "tag": "SYNTH_5034",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13142",
+              "description": "lint_lab_live_variant_0014 -> Comparison with don't care or tristate will be always false"
+            }
+          ]
+        },
+        {
+          "tag": "UndrivenInTerm-ML",
+          "count": 18,
+          "severities": {
+            "error": 18
+          },
+          "examples": [
+            {
+              "tag": "UndrivenInTerm-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "11634",
+              "description": "Detected undriven input terminal lint_lab_strict_live.variant_y_0284[0]"
+            },
+            {
+              "tag": "UndrivenInTerm-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "11644",
+              "description": "Detected undriven input terminal lint_lab_strict_live.variant_y_0294[0]"
+            },
+            {
+              "tag": "UndrivenInTerm-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "11660",
+              "description": "Detected undriven input terminal lint_lab_strict_live.variant_y_0310[7:0]"
+            }
+          ]
+        },
+        {
+          "tag": "CheckDelayTimescale-ML",
+          "count": 1,
+          "severities": {
+            "warning": 1
+          },
+          "examples": [
+            {
+              "tag": "CheckDelayTimescale-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12803",
+              "description": "Delay used without timescale compiler directive"
+            }
+          ]
+        },
+        {
+          "tag": "DetectTopDesignUnits",
+          "count": 1,
+          "severities": {
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "DetectTopDesignUnits",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1",
+              "description": "Module lint_lab_strict_live is a top level design unit"
+            }
+          ]
+        },
+        {
+          "tag": "ElabSummary",
+          "count": 1,
+          "severities": {
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "ElabSummary",
+              "filename": "./lint_lab_strict_live_lint/lint/lint_rtl/spyglass_reports/SpyGlass/elab_summary.rpt",
+              "linenumber": "0",
+              "description": "Please refer file './lint_lab_strict_live_lint/lint/lint_rtl/spyglass_reports/SpyGlass/elab_summary.rpt' for elab summary report"
+            }
+          ]
+        },
+        {
+          "tag": "checkCMD_ignore01",
+          "count": 1,
+          "severities": {
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "checkCMD_ignore01",
+              "filename": "N.A.",
+              "linenumber": "0",
+              "description": "Option 'enableSV' ignored as another option(s) 'enableSV09' have been specified"
+            }
+          ]
+        }
+      ]
+    },
+    "with_kb_work": {
+      "report": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/run/lint_spyglass/moresimple.rpt",
+      "format": "spyglass",
+      "unique_tags": 29,
+      "total_violations": 9962,
+      "total_findings": 9969,
+      "info_messages": 7,
+      "tags": [
+        {
+          "tag": "sim_race02",
+          "count": 1264,
+          "severities": {
+            "warning": 1264
+          },
+          "examples": [
+            {
+              "tag": "sim_race02",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12692",
+              "description": "Write-Write Race for signal y (assignments on line 12692 and line 12684)"
+            },
+            {
+              "tag": "sim_race02",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12694",
+              "description": "Write-Write Race for signal y (assignments on line 12694 and line 12684)"
+            },
+            {
+              "tag": "sim_race02",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12695",
+              "description": "Write-Write Race for signal y (assignments on line 12695 and line 12684)"
+            }
+          ]
+        },
+        {
+          "tag": "W240",
+          "count": 1263,
+          "severities": {
+            "warning": 1262,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "W240",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12618",
+              "description": "Input 'sel[1:0]' declared but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0000@lint_lab_live_variant_0000']"
+            },
+            {
+              "tag": "W240",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12646",
+              "description": "Input 'sel[1:0]' declared but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "W240",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12668",
+              "description": "Input 'rst_n' declared but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0002@lint_lab_live_variant_0002']"
+            }
+          ]
+        },
+        {
+          "tag": "W528",
+          "count": 932,
+          "severities": {
+            "warning": 931,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "W528",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12662",
+              "description": "Variable 'signed_narrow_0001_1[3:0]' set but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "W528",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12663",
+              "description": "Variable 'tiny_sum_0001_1[2:0]' set but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "W528",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12721",
+              "description": "Variable 'unused_inverted_0003_0' set but not read.[Hierarchy: ':lint_lab_strict_live:u_variant_0003@lint_lab_live_variant_0003']"
+            }
+          ]
+        },
+        {
+          "tag": "ErrorAnalyzeBBox",
+          "count": 714,
+          "severities": {
+            "error": 714
+          },
+          "examples": [
+            {
+              "tag": "ErrorAnalyzeBBox",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1334",
+              "description": "UnsynthesizedDU: Design Unit 'lint_lab_live_variant_0008' (elaborated name 'lint_lab_live_variant_0008') not synthesizable; SYNTH_5191 error(s) found during synthesis"
+            },
+            {
+              "tag": "ErrorAnalyzeBBox",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1438",
+              "description": "UnsynthesizedDU: Design Unit 'lint_lab_live_variant_0021' (elaborated name 'lint_lab_live_variant_0021') not synthesizable; SYNTH_5191 error(s) found during synthesis"
+            },
+            {
+              "tag": "ErrorAnalyzeBBox",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1470",
+              "description": "UnsynthesizedDU: Design Unit 'lint_lab_live_variant_0025' (elaborated name 'lint_lab_live_variant_0025') not synthesizable; SYNTH_5191 error(s) found during synthesis"
+            }
+          ]
+        },
+        {
+          "tag": "W415",
+          "count": 639,
+          "severities": {
+            "error": 638,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "W415",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1300",
+              "description": "Signal 'lint_lab_strict_live.variant_y_0003[7:0]' has multiple simultaneous drivers"
+            },
+            {
+              "tag": "W415",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1308",
+              "description": "Signal 'lint_lab_strict_live.variant_y_0004[7:0]' has multiple simultaneous drivers"
+            },
+            {
+              "tag": "W415",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1332",
+              "description": "Signal 'lint_lab_strict_live.variant_y_0007[7:0]' has multiple simultaneous drivers"
+            }
+          ]
+        },
+        {
+          "tag": "NoAssignX-ML",
+          "count": 521,
+          "severities": {
+            "warning": 521
+          },
+          "examples": [
+            {
+              "tag": "NoAssignX-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12694",
+              "description": "RHS of the assignment contains 'X'"
+            },
+            {
+              "tag": "NoAssignX-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12756",
+              "description": "RHS of the assignment contains 'X'"
+            },
+            {
+              "tag": "NoAssignX-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12802",
+              "description": "RHS of the assignment contains 'X'"
+            }
+          ]
+        },
+        {
+          "tag": "W398",
+          "count": 385,
+          "severities": {
+            "error": 385
+          },
+          "examples": [
+            {
+              "tag": "W398",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12697",
+              "description": "Case '3'b1?1' covered more than once at '3'b1z1'"
+            },
+            {
+              "tag": "W398",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12759",
+              "description": "Case '3'b1?1' covered more than once at '3'b1z1'"
+            },
+            {
+              "tag": "W398",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12908",
+              "description": "Case '3'b1?1' covered more than once at '3'b1z1'"
+            }
+          ]
+        },
+        {
+          "tag": "InferLatch",
+          "count": 314,
+          "severities": {
+            "error": 314
+          },
+          "examples": [
+            {
+              "tag": "InferLatch",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12855",
+              "description": "Latch inferred for signal 'sticky_0007_3' in module 'lint_lab_live_variant_0007'"
+            },
+            {
+              "tag": "InferLatch",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12859",
+              "description": "Latch inferred for signal 'y[7:0]' in module 'lint_lab_live_variant_0007'"
+            },
+            {
+              "tag": "InferLatch",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12927",
+              "description": "Latch inferred for signal 'sticky_0009_3' in module 'lint_lab_live_variant_0009'"
+            }
+          ]
+        },
+        {
+          "tag": "W110",
+          "count": 314,
+          "severities": {
+            "error": 314
+          },
+          "examples": [
+            {
+              "tag": "W110",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12918",
+              "description": "Incompatible width for port 'din'(width 4 in module 'lint_lab_live_leaf_0009_2') on instance 'u_leaf_2'(actual width 8) [Hierarchy: ':lint_lab_strict_live:u_variant_0009@lint_lab_live_variant_0009']"
+            },
+            {
+              "tag": "W110",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12980",
+              "description": "Incompatible width for port 'din'(width 4 in module 'lint_lab_live_leaf_0010_3') on instance 'u_leaf_3'(actual width 8) [Hierarchy: ':lint_lab_strict_live:u_variant_0010@lint_lab_live_variant_0010']"
+            },
+            {
+              "tag": "W110",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13022",
+              "description": "Incompatible width for port 'din'(width 4 in module 'lint_lab_live_leaf_0011_1') on instance 'u_leaf_1'(actual width 8) [Hierarchy: ':lint_lab_strict_live:u_variant_0011@lint_lab_live_variant_0011']"
+            }
+          ]
+        },
+        {
+          "tag": "W287b",
+          "count": 314,
+          "severities": {
+            "warning": 314
+          },
+          "examples": [
+            {
+              "tag": "W287b",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12920",
+              "description": "Instance output port 'ready' is not connected"
+            },
+            {
+              "tag": "W287b",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12982",
+              "description": "Instance output port 'ready' is not connected"
+            },
+            {
+              "tag": "W287b",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13024",
+              "description": "Instance output port 'ready' is not connected"
+            }
+          ]
+        },
+        {
+          "tag": "W336",
+          "count": 314,
+          "severities": {
+            "error": 314
+          },
+          "examples": [
+            {
+              "tag": "W336",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12734",
+              "description": "Blocking assignment 'y = 8'h00;' used inside a 'FlipFlop' inferred sequential block"
+            },
+            {
+              "tag": "W336",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12736",
+              "description": "Blocking assignment 'y = b;' used inside a 'FlipFlop' inferred sequential block"
+            },
+            {
+              "tag": "W336",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12764",
+              "description": "Blocking assignment 'y = 8'h00;' used inside a 'FlipFlop' inferred sequential block"
+            }
+          ]
+        },
+        {
+          "tag": "ParamWidthMismatch-ML",
+          "count": 312,
+          "severities": {
+            "warning": 312
+          },
+          "examples": [
+            {
+              "tag": "ParamWidthMismatch-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12652",
+              "description": "Parameter 'BAD_PARAM_0001_1' width(4) does not match width(8) of value assigned[Hierarchy: ':lint_lab_strict_live:u_variant_0001@lint_lab_live_variant_0001']"
+            },
+            {
+              "tag": "ParamWidthMismatch-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12718",
+              "description": "Parameter 'BAD_PARAM_0003_1' width(4) does not match width(8) of value assigned[Hierarchy: ':lint_lab_strict_live:u_variant_0003@lint_lab_live_variant_0003']"
+            },
+            {
+              "tag": "ParamWidthMismatch-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12751",
+              "description": "Parameter 'BAD_PARAM_0004_2' width(4) does not match width(8) of value assigned[Hierarchy: ':lint_lab_strict_live:u_variant_0004@lint_lab_live_variant_0004']"
+            }
+          ]
+        },
+        {
+          "tag": "W442a",
+          "count": 310,
+          "severities": {
+            "error": 310
+          },
+          "examples": [
+            {
+              "tag": "W442a",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12626",
+              "description": "Asynchronously reset/set always block has missing 'if' statement at the top level"
+            },
+            {
+              "tag": "W442a",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12701",
+              "description": "Asynchronously reset/set always block has missing 'if' statement at the top level"
+            },
+            {
+              "tag": "W442a",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12820",
+              "description": "Asynchronously reset/set always block has missing 'if' statement at the top level"
+            }
+          ]
+        },
+        {
+          "tag": "bothedges",
+          "count": 310,
+          "severities": {
+            "error": 310
+          },
+          "examples": [
+            {
+              "tag": "bothedges",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12625",
+              "description": "Both edges of the same variable ( clk ) are not allowed in the event control list"
+            },
+            {
+              "tag": "bothedges",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12700",
+              "description": "Both edges of the same variable ( clk ) are not allowed in the event control list"
+            },
+            {
+              "tag": "bothedges",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12819",
+              "description": "Both edges of the same variable ( clk ) are not allowed in the event control list"
+            }
+          ]
+        },
+        {
+          "tag": "W123",
+          "count": 308,
+          "severities": {
+            "error": 308
+          },
+          "examples": [
+            {
+              "tag": "W123",
+              "filename": "./lint_lab_strict_live_lint/lint/lint_rtl/spyglass_reports/lint/SignalUsageReport.rpt",
+              "linenumber": "0",
+              "description": "Please refer to 'SignalUsageReport.rpt' for details of violating bits"
+            },
+            {
+              "tag": "W123",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12723",
+              "description": "Variable 'floating_0003_0[7:0]' read but never set.[Hierarchy: ':lint_lab_strict_live:u_variant_0003@lint_lab_live_variant_0003']"
+            },
+            {
+              "tag": "W123",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12851",
+              "description": "Variable 'floating_0007_2[7:0]' read but never set.[Hierarchy: ':lint_lab_strict_live:u_variant_0007@lint_lab_live_variant_0007']"
+            }
+          ]
+        },
+        {
+          "tag": "STARC05-2.3.3.1",
+          "count": 275,
+          "severities": {
+            "error": 275
+          },
+          "examples": [
+            {
+              "tag": "STARC05-2.3.3.1",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12816",
+              "description": "Edges of multiple clocks used in the same always block.[Hierarchy: 'lint_lab_live_variant_0006']"
+            },
+            {
+              "tag": "STARC05-2.3.3.1",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12880",
+              "description": "Edges of multiple clocks used in the same always block.[Hierarchy: 'lint_lab_live_variant_0008']"
+            },
+            {
+              "tag": "STARC05-2.3.3.1",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13108",
+              "description": "Edges of multiple clocks used in the same always block.[Hierarchy: 'lint_lab_live_variant_0013']"
+            }
+          ]
+        },
+        {
+          "tag": "W422",
+          "count": 275,
+          "severities": {
+            "error": 275
+          },
+          "examples": [
+            {
+              "tag": "W422",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12816",
+              "description": "Block might be un-synthesizable by some tool: event control has more than one clock"
+            },
+            {
+              "tag": "W422",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12880",
+              "description": "Block might be un-synthesizable by some tool: event control has more than one clock"
+            },
+            {
+              "tag": "W422",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13108",
+              "description": "Block might be un-synthesizable by some tool: event control has more than one clock"
+            }
+          ]
+        },
+        {
+          "tag": "mixedsenselist",
+          "count": 250,
+          "severities": {
+            "error": 250
+          },
+          "examples": [
+            {
+              "tag": "mixedsenselist",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12654",
+              "description": "Mixed conditions in sensitivity list may not be synthesizable"
+            },
+            {
+              "tag": "mixedsenselist",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12791",
+              "description": "Mixed conditions in sensitivity list may not be synthesizable"
+            },
+            {
+              "tag": "mixedsenselist",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13069",
+              "description": "Mixed conditions in sensitivity list may not be synthesizable"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5191",
+          "count": 194,
+          "severities": {
+            "error": 194
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5191",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12881",
+              "description": "lint_lab_live_variant_0008 -> Invalid condition of if statement inside asynchronous sequential always block"
+            },
+            {
+              "tag": "SYNTH_5191",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13381",
+              "description": "lint_lab_live_variant_0021 -> Invalid condition of if statement inside asynchronous sequential always block"
+            },
+            {
+              "tag": "SYNTH_5191",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13519",
+              "description": "lint_lab_live_variant_0025 -> Invalid condition of if statement inside asynchronous sequential always block"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5035",
+          "count": 173,
+          "severities": {
+            "warning": 173
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5035",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12759",
+              "description": "lint_lab_live_variant_0004 -> Case 3'b1?1 has already been covered. Now ignoring it"
+            },
+            {
+              "tag": "SYNTH_5035",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12908",
+              "description": "lint_lab_live_variant_0009 -> Case 3'b1?1 has already been covered. Now ignoring it"
+            },
+            {
+              "tag": "SYNTH_5035",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13145",
+              "description": "lint_lab_live_variant_0014 -> Case 3'b1?1 has already been covered. Now ignoring it"
+            }
+          ]
+        },
+        {
+          "tag": "CombLoop",
+          "count": 163,
+          "severities": {
+            "error": 162,
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "CombLoop",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13015",
+              "description": "Combinational loop exists at 'lint_lab_strict_live.u_variant_0011.loop_a_0011_0-lint_lab_strict_live.u_variant_0011.loop_b_0011_0'"
+            },
+            {
+              "tag": "CombLoop",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13184",
+              "description": "Combinational loop exists at 'lint_lab_strict_live.u_variant_0015.loop_a_0015_1-lint_lab_strict_live.u_variant_0015.loop_b_0015_1'"
+            },
+            {
+              "tag": "CombLoop",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13411",
+              "description": "Combinational loop exists at 'lint_lab_strict_live.u_variant_0022.loop_a_0022_0-lint_lab_strict_live.u_variant_0022.loop_b_0022_0'"
+            }
+          ]
+        },
+        {
+          "tag": "W337",
+          "count": 159,
+          "severities": {
+            "warning": 159
+          },
+          "examples": [
+            {
+              "tag": "W337",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12694",
+              "description": "Illegal value as case item"
+            },
+            {
+              "tag": "W337",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12756",
+              "description": "Illegal value as case item"
+            },
+            {
+              "tag": "W337",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12905",
+              "description": "Illegal value as case item"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5143",
+          "count": 141,
+          "severities": {
+            "warning": 141
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5143",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12961",
+              "description": "lint_lab_live_variant_0010 -> Initial block is ignored for synthesis"
+            },
+            {
+              "tag": "SYNTH_5143",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13339",
+              "description": "lint_lab_live_variant_0020 -> Initial block is ignored for synthesis"
+            },
+            {
+              "tag": "SYNTH_5143",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13674",
+              "description": "lint_lab_live_variant_0029 -> Initial block is ignored for synthesis"
+            }
+          ]
+        },
+        {
+          "tag": "SYNTH_5034",
+          "count": 103,
+          "severities": {
+            "warning": 103
+          },
+          "examples": [
+            {
+              "tag": "SYNTH_5034",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12756",
+              "description": "lint_lab_live_variant_0004 -> Comparison with don't care or tristate will be always false"
+            },
+            {
+              "tag": "SYNTH_5034",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12905",
+              "description": "lint_lab_live_variant_0009 -> Comparison with don't care or tristate will be always false"
+            },
+            {
+              "tag": "SYNTH_5034",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "13142",
+              "description": "lint_lab_live_variant_0014 -> Comparison with don't care or tristate will be always false"
+            }
+          ]
+        },
+        {
+          "tag": "UndrivenInTerm-ML",
+          "count": 18,
+          "severities": {
+            "error": 18
+          },
+          "examples": [
+            {
+              "tag": "UndrivenInTerm-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "11634",
+              "description": "Detected undriven input terminal lint_lab_strict_live.variant_y_0284[0]"
+            },
+            {
+              "tag": "UndrivenInTerm-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "11644",
+              "description": "Detected undriven input terminal lint_lab_strict_live.variant_y_0294[0]"
+            },
+            {
+              "tag": "UndrivenInTerm-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "11660",
+              "description": "Detected undriven input terminal lint_lab_strict_live.variant_y_0310[7:0]"
+            }
+          ]
+        },
+        {
+          "tag": "CheckDelayTimescale-ML",
+          "count": 1,
+          "severities": {
+            "warning": 1
+          },
+          "examples": [
+            {
+              "tag": "CheckDelayTimescale-ML",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "12803",
+              "description": "Delay used without timescale compiler directive"
+            }
+          ]
+        },
+        {
+          "tag": "DetectTopDesignUnits",
+          "count": 1,
+          "severities": {
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "DetectTopDesignUnits",
+              "filename": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/rtl/lint_lab_strict_live.v",
+              "linenumber": "1",
+              "description": "Module lint_lab_strict_live is a top level design unit"
+            }
+          ]
+        },
+        {
+          "tag": "ElabSummary",
+          "count": 1,
+          "severities": {
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "ElabSummary",
+              "filename": "./lint_lab_strict_live_lint/lint/lint_rtl/spyglass_reports/SpyGlass/elab_summary.rpt",
+              "linenumber": "0",
+              "description": "Please refer file './lint_lab_strict_live_lint/lint/lint_rtl/spyglass_reports/SpyGlass/elab_summary.rpt' for elab summary report"
+            }
+          ]
+        },
+        {
+          "tag": "checkCMD_ignore01",
+          "count": 1,
+          "severities": {
+            "info": 1
+          },
+          "examples": [
+            {
+              "tag": "checkCMD_ignore01",
+              "filename": "N.A.",
+              "linenumber": "0",
+              "description": "Option 'enableSV' ignored as another option(s) 'enableSV09' have been specified"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "fairness_constraints": [
+    "Both arms start from identical broken RTL content copied into independent work branches.",
+    "Main session does not repair RTL and only schedules workers plus final aggregation.",
+    "No arm may use generator clean templates, base_level replacement, whole-module replacement, waivers, severity downgrades, or scripted repair helpers.",
+    "Each repair round must be derived from the current SpyGlass report file/line/tag findings in that arm only.",
+    "Round count ends naturally when SpyGlass reaches 0 errors / 0 warnings, not a fixed round count.",
+    "No-kb arm may not use KB/RAG/wiki/web/with-kb artifacts.",
+    "With-kb arm may only use the tag-specific KB excerpt embedded in its prompt."
+  ]
+}

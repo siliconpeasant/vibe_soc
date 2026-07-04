@@ -7,6 +7,9 @@
 !**/de/syn/**/
 !**/de/syn/*.sdc
 !**/de/syn/**/*.sdc
+!**/de/syn/dc_setup.tcl
+!**/de/syn/**/dc_setup.tcl
+**/de/syn/dc/**
 **/release/*/syn/**
 !**/release/*/syn/**/
 !**/release/*/syn/*.sdc
@@ -18,6 +21,7 @@ __pycache__/
 .pipeline_state.lock
 *.log
 *.out
+lc_output.txt
 *.vcd
 *.vpd
 obj_dir/

@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "module": "lint_lab",
+  "workspace": "ip/digital/lint_lab",
+  "mode": "single",
+  "created_at": "2026-06-29T08:52:25Z",
+  "last_updated": "2026-06-29T08:52:25Z",
+  "pipeline": {
+    "doc": {
+      "step_id": "doc",
+      "name": "设计文档编写",
+      "agent": "soc-doc-engineer",
+      "status": "pending",
+      "blocked_by": [],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    },
+    "rtl": {
+      "step_id": "rtl",
+      "name": "RTL设计与编码",
+      "agent": "soc-rtl-designer",
+      "status": "blocked",
+      "blocked_by": [
+        "doc"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    },
+    "verif": {
+      "step_id": "verif",
+      "name": "验证环境搭建与仿真",
+      "agent": "soc-verification-engineer",
+      "status": "blocked",
+      "blocked_by": [
+        "rtl"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    },
+    "syn": {
+      "step_id": "syn",
+      "name": "逻辑综合与时序分析",
+      "agent": "soc-synthesis-engineer",
+      "status": "blocked",
+      "blocked_by": [
+        "rtl"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": ""
+    }
+  },
+  "next_actions": [
+    {
+      "stage": "doc",
+      "action": "spawn soc-doc-engineer",
+      "reason": "dependencies [] satisfied"
+    }
+  ]
+}

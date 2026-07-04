@@ -28,6 +28,8 @@ FSDB      ?= 0
 PARTCOMP  ?= 1
 FORCE     ?= 0
 COVERAGE  ?= 0
+SYN_TOOL  ?= yosys
+SUPPORTED_SYN_TOOLS := yosys dc
 
 REGRESS_TESTS      ?= default
 REGRESS_SEEDS      ?= 1
@@ -60,33 +62,22 @@ VERILATOR_RTL_SRCS     ?= $(filter-out $(TB_FILES),$(FLIST_SRCS))
 VERILATOR_SV_FILES     ?= $(wildcard $(TB_PATH)/*_verilator.sv $(TB_PATH)/*_verilator.v)
 VERILATOR_CPP_FILES    ?= $(wildcard $(TB_PATH)/*_verilator.cc $(TB_PATH)/*_verilator.cpp $(MODULE_PATH)/dv/verif/*_verilator.cc $(MODULE_PATH)/dv/verif/*_verilator.cpp)
 VERILATOR_HARNESS      ?= $(if $(strip $(VERILATOR_CPP_FILES)),$(VERILATOR_CPP_FILES),$(PROJECT_ROOT)/scripts/verilator/generic_main.cpp)
-VC_STATIC_HOME    ?= /usr/Synopsys/vc_static/T-2022.06-SP2
-VC_STATIC_SHELL     ?= $(VC_STATIC_HOME)/bin/vc_static_shell
-VC_STATIC_FLAGS     ?= -mode64 -no_init
-VC_STATIC_GUI_FLAGS ?= $(if $(filter 1 true yes,$(VC_LINT_GUI)),-gui,)
 LINT_RUN_DIR        ?= $(RUN_DIR)/lint
 LINT_LOG          ?= $(LINT_RUN_DIR)/lint.log
-VC_STATIC_LOG     ?= $(LINT_RUN_DIR)/vc_static.log
-VC_STATIC_OUT_DIR ?= $(LINT_RUN_DIR)/vcst_rtdb
-VC_LINT_SCRIPT    ?= $(PROJECT_ROOT)/scripts/lint/vc_lint.tcl
-VC_LINT_RULES     ?= $(PROJECT_ROOT)/scripts/lint/vc_lint_rules.tcl
-VC_LINT_REPORT      ?= $(LINT_RUN_DIR)/vc_lint.rpt
-VC_LINT_GUI         ?= $(GUI)
-VC_LINT_ENABLE_TAGS ?= CONN_NET_UNDRIVEN CODING_WIDTH_UNEQ_SIZE CODING_LATCH_INFER SYN_STMT_UNSYNTH_FOREVER
 CDC_RUN_DIR         ?= $(RUN_DIR)/cdc
 CDC_LOG             ?= $(CDC_RUN_DIR)/cdc.log
-VC_CDC_LOG          ?= $(CDC_RUN_DIR)/vc_static.log
-VC_CDC_OUT_DIR      ?= $(CDC_RUN_DIR)/vcst_rtdb
-VC_CDC_SCRIPT       ?= $(PROJECT_ROOT)/scripts/cdc/vc_cdc.tcl
-VC_CDC_REPORT       ?= $(CDC_RUN_DIR)/report_cdc.detailed.log
-VC_CDC_SUMMARY      ?= $(CDC_RUN_DIR)/report_cdc.summary.log
-VC_CDC_GUI          ?= $(GUI)
-VC_CDC_CHECK_ARGS   ?=
 CDC_SDC             ?= $(firstword $(wildcard $(MODULE_PATH)/de/cdc/*.sdc $(MODULE_PATH)/de/syn/$(RTL_TOP).sdc $(MODULE_PATH)/de/syn/$(MODULE_NAME).sdc $(MODULE_PATH)/de/syn/final.sdc))
 CDC_TOOL            ?= spyglass
-SG_HOME             ?= $(VC_STATIC_HOME)/SG_COMPAT/SPYGLASS_HOME
+SG_HOME             ?= $(if $(SPYGLASS_HOME),$(SPYGLASS_HOME),/usr/Synopsys/spyglass/latest)
 SG_SHELL            ?= $(SG_HOME)/bin/sg_shell
-SG_CDC_GEN          ?= $(PROJECT_ROOT)/scripts/cdc/sg_cdc_gen.py
+SG_LINT_RUN_DIR     ?= $(RUN_DIR)/lint_spyglass
+SG_LINT_LOG         ?= $(SG_LINT_RUN_DIR)/sg_lint.log
+SG_LINT_REPORT      ?= $(SG_LINT_RUN_DIR)/moresimple.rpt
+SG_LINT_TCL         ?= $(PROJECT_ROOT)/scripts/lint/sg_lint.tcl
+SG_LINT_GOAL        ?= lint/lint_rtl
+SG_LINT_METHODOLOGY ?= $(SG_HOME)/GuideWare/latest/soc/rtl_handoff
+SG_LINT_PROJECT_DIR ?= $(SG_LINT_RUN_DIR)/$(RTL_TOP)_lint
+SG_CDC_TCL          ?= $(PROJECT_ROOT)/scripts/cdc/sg_cdc.tcl
 SG_CDC_GOAL         ?= cdc/cdc_verify_struct
 SG_CDC_METHODOLOGY  ?= $(SG_HOME)/GuideWare/latest/soc/rtl_handoff
 SG_CDC_SGDC         ?= $(firstword $(wildcard $(MODULE_PATH)/de/cdc/*.sgdc))
@@ -115,6 +106,25 @@ VCS_UVM_HOME    ?= $(VCS_HOME)/etc/uvm-1.2
 VCS_DW_SIM_PATH ?=
 XCELIUM_FLAGS   ?= -64bit -sv -access +rwc
 XCELIUM_SIM_FLAGS ?= -seed $(SEED)
+
+YOSYS ?= yosys
+DC_SHELL          ?= dc_shell
+DC_SCRIPT         ?= $(PROJECT_ROOT)/scripts/syn/dc_synth.tcl
+DC_SETUP_TCL      ?= $(firstword $(wildcard $(MODULE_PATH)/de/syn/dc_setup.tcl))
+DC_SDC            ?= $(firstword $(wildcard $(MODULE_PATH)/de/syn/$(RTL_TOP).sdc $(MODULE_PATH)/de/syn/$(MODULE_NAME).sdc $(MODULE_PATH)/de/syn/final.sdc))
+DC_RUN_DIR        ?= $(SYN_DIR)/dc
+DC_WORK_DIR       ?= $(DC_RUN_DIR)/work
+DC_REPORT_DIR     ?= $(DC_RUN_DIR)/reports
+DC_OUTPUT_DIR     ?= $(DC_RUN_DIR)/outputs
+SKY130HD_DC_DB    ?=
+SKY130HD_DC_LIB   ?=
+DC_TARGET_LIBRARY ?=
+DC_LINK_LIBRARY   ?=
+DC_SYMBOL_LIBRARY ?=
+DC_SEARCH_PATH    ?= $(RTL_PATH) $(MODULE_PATH) $(PROJECT_ROOT)
+DC_COMPILE_ULTRA  ?= 1
+DC_CLOCK_GATING   ?= 0
+DC_MAX_CORES      ?= 1
 
 USER_COMPILE_FLAGS ?=
 USER_SIM_FLAGS     ?=
@@ -145,4 +155,8 @@ export SNPSLMD_LICENSE_FILE LM_LICENSE_FILE CDS_LIC_FILE
 
 ifeq (,$(filter $(SIMULATOR),$(SUPPORTED_SIMULATORS)))
   $(error Unsupported SIMULATOR '$(SIMULATOR)'; choose one of: $(SUPPORTED_SIMULATORS))
+endif
+
+ifeq (,$(filter $(SYN_TOOL),$(SUPPORTED_SYN_TOOLS)))
+  $(error Unsupported SYN_TOOL '$(SYN_TOOL)'; choose one of: $(SUPPORTED_SYN_TOOLS))
 endif

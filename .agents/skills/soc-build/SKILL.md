@@ -52,23 +52,24 @@ Create structure with `soc_init`, `soc_add_chip`, or `soc_add_ip`. Do not create
 | `soc_add_chip` | add a chip module |
 | `soc_add_ip` | add a digital/third-party IP |
 | `soc_flist` | generate a Verilog/SystemVerilog filelist |
-| `soc_lint` | project-filelist lint; accepts `rtl_top` |
+| `soc_lint` | project-filelist lint with Verilator or SpyGlass; accepts `rtl_top` |
+| `soc_cdc` | SpyGlass CDC check; accepts `rtl_top` |
 | `soc_comp` | compile; accepts `top_module` |
 | `soc_sim` | compile then simulate; accepts simulator/test/seed/top |
 | `soc_regress` | test/seed matrix regression |
 | `soc_coverage` | single or regression coverage |
-| `soc_syn` | project-filelist Yosys synthesis; accepts `rtl_top` |
+| `soc_syn` | project-filelist synthesis; accepts `rtl_top` and `syn_tool` (`yosys` or `dc`) |
 | `soc_verdi` | open Verdi; `scope=de` loads RTL/source, `scope=dv` loads sim DB/waves |
 
 All names, simulators, tests, seeds, and job counts are validated. A nonzero process exit or timeout is an MCP tool error.
 
 ## Stage use
 
-- RTL agents call `soc_lint`; no direct Verilator/Icarus fallback.
+- RTL agents call `soc_lint`; MCP allows Verilator or SpyGlass lint only; no direct Verilator/Icarus fallback.
 - Verification agents call `soc_sim` or `soc_regress`; no direct Make/simulator fallback.
-- Synthesis agents call `soc_syn`; Yosys output is not STA evidence.
+- Synthesis agents call `soc_syn`; use `syn_tool=dc` for Design Compiler or `syn_tool=yosys` for structural checks. Yosys output is not STA evidence.
 - Commercial simulator/license work must remain in the registered MCP process.
-- VC Static lint is run in no-GUI mode by default because the local license set may lack the Verdi plugin features. If GUI is explicitly requested and plugin checkout fails, do not block lint triage on the GUI; use the generated text reports under `de/run/lint/`.
+- SpyGlass lint is run in no-GUI mode by default because local GUI/plugin availability may vary. If GUI is explicitly requested and plugin checkout fails, do not block lint triage on the GUI; use the generated text reports under `de/run/`.
 - When lint reports any real rule violation at error or warning severity, first query the local SoC AI knowledge base (`soc-ai-kb`) using the rule/tag name and diagnostic text. If the knowledge base has no relevant guidance, reason from the tool report, RTL, and local coding rules.
 - Lint fixes are review-gated: propose the root cause, supporting report lines, and a concrete patch plan to the user. Do not apply a final RTL fix, waiver, or severity downgrade until the user confirms. Temporary repro edits must be clearly marked and restored before any commit.
 

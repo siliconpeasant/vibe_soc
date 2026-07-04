@@ -1,0 +1,94 @@
+{
+  "run_stem": "modelrepair_findings10000_20260704_130000",
+  "created_at": "2026-07-04T15:21:17",
+  "method": "strict live no-kb vs prompt-contained with-kb comparison; shared broken RTL, isolated work branches; each round patches only concrete current SpyGlass file/line/tag findings and reruns SpyGlass until 0 errors / 0 warnings or concrete blocker",
+  "baseline": {
+    "errors": 4781,
+    "warnings": 5333,
+    "infos": 7,
+    "total_messages": 10121
+  },
+  "baseline_parser": {
+    "actionable_violations": 9962,
+    "unique_tags": 29,
+    "total_findings_including_info": 9969
+  },
+  "per_round_budget": "100-200 modules or 1200-2500 changed lines, unless the current report has fewer local fixes left",
+  "arms": {
+    "no_kb": {
+      "result_md": "<repo>/ip/digital/lint_lab/docs/modelrepair_findings10000_20260704_130000_no_kb_result_20260704_151748.md",
+      "result_json": "<repo>/ip/digital/lint_lab/docs/modelrepair_findings10000_20260704_130000_no_kb_result_20260704_151748.json",
+      "work_dir": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work",
+      "final_report": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/run/lint_spyglass/moresimple.rpt",
+      "rounds": 14,
+      "lint_seconds_sum": 568.01,
+      "wall_seconds_from_metrics": 1225.0,
+      "final_errors": 0,
+      "final_warnings": 0,
+      "final_infos": 3,
+      "reached_zero_zero": true,
+      "forbidden_sources_used": {
+        "kb": false,
+        "rag": false,
+        "wiki": false,
+        "web": false,
+        "with_kb_artifact": false
+      },
+      "parser_final": {
+        "total_violations": 0,
+        "total_findings": 3,
+        "info_messages": 3
+      }
+    },
+    "with_kb": {
+      "result_md": "<repo>/ip/digital/lint_lab/docs/modelrepair_findings10000_20260704_130000_with_kb_result_20260704_150326.md",
+      "result_json": "<repo>/ip/digital/lint_lab/docs/modelrepair_findings10000_20260704_130000_with_kb_result_20260704_150326.json",
+      "work_dir": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work",
+      "final_report": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/with_kb_work/de/run/lint_spyglass/moresimple.rpt",
+      "rounds": 15,
+      "lint_seconds_sum": 576.6854,
+      "wall_seconds_approx": 1500,
+      "wall_seconds_source": "about 25 minutes from first counted patch timestamp 20260704_143813 to final result timestamp 20260704_150326",
+      "final_errors": 0,
+      "final_warnings": 0,
+      "final_infos": 3,
+      "reached_zero_zero": true,
+      "kb_excerpts_used": [
+        "sim_race02 / W415: multiple drivers and same-cycle multiple assignments",
+        "NoAssignX-ML / case x-z patterns",
+        "InferLatch",
+        "CombLoop / ErrorAnalyzeBBox / SYNTH_5191 root-cause direction"
+      ],
+      "forbidden_sources_used": [],
+      "invalid_reverted_patch_logs": [
+        "round_001_20260704_143616.diff/json",
+        "round_002_20260704_144036.diff/json"
+      ],
+      "parser_final": {
+        "total_violations": 0,
+        "total_findings": 3,
+        "info_messages": 3
+      }
+    }
+  },
+  "comparison": {
+    "round_delta_with_minus_no": 1,
+    "lint_seconds_delta_with_minus_no": 8.675,
+    "lint_seconds_ratio_with_over_no": 1.0153,
+    "wall_clock_note": "no-kb uses metrics timestamp wall seconds; with-kb reports approximate wall clock string, so wall-clock comparison is directional only.",
+    "winner_by_rounds": "no_kb",
+    "winner_by_recorded_lint_seconds": "no_kb"
+  },
+  "measurement_gaps": [
+    "analysis_seconds and edit_seconds were required by the method but were not consistently instrumented by the two workers in this 10000 run.",
+    "with-kb JSON records analysis_seconds/edit_seconds as null and lint_seconds per round.",
+    "no-kb JSON records per-round E/W/I metrics and aggregate lint/wall time, but not per-round analysis/edit durations.",
+    "Therefore the cleanest quantitative comparison here is natural round count and recorded MCP lint wall time, with wall-clock as approximate/contextual."
+  ],
+  "interpretation": [
+    "Both arms started from the same broken RTL and independently reached actual 0 errors / 0 warnings.",
+    "With the enlarged per-round cap, the prompt-contained KB excerpt did not produce a speed advantage in this run: no-kb completed in 14 rounds and with-kb in 15 counted rounds.",
+    "Recorded MCP lint time was effectively equal: no-kb 568.01s vs with-kb 576.6854s, a 1.5% difference in favor of no-kb.",
+    "This suggests the larger per-round budget let no-kb amortize lack of KB by patching broad report-local patterns; KB guidance may matter more under smaller per-round budgets or when root-cause ambiguity is higher."
+  ]
+}

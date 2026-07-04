@@ -33,7 +33,7 @@ class SocBuildMcpTest(unittest.TestCase):
 
     def test_tool_registry_contains_new_interfaces(self) -> None:
         tools = SERVER.mcp._tool_manager._tools
-        self.assertTrue({"soc_sim", "soc_regress", "soc_coverage", "soc_syn", "soc_verdi"} <= set(tools))
+        self.assertTrue({"soc_sim", "soc_regress", "soc_coverage", "soc_syn", "soc_verdi", "soc_cdc"} <= set(tools))
 
     def test_rejects_direct_tool_object_invocation(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
@@ -105,23 +105,27 @@ class SocBuildMcpTest(unittest.TestCase):
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
-    def test_lint_accepts_vc_static(self, run) -> None:
-        SERVER.soc_lint(str(self.module_dir), "vc_static", "uart")
+    def test_lint_accepts_spyglass(self, run) -> None:
+        SERVER.soc_lint(str(self.module_dir), "spyglass", "uart")
         run.assert_called_once_with(
-            ["make", "lint", "LINT_TOOL=vc_static", "RTL_TOP=uart"],
+            ["make", "lint", "LINT_TOOL=spyglass", "RTL_TOP=uart"],
             cwd=str(self.module_dir.resolve()),
             timeout=120,
         )
 
+    def test_lint_rejects_unknown_tool(self) -> None:
+        with self.assertRaisesRegex(ValueError, "spyglass, verilator"):
+            SERVER.soc_lint(str(self.module_dir), "bad_lint_tool", "uart")
+
     @patch.object(SERVER, "_detect_gui_variables", return_value={"DISPLAY": ":0", "XAUTHORITY": "/tmp/xauth"})
     @patch.object(SERVER, "_run", return_value="ok")
     def test_lint_accepts_gui(self, run, gui_vars) -> None:
-        SERVER.soc_lint(str(self.module_dir), "vc_static", "uart", gui=True)
+        SERVER.soc_lint(str(self.module_dir), "spyglass", "uart", gui=True)
         run.assert_called_once_with(
             [
                 "make",
                 "lint",
-                "LINT_TOOL=vc_static",
+                "LINT_TOOL=spyglass",
                 "RTL_TOP=uart",
                 "GUI=1",
                 "DISPLAY=:0",
@@ -132,13 +136,39 @@ class SocBuildMcpTest(unittest.TestCase):
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
-    def test_syn_uses_project_target(self, run) -> None:
-        SERVER.soc_syn(str(self.module_dir), "uart")
+    def test_cdc_accepts_spyglass(self, run) -> None:
+        SERVER.soc_cdc(str(self.module_dir), "spyglass", "uart")
         run.assert_called_once_with(
-            ["make", "syn", "RTL_TOP=uart"],
+            ["make", "cdc", "CDC_TOOL=spyglass", "RTL_TOP=uart"],
             cwd=str(self.module_dir.resolve()),
             timeout=1200,
         )
+
+    def test_cdc_rejects_non_spyglass(self) -> None:
+        with self.assertRaisesRegex(ValueError, "spyglass"):
+            SERVER.soc_cdc(str(self.module_dir), "bad_cdc_tool", "uart")
+
+    @patch.object(SERVER, "_run", return_value="ok")
+    def test_syn_uses_project_target(self, run) -> None:
+        SERVER.soc_syn(str(self.module_dir), "uart")
+        run.assert_called_once_with(
+            ["make", "syn", "SYN_TOOL=yosys", "RTL_TOP=uart"],
+            cwd=str(self.module_dir.resolve()),
+            timeout=1200,
+        )
+
+    @patch.object(SERVER, "_run", return_value="ok")
+    def test_syn_accepts_dc(self, run) -> None:
+        SERVER.soc_syn(str(self.module_dir), "uart", syn_tool="dc")
+        run.assert_called_once_with(
+            ["make", "syn", "SYN_TOOL=dc", "RTL_TOP=uart"],
+            cwd=str(self.module_dir.resolve()),
+            timeout=1200,
+        )
+
+    def test_syn_rejects_unknown_tool(self) -> None:
+        with self.assertRaisesRegex(ValueError, "dc, yosys"):
+            SERVER.soc_syn(str(self.module_dir), "uart", syn_tool="bad_syn_tool")
 
     @patch.object(SERVER, "_run", return_value="ok")
     def test_verdi_uses_scope(self, run) -> None:
