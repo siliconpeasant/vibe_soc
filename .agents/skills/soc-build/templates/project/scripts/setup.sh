@@ -2,7 +2,19 @@
 # vibe_soc SoC 开发环境初始化脚本
 # 兼容 bash/zsh/dash 等 POSIX shell
 
+_setup_old_errexit=0
+case $- in
+    *e*) _setup_old_errexit=1 ;;
+esac
 set -e
+
+_setup_finish() {
+    _setup_rc=$1
+    if [ "$_setup_old_errexit" -eq 0 ]; then
+        set +e
+    fi
+    return "$_setup_rc"
+}
 
 CHECK_ONLY=0
 if [ "${1:-}" = "--check" ]; then
@@ -13,9 +25,9 @@ fi
 # 1. 推断 PROJECT_ROOT
 # ---------------------------------------------------------------------------
 if [ -n "${BASH_SOURCE[0]}" ]; then
-    _script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+    _script_dir=$(command cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd -P)
 else
-    _script_dir=$(cd "$(dirname "$0")" && pwd -P)
+    _script_dir=$(command cd "$(dirname "$0")" >/dev/null && pwd -P)
 fi
 PROJECT_ROOT=$(dirname "$_script_dir")
 
@@ -24,7 +36,7 @@ if [ ! -d "$PROJECT_ROOT/chip" ] || [ ! -d "$PROJECT_ROOT/ip" ]; then
     echo "[ERROR] 无法定位 vibe_soc 项目根目录"
     echo "        请从项目根目录或 scripts/ 目录下 source 本脚本"
     echo "        当前推断路径: $PROJECT_ROOT"
-    exit 1
+    _setup_finish 1; _setup_rc=$?; return "$_setup_rc" 2>/dev/null || exit "$_setup_rc"
 fi
 
 # Optional site/user environment (tool homes, license servers, module commands).
@@ -144,5 +156,7 @@ echo "  make verdi  MODULE=<模块>     # Verdi 源码浏览"
 echo "======================================"
 
 if [ "$CHECK_ONLY" -eq 1 ]; then
-    exit "$MISSING"
+    _setup_finish "$MISSING"; _setup_rc=$?; return "$_setup_rc" 2>/dev/null || exit "$_setup_rc"
 fi
+
+_setup_finish 0; _setup_rc=$?; return "$_setup_rc" 2>/dev/null || exit "$_setup_rc"

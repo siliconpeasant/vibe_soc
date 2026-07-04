@@ -1,0 +1,117 @@
+name: auto-pr-automerge
+
+on:
+  push:
+    branches:
+      - "codex/**"
+      - "feature/**"
+      - "fix/**"
+  workflow_dispatch:
+    inputs:
+      head_branch:
+        description: "Branch to open as a PR"
+        required: true
+      base_branch:
+        description: "Target branch"
+        required: false
+        default: "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-pr-automerge-${{ github.event_name == 'workflow_dispatch' && inputs.head_branch || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  auto-pr:
+    name: create PR and enable auto-merge
+    runs-on: ubuntu-latest
+    env:
+      BASE_BRANCH: ${{ github.event_name == 'workflow_dispatch' && inputs.base_branch || github.event.repository.default_branch }}
+      HEAD_BRANCH: ${{ github.event_name == 'workflow_dispatch' && inputs.head_branch || github.ref_name }}
+
+    steps:
+      - name: Create or update pull request
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = process.env.HEAD_BRANCH;
+            const base = process.env.BASE_BRANCH;
+
+            if (head === base) {
+              core.setFailed(`head branch ${head} is the same as base branch ${base}`);
+              return;
+            }
+
+            const { data: existing } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:${head}`,
+              base,
+              per_page: 1,
+            });
+
+            let pull;
+            if (existing.length > 0) {
+              pull = existing[0];
+              core.info(`Reusing PR #${pull.number}: ${pull.html_url}`);
+            } else {
+              const title = `[auto] ${head} -> ${base}`;
+              const body = [
+                `Auto-created from \`${head}\` to \`${base}\`.`,
+                '',
+                'CI runs on the branch or pull request checks. If repository auto-merge is enabled and required checks pass, GitHub will merge this PR automatically.',
+              ].join('\n');
+              const created = await github.rest.pulls.create({
+                owner,
+                repo,
+                title,
+                body,
+                head,
+                base,
+                maintainer_can_modify: true,
+              });
+              pull = created.data;
+              core.info(`Created PR #${pull.number}: ${pull.html_url}`);
+            }
+
+            core.setOutput('number', String(pull.number));
+            core.setOutput('node_id', pull.node_id);
+            core.setOutput('url', pull.html_url);
+
+      - name: Enable auto-merge
+        uses: actions/github-script@v7
+        env:
+          PULL_REQUEST_ID: ${{ steps.pr.outputs.node_id }}
+        with:
+          script: |
+            const pullRequestId = process.env.PULL_REQUEST_ID;
+            if (!pullRequestId) {
+              core.setFailed('missing pull request node id');
+              return;
+            }
+
+            const mutation = `
+              mutation($pullRequestId: ID!) {
+                enablePullRequestAutoMerge(input: {
+                  pullRequestId: $pullRequestId,
+                  mergeMethod: SQUASH
+                }) {
+                  pullRequest { number autoMergeRequest { enabledAt } }
+                }
+              }
+            `;
+
+            try {
+              const result = await github.graphql(mutation, { pullRequestId });
+              core.info(`Auto-merge enabled for PR #${result.enablePullRequestAutoMerge.pullRequest.number}`);
+            } catch (error) {
+              core.warning(`Could not enable auto-merge: ${error.message}`);
+              core.warning('Check that repository Allow auto-merge is enabled and branch protection/required checks are configured.');
+            }

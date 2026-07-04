@@ -44,6 +44,19 @@ vibe_soc/
 
 不要新建旧式根目录 `rtl/`、`tb/`、`sim/`、`syn/`、`constraints/` 作为兼容层。
 
+## 当前模块索引
+
+当前可通过 `make list-modules` 发现的模块分为四类：
+
+| 类别 | 模块 |
+|---|---|
+| Chip shell | `chip/top`、`chip/core`、`chip/bus`、`chip/periph`、`chip/lib` |
+| 原生/公共数字 IP | `ip/digital/uart`、`ip/digital/spi`、`ip/digital/soc_ip_common`、`ip/digital/lint_lab` |
+| OpenTitan vendor-island IP | `ip/digital/<name>` 下的 AES、GPIO、I2C、KMAC、OTBN、ROM、RV、TL-UL、USB、XBAR 等 OpenTitan 源组织模块 |
+| 第三方封装 | `ip/third_party/pcie` |
+
+`uart_ot`、`spi_ot` 等带 `_ot` 后缀的模块保留 OpenTitan 侧源组织；`uart`、`spi` 等不带后缀的模块承载 vibe_soc 原生封装、验证和综合入口。
+
 ## 快速开始
 
 ```bash
@@ -71,6 +84,43 @@ make sim  MODULE=ip/digital/uart SIMULATOR=vcs TEST=uart_all SEED=7
 
 OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug 波形时显式加 `FSDB=1`。
 
+## CI/CD 与合并策略
+
+当前 GitHub Actions 包含三类 workflow：
+
+| Workflow | 触发方式 | 用途 |
+|---|---|---|
+| `auto-pr-automerge` | `codex/**`、`feature/**`、`fix/**` 分支 push、手动 | 自动创建/复用 PR，并尝试启用 GitHub 原生 auto-merge |
+| `top-smoke` | `codex/**`、`feature/**`、`fix/**` 分支 push、PR、手动、定时 | `chip/top` UART smoke CI 门禁 |
+| `cd-release-branch` | `release/**` 分支 push、手动 | 发布分支候选包构建 |
+| `cd-release` | `v*` tag、手动 | 正式 release 包和 GitHub Release |
+
+推荐合并链路是：push 功能分支 -> 自动创建/复用 PR -> PR CI 跑门禁 -> GitHub auto-merge 在 required checks 满足后合入默认分支。
+
+要让 auto-merge 生效，需要：
+
+1. 在仓库 `Settings -> General -> Pull Requests` 打开 `Allow auto-merge`。
+2. 给默认分支设置 branch protection，并把关键 CI check 设为 required status check。
+3. 保持 `auto-pr-automerge` workflow 的 `pull-requests: write` 和 `contents: write` 权限。
+
+如果仓库没有打开 `Allow auto-merge`，workflow 仍会创建 PR，但启用 auto-merge 的步骤会以 warning 形式跳过。
+
+发布分支建议使用 `release/<version>` 命名。发布分支允许做小修，但修复应同步回主线，避免 release 分支长期漂移。
+
+本地也可以手动生成设计 release 包，输出 tarball、manifest 和 SHA256SUMS：
+
+```bash
+python3 scripts/package_design_release.py \
+  --out-dir /tmp/vibe_soc_release \
+  --channel snapshot \
+  --release-id local-smoke \
+  --module chip/top \
+  --test chip_sw_uart_smoketest \
+  --seed 1
+```
+
+`--include-syn` 会额外收集已存在的 `chip/top/de/syn` 综合证据；脚本不会主动运行综合或仿真。
+
 ## Make 目标
 
 | 目标 | 作用 |
@@ -89,7 +139,7 @@ OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug �
 | `coverage-regress` | 回归覆盖率采集 |
 | `coverage-report` | 覆盖率报告生成 |
 | `verdi` | Verdi 入口 |
-| `syn` | Yosys 综合入口 |
+| `syn` | 综合入口，默认 Yosys，可用 `SYN_TOOL=dc` 切换 Design Compiler |
 | `clean` | 清理运行日志/波形，保留编译缓存 |
 | `debugclean` | 进一步清理调试和报告文件 |
 | `deepclean` | 清理瞬态编译/仿真产物，保留综合交付物 |
@@ -104,43 +154,61 @@ make regress MODULE=ip/digital/uart REGRESS_SEEDS=1-10 REGRESS_JOBS=4
 make coverage MODULE=ip/digital/uart TEST=uart_all SEED=7
 ```
 
+### Filelist 约定
+
+每个模块的 RTL 入口是 `de/rtl/filelist.f`，组合逻辑放在 `de/rtl/filelist.mk`。`make flist` 会生成模块运行用 filelist，`make validate-flist` 会展开嵌套 `-f`、检查 include 目录和源文件是否存在、去重并检测循环引用。
+
+filelist 中优先使用模块相对路径，避免写入本机绝对目录。生成的 `de/run/rtl.f`、`de/run/rtl.raw.f` 和仿真/综合临时 filelist 都属于本地产物，不入库。
+
 ### Lint 工具说明
 
-`lint` 默认使用 Verilator，也支持 Iverilog 和 VC Static：
+`lint` 默认使用 Verilator，也支持 SpyGlass：
 
 ```bash
 make lint MODULE=ip/digital/uart
 make lint MODULE=ip/digital/uart LINT_TOOL=verilator RTL_TOP=uart
-make lint MODULE=ip/digital/uart LINT_TOOL=vc_static RTL_TOP=uart
+make lint MODULE=ip/digital/uart LINT_TOOL=spyglass RTL_TOP=uart
 ```
 
-VC Static 当前分两类能力：
+SpyGlass lint 通过 `scripts/lint/sg_lint.tcl` 运行，默认 goal 为 `lint/lint_rtl`，报告写入模块 `de/run/lint_spyglass/`。VC Static lint 入口已移除；如果后续需要恢复，必须重新补齐合法 license、脚本和 MCP 参数约束。
 
-- structural lint：基于 elaboration 后的结构/网表检查连接、未驱动、未连接、黑盒和层次问题，例如 `CONN_NET_UNDRIVEN`。当前 license 可用。
-- native coding/quick-lint：基于 RTL 源码语义检查位宽、锁存器、case、不可综合语句和编码风格，例如 `CODING_WIDTH_UNEQ_SIZE`、`CODING_LATCH_INFER`。T-2022 native flow 需要 `VC-LINT-BASE`；当前 license server 有 `VC-STATIC-LINT`，但没有 `VC-LINT-BASE`，所以 `check_lint/report_lint` 不能作为可用路径。
-
-因此，当前 `LINT_TOOL=vc_static` 可作为 structural lint 入口；coding/quick-lint 类规则需要补齐合法 license 或切换到站点已有 license 对应的 nLint/SpyGlass flow。
+`ip/digital/lint_lab` 是故意构造的坏 RTL 语料库，用于 SpyGlass lint 修复和规则验证基准。相关脚本位于 `scripts/lint/lint_*`。它不是功能 IP，不应接入 chip/top。
 
 ## 工具链
 
-仿真/调试支持：
+仿真/调试/静态检查/综合支持：
 
-- VCS
+- VCS（本地已授权环境）
 - Verilator
 - Iverilog
 - Xcelium
-- Verdi、DVE、SimVision、GTKWave
+- Verdi、DVE、SimVision、GTKWave（按本地授权和安装情况启用）
+- SpyGlass lint/CDC（本地已授权环境）
+- Yosys 结构综合
+- Design Compiler 逻辑综合（本地已授权环境）
 
-本地工具路径、license endpoint 和默认参数写入本地文件：
+项目脚本不会直接 source 用户 home 下的 shell 启动文件。EDA 工具能否找到取决于当前进程继承的环境变量，以及项目本地配置文件：
+
+- `scripts/local.mk`：Make/MCP 使用，适合放 license endpoint、工具路径、DC `.db` 路径和默认参数。
+- `scripts/local.sh`：bash/sh 用户 source `scripts/setup.sh` 时加载。
+- `scripts/local.csh`：csh/tcsh 用户 source `scripts/setup.csh` 时加载。
+
+这些 `scripts/local.*` 文件已被 Git 忽略，不要强制加入仓库。推荐先复制示例再填写本机值：
 
 ```bash
 cp scripts/local.mk.example scripts/local.mk
 ```
 
-`scripts/local.mk`、`scripts/local.sh`、`scripts/local.csh` 已被 Git 忽略。不要强制加入这些文件。需要 DesignWare 仿真模型时，在 `scripts/local.mk` 配置：
+需要 DesignWare 仿真模型时，在 `scripts/local.mk` 配置：
 
 ```make
 VCS_DW_SIM_PATH := /path/to/dw/sim_ver
+```
+
+需要 Design Compiler 使用 Sky130HD 时，优先配置 Library Compiler 生成的 Synopsys `.db`：
+
+```make
+SKY130HD_DC_DB := /path/to/sky130_fd_sc_hd__tt_025C_1v80.db
 ```
 
 ## 门控开发流程
@@ -180,7 +248,7 @@ python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 
 ## MCP/Agent 功能
 
-仓库内置 `.agents/` 和 `.codex/` 配置，用于 silicon-crew 自动化。主要能力如下：
+仓库内置自动化配置，用于 silicon-crew 风格的项目生成、构建、集成和验证。主要能力如下：
 
 | 能力 | MCP/Skill | 说明 |
 |---|---|---|
@@ -188,13 +256,14 @@ python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 | 构建与验证 | `soc-build` | filelist、lint、compile、sim、regress、coverage、syn |
 | 顶层集成 | `soc-integrate` | 端口提取、实例化、wrapper、top 生成、快照、diff、刷新 |
 | OpenROAD handoff | `soc-pd-engineer` + `soc-openroad` | 物理设计 handoff agent 负责约束审查和流程调度；MCP 生成 ORFS config/SDC、运行 synth/floorplan/place/cts/route/finish/all 并汇总结果 |
+| Liberty/DB 辅助生成 | `lib-db-gen` | 使用 Library Compiler 将 `.lib` 转 `.db`，或从 Verilog top 端口生成早期 black-box stub `.lib/.db` |
 | 寄存器 YAML 生成 RTL | `yml2reg` | 从 YAML 生成 APB/AHB regfile RTL |
 | Excel 寄存器生成 | `excel-yml-gen` | 从 Excel 生成 YAML、regfile RTL、wrapper 等 |
 | CRG 需求转设计表 | `crg-req-to-design` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |
 | 时钟/复位树图 | `cr-tree-diag-gen` | 从设计表生成 Draw.io 和 Excalidraw 图 |
 | 流程编排 | `soc-pipeline` | 协调架构、doc、RTL、验证、综合、PD handoff |
 
-EDA 阶段必须走注册 MCP 工具：验证调用 `soc-build.soc_sim`，综合调用 `soc-build.soc_syn`，OpenROAD 调用 `soc-openroad.soc_openroad_*`。阶段 agent 不使用直接 `make`、`iverilog`、`vvp`、`yosys`、`openroad` 等 shell fallback。
+EDA 阶段应走注册工具入口：验证调用 `soc-build.soc_sim`，综合调用 `soc-build.soc_syn`，OpenROAD 调用 `soc-openroad.soc_openroad_*`。自动化流程不使用直接 `make`、`iverilog`、`vvp`、`yosys`、`openroad` 等 shell fallback。
 
 
 ## OpenTitan Vendor Island
@@ -237,21 +306,36 @@ make coverage-regress MODULE=ip/digital/uart REGRESS_SEEDS=1-10 REGRESS_JOBS=4
 
 ## CDC
 
-CDC 支持 VC Static CDC 和 SpyGlass CDC 入口，配置位于 `scripts/cdc/`。常用入口：
+CDC 使用 SpyGlass CDC 入口，配置位于 `scripts/cdc/sg_cdc.tcl`。常用入口：
 
 ```bash
 make cdc MODULE=ip/digital/uart RTL_TOP=uart CDC_TOOL=spyglass
 ```
 
+CDC 运行产物写入模块 `de/run/cdc/`，属于本地运行输出，不入库。
+
 ## 综合与 STA
 
-综合通过项目 Make 或 `soc-build.soc_syn` 运行：
+综合通过项目 Make 或 `soc-build.soc_syn` 运行，默认 `SYN_TOOL=yosys`：
 
 ```bash
 make syn MODULE=ip/digital/uart RTL_TOP=uart
 ```
 
-综合产物位于 `de/syn/`，包括 `*_netlist.v`、`synth.log`、`rtl.f`、`syn.ys`、SDC 和可选 STA 报告。Yosys 结构综合结果不等于时序收敛；只有真实 STA 报告可以声明 WNS/TNS 或 timing closure。
+Design Compiler 综合使用 `SYN_TOOL=dc`：
+
+```bash
+make syn MODULE=ip/digital/uart RTL_TOP=uart SYN_TOOL=dc
+```
+
+MCP 调用时使用 `soc-build.soc_syn`，并传入 `syn_tool=dc` 或 `syn_tool=yosys`。DC 通用脚本位于 `scripts/syn/dc_synth.tcl`，Sky130HD 技术库 setup 位于 `scripts/syn/sky130hd_dc_setup.tcl`。模块可在 `de/syn/dc_setup.tcl` 中 source 通用 setup。
+
+约束文件约定：
+
+- 原始 SDC 放在模块 `de/syn/*.sdc`，可以入库，例如 `ip/digital/uart/de/syn/uart.sdc`。
+- DC 生成的 SDC 位于 `de/syn/dc/outputs/*.sdc`，属于综合产物，不入库。
+
+综合产物位于 `de/syn/` 或 `de/syn/dc/`，包括网表、DDC/SDF、日志和报告。Yosys 结构综合结果不等于时序收敛；只有真实 STA/DC 报告可以声明 WNS/TNS 或 timing closure。
 
 ## OpenROAD handoff
 
@@ -299,7 +383,7 @@ CRG：
 - `scripts/local.mk`、`scripts/local.sh`、`scripts/local.csh`
 - `pd/openroad/work/`、`pd/openroad/work_local*/`、`pd/openroad/local/`、`pd/openroad/**/config.local.mk`
 
-贡献者和 agent 操作约定见 `AGENTS.md`，Claude 侧约定见 `CLAUDE.md`。这两个文件只描述协作和执行规则，不替代 README 的项目功能说明。
+贡献者和自动化操作约定见 `AGENTS.md`，Claude 侧约定见 `CLAUDE.md`。这两个文件只描述协作和执行规则，不替代 README 的项目功能说明。
 
 提交前建议执行：
 
@@ -308,5 +392,7 @@ make check-repo
 git diff --check
 git status --short
 ```
+
+`make check-repo` 会扫描已跟踪文件和待提交文件中的本机绝对路径、license endpoint。若第三方 vendor 元数据触发告警，发布前应确认其来源和许可状态，并确认本次 diff 没有新增泄漏。
 
 不要提交真实 license server、本机绝对工具路径、大型仿真/PD 运行产物或未审查的生成缓存。
