@@ -95,6 +95,12 @@ VERDI_CMD ?= cd $(SIM_DIR) && verdi $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILEL
 
 SYN_NETLIST   = $(SYN_DIR)/$(RTL_TOP)_netlist.v
 SYN_REPORT    = $(SYN_DIR)/synth.log
+YOSYS_SYN_SCRIPT = $(SYN_DIR)/syn.ys
+DC_NETLIST    = $(DC_OUTPUT_DIR)/$(RTL_TOP)_netlist.v
+DC_DDC        = $(DC_OUTPUT_DIR)/$(RTL_TOP).ddc
+DC_SDF        = $(DC_OUTPUT_DIR)/$(RTL_TOP).sdf
+DC_SDC_OUT    = $(DC_OUTPUT_DIR)/$(RTL_TOP).sdc
+DC_LOG        = $(DC_RUN_DIR)/dc_shell.log
 
 # =============================================================================
 # Public targets
@@ -262,45 +268,29 @@ ifeq ($(LINT_TOOL),verilator)
 	@verilator $(VERILATOR_LINT_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),iverilog)
 	@iverilog $(IVERILOG_FLAGS) -s $(RTL_TOP) -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
-else ifeq ($(LINT_TOOL),vc_static)
-	@test -x "$(VC_STATIC_SHELL)" || { echo "[LINT] VC Static shell not found: $(VC_STATIC_SHELL)"; exit 127; }
-	@test -f "$(VC_LINT_SCRIPT)" || { echo "[LINT] VC lint script not found: $(VC_LINT_SCRIPT)"; exit 2; }
-	@mkdir -p "$(LINT_RUN_DIR)"
-	@cd "$(LINT_RUN_DIR)" && \
-	  DISPLAY="$(DISPLAY)" \
-	  XAUTHORITY="$(XAUTHORITY)" \
-	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
-	  VC_LINT_FILELIST="$(RUN_DIR)/rtl.f" \
-	  VC_LINT_TOP="$(RTL_TOP)" \
-	  VC_LINT_REPORT="$(VC_LINT_REPORT)" \
-	  VC_LINT_MODULE_DIR="$(MODULE_PATH)" \
-	  VC_LINT_SETUP="$(MODULE_PATH)/de/lint/vc_lint_setup.tcl" \
-	  VC_LINT_RULES="$(VC_LINT_RULES)" \
-	  VC_LINT_SEARCH_PATH="$(RTL_PATH) $(MODULE_PATH)" \
-	  VC_LINT_GUI="$(VC_LINT_GUI)" \
-	  VC_LINT_ENABLE_TAGS="$(VC_LINT_ENABLE_TAGS)" \
-	  "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -out_dir "$(VC_STATIC_OUT_DIR)" \
-	    -f "$(VC_LINT_SCRIPT)" -output_log_file "../$(notdir $(VC_STATIC_LOG))" 2>&1 | tee "$(LINT_LOG)"; \
-	  status=$${PIPESTATUS[0]}; \
-	  if [ $$status -eq 11 ]; then echo "[LINT] VC Static completed with warnings"; status=0; fi; \
-	  if [ $$status -ne 0 ]; then exit $$status; fi; \
-	  if [ "$(VC_LINT_GUI)" = "1" ]; then \
-	    if [ -f "$(VC_STATIC_OUT_DIR)/novas.rc" ]; then \
-	      sed -i 's/^thirdpartyIdx[[:space:]]*=.*/thirdpartyIdx = 0/' "$(VC_STATIC_OUT_DIR)/novas.rc"; \
-	    fi; \
-	    echo "[LINT] Opening VC Static GUI: $(VC_STATIC_OUT_DIR)"; \
-	    DISPLAY="$(DISPLAY)" XAUTHORITY="$(XAUTHORITY)" HOME="$(LINT_RUN_DIR)" VC_STATIC_HOME="$(VC_STATIC_HOME)" \
-	      nohup "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -gui -restore \
-	        -out_dir "$(VC_STATIC_OUT_DIR)" -output_log_file "../vc_static_gui.log" \
-	        >/dev/null 2>&1 & \
-	  fi
+else ifeq ($(LINT_TOOL),spyglass)
+	@test -x "$(SG_SHELL)" || { echo "[LINT] SpyGlass sg_shell not found: $(SG_SHELL)"; exit 127; }
+	@test -f "$(SG_LINT_TCL)" || { echo "[LINT] SpyGlass lint Tcl not found: $(SG_LINT_TCL)"; exit 2; }
+	@mkdir -p "$(SG_LINT_RUN_DIR)"
+	@cd "$(SG_LINT_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  SPYGLASS_HOME="$(SG_HOME)" \
+	  SG_FILELIST="$(RUN_DIR)/rtl.f" \
+	  SG_TOP="$(RTL_TOP)" \
+	  SG_GOAL="$(SG_LINT_GOAL)" \
+	  SG_METHODOLOGY="$(SG_LINT_METHODOLOGY)" \
+	  SG_PROJECT_NAME="$(RTL_TOP)_lint" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(SG_SHELL)" -tcl "$(SG_LINT_TCL)" -licqueue -shell_log_file "$(SG_LINT_LOG)"
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 	@exit 2
 endif
-	@if [ "$(LINT_TOOL)" = "vc_static" ]; then \
-		echo "[LINT] Report: $(LINT_LOG)"; \
-		echo "[LINT] VC report: $(VC_LINT_REPORT)"; \
+	@if [ "$(LINT_TOOL)" = "spyglass" ]; then \
+		echo "[LINT] Log:     $(SG_LINT_LOG)"; \
+		echo "[LINT] Report:  $(SG_LINT_REPORT)"; \
+		echo "[LINT] Reports: $(SG_LINT_PROJECT_DIR)/consolidated_reports/lint_lint_rtl"; \
 	else \
 		echo "[LINT] Report: $(RUN_DIR)/lint.log"; \
 	fi
@@ -311,25 +301,23 @@ cdc: $(RTL_FLIST)
 	@echo "[CDC] Tool: $(CDC_TOOL) | Top: $(RTL_TOP)"
 ifeq ($(CDC_TOOL),spyglass)
 	@test -x "$(SG_SHELL)" || { echo "[CDC] SpyGlass sg_shell not found: $(SG_SHELL)"; exit 127; }
-	@test -f "$(SG_CDC_GEN)" || { echo "[CDC] SpyGlass CDC generator not found: $(SG_CDC_GEN)"; exit 2; }
+	@test -f "$(SG_CDC_TCL)" || { echo "[CDC] SpyGlass CDC Tcl not found: $(SG_CDC_TCL)"; exit 2; }
 	@mkdir -p "$(CDC_RUN_DIR)"
-	@$(PYTHON_RUN) "$(SG_CDC_GEN)" \
-	  --project-root "$(PROJECT_ROOT)" \
-	  --run-dir "$(CDC_RUN_DIR)" \
-	  --filelist "$(RUN_DIR)/rtl.f" \
-	  --top "$(RTL_TOP)" \
-	  --spyglass-home "$(SG_HOME)" \
-	  --goal "$(SG_CDC_GOAL)" \
-	  --methodology "$(SG_CDC_METHODOLOGY)" \
-	  --clock-port "$(SG_CDC_CLOCK_PORT)" \
-	  --reset-port "$(SG_CDC_RESET_PORT)" \
-	  --reset-value "$(SG_CDC_RESET_VALUE)" \
-	  $(if $(SG_CDC_SGDC),--sgdc "$(SG_CDC_SGDC)")
 	@cd "$(CDC_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
 	  SPYGLASS_HOME="$(SG_HOME)" \
+	  SG_FILELIST="$(RUN_DIR)/rtl.f" \
+	  SG_TOP="$(RTL_TOP)" \
+	  SG_GOAL="$(SG_CDC_GOAL)" \
+	  SG_METHODOLOGY="$(SG_CDC_METHODOLOGY)" \
+	  SG_PROJECT_NAME="$(RTL_TOP)_cdc" \
+	  SG_SGDC="$(SG_CDC_SGDC)" \
+	  SG_CLOCK_PORT="$(SG_CDC_CLOCK_PORT)" \
+	  SG_RESET_PORT="$(SG_CDC_RESET_PORT)" \
+	  SG_RESET_VALUE="$(SG_CDC_RESET_VALUE)" \
 	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
 	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
-	  "$(SG_SHELL)" -tcl run_sg_cdc.tcl -licqueue -shell_log_file "$(CDC_LOG)"
+	  "$(SG_SHELL)" -tcl "$(SG_CDC_TCL)" -licqueue -shell_log_file "$(CDC_LOG)"
 	@echo "[CDC] Log:      $(CDC_LOG)"
 	@echo "[CDC] Reports:  $(SG_CDC_PROJECT_DIR)/consolidated_reports/cdc_cdc_verify_struct"
 	@if [ "$(SG_CDC_GUI)" = "1" ]; then \
@@ -338,56 +326,69 @@ ifeq ($(CDC_TOOL),spyglass)
 	  cd "$(CDC_RUN_DIR)" && \
 	    setsid sh -c 'DISPLAY="$(DISPLAY)" XAUTHORITY="$(XAUTHORITY)" SPYGLASS_HOME="$(SG_HOME)" SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" LM_LICENSE_FILE="$(LM_LICENSE_FILE)" nohup "$(SG_HOME)/bin/spyglass" -project "$(notdir $(SG_CDC_PROJECT_DIR))" -disablesplashscreen > "$(SG_CDC_GUI_LOG)" 2>&1 &'; \
 	fi
-else ifeq ($(CDC_TOOL),vc_static)
-	@test -x "$(VC_STATIC_SHELL)" || { echo "[CDC] VC Static shell not found: $(VC_STATIC_SHELL)"; exit 127; }
-	@test -f "$(VC_CDC_SCRIPT)" || { echo "[CDC] VC CDC script not found: $(VC_CDC_SCRIPT)"; exit 2; }
-	@if [ -n "$(CDC_SDC)" ]; then \
-		test -f "$(CDC_SDC)" || { echo "[CDC] SDC not found: $(CDC_SDC)"; exit 2; }; \
-		echo "[CDC] SDC: $(CDC_SDC)"; \
-	else \
-		echo "[CDC] WARNING: No CDC_SDC found; override with CDC_SDC=<path> for clock constraints"; \
-	fi
-	@mkdir -p "$(CDC_RUN_DIR)"
-	@cd "$(CDC_RUN_DIR)" && \
-	  DISPLAY="$(DISPLAY)" \
-	  XAUTHORITY="$(XAUTHORITY)" \
-	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
-	  VC_CDC_FILELIST="$(RUN_DIR)/rtl.f" \
-	  VC_CDC_TOP="$(RTL_TOP)" \
-	  VC_CDC_SDC="$(CDC_SDC)" \
-	  VC_CDC_REPORT="$(VC_CDC_REPORT)" \
-	  VC_CDC_SUMMARY="$(VC_CDC_SUMMARY)" \
-	  VC_CDC_SETUP="$(MODULE_PATH)/de/cdc/vc_cdc_setup.tcl" \
-	  VC_CDC_SEARCH_PATH="$(RTL_PATH) $(MODULE_PATH)" \
-	  VC_CDC_CHECK_ARGS="$(VC_CDC_CHECK_ARGS)" \
-	  "$(VC_STATIC_SHELL)" $(VC_STATIC_FLAGS) -out_dir "$(VC_CDC_OUT_DIR)" \
-	    -f "$(VC_CDC_SCRIPT)" -output_log_file "../$(notdir $(VC_CDC_LOG))" 2>&1 | tee "$(CDC_LOG)"; \
-	  status=$${PIPESTATUS[0]}; \
-	  if [ $$status -eq 11 ]; then echo "[CDC] VC Static completed with warnings"; status=0; fi; \
-	  if [ $$status -ne 0 ]; then exit $$status; fi
-	@echo "[CDC] Log:      $(CDC_LOG)"
-	@echo "[CDC] Summary:  $(VC_CDC_SUMMARY)"
-	@echo "[CDC] Detailed: $(VC_CDC_REPORT)"
 else
 	@echo "[CDC] Unknown CDC_TOOL: $(CDC_TOOL)"
 	@exit 2
 endif
 
-# --- syn: Yosys synthesis ---
+# --- syn: synthesis ---
 syn: $(RTL_FLIST)
-	@echo "[SYN] Yosys | Top: $(RTL_TOP)"
+	@echo "[SYN] Tool: $(SYN_TOOL) | Top: $(RTL_TOP)"
 	@mkdir -p $(SYN_DIR)
 	@cp $(RTL_FLIST) $(SYN_DIR)/rtl.f
 	@if [ ! -s $(SYN_DIR)/rtl.f ]; then \
 		echo "[SYN] ERROR: No RTL files found in $(RTL_PATH)"; \
 		exit 1; \
 	fi
-	@echo "# Auto-generated Yosys synthesis script for $(RTL_TOP)" > $(SYN_DIR)/syn.ys
-	@echo "read_verilog $$(grep -v '^#' $(SYN_DIR)/rtl.f | grep -v '^//' | grep -v '^$$' | tr '\n' ' ')" >> $(SYN_DIR)/syn.ys
-	@echo "hierarchy -check -top $(RTL_TOP)" >> $(SYN_DIR)/syn.ys
-	@echo "proc; flatten; opt; fsm; opt; memory; opt; techmap; opt" >> $(SYN_DIR)/syn.ys
-	@echo "write_verilog $(notdir $(SYN_NETLIST))" >> $(SYN_DIR)/syn.ys
-	@echo "stat" >> $(SYN_DIR)/syn.ys
-	@cd $(SYN_DIR) && yosys syn.ys 2>&1 | tee $(notdir $(SYN_REPORT))
+ifeq ($(SYN_TOOL),yosys)
+	@echo "# Auto-generated Yosys synthesis script for $(RTL_TOP)" > $(YOSYS_SYN_SCRIPT)
+	@echo "read_verilog $$(grep -v '^#' $(SYN_DIR)/rtl.f | grep -v '^//' | grep -v '^$$' | tr '\n' ' ')" >> $(YOSYS_SYN_SCRIPT)
+	@echo "hierarchy -check -top $(RTL_TOP)" >> $(YOSYS_SYN_SCRIPT)
+	@echo "proc; flatten; opt; fsm; opt; memory; opt; techmap; opt" >> $(YOSYS_SYN_SCRIPT)
+	@echo "write_verilog $(notdir $(SYN_NETLIST))" >> $(YOSYS_SYN_SCRIPT)
+	@echo "stat" >> $(YOSYS_SYN_SCRIPT)
+	@cd $(SYN_DIR) && $(YOSYS) $(notdir $(YOSYS_SYN_SCRIPT)) 2>&1 | tee $(notdir $(SYN_REPORT))
 	@echo "[SYN] Netlist: $(SYN_NETLIST)"
 	@echo "[SYN] Report:  $(SYN_REPORT)"
+else ifeq ($(SYN_TOOL),dc)
+	@command -v "$(DC_SHELL)" >/dev/null 2>&1 || test -x "$(DC_SHELL)" || { echo "[SYN] Design Compiler not found: $(DC_SHELL)"; exit 127; }
+	@test -f "$(DC_SCRIPT)" || { echo "[SYN] DC script not found: $(DC_SCRIPT)"; exit 2; }
+	@if [ -n "$(DC_SETUP_TCL)" ]; then test -f "$(DC_SETUP_TCL)" || { echo "[SYN] DC setup Tcl not found: $(DC_SETUP_TCL)"; exit 2; }; fi
+	@if [ -n "$(DC_SDC)" ]; then test -f "$(DC_SDC)" || { echo "[SYN] DC SDC not found: $(DC_SDC)"; exit 2; }; else echo "[SYN] WARNING: No DC_SDC found; override DC_SDC=<path> for timing constraints"; fi
+	@if [ -z "$(strip $(DC_TARGET_LIBRARY)$(DC_SETUP_TCL))" ]; then echo "[SYN] WARNING: No DC_TARGET_LIBRARY or DC_SETUP_TCL configured; technology mapping may fail"; fi
+	@mkdir -p "$(DC_RUN_DIR)" "$(DC_WORK_DIR)" "$(DC_REPORT_DIR)" "$(DC_OUTPUT_DIR)"
+	@cd "$(DC_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  DC_TOP="$(RTL_TOP)" \
+	  DC_FILELIST="$(SYN_DIR)/rtl.f" \
+	  DC_SDC="$(DC_SDC)" \
+	  DC_SETUP_TCL="$(DC_SETUP_TCL)" \
+	  DC_WORK_DIR="$(DC_WORK_DIR)" \
+	  DC_REPORT_DIR="$(DC_REPORT_DIR)" \
+	  DC_OUTPUT_DIR="$(DC_OUTPUT_DIR)" \
+	  DC_NETLIST="$(DC_NETLIST)" \
+	  DC_DDC="$(DC_DDC)" \
+	  DC_SDF="$(DC_SDF)" \
+	  DC_SDC_OUT="$(DC_SDC_OUT)" \
+	  DC_TARGET_LIBRARY="$(DC_TARGET_LIBRARY)" \
+	  DC_LINK_LIBRARY="$(DC_LINK_LIBRARY)" \
+	  DC_SYMBOL_LIBRARY="$(DC_SYMBOL_LIBRARY)" \
+	  SKY130HD_DC_DB="$(SKY130HD_DC_DB)" \
+	  SKY130HD_DC_LIB="$(SKY130HD_DC_LIB)" \
+	  DC_SEARCH_PATH="$(DC_SEARCH_PATH)" \
+	  DC_COMPILE_ULTRA="$(DC_COMPILE_ULTRA)" \
+	  DC_CLOCK_GATING="$(DC_CLOCK_GATING)" \
+	  DC_MAX_CORES="$(DC_MAX_CORES)" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(DC_SHELL)" -f "$(DC_SCRIPT)" 2>&1 | tee "$(DC_LOG)"; \
+	  status=$${PIPESTATUS[0]}; \
+	  exit $$status
+	@echo "[SYN] Netlist: $(DC_NETLIST)"
+	@echo "[SYN] DDC:     $(DC_DDC)"
+	@echo "[SYN] Reports: $(DC_REPORT_DIR)"
+	@echo "[SYN] Log:     $(DC_LOG)"
+else
+	@echo "[SYN] Unknown SYN_TOOL: $(SYN_TOOL)"
+	@exit 2
+endif

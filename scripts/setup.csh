@@ -71,8 +71,9 @@ if ($?XCELIUM_HOME && -d "$XCELIUM_HOME/tools.lnx86/bin") set path = ("$XCELIUM_
 # ---------------------------------------------------------------------------
 if (! $?SIMULATOR) setenv SIMULATOR "vcs"
 if (! $?LINT_TOOL) setenv LINT_TOOL "verilator"
-if (! $?VC_STATIC_HOME) setenv VC_STATIC_HOME "/usr/Synopsys/vc_static/T-2022.06-SP2"
-if (! $?VC_STATIC_SHELL) setenv VC_STATIC_SHELL "$VC_STATIC_HOME/bin/vc_static_shell"
+if (! $?SPYGLASS_HOME) setenv SPYGLASS_HOME "/usr/Synopsys/spyglass/latest"
+if (! $?SG_HOME) setenv SG_HOME "$SPYGLASS_HOME"
+if (! $?SG_SHELL) setenv SG_SHELL "$SG_HOME/bin/sg_shell"
 
 echo ""
 echo "[CHECK] 检测工具链 ..."
@@ -93,11 +94,11 @@ foreach _tool (make verilator iverilog vvp yosys vcs verdi xrun)
     endif
 end
 
-if (-x "$VC_STATIC_SHELL") then
-    echo "  ✓ $VC_STATIC_SHELL"
+if (-x "$SG_SHELL") then
+    echo "  ✓ $SG_SHELL"
 else
-    echo "  - $VC_STATIC_SHELL (当前环境不可用)"
-    if ("$LINT_TOOL" == "vc_static") @_missing++
+    echo "  - $SG_SHELL (当前环境不可用)"
+    if ("$LINT_TOOL" == "spyglass") @_missing++
 endif
 
 if ($_missing > 0) then

@@ -51,8 +51,9 @@ export CHIP_PATH="$PROJECT_ROOT/chip"
 export IP_PATH="$PROJECT_ROOT/ip"
 export SIMULATOR=${SIMULATOR:-vcs}
 export LINT_TOOL=${LINT_TOOL:-verilator}
-export VC_STATIC_HOME=${VC_STATIC_HOME:-/usr/Synopsys/vc_static/T-2022.06-SP2}
-export VC_STATIC_SHELL=${VC_STATIC_SHELL:-$VC_STATIC_HOME/bin/vc_static_shell}
+export SPYGLASS_HOME=${SPYGLASS_HOME:-/usr/Synopsys/spyglass/latest}
+export SG_HOME=${SG_HOME:-$SPYGLASS_HOME}
+export SG_SHELL=${SG_SHELL:-$SG_HOME/bin/sg_shell}
 
 # ---------------------------------------------------------------------------
 # 2. 工具链检测
@@ -95,8 +96,8 @@ _check_tool make --version || MISSING=$((MISSING + 1))
 _check_tool verilator --version || {
     [ "$LINT_TOOL" != "verilator" ] || MISSING=$((MISSING + 1))
 }
-_check_tool "$VC_STATIC_SHELL" -help || {
-    [ "$LINT_TOOL" != "vc_static" ] || MISSING=$((MISSING + 1))
+_check_tool "$SG_SHELL" -help || {
+    [ "$LINT_TOOL" != "spyglass" ] || MISSING=$((MISSING + 1))
 }
 _check_iverilog || {
     [ "$SIMULATOR" != "iverilog" ] || MISSING=$((MISSING + 1))

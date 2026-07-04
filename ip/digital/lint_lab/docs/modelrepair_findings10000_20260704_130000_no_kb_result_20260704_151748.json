@@ -1,0 +1,169 @@
+{
+  "final_errors": 0,
+  "final_infos": 3,
+  "final_log": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/run/lint_spyglass/sg_lint.log",
+  "final_report": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/run/lint_spyglass/moresimple.rpt",
+  "final_warnings": 0,
+  "kb_used": false,
+  "lint_seconds_sum": 568.01,
+  "lint_tool": "spyglass",
+  "metrics": [
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_001_metrics.json",
+      "post_errors": 4185,
+      "post_infos": 7,
+      "post_warnings": 5081,
+      "pre_errors": null,
+      "pre_warnings": null,
+      "round": 1
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_002_metrics.json",
+      "post_errors": 4201,
+      "post_infos": 7,
+      "post_warnings": 4993,
+      "pre_errors": null,
+      "pre_warnings": null,
+      "round": 2
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_003_metrics.json",
+      "post_errors": 3594,
+      "post_infos": 7,
+      "post_warnings": 4806,
+      "pre_errors": null,
+      "pre_warnings": null,
+      "round": 3
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_004_metrics.json",
+      "post_errors": 3094,
+      "post_infos": 7,
+      "post_warnings": 4606,
+      "pre_errors": null,
+      "pre_warnings": null,
+      "round": 4
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_005_metrics.json",
+      "post_errors": 2192,
+      "post_infos": 7,
+      "post_warnings": 4146,
+      "pre_errors": null,
+      "pre_warnings": null,
+      "round": 5
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_006_metrics.json",
+      "post_errors": 1392,
+      "post_infos": 7,
+      "post_warnings": 3691,
+      "pre_errors": null,
+      "pre_warnings": null,
+      "round": 6
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_007_metrics.json",
+      "post_errors": 714,
+      "post_infos": 7,
+      "post_warnings": 3294,
+      "pre_errors": null,
+      "pre_warnings": null,
+      "round": 7
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_008_metrics.json",
+      "post_errors": 220,
+      "post_infos": 12,
+      "post_warnings": 2966,
+      "pre_errors": 714,
+      "pre_warnings": 3294,
+      "round": 8
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_009_metrics.json",
+      "post_errors": 98,
+      "post_infos": 12,
+      "post_warnings": 2973,
+      "pre_errors": 220,
+      "pre_warnings": 2966,
+      "round": 9
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_010_metrics.json",
+      "post_errors": 52,
+      "post_infos": 12,
+      "post_warnings": 2918,
+      "pre_errors": 98,
+      "pre_warnings": 2973,
+      "round": 10
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_011_metrics.json",
+      "post_errors": 0,
+      "post_infos": 11,
+      "post_warnings": 2854,
+      "pre_errors": 52,
+      "pre_warnings": 2918,
+      "round": 11
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_012_metrics.json",
+      "post_errors": 0,
+      "post_infos": 4,
+      "post_warnings": 14,
+      "pre_errors": 0,
+      "pre_warnings": 2854,
+      "round": 12
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_013_metrics.json",
+      "post_errors": 0,
+      "post_infos": 3,
+      "post_warnings": 6,
+      "pre_errors": 0,
+      "pre_warnings": 14,
+      "round": 13
+    },
+    {
+      "path": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs/round_014_metrics.json",
+      "post_errors": 0,
+      "post_infos": 3,
+      "post_warnings": 0,
+      "pre_errors": 0,
+      "pre_warnings": 6,
+      "round": 14
+    }
+  ],
+  "mode": "no_kb",
+  "patch_log_dir": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/patch_logs",
+  "rag_used": false,
+  "reached_zero_zero": true,
+  "result_json": "<repo>/ip/digital/lint_lab/docs/modelrepair_findings10000_20260704_130000_no_kb_result_20260704_151748.json",
+  "result_md": "<repo>/ip/digital/lint_lab/docs/modelrepair_findings10000_20260704_130000_no_kb_result_20260704_151748.md",
+  "round_numbers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "rounds": 14,
+  "rtl_file": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work/de/rtl/lint_lab_strict_live.v",
+  "rtl_top": "lint_lab_strict_live",
+  "runner": "soc-build.soc_lint",
+  "wall_seconds_from_metrics": 1225.0,
+  "web_used": false,
+  "wiki_used": false,
+  "with_kb_artifact_used": false,
+  "work_dir": "<repo>/ip/digital/lint_lab/de/run/lint_spyglass/live_compare/modelrepair_findings10000_20260704_130000/seed_20260703/no_kb_work"
+}
