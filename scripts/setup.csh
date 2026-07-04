@@ -6,41 +6,36 @@ set _ok = 0
 set _script_dir = ""
 
 # ---------------------------------------------------------------------------
-# 1. 推断脚本所在目录
+# 1. 优先从当前目录向上查找包含 chip/ + ip/ 的项目根目录。
+#    source scripts/setup.csh 时 csh 的 $0 通常是 shell 名，不是脚本路径。
 # ---------------------------------------------------------------------------
-if ($?0) then
+set _cwd = `pwd -P`
+set _candidate = "$_cwd"
+while ("$_candidate" != "/" && "$_candidate" != "")
+    if (-d "$_candidate/chip" && -d "$_candidate/ip" && -d "$_candidate/scripts") then
+        set _script_dir = "$_candidate/scripts"
+        set _ok = 1
+        break
+    endif
+    set _candidate = `dirname "$_candidate"`
+end
+
+# ---------------------------------------------------------------------------
+# 2. Fallback：脚本被 csh scripts/setup.csh 直接执行时，$0 可能可用。
+# ---------------------------------------------------------------------------
+if ($_ok == 0 && $?0) then
     if ("$0" =~ /*) then
         set _script_dir = `dirname "$0"`
     else if (-e "$0") then
         set _script_dir = `dirname "$0"`
     endif
-endif
-
-# ---------------------------------------------------------------------------
-# 2. 验证推断的路径是否合理
-#    合理标准：scripts/ 的父目录下必须有 chip/ 和 ip/
-# ---------------------------------------------------------------------------
-if ("$_script_dir" != "") then
-    set _candidate = `cd $_script_dir/.. && pwd -P`
-    if (-d "$_candidate/chip" && -d "$_candidate/ip") then
-        set _ok = 1
-    endif
-endif
-
-# ---------------------------------------------------------------------------
-# 3. Fallback：从当前目录向上查找包含 chip/ + ip/ 的目录
-# ---------------------------------------------------------------------------
-if ($_ok == 0) then
-    set _cwd = `pwd -P`
-    set _candidate = "$_cwd"
-    while ("$_candidate" != "/" && "$_candidate" != "")
-        if (-d "$_candidate/chip" && -d "$_candidate/ip" && -d "$_candidate/scripts") then
+    if ("$_script_dir" != "") then
+        set _candidate = `\cd "$_script_dir/.." >& /dev/null && pwd -P`
+        if (-d "$_candidate/chip" && -d "$_candidate/ip") then
             set _script_dir = "$_candidate/scripts"
             set _ok = 1
-            break
         endif
-        set _candidate = `dirname "$_candidate"`
-    end
+    endif
 endif
 
 # ---------------------------------------------------------------------------
@@ -52,8 +47,7 @@ if ($_ok == 0) then
     exit 1
 endif
 
-set _script_abs = `cd $_script_dir && pwd -P`
-setenv PROJECT_ROOT `dirname $_script_abs`
+setenv PROJECT_ROOT `dirname "$_script_dir"`
 setenv SOC "$PROJECT_ROOT"
 setenv CHIP_PATH "$PROJECT_ROOT/chip"
 setenv IP_PATH "$PROJECT_ROOT/ip"
@@ -62,9 +56,15 @@ if (-f "$PROJECT_ROOT/scripts/local.csh") then
     source "$PROJECT_ROOT/scripts/local.csh"
 endif
 
-if ($?VCS_HOME && -d "$VCS_HOME/bin") set path = ("$VCS_HOME/bin" $path)
-if ($?VERDI_HOME && -d "$VERDI_HOME/bin") set path = ("$VERDI_HOME/bin" $path)
-if ($?XCELIUM_HOME && -d "$XCELIUM_HOME/tools.lnx86/bin") set path = ("$XCELIUM_HOME/tools.lnx86/bin" $path)
+if ($?VCS_HOME) then
+    if (-d "$VCS_HOME/bin") set path = ("$VCS_HOME/bin" $path)
+endif
+if ($?VERDI_HOME) then
+    if (-d "$VERDI_HOME/bin") set path = ("$VERDI_HOME/bin" $path)
+endif
+if ($?XCELIUM_HOME) then
+    if (-d "$XCELIUM_HOME/tools.lnx86/bin") set path = ("$XCELIUM_HOME/tools.lnx86/bin" $path)
+endif
 
 # ---------------------------------------------------------------------------
 # 5. 工具链检测
@@ -129,4 +129,4 @@ echo "  make sim    TOP_MODULE=<tb>   # 运行仿真"
 echo "  make syn    RTL_TOP=<模块>    # 逻辑综合"
 echo "======================================"
 
-unset _ok _script_dir _script_abs _candidate _cwd _missing _tool
+unset _ok _script_dir _candidate _cwd _missing _tool

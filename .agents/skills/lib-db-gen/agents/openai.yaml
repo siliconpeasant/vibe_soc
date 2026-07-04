@@ -1,0 +1,3 @@
+display_name: Lib DB Gen
+short_description: Convert Liberty files to Synopsys DB or create early black-box stub libraries from RTL ports.
+default_prompt: Convert a .lib to .db or create a stub .lib/.db from a Verilog top module.
