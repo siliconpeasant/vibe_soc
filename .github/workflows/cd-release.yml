@@ -1,0 +1,190 @@
+name: cd-release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_id:
+        description: "Release id for manual artifact builds"
+        required: false
+        default: ""
+      seed:
+        description: "Simulation seed"
+        required: false
+        default: "1"
+      use_prebuilt_simv:
+        description: "Use chip/top prebuilt OpenTitan smoke simv"
+        required: false
+        type: boolean
+        default: false
+      include_syn:
+        description: "Include existing chip/top synthesis outputs if present"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cd-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: tagged release
+    runs-on: [self-hosted, linux, eda, vcs]
+    timeout-minutes: 120
+    env:
+      MODULE: chip/top
+      SIMULATOR: vcs
+      LINT_TOOL: none
+      TEST: chip_sw_uart_smoketest
+      SEED: ${{ inputs.seed || '1' }}
+      FSDB: "0"
+      OT_USE_PREBUILT_SIMV: ${{ inputs.use_prebuilt_simv && '1' || vars.OT_USE_PREBUILT_SIMV || '0' }}
+      OT_SMOKE_PREBUILT_SIMV: ${{ vars.OT_SMOKE_PREBUILT_SIMV }}
+      CI_SITE_ENV_SCRIPT: ${{ vars.CI_SITE_ENV_SCRIPT }}
+      CD_INCLUDE_SYN: ${{ inputs.include_syn && '1' || vars.CD_INCLUDE_SYN || '0' }}
+      CD_OUT_DIR: ${{ runner.temp }}/vibe_soc_cd
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          clean: true
+          fetch-depth: 0
+
+      - name: Show release context
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "runner=$(hostname)"
+          echo "workspace=$GITHUB_WORKSPACE"
+          echo "ref=$GITHUB_REF_NAME sha=$GITHUB_SHA"
+          echo "module=$MODULE test=$TEST seed=$SEED simulator=$SIMULATOR"
+          echo "OT_USE_PREBUILT_SIMV=$OT_USE_PREBUILT_SIMV"
+          echo "CD_INCLUDE_SYN=$CD_INCLUDE_SYN"
+
+      - name: Check repository hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          make check-repo
+
+      - name: Check EDA environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CI_SITE_ENV_SCRIPT:-}" ]]; then
+            test -f "$CI_SITE_ENV_SCRIPT"
+            # shellcheck disable=SC1090
+            source "$CI_SITE_ENV_SCRIPT"
+          fi
+          make check-env SIMULATOR="$SIMULATOR" LINT_TOOL="$LINT_TOOL"
+
+      - name: Validate chip/top filelist
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CI_SITE_ENV_SCRIPT:-}" ]]; then
+            # shellcheck disable=SC1090
+            source "$CI_SITE_ENV_SCRIPT"
+          fi
+          make validate-flist MODULE="$MODULE" SIMULATOR="$SIMULATOR" TEST="$TEST"
+
+      - name: Run chip/top smoke gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CI_SITE_ENV_SCRIPT:-}" ]]; then
+            # shellcheck disable=SC1090
+            source "$CI_SITE_ENV_SCRIPT"
+          fi
+          simv_arg=()
+          if [[ -n "${OT_SMOKE_PREBUILT_SIMV:-}" ]]; then
+            simv_arg=(OT_SMOKE_PREBUILT_SIMV="$OT_SMOKE_PREBUILT_SIMV")
+          fi
+          make comp sim \
+            MODULE="$MODULE" \
+            SIMULATOR="$SIMULATOR" \
+            TEST="$TEST" \
+            SEED="$SEED" \
+            FSDB="$FSDB" \
+            OT_USE_PREBUILT_SIMV="$OT_USE_PREBUILT_SIMV" \
+            "${simv_arg[@]}"
+
+      - name: Run optional synthesis gate
+        if: env.CD_INCLUDE_SYN == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CI_SITE_ENV_SCRIPT:-}" ]]; then
+            # shellcheck disable=SC1090
+            source "$CI_SITE_ENV_SCRIPT"
+          fi
+          make syn MODULE="$MODULE"
+
+      - name: Package release
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$CD_OUT_DIR"
+          mkdir -p "$CD_OUT_DIR"
+          include_syn_arg=()
+          if [[ "$CD_INCLUDE_SYN" == "1" ]]; then
+            include_syn_arg=(--include-syn)
+          fi
+          release_id="${GITHUB_REF_NAME}"
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${{ inputs.release_id }}" ]]; then
+            release_id="${{ inputs.release_id }}"
+          fi
+          python3 scripts/package_design_release.py \
+            --out-dir "$CD_OUT_DIR" \
+            --channel release \
+            --release-id "$release_id" \
+            --module "$MODULE" \
+            --test "$TEST" \
+            --seed "$SEED" \
+            --metadata-env "$CD_OUT_DIR/package.env" \
+            "${include_syn_arg[@]}"
+          source "$CD_OUT_DIR/package.env"
+          echo "package_name=$PACKAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "package_path=$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
+          echo "manifest_path=$MANIFEST_PATH" >> "$GITHUB_OUTPUT"
+          echo "sha256_path=$SHA256_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.package_name }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            ${{ steps.package.outputs.package_path }}
+            ${{ steps.package.outputs.manifest_path }}
+            ${{ steps.package.outputs.sha256_path }}
+
+      - name: Publish GitHub Release on tag
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          source "$CD_OUT_DIR/package.env"
+          if ! command -v gh >/dev/null 2>&1; then
+            echo "::warning::gh not found on runner; release package was uploaded as a workflow artifact only"
+            exit 0
+          fi
+          notes="vibe_soc design release generated by ${GITHUB_WORKFLOW} run ${GITHUB_RUN_ID}."
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$PACKAGE_PATH" "$MANIFEST_PATH" "$SHA256_PATH" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$PACKAGE_PATH" "$MANIFEST_PATH" "$SHA256_PATH" \
+              --title "$GITHUB_REF_NAME" \
+              --notes "$notes"
+          fi

@@ -5,7 +5,16 @@ on:
     paths:
       - ".github/workflows/top-smoke.yml"
       - "Makefile"
-      - "scripts/**"
+      - "scripts/common.mk"
+      - "scripts/config.mk"
+      - "scripts/paths.mk"
+      - "scripts/setup"
+      - "scripts/setup.sh"
+      - "scripts/setup.csh"
+      - "scripts/toolchains/**"
+      - "scripts/build_fingerprint.py"
+      - "scripts/validate_filelist.py"
+      - "scripts/run_regression.py"
       - "chip/top/**"
       - "ip/**"
   workflow_dispatch:
