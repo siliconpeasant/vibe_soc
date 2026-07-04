@@ -90,17 +90,20 @@ OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug �
 
 | Workflow | 触发方式 | 用途 |
 |---|---|---|
-| `top-smoke` | PR、手动、定时 | `chip/top` UART smoke CI 门禁 |
+| `auto-pr-automerge` | `codex/**`、`feature/**`、`fix/**` 分支 push、手动 | 自动创建/复用 PR，并尝试启用 GitHub 原生 auto-merge |
+| `top-smoke` | `codex/**`、`feature/**`、`fix/**` 分支 push、PR、手动、定时 | `chip/top` UART smoke CI 门禁 |
 | `cd-release-branch` | `release/**` 分支 push、手动 | 发布分支候选包构建 |
 | `cd-release` | `v*` tag、手动 | 正式 release 包和 GitHub Release |
 
-CI 成功只表示检查通过，不会自动合并到默认分支。要使用 GitHub 原生 auto-merge，需要：
+推荐合并链路是：push 功能分支 -> 自动创建/复用 PR -> PR CI 跑门禁 -> GitHub auto-merge 在 required checks 满足后合入默认分支。
+
+要让 auto-merge 生效，需要：
 
 1. 在仓库 `Settings -> General -> Pull Requests` 打开 `Allow auto-merge`。
 2. 给默认分支设置 branch protection，并把关键 CI check 设为 required status check。
-3. 在具体 PR 页面点击 `Enable auto-merge`。
+3. 保持 `auto-pr-automerge` workflow 的 `pull-requests: write` 和 `contents: write` 权限。
 
-之后 PR 会在 required reviews 和 required status checks 全部满足后自动合并。仓库当前没有“所有 PR 自动启用 auto-merge”的 bot/workflow；如需这种策略，应单独评审权限、分支保护和误合并风险。
+如果仓库没有打开 `Allow auto-merge`，workflow 仍会创建 PR，但启用 auto-merge 的步骤会以 warning 形式跳过。
 
 发布分支建议使用 `release/<version>` 命名。发布分支允许做小修，但修复应同步回主线，避免 release 分支长期漂移。
 

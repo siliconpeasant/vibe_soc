@@ -1,9 +1,31 @@
 name: top-smoke
 
 on:
+  push:
+    branches:
+      - "codex/**"
+      - "feature/**"
+      - "fix/**"
+    paths:
+      - ".github/workflows/top-smoke.yml"
+      - ".github/workflows/auto-pr-automerge.yml"
+      - "Makefile"
+      - "scripts/common.mk"
+      - "scripts/config.mk"
+      - "scripts/paths.mk"
+      - "scripts/setup"
+      - "scripts/setup.sh"
+      - "scripts/setup.csh"
+      - "scripts/toolchains/**"
+      - "scripts/build_fingerprint.py"
+      - "scripts/validate_filelist.py"
+      - "scripts/run_regression.py"
+      - "chip/top/**"
+      - "ip/**"
   pull_request:
     paths:
       - ".github/workflows/top-smoke.yml"
+      - ".github/workflows/auto-pr-automerge.yml"
       - "Makefile"
       - "scripts/common.mk"
       - "scripts/config.mk"
