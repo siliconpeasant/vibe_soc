@@ -1,44 +1,7 @@
 name: top-smoke
 
 on:
-  push:
-    branches:
-      - "codex/**"
-      - "feature/**"
-      - "fix/**"
-    paths:
-      - ".github/workflows/top-smoke.yml"
-      - ".github/workflows/auto-pr-automerge.yml"
-      - "Makefile"
-      - "scripts/common.mk"
-      - "scripts/config.mk"
-      - "scripts/paths.mk"
-      - "scripts/setup"
-      - "scripts/setup.sh"
-      - "scripts/setup.csh"
-      - "scripts/toolchains/**"
-      - "scripts/build_fingerprint.py"
-      - "scripts/validate_filelist.py"
-      - "scripts/run_regression.py"
-      - "chip/top/**"
-      - "ip/**"
   pull_request:
-    paths:
-      - ".github/workflows/top-smoke.yml"
-      - ".github/workflows/auto-pr-automerge.yml"
-      - "Makefile"
-      - "scripts/common.mk"
-      - "scripts/config.mk"
-      - "scripts/paths.mk"
-      - "scripts/setup"
-      - "scripts/setup.sh"
-      - "scripts/setup.csh"
-      - "scripts/toolchains/**"
-      - "scripts/build_fingerprint.py"
-      - "scripts/validate_filelist.py"
-      - "scripts/run_regression.py"
-      - "chip/top/**"
-      - "ip/**"
   workflow_dispatch:
     inputs:
       seed:
@@ -53,13 +16,111 @@ on:
   schedule:
     - cron: "0 18 * * *"
 
+permissions:
+  contents: read
+  pull-requests: read
+
 concurrency:
-  group: top-smoke-${{ github.ref }}
+  group: top-smoke-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  chip-top-smoke:
+  detect_smoke_need:
+    name: detect chip/top smoke need
+    runs-on: ubuntu-latest
+    outputs:
+      need_smoke: ${{ steps.detect.outputs.need_smoke }}
+      changed_files: ${{ steps.detect.outputs.changed_files }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect RTL-impacting changes
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          need_smoke=0
+          changed_file="$(mktemp)"
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" || "$EVENT_NAME" == "schedule" ]]; then
+            need_smoke=1
+            echo "manual or scheduled run" > "$changed_file"
+          elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+            git diff --name-only "$BASE_SHA" "$HEAD_SHA" > "$changed_file"
+          elif [[ "$EVENT_NAME" == "push" ]]; then
+            pr_number=""
+            if command -v gh >/dev/null 2>&1; then
+              pr_number=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" \
+                -f state=open \
+                -f head="${GITHUB_REPOSITORY_OWNER}:${GITHUB_REF_NAME}" \
+                -f per_page=1 \
+                --jq '.[0].number // ""')
+            fi
+
+            if [[ -n "$pr_number" ]]; then
+              base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.base.sha')
+              head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.head.sha')
+              git diff --name-only "$base_sha" "$head_sha" > "$changed_file"
+            elif [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" =~ ^0+$ ]]; then
+              need_smoke=1
+              echo "new branch push" > "$changed_file"
+            else
+              git diff --name-only "$BEFORE_SHA" "$HEAD_SHA" > "$changed_file"
+            fi
+          else
+            need_smoke=1
+            echo "event $EVENT_NAME" > "$changed_file"
+          fi
+
+          if [[ "$need_smoke" != "1" ]]; then
+            while IFS= read -r path; do
+              case "$path" in
+                .github/workflows/top-smoke.yml|\
+                Makefile|\
+                scripts/common.mk|\
+                scripts/config.mk|\
+                scripts/paths.mk|\
+                scripts/setup|\
+                scripts/setup.sh|\
+                scripts/setup.csh|\
+                scripts/toolchains/*|\
+                scripts/build_fingerprint.py|\
+                scripts/validate_filelist.py|\
+                scripts/run_regression.py|\
+                chip/top/*|\
+                ip/*)
+                  need_smoke=1
+                  break
+                  ;;
+              esac
+            done < "$changed_file"
+          fi
+
+          echo "need_smoke=$need_smoke" >> "$GITHUB_OUTPUT"
+          {
+            echo "changed_files<<EOF"
+            sed -n '1,200p' "$changed_file"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "need_smoke=$need_smoke"
+          echo "changed files:"
+          sed -n '1,200p' "$changed_file"
+
+  chip_top_smoke:
     name: chip/top UART smoke
+    needs: detect_smoke_need
+    if: needs.detect_smoke_need.outputs.need_smoke == '1'
     runs-on: [self-hosted, linux, eda, vcs]
     timeout-minutes: 90
     env:
