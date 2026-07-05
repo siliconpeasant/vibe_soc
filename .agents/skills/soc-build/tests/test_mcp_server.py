@@ -53,6 +53,23 @@ class SocBuildMcpTest(unittest.TestCase):
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
+    def test_relative_module_dir_resolves_from_project_root(self, run) -> None:
+        project_root = self.module_dir / "project"
+        relative_module = project_root / "chip" / "top"
+        relative_module.mkdir(parents=True)
+        (relative_module / "Makefile").write_text("all:\n\t@true\n")
+
+        with patch.object(SERVER, "PROJECT_ROOT", project_root):
+            result = SERVER.soc_sim("chip/top", "vcs", 7, "uart_all")
+
+        self.assertEqual(result, "ok")
+        run.assert_called_once_with(
+            ["make", "comp", "sim", "SIMULATOR=vcs", "SEED=7", "TEST=uart_all"],
+            cwd=str(relative_module.resolve()),
+            timeout=1800,
+        )
+
+    @patch.object(SERVER, "_run", return_value="ok")
     def test_regress_matrix(self, run) -> None:
         SERVER.soc_regress(str(self.module_dir), "vcs", "smoke,irq", "1,4-6", 3)
         run.assert_called_once_with(

@@ -1,0 +1,39 @@
+{
+  "mcpServers": {
+    "silicon-crew:soc-build": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["scripts/mcp_python.sh", ".agents/skills/soc-build/mcp_server.py"]
+    },
+    "silicon-crew:soc-integrate": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["scripts/mcp_python.sh", ".agents/skills/soc-integrate/mcp_server.py"]
+    },
+    "silicon-crew:soc-openroad": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["scripts/mcp_python.sh", ".agents/skills/soc-openroad/mcp_server.py"]
+    },
+    "silicon-crew:yml2reg": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["scripts/mcp_python.sh", ".agents/skills/yml2reg/mcp_server.py"]
+    },
+    "silicon-crew:excel-yml-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["scripts/mcp_python.sh", ".agents/skills/excel-yml-gen/mcp_server.py"]
+    },
+    "silicon-crew:crg-req-to-design": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["scripts/mcp_python.sh", ".agents/skills/crg-req-to-design/mcp_server.py"]
+    },
+    "silicon-crew:cr-tree-diag-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["scripts/mcp_python.sh", ".agents/skills/cr-tree-diag-gen/mcp_server.py"]
+    }
+  }
+}

@@ -21,6 +21,7 @@ from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = PLUGIN_ROOT.parent
 if str(PLUGIN_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT / "scripts"))
 
@@ -65,7 +66,18 @@ def _python(script: str, *args: str, cwd: str = None) -> str:
 
 def _module_path(module_dir: str) -> Path:
     """校验模块目录，避免在非 SoC 模块目录执行 Make 目标。"""
-    path = Path(module_dir).expanduser().resolve()
+    raw_path = Path(module_dir).expanduser()
+    if raw_path.is_absolute():
+        candidates = [raw_path]
+    else:
+        candidates = [PROJECT_ROOT / raw_path, Path.cwd() / raw_path]
+
+    path = candidates[0].resolve()
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved.is_dir():
+            path = resolved
+            break
     if not path.is_dir():
         raise ValueError(f"module_dir is not a directory: {path}")
     if not (path / "Makefile").is_file():
