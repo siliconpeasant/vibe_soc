@@ -1,0 +1,193 @@
+name: issue-to-fix-pr
+
+on:
+  issues:
+    types:
+      - opened
+      - reopened
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to turn into a fix PR"
+        required: true
+      base_branch:
+        description: "Target branch"
+        required: false
+        default: "main"
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: issue-to-fix-pr-${{ github.event_name == 'workflow_dispatch' && inputs.issue_number || github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  issue-to-fix-pr:
+    name: create issue fix branch and draft PR
+    runs-on: ubuntu-latest
+    env:
+      BASE_BRANCH: ${{ github.event_name == 'workflow_dispatch' && inputs.base_branch || github.event.repository.default_branch }}
+      ISSUE_NUMBER: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_number || github.event.issue.number }}
+
+    steps:
+      - name: Create branch, request commit, and draft PR
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
+            const base = process.env.BASE_BRANCH;
+            const head = `issue/fix-${issueNumber}`;
+
+            if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
+              core.setFailed(`invalid issue number: ${process.env.ISSUE_NUMBER}`);
+              return;
+            }
+
+            const { data: issue } = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: issueNumber,
+            });
+
+            if (issue.pull_request) {
+              core.setFailed(`#${issueNumber} is a pull request, not an issue`);
+              return;
+            }
+
+            const { data: baseRef } = await github.rest.git.getRef({
+              owner,
+              repo,
+              ref: `heads/${base}`,
+            });
+            const baseSha = baseRef.object.sha;
+
+            let branchExists = false;
+            try {
+              await github.rest.git.getRef({ owner, repo, ref: `heads/${head}` });
+              branchExists = true;
+              core.info(`Reusing branch ${head}`);
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              await github.rest.git.createRef({
+                owner,
+                repo,
+                ref: `refs/heads/${head}`,
+                sha: baseSha,
+              });
+              core.info(`Created branch ${head} from ${base}@${baseSha}`);
+            }
+
+            const safeTitle = issue.title.split('\n').join(' ').split('\r').join(' ').trim();
+            const requestPath = `.github/issue-fix-requests/issue-${issueNumber}.md`;
+            const requestBody = [
+              `# Issue ${issueNumber} Fix Request`,
+              '',
+              `Issue: #${issueNumber}`,
+              `Title: ${safeTitle}`,
+              '',
+              'This draft PR was created automatically from a GitHub issue.',
+              '',
+              'Expected workflow:',
+              '- Codex or a developer pushes the actual fix to this branch.',
+              '- CI runs on the branch or PR when relevant design files change.',
+              '- The PR should be marked ready only after the real fix is present and checks pass.',
+              '',
+              'This file is a trace marker. Remove or update it in the real fix commit if it is not useful.',
+              '',
+            ].join('\\n');
+
+            if (!branchExists) {
+              const { data: baseCommit } = await github.rest.git.getCommit({
+                owner,
+                repo,
+                commit_sha: baseSha,
+              });
+              const { data: blob } = await github.rest.git.createBlob({
+                owner,
+                repo,
+                content: requestBody,
+                encoding: 'utf-8',
+              });
+              const { data: tree } = await github.rest.git.createTree({
+                owner,
+                repo,
+                base_tree: baseCommit.tree.sha,
+                tree: [{ path: requestPath, mode: '100644', type: 'blob', sha: blob.sha }],
+              });
+              const { data: commit } = await github.rest.git.createCommit({
+                owner,
+                repo,
+                message: `Create fix branch for issue #${issueNumber}`,
+                tree: tree.sha,
+                parents: [baseSha],
+              });
+              await github.rest.git.updateRef({
+                owner,
+                repo,
+                ref: `heads/${head}`,
+                sha: commit.sha,
+                force: false,
+              });
+              core.info(`Seeded ${head} with request commit ${commit.sha}`);
+            }
+
+            const { data: existing } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:${head}`,
+              base,
+              per_page: 1,
+            });
+
+            let pull;
+            if (existing.length > 0) {
+              pull = existing[0];
+              core.info(`Reusing PR #${pull.number}: ${pull.html_url}`);
+            } else {
+              const body = [
+                `Fixes #${issueNumber}.`,
+                '',
+                'This is a draft issue-fix PR created automatically from an issue.',
+                '',
+                'Before marking ready:',
+                '- Add the actual code or collateral fix on this branch.',
+                '- Confirm the relevant CI checks pass.',
+                '- Keep generated logs, waves, caches, and local config out of the diff.',
+              ].join('\\n');
+              const created = await github.rest.pulls.create({
+                owner,
+                repo,
+                title: `[codex] fix issue #${issueNumber}: ${safeTitle}`,
+                body,
+                head,
+                base,
+                draft: true,
+                maintainer_can_modify: true,
+              });
+              pull = created.data;
+              core.info(`Created draft PR #${pull.number}: ${pull.html_url}`);
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: `Created issue-fix branch \`${head}\` and draft PR #${pull.number}: ${pull.html_url}`,
+            });
+
+            core.setOutput('branch', head);
+            core.setOutput('number', String(pull.number));
+            core.setOutput('url', pull.html_url);
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "branch=${{ steps.pr.outputs.branch }}"
+          echo "pr=${{ steps.pr.outputs.url }}"

@@ -51,3 +51,6 @@ pd/openroad/work/
 pd/openroad/work_local*/
 pd/openroad/local/
 pd/openroad/**/config.local.mk
+
+# Auto-bootstrapped venv for silicon-crew MCP servers (scripts/mcp_python.sh)
+.soc-mcp-venv/
