@@ -9,7 +9,7 @@ Coordinate work; do not implement RTL or testbench content in the coordinator.
 
 ## Preflight
 
-1. Read `../../rules/01_swarm_flow.md`, `../../rules/02_toolchain.md`, and `../../rules/05_pipeline_state.md`. Read coding style or exceptions only when relevant.
+1. Read `../../rules/01_swarm_flow.md`, `../../rules/02_toolchain.md`, and `../../rules/05_pipeline_state.md`. Read coding style or exceptions only when relevant. For any architecture, documentation, RTL, verification, synthesis, physical-design, or material refactoring task, also read `../../rules/06_design_knowledge.md` and query `soc-ai-kb` before design decisions.
 2. Resolve the absolute module workspace and module name.
 3. Query `pipeline_state.json`; initialize it only when absent. Never overwrite existing state implicitly.
 4. For chip-level, subsystem-level, or multi-module requirements without an approved architecture handoff, dispatch `soc-architect` first for IP selection, technology/process selection, and the overall SoC integration architecture plan. Treat it as pre-doc planning, not a `pipeline_state.json` stage.
@@ -22,6 +22,8 @@ Coordinate work; do not implement RTL or testbench content in the coordinator.
 ## Delegation
 
 Use named role agents when supported. Otherwise spawn a generic subagent with the matching file under `../../agents/` as its role contract. Respect host delegation policy and do not silently replace a required role agent with coordinator-authored RTL.
+
+For large stage tasks, the coordinator may split work across multiple agents automatically when the host allows it. Keep one role agent as the stage owner. Sidecar agents must have explicit, disjoint write ownership and may not independently close the stage. The stage owner integrates sidecar work, runs the required registered MCP checks, validates artifacts, and updates `pipeline_state.json`.
 
 Every dispatch prompt includes:
 

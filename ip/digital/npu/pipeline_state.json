@@ -1,0 +1,128 @@
+{
+  "schema_version": 2,
+  "module": "npu",
+  "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/ip/digital/npu",
+  "mode": "single",
+  "created_at": "2026-07-07T02:12:44Z",
+  "last_updated": "2026-07-07T05:57:14Z",
+  "pipeline": {
+    "doc": {
+      "step_id": "doc",
+      "name": "设计文档编写",
+      "agent": "soc-doc-engineer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-07-07T03:06:17Z",
+      "completed_at": "2026-07-07T03:19:51Z",
+      "artifacts": [
+        "docs/design_spec.md",
+        "docs/interface_spec.md",
+        "docs/regmap.md",
+        "docs/verification_plan.md"
+      ],
+      "check_results": [
+        {
+          "tool": "doc_completeness",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "notes": "NPU minimal inference evolution docs completed; downstream RTL/verif/syn require rerun",
+      "last_updated": "2026-07-07T03:19:51Z"
+    },
+    "rtl": {
+      "step_id": "rtl",
+      "name": "RTL设计与编码",
+      "agent": "soc-rtl-designer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-07-07T04:01:11Z",
+      "completed_at": "2026-07-07T04:12:50Z",
+      "artifacts": [
+        "de/rtl/npu.v",
+        "de/rtl/npu_regs.v",
+        "de/rtl/npu_spm.v",
+        "de/rtl/npu_core.v",
+        "de/rtl/npu_mac.v",
+        "de/rtl/npu_requant.v",
+        "de/rtl/filelist.f",
+        "de/syn/npu.sdc"
+      ],
+      "check_results": [
+        {
+          "tool": "soc_lint",
+          "passed": true,
+          "note": "verilator lint completed; lint.log empty"
+        },
+        {
+          "tool": "soc_comp",
+          "passed": true,
+          "note": "vcs compile/elab completed; only VCS LCA usage warning"
+        },
+        {
+          "tool": "rtl_quality",
+          "passed": true,
+          "note": "check_rtl_quality.py passed with no issues"
+        }
+      ],
+      "notes": "Reopen RTL for behavior-preserving modular refactor of npu top; downstream verif/syn remain pending.",
+      "last_updated": "2026-07-07T04:12:50Z"
+    },
+    "verif": {
+      "step_id": "verif",
+      "name": "验证环境搭建与仿真",
+      "agent": "soc-verification-engineer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-07-07T05:49:49Z",
+      "completed_at": "2026-07-07T05:57:14Z",
+      "artifacts": [
+        "dv/tb/tb_npu.sv",
+        "dv/sim/sim.log"
+      ],
+      "check_results": [
+        {
+          "tool": "soc_sim",
+          "passed": true,
+          "note": "vcs npu_toy_mlp seed1 top tb_npu"
+        },
+        {
+          "tool": "sim_log",
+          "passed": true,
+          "note": "check_sim_pass dv/sim/sim.log"
+        }
+      ],
+      "notes": "Add toy MLP end-to-end inference demo",
+      "last_updated": "2026-07-07T05:57:14Z"
+    },
+    "syn": {
+      "step_id": "syn",
+      "name": "逻辑综合与时序分析",
+      "agent": "soc-synthesis-engineer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-07-07T04:16:43Z",
+      "completed_at": "2026-07-07T04:18:54Z",
+      "artifacts": [
+        "de/syn/npu_netlist.v",
+        "de/syn/synth.log",
+        "de/syn/npu.sdc"
+      ],
+      "check_results": [
+        {
+          "tool": "soc_syn",
+          "passed": true,
+          "note": "yosys default backend, rtl_top=npu, netlist and log generated"
+        },
+        {
+          "tool": "synth_log_review",
+          "passed": true,
+          "note": "no hierarchy errors, unsupported constructs, or inferred latches, four memory-to-register replacement warnings reviewed"
+        }
+      ],
+      "notes": "",
+      "last_updated": "2026-07-07T04:18:54Z"
+    }
+  },
+  "next_actions": []
+}
