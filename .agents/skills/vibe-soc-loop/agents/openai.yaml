@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vibe Soc Loop"
+  short_description: "Coordinate vibe_soc staged SoC loop and review work"
+  default_prompt: "Use the vibe_soc loop workflow for this task."

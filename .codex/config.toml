@@ -55,3 +55,12 @@ type = "command"
 command = 'bash "$(git rev-parse --show-toplevel)/.codex/hooks/session-start.sh"'
 timeout = 30
 statusMessage = "Loading silicon-crew workflow"
+
+[[hooks.PreToolUse]]
+matcher = "Bash|functions.exec_command|exec_command"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = '/usr/bin/python3 "$(git rev-parse --show-toplevel)/.codex/hooks/pre_tool_use_policy.py"'
+timeout = 10
+statusMessage = "Checking EDA command policy"
