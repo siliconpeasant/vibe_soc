@@ -11,6 +11,11 @@ For chip-level, subsystem-level, or multi-module requirements, dispatch `soc-arc
 | rtl | `soc-rtl-designer` | `de/rtl/<module>.v`, `de/rtl/filelist.f`, `de/syn/<module>.sdc` |
 | verif | `soc-verification-engineer` | `dv/tb/tb_<module>.*`, `dv/sim/sim.log` |
 | syn | `soc-synthesis-engineer` | `de/syn/<module>_netlist.v`, `de/syn/synth.log` |
+| review gate (post-stage or pre-commit) | `soc-reviewer` | findings with evidence, no state transition |
+
+## Review gate
+
+Dispatch `soc-reviewer` after pipeline-governed work when preparing to commit, when a task claims validation success, or when an independent audit is requested. The reviewer is not a pipeline stage and does not update `pipeline_state.json`; use `13_review_gate.md` for the audit contract.
 
 RTL specialization:
 

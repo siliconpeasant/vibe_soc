@@ -38,9 +38,10 @@ This cwd is a silicon-crew SoC project. For RTL creation or material refactoring
 - Physical-design handoff uses `soc-openroad`; keep OpenROAD-flow-scripts/OpenROAD directories independent and store project-owned config under `pd/openroad/`.
 - Use only `docs/`, `de/rtl/`, `de/syn/`, `de/run/`, `dv/tb/`, and `dv/sim/` artifact roots.
 - A stage is done only when artifacts exist and every recorded check passes. Never fabricate simulation PASS or timing WNS/TNS.
+- Use `soc-reviewer` for post-stage, pre-commit, or validation-evidence audit; it reports findings only and does not update `pipeline_state.json`.
 - `crg-gen` is currently not registered; do not schedule CRG RTL generation until it is available.
 
-Before acting on an RTL workflow, read the relevant full rules from `{rules}`. Pipeline dispatch requires `01_swarm_flow.md`, `02_toolchain.md`, and `05_pipeline_state.md`; read coding style or exceptions only when applicable.
+Before acting on an RTL workflow, read the relevant full rules from `{rules}`. Pipeline dispatch requires `01_swarm_flow.md`, `02_toolchain.md`, and `05_pipeline_state.md`; review or commit-readiness work also requires `13_review_gate.md`; read coding style or exceptions only when applicable.
 """
 print(json.dumps({
     "hookSpecificOutput": {

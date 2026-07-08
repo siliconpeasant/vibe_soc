@@ -9,7 +9,7 @@ Coordinate work; do not implement RTL or testbench content in the coordinator.
 
 ## Preflight
 
-1. Read `../../rules/01_swarm_flow.md`, `../../rules/02_toolchain.md`, and `../../rules/05_pipeline_state.md`. Read coding style or exceptions only when relevant. For any architecture, documentation, RTL, verification, synthesis, physical-design, or material refactoring task, also read `../../rules/06_design_knowledge.md` and query `soc-ai-kb` before design decisions.
+1. Read `../../rules/01_swarm_flow.md`, `../../rules/02_toolchain.md`, `../../rules/05_pipeline_state.md`, and `../../rules/13_review_gate.md` when review or commit readiness is in scope. Read coding style or exceptions only when relevant. For any architecture, documentation, RTL, verification, synthesis, physical-design, or material refactoring task, also read `../../rules/06_design_knowledge.md` and query `soc-ai-kb` before design decisions.
 2. Resolve the absolute module workspace and module name.
 3. Query `pipeline_state.json`; initialize it only when absent. Never overwrite existing state implicitly.
 4. For chip-level, subsystem-level, or multi-module requirements without an approved architecture handoff, dispatch `soc-architect` first for IP selection, technology/process selection, and the overall SoC integration architecture plan. Treat it as pre-doc planning, not a `pipeline_state.json` stage.
@@ -18,6 +18,7 @@ Coordinate work; do not implement RTL or testbench content in the coordinator.
    - top integration: `soc-integrator`
    - CRG: `soc-crg-engineer`, only when `crg-gen` is registered
    - OpenROAD physical-design handoff: `soc-pd-engineer`
+6. Select `soc-reviewer` for post-stage, pre-commit, or validation-evidence audit. The reviewer reports findings only and never closes a pipeline stage. Use `.agents/scripts/check_loop_state.py <workspace> --mode normal` after stage work and `--mode strict` before commit readiness when a workspace is available.
 
 ## Delegation
 
@@ -33,7 +34,7 @@ Every dispatch prompt includes:
 - single- or multi-module state mode
 - for pipeline-stage agents only, requirement to update state and quote the `update_state.py` stdout line
 
-After each pipeline-stage role returns, query state immediately and verify status, artifacts, and all checks. After `soc-architect` returns, verify that architecture artifacts exist and are ready for the doc stage. Do not dispatch downstream work after failure.
+After each pipeline-stage role returns, query state immediately and verify status, artifacts, and all checks. After `soc-architect` returns, verify that architecture artifacts exist and are ready for the doc stage. When review is requested or commit readiness matters, dispatch `soc-reviewer` after the stage owner reports and before claiming the loop is closed. Do not dispatch downstream work after failure.
 
 ## Execution contract
 
