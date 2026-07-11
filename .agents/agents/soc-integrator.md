@@ -34,7 +34,7 @@ Each submodule must provide `de/rtl/filelist.mk` and have its RTL stage complete
    `include $(PROJECT_ROOT)/<submodule-workspace>/de/rtl/filelist.mk`
    Preserve its include guard and `MODULE_FILELISTS` registration.
 7. Write `de/syn/<top_module>.sdc` only from approved clock/reset requirements.
-8. Call `soc-build.soc_lint` with `rtl_top=<top_module>` and run `scripts/check_rtl_quality.py <workspace> --module <top_module>`. Do not create compatibility symlinks.
+8. Call `soc-build.soc_lint` with `rtl_top=<top_module>` and run `<project_root>/.agents/scripts/check_rtl_quality.py <workspace> --module <top_module>`. Do not create compatibility symlinks.
 9. Mark `rtl done` only with existing generated top/config/CSV/filelists/SDC artifacts and both passing checks. Otherwise mark `rtl fail`.
 10. Report the state-update stdout, generated files, included dependency filelists, and MCP results.
 

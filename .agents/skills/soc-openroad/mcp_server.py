@@ -43,7 +43,7 @@ CONTAINER_PROJECT_DIR = "/work"
 CONTAINER_ORFS_DIR = "/OpenROAD-flow-scripts/flow"
 DEFAULT_ORFS_IMAGE = "openroad/orfs:latest"
 DEFAULT_BACKEND = "local"
-DEFAULT_LOCAL_ORFS_DIR = "/project/xuanwu9000/user/silicon/OpenROAD-flow-scripts-master/flow"
+DEFAULT_LOCAL_ORFS_DIR = ""
 LOCAL_ORFS_ENV = "SILICON_CREW_ORFS_DIR"
 
 
@@ -292,7 +292,10 @@ def _default_work_home(project: Path, backend: str = DEFAULT_BACKEND) -> Path:
 
 
 def _default_orfs_dir() -> str:
-    return os.environ.get(LOCAL_ORFS_ENV, DEFAULT_LOCAL_ORFS_DIR)
+    configured = os.environ.get(LOCAL_ORFS_ENV, DEFAULT_LOCAL_ORFS_DIR)
+    if not configured:
+        raise ValueError("local backend requires orfs_dir or SILICON_CREW_ORFS_DIR")
+    return configured
 
 
 def _orfs(orfs_dir: str) -> Path:
@@ -496,7 +499,7 @@ def soc_openroad_run(
 
     Args:
         project_dir: SoC project root
-        orfs_dir: OpenROAD-flow-scripts/flow directory; defaults to SILICON_CREW_ORFS_DIR or /project/xuanwu9000/user/silicon/OpenROAD-flow-scripts-master/flow for backend=local
+        orfs_dir: OpenROAD-flow-scripts/flow directory; defaults to SILICON_CREW_ORFS_DIR for backend=local
         design_config: config.mk path; defaults to pd/openroad/<platform>/<design>/config.mk
         stage: ORFS make target, e.g. synth/floorplan/place/cts/route/finish/all
         platform: used only for default design_config path

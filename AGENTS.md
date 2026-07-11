@@ -14,6 +14,8 @@ Do not add legacy root-level `rtl/`, `tb/`, `sim/`, `syn/`, or `constraints/` co
 
 ## Build, Test, and Development Commands
 
+The Make examples below are for human developers. Agents must use registered MCP tools for EDA stages.
+
 Run from the repository root unless noted:
 
 ```bash
@@ -35,7 +37,7 @@ Keep RTL SystemVerilog consistent with nearby OpenTitan/vibe_soc code. Use lower
 
 ## Testing Guidelines
 
-Verification must use the project Make/MCP flow, not direct simulator commands. Preferred smoke check is:
+Human verification may use the Make flow below. Agent verification must use `soc-build.soc_sim`, never direct Make or simulator commands. Preferred human smoke check is:
 
 ```bash
 make sim MODULE=chip/top SIMULATOR=vcs TEST=chip_sw_uart_smoketest SEED=1

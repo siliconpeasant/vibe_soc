@@ -1,0 +1,10 @@
+{
+  "case": "ate_bootstrap_flash_erase",
+  "type": "case_without_flash_image",
+  "status": "runnable_without_flash_image",
+  "source_hjson": "OpenTitan hw/top_earlgrey/dv/chip_manuf_ate_tests.hjson",
+  "reason": "The test checks behavior before loading flash and intentionally declares sw_images as empty.",
+  "stable_input_root": "chip/top/dv/tb/sw/cases/ate_bootstrap_flash_erase",
+  "images": [],
+  "files": []
+}

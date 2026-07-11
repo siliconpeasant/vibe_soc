@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import tempfile
 import unittest
@@ -26,6 +27,10 @@ class SocBuildMcpTest(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory()
         self.module_dir = Path(self.tempdir.name)
         (self.module_dir / "Makefile").write_text("all:\n\t@true\n")
+        rtl = self.module_dir / "de" / "rtl"
+        rtl.mkdir(parents=True)
+        (rtl / "demo.sv").write_text("module demo; endmodule\n")
+        (rtl / "filelist.f").write_text("demo.sv\n")
 
     def tearDown(self) -> None:
         self.tempdir.cleanup()
@@ -45,8 +50,13 @@ class SocBuildMcpTest(unittest.TestCase):
     @patch.object(SERVER, "_run", return_value="ok")
     def test_sim_builds_before_running(self, run) -> None:
         result = SERVER.soc_sim(str(self.module_dir), "vcs", 7, "uart_all")
-        self.assertEqual(result, "ok")
-        run.assert_called_once_with(
+        self.assertTrue(result.startswith("ok\nLOOP_EVIDENCE="))
+        evidence = json.loads(result.split("LOOP_EVIDENCE=", 1)[1])
+        self.assertEqual(evidence["tool_family"], "soc_sim")
+        self.assertTrue(evidence["run_id"].startswith("soc_sim-"))
+        self.assertRegex(evidence["source_fingerprint"], r"^[0-9a-f]{64}$")
+        self.assertEqual(run.call_count, 2)
+        run.assert_any_call(
             ["make", "comp", "sim", "SIMULATOR=vcs", "SEED=7", "TEST=uart_all"],
             cwd=str(self.module_dir.resolve()),
             timeout=1800,
@@ -58,12 +68,17 @@ class SocBuildMcpTest(unittest.TestCase):
         relative_module = project_root / "chip" / "top"
         relative_module.mkdir(parents=True)
         (relative_module / "Makefile").write_text("all:\n\t@true\n")
+        rtl = relative_module / "de" / "rtl"
+        rtl.mkdir(parents=True)
+        (rtl / "top.sv").write_text("module top; endmodule\n")
+        (rtl / "filelist.f").write_text("top.sv\n")
 
         with patch.object(SERVER, "PROJECT_ROOT", project_root):
             result = SERVER.soc_sim("chip/top", "vcs", 7, "uart_all")
 
-        self.assertEqual(result, "ok")
-        run.assert_called_once_with(
+        self.assertTrue(result.startswith("ok\nLOOP_EVIDENCE="))
+        self.assertEqual(run.call_count, 2)
+        run.assert_any_call(
             ["make", "comp", "sim", "SIMULATOR=vcs", "SEED=7", "TEST=uart_all"],
             cwd=str(relative_module.resolve()),
             timeout=1800,
@@ -82,7 +97,7 @@ class SocBuildMcpTest(unittest.TestCase):
                 "REGRESS_TESTS=smoke,irq",
             ],
             cwd=str(self.module_dir.resolve()),
-            timeout=3600,
+            timeout=43200,
         )
 
     @patch.object(SERVER, "_run", return_value="ok")
@@ -90,7 +105,8 @@ class SocBuildMcpTest(unittest.TestCase):
         SERVER.soc_sim(
             str(self.module_dir), "iverilog", 1, "smoke", top_module="tb_uart"
         )
-        run.assert_called_once_with(
+        self.assertEqual(run.call_count, 2)
+        run.assert_any_call(
             [
                 "make",
                 "comp",
@@ -107,7 +123,8 @@ class SocBuildMcpTest(unittest.TestCase):
     @patch.object(SERVER, "_run", return_value="ok")
     def test_sim_accepts_fsdb(self, run) -> None:
         SERVER.soc_sim(str(self.module_dir), "vcs", 1, "smoke", fsdb=True)
-        run.assert_called_once_with(
+        self.assertEqual(run.call_count, 2)
+        run.assert_any_call(
             [
                 "make",
                 "comp",
@@ -168,7 +185,8 @@ class SocBuildMcpTest(unittest.TestCase):
     @patch.object(SERVER, "_run", return_value="ok")
     def test_syn_uses_project_target(self, run) -> None:
         SERVER.soc_syn(str(self.module_dir), "uart")
-        run.assert_called_once_with(
+        self.assertEqual(run.call_count, 2)
+        run.assert_any_call(
             ["make", "syn", "SYN_TOOL=yosys", "RTL_TOP=uart"],
             cwd=str(self.module_dir.resolve()),
             timeout=1200,
@@ -176,12 +194,28 @@ class SocBuildMcpTest(unittest.TestCase):
 
     @patch.object(SERVER, "_run", return_value="ok")
     def test_syn_accepts_dc(self, run) -> None:
-        SERVER.soc_syn(str(self.module_dir), "uart", syn_tool="dc")
-        run.assert_called_once_with(
+        result = SERVER.soc_syn(str(self.module_dir), "uart", syn_tool="dc")
+        evidence = json.loads(result.split("LOOP_EVIDENCE=", 1)[1])
+        self.assertEqual(evidence["tool_family"], "soc_syn")
+        self.assertEqual(run.call_count, 2)
+        run.assert_any_call(
             ["make", "syn", "SYN_TOOL=dc", "RTL_TOP=uart"],
             cwd=str(self.module_dir.resolve()),
             timeout=1200,
         )
+
+    @patch.object(SERVER, "_run")
+    def test_success_evidence_rejects_source_drift(self, run) -> None:
+        def mutate(*args, **kwargs):
+            if run.call_count == 2:
+                (self.module_dir / "de" / "rtl" / "demo.sv").write_text(
+                    "module demo; wire changed; endmodule\n"
+                )
+            return "ok"
+
+        run.side_effect = mutate
+        with self.assertRaisesRegex(RuntimeError, "changed during soc_sim"):
+            SERVER.soc_sim(str(self.module_dir), "vcs", 1, "smoke")
 
     def test_syn_rejects_unknown_tool(self) -> None:
         with self.assertRaisesRegex(ValueError, "dc, yosys"):

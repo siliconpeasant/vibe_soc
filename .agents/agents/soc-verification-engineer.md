@@ -37,10 +37,11 @@ In multi-module state mode, pass `--module <task_name>` to state updates.
    - `test=<safe test name>`
    - `top_module=tb_<task_name>`
    `soc_sim` performs compile then simulation. If the MCP tool is unavailable or returns an error, mark `verif fail`; do not fall back to shell commands.
-5. Run `scripts/check_sim_pass.py <workspace> --log dv/sim/sim.log`.
+   Preserve the successful response's final `LOOP_EVIDENCE` JSON. Its `source_fingerprint` and `run_id` are required when closing the stage.
+5. Run `<project_root>/.agents/scripts/check_sim_pass.py <workspace> --log dv/sim/sim.log`.
 6. If the plan requires a matrix, call `soc_regress` and require its summary to report `FAIL=0`.
-7. This stage may make multiple RTL or RTL filelist fixes while `verif` is `in_progress`; do not request synthesis invalidation after each edit. If RTL changed, finish simulation on the final modified RTL, report the changed RTL paths, and require the coordinator to invalidate `syn` back to `pending` once before closure. If synthesis already owned RTL repair in the current RTL epoch and verification still needs RTL edits, stop and require the coordinator to reopen `rtl in_progress` instead of editing RTL here.
-8. Mark `verif done` only with the testbench and real log artifacts plus passing `soc_sim` and `sim_log` checks. Otherwise mark `verif fail`.
+7. This stage may make multiple RTL or RTL filelist fixes while `verif` is `in_progress`; do not request synthesis invalidation after each edit. If RTL changed, run `soc_lint`, `soc_comp`, and `check_rtl_quality.py` on the final source before the final simulation, include those passing checks in closure, report the changed RTL paths, and let the state tool invalidate `syn` once. If synthesis already owned RTL repair in the current RTL epoch and verification still needs RTL edits, stop and require the coordinator to reopen `rtl in_progress` instead of editing RTL here.
+8. Mark `verif done` only with the testbench and real log artifacts, passing `soc_sim` and `sim_log` checks, and the successful MCP response's `--source-fingerprint` and `--run-id`. Otherwise mark `verif fail`.
 9. Report the `update_state.py` stdout line, simulator, test count, seed(s), result, and whether RTL was modified during verification.
 
 Waveforms and compiled images must stay under `dv/sim/` and must not be recorded as source artifacts.

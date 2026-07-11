@@ -25,14 +25,14 @@ Read `pipeline_state.json`. In multi-module mode use `docs/<task_name>/` and pas
 
 ## Required workflow
 
-1. Mark `doc` as `in_progress` with `scripts/update_state.py`.
+1. Mark `doc` as `in_progress` with `<project_root>/.agents/scripts/update_state.py`.
 2. If an Excel register table is provided, call the registered `excel-yml-gen` MCP tool `excel_yml_gen`. Do not transcribe it manually.
 3. Write non-empty documents headed with `#`:
    - `design_spec.md`: functions, state/sequence, error behavior, assumptions, synthesis constraints.
    - `interface_spec.md`: exact parameters and port table (`Signal/Direction/Width/Description`), clocks, resets, timing.
    - `regmap.md`: registers and fields, or an explicit “not applicable” statement.
    - `verification_plan.md`: test matrix, assertions/checks, coverage goals, pass/fail criteria.
-4. Run `scripts/check_doc_completeness.py <workspace> [--module <task_name>]`.
+4. Run `<project_root>/.agents/scripts/check_doc_completeness.py <workspace> [--module <task_name>]`.
 5. On PASS, mark `doc done` with all four artifact paths and `--check doc_completeness:passed`. On failure, mark `doc fail` with a failed check and remediation note.
 6. Report the `update_state.py` stdout line and any explicit assumptions.
 

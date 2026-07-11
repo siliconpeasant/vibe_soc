@@ -77,7 +77,15 @@ def check(workspace: str, module: str = "") -> dict:
     if module and module not in declared_modules:
         issues.append(f"expected module '{module}' is not present in the filelist")
 
-    misplaced_sdc = sorted(rtl_dir.rglob("*.sdc")) if rtl_dir.is_dir() else []
+    misplaced_sdc = (
+        sorted(
+            path
+            for path in rtl_dir.rglob("*.sdc")
+            if not set(path.relative_to(rtl_dir).parts) & {"vendor", "generated"}
+        )
+        if rtl_dir.is_dir()
+        else []
+    )
     for path in misplaced_sdc:
         issues.append(f"SDC must be under de/syn, not de/rtl: {path}")
 

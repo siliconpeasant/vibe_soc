@@ -13,9 +13,11 @@ SoC Build MCP Server
 import argparse
 import glob
 import getpass
+import json
 import os
 import re
 import sys
+import uuid
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
@@ -26,6 +28,7 @@ if str(PLUGIN_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT / "scripts"))
 
 from mcp_runtime import run_command, run_python
+from loop_state_core import compute_rtl_fingerprint
 
 # ---------------------------------------------------------------------------
 # 路径推导
@@ -194,6 +197,39 @@ def _make(
     return _run(command, cwd=str(path), timeout=timeout)
 
 
+def _make_with_loop_evidence(
+    module_dir: str,
+    targets: list[str],
+    variables: dict[str, str | int],
+    timeout: int,
+    tool_family: str,
+) -> str:
+    """Run an MCP Make target and bind its success to one immutable RTL snapshot."""
+    path = _module_path(module_dir)
+    rtl_filelist_target = str(path / "de" / "run" / "rtl.f")
+    _make(module_dir, [rtl_filelist_target], {}, timeout=120)
+    source_fingerprint = compute_rtl_fingerprint(path)
+    if not source_fingerprint:
+        raise RuntimeError(
+            "cannot create loop evidence: resolved RTL/filelist fingerprint is empty"
+        )
+    run_id = f"{tool_family}-{uuid.uuid4().hex}"
+    output = _make(module_dir, targets, variables, timeout)
+    final_fingerprint = compute_rtl_fingerprint(path)
+    if final_fingerprint != source_fingerprint:
+        raise RuntimeError(
+            f"RTL/filelist changed during {tool_family}; discard this run and rerun"
+        )
+    evidence = {
+        "run_id": run_id,
+        "source_fingerprint": source_fingerprint,
+        "tool_family": tool_family,
+    }
+    return str(output).rstrip() + "\nLOOP_EVIDENCE=" + json.dumps(
+        evidence, sort_keys=True
+    )
+
+
 # ---------------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------------
@@ -350,7 +386,13 @@ def soc_sim(
         variables["TOP_MODULE"] = _hdl_identifier(top_module, "top_module")
     if fsdb:
         variables["FSDB"] = 1
-    return _make(module_dir, ["comp", "sim"], variables, timeout=1800)
+    return _make_with_loop_evidence(
+        module_dir,
+        ["comp", "sim"],
+        variables,
+        timeout=1800,
+        tool_family="soc_sim",
+    )
 
 
 @mcp.tool()
@@ -380,7 +422,7 @@ def soc_regress(
         variables["REGRESS_TESTS"] = _tests(tests)
     if top_module:
         variables["TOP_MODULE"] = _hdl_identifier(top_module, "top_module")
-    return _make(module_dir, ["regress"], variables, timeout=3600)
+    return _make(module_dir, ["regress"], variables, timeout=43200)
 
 
 @mcp.tool()
@@ -443,7 +485,13 @@ def soc_syn(module_dir: str, rtl_top: str = "", syn_tool: str = "yosys") -> str:
     variables: dict[str, str | int] = {"SYN_TOOL": _syn_tool(syn_tool)}
     if rtl_top:
         variables["RTL_TOP"] = _hdl_identifier(rtl_top, "rtl_top")
-    return _make(module_dir, ["syn"], variables, timeout=1200)
+    return _make_with_loop_evidence(
+        module_dir,
+        ["syn"],
+        variables,
+        timeout=1200,
+        tool_family="soc_syn",
+    )
 
 
 @mcp.tool()

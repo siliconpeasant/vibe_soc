@@ -3,13 +3,14 @@
   "workspace": "ip/digital/spi",
   "mode": "single",
   "created_at": "2026-05-22T09:47:15Z",
-  "last_updated": "2026-05-22T10:07:54Z",
+  "last_updated": "2026-07-11T00:32:46Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
       "name": "设计文档编写",
       "agent": "soc-doc-engineer",
       "status": "done",
+      "blocked_by": [],
       "started_at": null,
       "completed_at": "2026-05-22T09:47:21Z",
       "artifacts": [
@@ -18,6 +19,40 @@
         "docs/regmap.md",
         "docs/verification_plan.md"
       ],
+      "artifact_evidence": {
+        "docs/design_spec.md": {
+          "sha256": "f0d8d8b4ad1b70e80c799a7312071bd1c7d09f650d827dc1c5a0fef0f99c7c56",
+          "size": 16617,
+          "recorded_at": "2026-07-11T00:32:46Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/interface_spec.md": {
+          "sha256": "c517f99bf35a96dd3f35d7d9692a21a528cb62c12f0c0f41e33a3643f617c427",
+          "size": 7487,
+          "recorded_at": "2026-07-11T00:32:46Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/regmap.md": {
+          "sha256": "4db31dc7e75e546d88215e9a4eb034ea5ab70f8ac27b3df1e3273b1da6a12020",
+          "size": 8480,
+          "recorded_at": "2026-07-11T00:32:46Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/verification_plan.md": {
+          "sha256": "29e03a62ac1b0186b58dcf1aea712b22709c35c1cd8f585953e11193d1d2ea05",
+          "size": 13478,
+          "recorded_at": "2026-07-11T00:32:46Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        }
+      },
       "check_results": [
         {
           "tool": "doc_completeness",
@@ -25,62 +60,76 @@
           "note": ""
         }
       ],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": "",
-      "last_updated": "2026-05-22T09:47:21Z"
+      "last_updated": "2026-05-22T09:47:21Z",
+      "evidence_policy": "legacy_migrated"
     },
     "rtl": {
       "step_id": "rtl",
       "name": "RTL设计与编码",
       "agent": "soc-rtl-designer",
       "status": "pending",
+      "blocked_by": [],
       "started_at": null,
       "completed_at": null,
       "artifacts": [],
+      "artifact_evidence": {},
       "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": ""
     },
     "verif": {
       "step_id": "verif",
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
-      "status": "pending",
+      "status": "blocked",
+      "blocked_by": [
+        "rtl"
+      ],
       "started_at": null,
       "completed_at": null,
       "artifacts": [],
+      "artifact_evidence": {},
       "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": ""
     },
     "syn": {
       "step_id": "syn",
       "name": "逻辑综合与时序分析",
       "agent": "soc-synthesis-engineer",
-      "status": "done",
+      "status": "blocked",
+      "blocked_by": [
+        "rtl"
+      ],
       "started_at": null,
-      "completed_at": "2026-05-22T10:07:54Z",
-      "artifacts": [
-        "de/syn/spi_netlist.v",
-        "de/syn/final.sdc",
-        "de/syn/timing.rpt",
-        "de/syn/area.rpt",
-        "de/syn/synth.log",
-        "de/syn/spi_synthesis_report.md"
-      ],
-      "check_results": [
-        {
-          "tool": "timing",
-          "passed": true,
-          "note": "WNS >= 0"
-        }
-      ],
-      "notes": "",
-      "last_updated": "2026-05-22T10:07:54Z"
+      "completed_at": null,
+      "artifacts": [],
+      "artifact_evidence": {},
+      "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
+      "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
+      "last_updated": "2026-07-11T00:32:46Z"
     }
   },
   "next_actions": [
     {
       "stage": "rtl",
       "action": "spawn soc-rtl-designer",
-      "reason": "dependencies ['doc'] satisfied, ready to start rtl"
+      "reason": "dependencies ['doc'] satisfied"
     }
-  ]
+  ],
+  "schema_version": 3,
+  "migration": {
+    "normalized_from_schema": 1,
+    "normalization": "current-checkout snapshot; legacy checks not re-executed",
+    "migrated_from_schema": 1,
+    "validated_at": "2026-07-11T00:32:46Z",
+    "policy": "done retained only with current real evidence"
+  }
 }

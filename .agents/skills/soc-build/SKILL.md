@@ -63,6 +63,13 @@ Create structure with `soc_init`, `soc_add_chip`, or `soc_add_ip`. Do not create
 
 All names, simulators, tests, seeds, and job counts are validated. A nonzero process exit or timeout is an MCP tool error.
 
+Successful `soc_sim` and `soc_syn` responses end with a machine-readable
+`LOOP_EVIDENCE=<json>` line containing `run_id`, `source_fingerprint`, and
+`tool_family`. The server hashes the resolved source manifest before and after
+the Make target and rejects the run if RTL/filelist material changed. Pass the
+emitted run ID and fingerprint to `update_state.py` when closing `verif` or
+`syn`; never synthesize these values from the current checkout after the run.
+
 ## Stage use
 
 - RTL agents call `soc_lint`; MCP allows Verilator or SpyGlass lint only; no direct Verilator/Icarus fallback.

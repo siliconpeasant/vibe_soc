@@ -3,7 +3,7 @@
   "workspace": "ip/digital/uart",
   "mode": "multi_module",
   "created_at": "2026-05-17T09:22:00Z",
-  "last_updated": "2026-05-17T09:51:08Z",
+  "last_updated": "2026-07-11T00:32:44Z",
   "modules": {
     "uart": {
       "pipeline": {
@@ -12,6 +12,7 @@
           "name": "设计文档编写",
           "agent": "soc-doc-engineer",
           "status": "done",
+          "blocked_by": [],
           "started_at": "2026-05-17T09:22:00Z",
           "completed_at": "2026-05-17T09:30:01Z",
           "artifacts": [
@@ -20,6 +21,40 @@
             "docs/uart/regmap.md",
             "docs/uart/verification_plan.md"
           ],
+          "artifact_evidence": {
+            "docs/uart/design_spec.md": {
+              "sha256": "0ab2dca113df8ddc4cf0cedb7402d4b68bf1c91258858dbd8e3ad4e8d590797e",
+              "size": 16358,
+              "recorded_at": "2026-07-11T00:32:44Z",
+              "provenance": [
+                "doc_completeness"
+              ]
+            },
+            "docs/uart/interface_spec.md": {
+              "sha256": "27847a6415900163d891c65805e639a2a9598d3b47d7b1b28ff21907c7c211e0",
+              "size": 6011,
+              "recorded_at": "2026-07-11T00:32:44Z",
+              "provenance": [
+                "doc_completeness"
+              ]
+            },
+            "docs/uart/regmap.md": {
+              "sha256": "02e18306a7cc55eaa4c5b5b216f25eda3cc4b03d5d128afa2aa52f07d1068e61",
+              "size": 741,
+              "recorded_at": "2026-07-11T00:32:44Z",
+              "provenance": [
+                "doc_completeness"
+              ]
+            },
+            "docs/uart/verification_plan.md": {
+              "sha256": "37d4fac64e1d7ae711d4e558970b43014f4a9334769f3e9e9c9ff4ede3a8aeab",
+              "size": 8841,
+              "recorded_at": "2026-07-11T00:32:44Z",
+              "provenance": [
+                "doc_completeness"
+              ]
+            }
+          },
           "check_results": [
             {
               "tool": "doc_completeness",
@@ -27,92 +62,80 @@
               "note": ""
             }
           ],
+          "rtl_fingerprint": null,
+          "rtl_fingerprint_source": null,
           "notes": "",
-          "last_updated": "2026-05-17T09:30:01Z"
+          "last_updated": "2026-05-17T09:30:01Z",
+          "evidence_policy": "legacy_migrated"
         },
         "rtl": {
           "step_id": "rtl",
           "name": "RTL设计与编码",
           "agent": "soc-rtl-designer",
-          "status": "done",
+          "status": "pending",
+          "blocked_by": [],
           "started_at": null,
-          "completed_at": "2026-05-17T09:32:35Z",
-          "artifacts": [
-            "de/rtl/uart.v",
-            "de/rtl/filelist.f",
-            "de/syn/uart.sdc"
-          ],
-          "check_results": [
-            {
-              "tool": "rtl_quality",
-              "passed": true,
-              "note": ""
-            }
-          ],
-          "notes": "",
-          "last_updated": "2026-05-17T09:32:35Z"
+          "completed_at": null,
+          "artifacts": [],
+          "artifact_evidence": {},
+          "check_results": [],
+          "rtl_fingerprint": null,
+          "rtl_fingerprint_source": null,
+          "notes": "Migration invalidated legacy evidence: required checks absent: registered lint, registered compile",
+          "last_updated": "2026-07-11T00:32:44Z"
         },
         "verif": {
           "step_id": "verif",
           "name": "验证环境搭建与仿真",
           "agent": "soc-verification-engineer",
-          "status": "done",
+          "status": "blocked",
+          "blocked_by": [
+            "rtl"
+          ],
           "started_at": null,
-          "completed_at": "2026-05-17T09:51:08Z",
-          "artifacts": [
-            "dv/tb/tb_uart.v",
-            "dv/sim/tb_uart.log"
-          ],
-          "check_results": [
-            {
-              "tool": "sim",
-              "passed": true,
-              "note": "0 ERROR 0 MISMATCH"
-            }
-          ],
-          "notes": "",
-          "last_updated": "2026-05-17T09:51:08Z"
+          "completed_at": null,
+          "artifacts": [],
+          "artifact_evidence": {},
+          "check_results": [],
+          "rtl_fingerprint": null,
+          "rtl_fingerprint_source": null,
+          "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
+          "last_updated": "2026-07-11T00:32:44Z"
         },
         "syn": {
           "step_id": "syn",
           "name": "逻辑综合与时序分析",
           "agent": "soc-synthesis-engineer",
-          "status": "done",
-          "started_at": null,
-          "completed_at": "2026-05-17T09:35:34Z",
-          "artifacts": [
-            "de/syn/uart_netlist.v",
-            "de/syn/uart.sdc",
-            "de/syn/timing.rpt",
-            "de/syn/area.rpt",
-            "de/syn/yosys.log",
-            "docs/synthesis_report.md"
+          "status": "blocked",
+          "blocked_by": [
+            "rtl"
           ],
-          "check_results": [
-            {
-              "tool": "timing",
-              "passed": true,
-              "note": "WNS >= 0"
-            }
-          ],
-          "notes": "",
-          "last_updated": "2026-05-17T09:35:34Z"
-        },
-        "release": {
-          "step_id": "release",
-          "name": "集成与版本发布",
-          "agent": "soc-release-engineer",
-          "status": "done",
-          "blocked_by": [],
           "started_at": null,
-          "completed_at": "2026-05-17T09:51:08Z",
+          "completed_at": null,
           "artifacts": [],
+          "artifact_evidence": {},
           "check_results": [],
-          "notes": "release stage removed from workflow"
+          "rtl_fingerprint": null,
+          "rtl_fingerprint_source": null,
+          "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
+          "last_updated": "2026-07-11T00:32:44Z"
         }
       },
-      "next_actions": []
+      "next_actions": [
+        {
+          "stage": "rtl",
+          "action": "spawn soc-rtl-designer",
+          "reason": "dependencies ['doc'] satisfied"
+        }
+      ]
     }
   },
-  "next_actions": []
+  "schema_version": 3,
+  "migration": {
+    "normalized_from_schema": 1,
+    "normalization": "current-checkout snapshot; legacy checks not re-executed",
+    "migrated_from_schema": 1,
+    "validated_at": "2026-07-11T00:32:44Z",
+    "policy": "done retained only with current real evidence"
+  }
 }

@@ -39,7 +39,7 @@ In multi-module state mode, pass `--module <task_name>` to state updates.
    - `simulator=vcs`
    - `top_module=<task_name>`
    No direct VCS/Icarus/Verilator or shell `make comp` fallback is allowed.
-7. Run `scripts/check_rtl_quality.py <workspace> --module <task_name>`.
+7. Run `<project_root>/.agents/scripts/check_rtl_quality.py <workspace> --module <task_name>`.
 8. Mark `rtl done` only with existing RTL/filelist/SDC artifacts and all passing checks (`soc_lint`, `soc_comp`, `rtl_quality`). On any failure, mark `rtl fail` and stop.
 9. Report the `update_state.py` stdout line and the exact MCP results.
 

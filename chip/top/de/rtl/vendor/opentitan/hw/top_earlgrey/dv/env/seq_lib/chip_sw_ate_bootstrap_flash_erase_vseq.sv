@@ -25,6 +25,10 @@ class chip_sw_ate_bootstrap_flash_erase_vseq extends chip_sw_base_vseq;
 
     super.body();
 
+    // cpu_init() has completed, so this only keeps the base sequence's strap
+    // handler from clearing the manually driven bootstrap straps in Boot ROM.
+    cfg.use_spi_load_bootstrap = 1'b1;
+
     // Drive SW straps for bootstrap.
     `uvm_info(get_name(), "Driving SW straps high for bootstrap.", UVM_LOW)
     cfg.chip_vif.sw_straps_if.drive(3'h7);
@@ -50,6 +54,7 @@ class chip_sw_ate_bootstrap_flash_erase_vseq extends chip_sw_base_vseq;
     _check_flash_data_page('h0, 32'hFFFF_FFFF);
 
     // Set test passed.
+    cfg.use_spi_load_bootstrap = 1'b0;
     cfg.chip_vif.sw_straps_if.drive(3'h0);
     assert_por_reset();
     override_test_status_and_finish(.passed(1'b1));

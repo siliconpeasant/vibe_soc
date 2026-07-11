@@ -7,6 +7,7 @@ Use the registered MCP server/tool by logical name. The host may prefix the expo
 | project/module scaffolding | `soc-build` | `soc_init`, `soc_add_chip`, `soc_add_ip` |
 | filelist | `soc-build` | `soc_flist` |
 | lint | `soc-build` | `soc_lint` |
+| CDC | `soc-build` | `soc_cdc` |
 | compile/single simulation | `soc-build` | `soc_comp`, `soc_sim` |
 | regression/coverage | `soc-build` | `soc_regress`, `soc_coverage` |
 | synthesis | `soc-build` | `soc_syn` |

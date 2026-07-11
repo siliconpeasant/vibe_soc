@@ -1,6 +1,6 @@
 # Design knowledge-base contract
 
-All substantive development tasks must be evidence-led. Before making architecture, documentation, RTL, verification, synthesis, physical-design, integration, lint-fix, or material refactoring decisions, query the local SoC AI knowledge base with `soc-ai-kb` for relevant methodology, coding, tool, domain, or implementation guidance.
+All substantive development tasks must be evidence-led. When `soc-ai-kb` is registered, query it before architecture, documentation, RTL, verification, synthesis, physical-design, integration, lint-fix, or material-refactoring decisions. If it is unavailable, do not block a fresh clone solely for that reason; record the unavailable capability, local evidence used, and engineering assumptions.
 
 The resulting artifacts must cite or summarize the knowledge-base evidence that influenced the design. If the knowledge base has insufficient evidence for a material design choice, state that explicitly and record the engineering assumption.
 

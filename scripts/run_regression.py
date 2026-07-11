@@ -32,10 +32,12 @@ class Result:
 
 def load_tests(path: Path | None, inline: str) -> list[TestSpec]:
     specs: list[TestSpec] = []
-    if path and path.is_file():
+    if inline.strip() and inline.strip() != "default":
+        lines = [item.strip() for item in inline.split(",") if item.strip()] or ["default"]
+    elif path and path.is_file():
         lines = path.read_text(errors="replace").splitlines()
     else:
-        lines = [item.strip() for item in inline.split(",") if item.strip()] or ["default"]
+        lines = ["default"]
     for line in lines:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
@@ -68,21 +70,53 @@ def run_one(
     pass_regex: str,
     fail_regex: str,
     matrix_args: str,
+    make_module_dir: Path | None,
+    make_simulator: str,
+    make_top_module: str,
 ) -> Result:
     safe_name = re.sub(r"[^A-Za-z0-9_.-]+", "_", spec.name)
     log_path = output_dir / f"{safe_name}_seed_{seed}.log"
-    test_args = f"+TESTNAME={shlex.quote(spec.name)} +UVM_TESTNAME={shlex.quote(spec.name)}"
-    per_run_args = matrix_args.format(test=safe_name, seed=seed)
-    command = f"{base_command} {test_args} +ntb_random_seed={seed} {spec.args} {per_run_args}".strip()
+    if make_module_dir:
+        if safe_name != spec.name:
+            raise ValueError(f"unsafe recursive-make test name: {spec.name}")
+        case_sim_dir = output_dir / "cases" / safe_name / f"seed_{seed}"
+        case_sim_dir.mkdir(parents=True, exist_ok=True)
+        command_args = [
+            "make",
+            "--no-print-directory",
+            "-C",
+            str(make_module_dir.resolve()),
+            "comp",
+            "sim",
+            f"SIMULATOR={make_simulator}",
+            f"TEST={spec.name}",
+            f"SEED={seed}",
+            f"SIM_DIR={case_sim_dir.resolve()}",
+        ]
+        if make_top_module:
+            command_args.append(f"TOP_MODULE={make_top_module}")
+        if spec.args:
+            command_args.append(f"REGRESS_CASE_ARGS={spec.args}")
+        command = shlex.join(command_args)
+        run_command: str | list[str] = command_args
+        run_cwd = make_module_dir
+        use_shell = False
+    else:
+        test_args = f"+TESTNAME={shlex.quote(spec.name)} +UVM_TESTNAME={shlex.quote(spec.name)}"
+        per_run_args = matrix_args.format(test=safe_name, seed=seed)
+        command = f"{base_command} {test_args} +ntb_random_seed={seed} {spec.args} {per_run_args}".strip()
+        run_command = command
+        run_cwd = sim_dir
+        use_shell = True
     env = os.environ.copy()
     env.update({"TEST": spec.name, "SEED": str(seed)})
     with log_path.open("w") as log:
         completed = subprocess.run(
-            command,
-            cwd=sim_dir,
+            run_command,
+            cwd=run_cwd,
             env=env,
-            shell=True,
-            executable="/bin/bash",
+            shell=use_shell,
+            executable="/bin/bash" if use_shell else None,
             stdout=log,
             stderr=subprocess.STDOUT,
             check=False,
@@ -107,19 +141,24 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sim-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--command", required=True)
+    parser.add_argument("--command", default="")
     parser.add_argument("--tests-file", type=Path)
     parser.add_argument("--tests", default="default")
     parser.add_argument("--seeds", default="1")
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--pass-regex", default="")
     parser.add_argument("--matrix-args", default="")
+    parser.add_argument("--make-module-dir", type=Path)
+    parser.add_argument("--make-simulator", default="vcs")
+    parser.add_argument("--make-top-module", default="")
     parser.add_argument(
         "--fail-regex",
         default=r"\[(?:ERROR|FAIL)\]|MISMATCH|ERROR=[1-9][0-9]*|^RESULT:(?!\s*ALL TESTS PASS)",
     )
     args = parser.parse_args()
 
+    if not args.make_module_dir and not args.command:
+        parser.error("--command is required unless --make-module-dir is set")
     args.output_dir.mkdir(parents=True, exist_ok=True)
     tests = load_tests(args.tests_file, args.tests)
     matrix = [(test, seed) for test in tests for seed in load_seeds(args.seeds)]
@@ -136,6 +175,9 @@ def main() -> int:
                 args.pass_regex,
                 args.fail_regex,
                 args.matrix_args,
+                args.make_module_dir,
+                args.make_simulator,
+                args.make_top_module,
             )
             for test, seed in matrix
         ]

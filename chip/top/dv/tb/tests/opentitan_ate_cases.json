@@ -50,7 +50,7 @@
       "run_opts": [
         "+sw_test_timeout_ns=160000000"
       ],
-      "status": "migrated_case_definition",
+      "status": "runnable_without_flash_image",
       "sw_collateral": {
         "common_otp": "dv/tb/sw/common/otp",
         "images": [],

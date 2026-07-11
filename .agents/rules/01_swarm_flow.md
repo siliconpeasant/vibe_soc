@@ -36,6 +36,7 @@ Only these artifact roots are valid:
 
 - documentation: `docs/`
 - RTL/filelists: `de/rtl/`
+- transient build output: `de/run/`
 - constraints, synthesis and STA: `de/syn/`
 - testbench and simulation: `dv/tb/`, `dv/sim/`
 

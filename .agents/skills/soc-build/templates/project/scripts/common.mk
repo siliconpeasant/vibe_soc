@@ -138,6 +138,16 @@ test: comp
 		--jobs 1 --pass-regex "$(REGRESS_PASS_REGEX)" \
 		--matrix-args "$(REGRESS_MATRIX_ARGS)"
 
+ifeq ($(REGRESS_RECURSIVE_MAKE),1)
+regress:
+	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/run_regression.py \
+		--sim-dir $(SIM_DIR) --output-dir $(REGRESS_DIR) \
+		--make-module-dir $(MODULE_PATH) --make-simulator "$(SIMULATOR)" \
+		--make-top-module "$(TOP_MODULE)" --tests-file $(REGRESS_TEST_FILE) \
+		--tests "$(REGRESS_TESTS)" --seeds "$(REGRESS_SEEDS)" \
+		--jobs $(REGRESS_JOBS) --pass-regex "$(REGRESS_PASS_REGEX)" \
+		--matrix-args "$(REGRESS_MATRIX_ARGS)"
+else
 regress: comp
 	@$(PYTHON_RUN) $(PROJECT_ROOT)/scripts/run_regression.py \
 		--sim-dir $(SIM_DIR) --output-dir $(REGRESS_DIR) \
@@ -145,6 +155,7 @@ regress: comp
 		--tests "$(REGRESS_TESTS)" --seeds "$(REGRESS_SEEDS)" \
 		--jobs $(REGRESS_JOBS) --pass-regex "$(REGRESS_PASS_REGEX)" \
 		--matrix-args "$(REGRESS_MATRIX_ARGS)"
+endif
 
 report:
 	@test -f $(REGRESS_DIR)/summary.txt || { echo "[REPORT] No regression summary"; exit 2; }
