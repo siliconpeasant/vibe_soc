@@ -186,18 +186,9 @@ If a required owner role or executor is missing, stop with a precise blocker. Do
             "and the configured local ORFS directory.",
         )
     elif relative.endswith("soc-reviewer.md"):
-        text = replace_once(
-            text,
-            "1. Read repository `AGENTS.md` and the relevant `.agents/rules` files. Always read `01_swarm_flow.md`, `02_toolchain.md`, `05_pipeline_state.md`, and `13_review_gate.md` when present.",
-            "1. Read repository `AGENTS.md` and the relevant `.agents/rules` files. Always read `01_swarm_flow.md`, `02_toolchain.md`, `05_pipeline_state.md`, and `13_review_gate.md`; read `10_rtl_change_gate.md`, `11_verif_recovery_gate.md`, and `12_syn_pd_gate.md` when the focus touches them.",
-            relative,
-        )
-        text = replace_once(
-            text,
-            "5. Verify that state, artifacts, check results, and claimed EDA evidence agree with real files and registered MCP execution.\n6. Report findings and exact follow-up checks. Do not modify source, state, generated artifacts, or waivers, and do not run EDA tools.",
-            "5. Verify that state, artifacts, check results, and claimed EDA evidence agree with real files and registered MCP execution. Treat stale/missing logs, estimated timing, direct shell fallback, illegal roots, and missing RTL-repair invalidation as findings.\n6. Report `pass`, `needs-fix`, `needs-validation`, or `blocked` with exact follow-up checks. Do not modify source, state, generated artifacts, or waivers, and do not run EDA tools.",
-            relative,
-        )
+        # The reviewer contract is canonical and generated into Codex adapters by
+        # sync_agent_profiles.py. Keep this cross-contract pass idempotent.
+        pass
     return text
 
 
