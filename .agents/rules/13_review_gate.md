@@ -4,7 +4,7 @@ Use this rule for independent review after a pipeline-governed change, before co
 
 ## Reviewer role
 
-Use `soc-reviewer` for loop audit when named agent profiles are available. If named role agents are unavailable, use a generic subagent with canonical `.agents/agents/soc-reviewer.md` as the role contract.
+Use `soc-reviewer` for loop audit when named agent profiles are available. If role agents are unavailable, use a generic subagent with `.codex/agents/soc-reviewer.toml` as the role contract.
 
 `soc-reviewer` is an audit role. It does not write RTL, testbench, constraints, generated tops, `pipeline_state.json`, waivers, or OpenROAD collateral. It does not run simulator, synthesis, STA, or OpenROAD tools. It reports findings and required follow-up checks.
 

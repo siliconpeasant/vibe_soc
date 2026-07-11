@@ -20,24 +20,27 @@ Use this skill as the high-level dispatcher for `vibe_soc`. It selects the corre
    - review or commit readiness: `../../rules/13_review_gate.md`
    - manual RTL style: `../../rules/04_coding_style.md`
    - design decisions: `../../rules/06_design_knowledge.md`
-3. Resolve the absolute project root, workspace, state module name, RTL top, and testbench top separately. For `chip/top`, the state module is `vibe_soc_top` while the current RTL top is `chip_earlgrey_asic`; never infer one from the other.
+3. Resolve the absolute project root, module workspace, and module name. For the active top, use `chip/top` and `vibe_soc_top` unless the user specifies another module.
 4. Query existing `pipeline_state.json` before stage work. Initialize only when absent and only through the validated state helper.
 5. For review requests, select `review_mode=quick|normal|strict`; default to `normal`, use `quick` for dry-run planning, and use `strict` before commit or PR.
 
 ## Classification
 
-Classify ownership before selecting an executor. Any generated top, wrapper, register RTL, CRG RTL, RTL/filelist, interface, or constraint change is pipeline-governed and must be owned by `soc-pipeline` plus the applicable stage role. Lower-level skills and MCP tools execute work for that owner; they do not bypass state gates.
+Classify the task first, then use the matching skill:
 
-| Task class | Owner | Executor |
-|---|---|---|
-| architecture, material RTL, generated RTL/top/wrapper, multi-stage recovery | `soc-pipeline` / stage role | matching generator, `soc-integrate`, or `soc-build` |
-| standalone lint/compile/simulation/regression/coverage/synthesis request | applicable stage role | `soc-build` |
-| read-only port extraction, snapshot, or interface diff | coordinator | `soc-integrate` |
-| OpenROAD physical-design handoff | `soc-pd-engineer` | `soc-openroad` |
-| loop audit, validation evidence, commit readiness | `soc-reviewer` | `check_loop_state.py` and read-only inspection |
-| approved source-table conversion with no RTL output | coordinator | `excel-yml-gen`, `crg-req-to-design`, or `cr-tree-diag-gen` |
+| Task | Use |
+|---|---|
+| chip/subsystem architecture, material RTL, multi-stage recovery | `soc-pipeline` |
+| lint, filelist, compile, simulation, regression, coverage, synthesis | `soc-build` |
+| top/wrapper/port extraction or interface snapshots | `soc-integrate` |
+| OpenROAD physical-design handoff | `soc-openroad` |
+| loop audit, validation evidence review, commit readiness | `soc-reviewer` |
+| YAML register implementation | `yml2reg` |
+| Excel register source conversion | `excel-yml-gen` |
+| CRG requirement to design tables | `crg-req-to-design` |
+| clock/reset design diagrams | `cr-tree-diag-gen` |
 
-If a required owner role or executor is missing, stop with a precise blocker. Do not hand-roll generated tops, generated CRG logic, direct simulator runs, direct synthesis runs, or OpenROAD shell fallbacks.
+If the required lower-level skill is missing, stop with a precise blocker. Do not hand-roll generated tops, generated CRG logic, direct simulator runs, direct synthesis runs, or OpenROAD shell fallbacks.
 
 ## Loop Contract
 
