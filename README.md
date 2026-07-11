@@ -97,6 +97,16 @@ OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug �
 
 推荐合并链路是：push 功能分支 -> 自动创建/复用 PR -> PR CI 跑门禁 -> GitHub auto-merge 在 required checks 满足后合入默认分支。
 
+每个新任务必须从最新默认分支创建唯一 fresh branch。已经合并过 PR 的分支禁止复用，继续向旧分支 push 会被 `auto-pr-automerge` 主动拒绝：
+
+```bash
+scripts/prepare_task_branch.sh <task-slug>
+# 完成修改和提交后
+git push -u origin "$(git branch --show-current)"
+```
+
+脚本生成 `codex/<task>-<UTC timestamp>` 分支。push 后 workflow 会自动创建 PR，并以 squash 方式启用 GitHub auto-merge。
+
 要让 auto-merge 生效，需要：
 
 1. 在仓库 `Settings -> General -> Pull Requests` 打开 `Allow auto-merge`。
@@ -262,8 +272,42 @@ python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 | CRG 需求转设计表 | `crg-req-to-design` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |
 | 时钟/复位树图 | `cr-tree-diag-gen` | 从设计表生成 Draw.io 和 Excalidraw 图 |
 | 流程编排 | `vibe-soc-loop` → `soc-pipeline` | 前者分类与路由，后者协调架构、doc、RTL、验证、综合、PD handoff |
+| 独立设计审查 | `soc-reviewer` + `soc-ai-kb` | 对设计交付物做只读第一轮 Review，输出结构化风险、Issue、waiver 和交付清单，不执行 EDA 或宣称 signoff |
 
 EDA 阶段应走注册工具入口：验证调用 `soc-build.soc_sim`，综合调用 `soc-build.soc_syn`，OpenROAD 调用 `soc-openroad.soc_openroad_*`。自动化流程不使用直接 `make`、`iverilog`、`vvp`、`yosys`、`openroad` 等 shell fallback。
+
+## SoC Reviewer 与知识库
+
+`soc-reviewer` 用于 post-stage、提交前、PR 前或独立设计审查。它是只读审查角色，不修改 RTL、testbench、约束、waiver 或 `pipeline_state.json`，也不运行仿真、综合、STA 和 OpenROAD。Review 结果只作为人工二轮评审输入，不代表设计 signoff。
+
+审查范围按实际输入选择，可覆盖 RTL coding/lint、clock/reset、CDC/RDC、总线协议、寄存器和地址映射、顶层集成、UPF/low power、DFT、SDC/STA、综合 QoR、LEC/Formality、Formal、验证/regression/coverage、X-prop/GLS、安全、waiver、交付复现性和文档完整性。固定输出包括：
+
+- `Review Summary`
+- `Key Risks`
+- `Issue List`
+- `Waiver Review`
+- `Delivery Checklist`
+- `Next Actions`
+
+知识库通过 Codex 全局 MCP `soc-ai-kb` 提供。当前 reviewer 使用 `kb_search`/`kb_context` 查询规则；仓库不保存个人服务地址或认证信息。可用性检查：
+
+```bash
+codex mcp list
+```
+
+### 知识库来源硬门禁
+
+- 只有 source path 以 `soc/review/rule_library/` 开头的结果具有 `Project Rule` 权威。
+- 其他知识库结果只能标记为 `Reference Evidence`，不得单独判定项目违规、设置 `Blocker/Critical` 或支持 waiver。
+- 项目规则若只有标题或缺少实质 requirement，视为 placeholder，结论必须标记 `Need Human Confirmation`。
+- 直接代码缺陷、失败检查、缺失 artifact 和仓库流程违规仍可使用 `Local Evidence` 报告。
+- Reviewer 不得伪造规则 ID、来源、版本或项目要求。
+
+典型调用：
+
+```text
+使用 soc-reviewer strict 审查 chip/top；知识库优先限定 soc/review/rule_library/，列出 reviewed/unreviewed domains，并输出结构化 Issue List。
+```
 
 
 ## OpenTitan Vendor Island
