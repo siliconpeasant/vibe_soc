@@ -10,8 +10,11 @@ from __future__ import annotations
 import json
 import os
 import re
+import select
 import shlex
 import sys
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 BLOCKED_TOOLS = {
@@ -42,10 +45,54 @@ BLOCKED_MAKE_TARGETS = {
     "openroad",
 }
 SHELL_SEPARATORS = {";", "&&", "||", "|"}
+MAX_PAYLOAD_BYTES = 1024 * 1024
+PAYLOAD_WAIT_SECONDS = 2.0
+DIAGNOSTIC_LOG = Path(
+    os.environ.get(
+        "VIBE_SOC_HOOK_DIAGNOSTIC_LOG",
+        Path(__file__).resolve().parent / "logs" / "pre_tool_use_policy.log",
+    )
+)
+
+
+def _write_diagnostic(exc: BaseException) -> None:
+    timestamp = datetime.now(timezone.utc).isoformat()
+    message = f"{timestamp} {type(exc).__name__}: {exc}\n"
+    try:
+        DIAGNOSTIC_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with DIAGNOSTIC_LOG.open("a", encoding="utf-8") as log:
+            log.write(message)
+    except OSError as log_exc:
+        print(f"PreToolUse diagnostic log error: {log_exc}", file=sys.stderr)
 
 
 def _load_payload() -> object:
-    raw = sys.stdin.read()
+    """Read one JSON payload without requiring the hook runner to close stdin."""
+    chunks: list[bytes] = []
+    size = 0
+    deadline = time.monotonic() + PAYLOAD_WAIT_SECONDS
+    fd = sys.stdin.fileno()
+
+    while size < MAX_PAYLOAD_BYTES:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        readable, _, _ = select.select([fd], [], [], remaining)
+        if not readable:
+            break
+        chunk = os.read(fd, min(65536, MAX_PAYLOAD_BYTES - size))
+        if not chunk:
+            break
+        chunks.append(chunk)
+        size += len(chunk)
+
+        raw = b"".join(chunks).decode("utf-8", errors="replace")
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+
+    raw = b"".join(chunks).decode("utf-8", errors="replace")
     if not raw.strip():
         return {}
     try:
@@ -164,4 +211,13 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except SystemExit:
+        raise
+    except BaseException as exc:
+        # Fail open on hook infrastructure errors so a broken hook cannot wedge
+        # every tool call. Keep both persistent and visible diagnostics.
+        _write_diagnostic(exc)
+        print(f"PreToolUse policy hook error: {exc}", file=sys.stderr)
+        raise SystemExit(0)
