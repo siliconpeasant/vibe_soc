@@ -17,3 +17,5 @@ When RTL grows beyond a readable single file, split it into focused Verilog/Syst
 Do not expand scope into new protocols, autonomous DMA, cache hierarchy, generated clocks/resets, safety mechanisms, DFT wrappers, SRAM macros, or physical-design assumptions unless the architecture and doc stages explicitly approve those choices with knowledge-base evidence or a documented lack of evidence.
 
 For `soc-reviewer`, knowledge-base evidence is ordered by specificity: active project rules, IP/subsystem rules, company rules, then general rules. Each cited rule includes its ID, source, version, and scope. If no applicable rule is found, rule-dependent findings use `Need Human Confirmation`; the reviewer must not invent authoritative requirements.
+
+For reviewer decisions, only knowledge-base sources under `soc/review/rule_library/` have project-rule authority. Other sources are reference evidence and cannot independently create a project violation, set `Blocker` or `Critical` severity, or justify a waiver. A project-rule file containing only a heading or no substantive requirement is a placeholder and requires `Need Human Confirmation`.

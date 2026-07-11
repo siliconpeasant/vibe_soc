@@ -35,6 +35,9 @@ class SocReviewerContractTest(unittest.TestCase):
             self.assertIn(severity, contract)
         self.assertIn("Need Human Confirmation", contract)
         self.assertIn("soc-ai-kb", contract)
+        self.assertIn("soc/review/rule_library/", contract)
+        self.assertIn("Reference Evidence", contract)
+        self.assertIn("contains only a title/heading", contract)
         self.assertIn("Never state that the design is signed off", contract)
 
     def test_review_gate_matches_knowledge_fallback(self) -> None:
@@ -42,6 +45,9 @@ class SocReviewerContractTest(unittest.TestCase):
         self.assertIn("project-specific rules first", gate)
         self.assertIn("Need Human Confirmation", gate)
         self.assertIn("rule ID/source/version", gate)
+        self.assertIn("Hard source gate", gate)
+        self.assertIn("cannot independently establish a project violation", gate)
+        self.assertIn("Project Rule|Reference Evidence|Local Evidence", gate)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,8 @@ The reviewer is a first-pass design review, not a signoff authority. Its coverag
 
 When `soc-ai-kb` is registered, query active project-specific rules first, then IP/subsystem, company, and general rules. Findings cite the matched rule ID, source, version, and scope. If the service is unavailable or no applicable rule is found, record that limitation and use `Need Human Confirmation` for conclusions that depend on the missing rule. Never fabricate a rule or convert generic model knowledge into a project requirement. Direct code defects, failed checks, missing evidence, and repository process violations remain reportable from local evidence.
 
+Hard source gate: only results with a source path beginning `soc/review/rule_library/` are authoritative `Project Rule` evidence. Every other knowledge-base source is `Reference Evidence`; it cannot independently establish a project violation, assign `Blocker`/`Critical`, or justify a waiver unless a substantive project rule explicitly incorporates it. A source under the project-rule prefix that contains only a heading or lacks a substantive requirement is a placeholder, not an active rule, and requires `Need Human Confirmation`.
+
 ## Review depth
 
 Use the narrowest review mode that matches the risk:
@@ -48,6 +50,6 @@ A review result does not replace the module pipeline state machine. Do not add a
 
 ## Structured report contract
 
-Reports contain, in order: `Review Summary`, `Key Risks`, `Issue List`, `Waiver Review`, `Delivery Checklist`, and `Next Actions`. Issues use severity `Blocker|Critical|Major|Minor|Info`, confidence 0-100, and proposed status `Open|Need Human Confirmation|Waiver Review|Deferred|Resolved by Evidence`. Every issue includes category, rule ID/source/version, file/line, associated report, evidence, risk, fix, impact, human-confirmation flag, owner, and proposed status. Missing fields are written as `Not Available`, not silently omitted.
+Reports contain, in order: `Review Summary`, `Key Risks`, `Issue List`, `Waiver Review`, `Delivery Checklist`, and `Next Actions`. Issues use severity `Blocker|Critical|Major|Minor|Info`, confidence 0-100, and proposed status `Open|Need Human Confirmation|Waiver Review|Deferred|Resolved by Evidence`. Every issue includes category, rule ID/source/version, rule authority (`Project Rule|Reference Evidence|Local Evidence`), file/line, associated report, evidence, risk, fix, impact, human-confirmation flag, owner, and proposed status. Missing fields are written as `Not Available`, not silently omitted.
 
 `Next Actions` separates must-fix-before-merge items, owner confirmations, deferrable work, and optimizations. The report may recommend a registered MCP check but cannot execute EDA or claim design signoff.
