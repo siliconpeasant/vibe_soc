@@ -48,6 +48,24 @@ jobs:
               return;
             }
 
+            const { data: closed } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'closed',
+              head: `${owner}:${head}`,
+              base,
+              per_page: 100,
+            });
+            const merged = closed.find((pull) => pull.merged_at);
+            if (merged) {
+              core.setFailed([
+                `Refusing to reuse branch ${head}: PR #${merged.number} already merged.`,
+                'Create a fresh task branch from the latest base with',
+                `scripts/prepare_task_branch.sh <task-slug>.`,
+              ].join(' '));
+              return;
+            }
+
             const { data: existing } = await github.rest.pulls.list({
               owner,
               repo,
