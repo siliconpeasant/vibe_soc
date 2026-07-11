@@ -40,12 +40,14 @@ Select every domain implicated by the inputs; do not claim coverage for absent a
 2. Select review depth: `quick` checks diff and state shape; `normal` also checks artifact existence and PASS evidence; `strict` adds transient-file and commit-readiness checks.
 3. Infer applicable review domains from the diff, specifications, reports, manifests, and delivery list. Record both reviewed and unreviewed domains.
 4. When `soc-ai-kb` is registered, query project-specific active rules first, then IP/subsystem rules, company rules, and general rules. Search by domain, rule/tag name, report diagnostic, interface, and design concept. Record rule ID, source, version, and scope for every matched rule.
-5. If `soc-ai-kb` is unavailable or no applicable rule is found, record that fact. Any issue whose conclusion depends on the missing rule must use proposed status `Need Human Confirmation`; never invent a rule ID or authoritative conclusion. Direct code defects, failed checks, missing artifacts, and repository process violations may still be reported from local evidence.
-6. Run `<project_root>/.agents/scripts/check_loop_state.py <workspace> --mode <review_mode>` when a workspace is available.
-7. Inspect `git status --short`, the relevant diff, and untracked files.
-8. Verify that state, artifacts, check results, and claimed EDA evidence agree with real files and registered MCP execution. Treat stale/missing logs, estimated timing, direct shell fallback, illegal roots, and missing RTL-repair invalidation as findings.
-9. Review every waiver separately. A waiver needs a rule/instance, owner, rationale, bounded impact, evidence, approval, and expiry or review condition. Do not create or approve waivers.
-10. Report the review outcome as `pass`, `needs-fix`, `needs-validation`, or `blocked`. Do not modify source, state, generated artifacts, or waivers, and do not run EDA tools.
+5. Apply the project-rule source gate: only results whose source path starts with `soc/review/rule_library/` may be classified as `Project Rule`. All other knowledge-base results are `Reference Evidence` only and cannot establish a project violation, determine `Blocker`/`Critical` severity, or justify a waiver unless an applicable project rule explicitly incorporates that source.
+6. Treat a project-rule result as a placeholder when it contains only a title/heading or lacks a substantive requirement. A placeholder cannot establish a violation or severity and requires proposed status `Need Human Confirmation`.
+7. If `soc-ai-kb` is unavailable or no applicable substantive project rule is found, record that fact. Any issue whose conclusion depends on the missing rule must use proposed status `Need Human Confirmation`; never invent a rule ID or authoritative conclusion. Direct code defects, failed checks, missing artifacts, and repository process violations may still be reported from local evidence.
+8. Run `<project_root>/.agents/scripts/check_loop_state.py <workspace> --mode <review_mode>` when a workspace is available.
+9. Inspect `git status --short`, the relevant diff, and untracked files.
+10. Verify that state, artifacts, check results, and claimed EDA evidence agree with real files and registered MCP execution. Treat stale/missing logs, estimated timing, direct shell fallback, illegal roots, and missing RTL-repair invalidation as findings.
+11. Review every waiver separately. A waiver needs a rule/instance, owner, rationale, bounded impact, evidence, approval, and expiry or review condition. Do not create or approve waivers.
+12. Report the review outcome as `pass`, `needs-fix`, `needs-validation`, or `blocked`. Do not modify source, state, generated artifacts, or waivers, and do not run EDA tools.
 
 ## Classification
 
@@ -83,6 +85,7 @@ For every issue include all fields below; use `Not Available` rather than omitti
 - Confidence
 - Rule ID
 - Rule source and version
+- Rule authority (`Project Rule`, `Reference Evidence`, or `Local Evidence`)
 - File path and line
 - Associated report
 - Description

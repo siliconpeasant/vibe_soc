@@ -51,7 +51,7 @@ For pipeline-governed work:
 6. If a downstream stage repairs RTL, apply the invalidation rules from `01_swarm_flow.md` and `05_pipeline_state.md` before declaring closure.
 7. For post-stage review or commit readiness, dispatch `soc-reviewer` after the stage owner finishes. Treat review findings as follow-up work; do not add a `review` stage to `pipeline_state.json`.
 8. When a module workspace is available, run `.agents/scripts/check_loop_state.py <workspace> --mode <review_mode>` as read-only evidence for the reviewer or final response.
-9. Reviewer dispatches include the implicated review domains, available reports/deliverables, `knowledge_scope`, and requested top-risk count. Require the structured report sections from `13_review_gate.md`. If `soc-ai-kb` is unavailable, require explicit knowledge gaps and `Need Human Confirmation` rather than invented rules.
+9. Reviewer dispatches include the implicated review domains, available reports/deliverables, `knowledge_scope`, and requested top-risk count. Require the structured report sections and source-authority gate from `13_review_gate.md`. Only `soc/review/rule_library/` may supply project rules; other knowledge-base sources are reference evidence, and empty placeholders require `Need Human Confirmation`.
 
 ## Reporting
 
