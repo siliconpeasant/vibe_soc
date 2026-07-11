@@ -53,6 +53,18 @@ For MCP changes, run:
 
 Commit messages are short, imperative summaries, for example `Update simulation toolchain controls` or `Split OpenTitan RTL into native IP filelists`. Keep commits focused and exclude waveforms, simulator caches, local config, and personal files. PRs should describe intent, list affected modules, include commands run, and call out any known tool or license assumptions.
 
+Every new task must use a fresh branch created from the latest remote default
+branch. Before making task changes, run:
+
+```bash
+scripts/prepare_task_branch.sh <task-slug>
+```
+
+Never push new commits to a branch whose pull request has already merged. Do
+not reuse a prior `codex/**`, `feature/**`, or `fix/**` branch for another
+task. The automatic PR workflow rejects reuse of a previously merged head
+branch.
+
 ## Agent-Specific Instructions
 
 For RTL creation or material refactoring, follow the gated `doc -> rtl -> {verif, syn}` workflow and update `pipeline_state.json` when applicable. EDA stages must use registered MCP tools such as `soc-build.soc_sim`, `soc-build.soc_syn`, and `soc-openroad`; do not bypass them with direct shell simulator or synthesis invocations.
