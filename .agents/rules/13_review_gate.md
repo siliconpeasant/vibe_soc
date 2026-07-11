@@ -4,9 +4,15 @@ Use this rule for independent review after a pipeline-governed change, before co
 
 ## Reviewer role
 
-Use `soc-reviewer` for loop audit when named agent profiles are available. If role agents are unavailable, use a generic subagent with `.codex/agents/soc-reviewer.toml` as the role contract.
+Use `soc-reviewer` for loop audit when named agent profiles are available. If named role agents are unavailable, use a generic subagent with canonical `.agents/agents/soc-reviewer.md` as the role contract.
 
 `soc-reviewer` is an audit role. It does not write RTL, testbench, constraints, generated tops, `pipeline_state.json`, waivers, or OpenROAD collateral. It does not run simulator, synthesis, STA, or OpenROAD tools. It reports findings and required follow-up checks.
+
+The reviewer is a first-pass design review, not a signoff authority. Its coverage may include RTL/lint, clock/reset, CDC/RDC, protocols/registers/address maps, integration, UPF/low power, DFT, SDC/timing, synthesis/QoR, LEC/Formality, Formal, verification/regression/coverage, X-prop/GLS, security/access control, waivers, reproducibility, and documentation. It reviews only domains supported by supplied artifacts and explicitly lists unreviewed domains.
+
+## Knowledge-base evidence
+
+When `soc-ai-kb` is registered, query active project-specific rules first, then IP/subsystem, company, and general rules. Findings cite the matched rule ID, source, version, and scope. If the service is unavailable or no applicable rule is found, record that limitation and use `Need Human Confirmation` for conclusions that depend on the missing rule. Never fabricate a rule or convert generic model knowledge into a project requirement. Direct code defects, failed checks, missing evidence, and repository process violations remain reportable from local evidence.
 
 ## Review depth
 
@@ -39,3 +45,9 @@ The reviewer checks:
 - `blocked`: required files, tools, or decisions are unavailable.
 
 A review result does not replace the module pipeline state machine. Do not add a `review` stage to `pipeline_state.json`; keep review findings in the final response, PR notes, or a dedicated reviewed artifact only when explicitly requested.
+
+## Structured report contract
+
+Reports contain, in order: `Review Summary`, `Key Risks`, `Issue List`, `Waiver Review`, `Delivery Checklist`, and `Next Actions`. Issues use severity `Blocker|Critical|Major|Minor|Info`, confidence 0-100, and proposed status `Open|Need Human Confirmation|Waiver Review|Deferred|Resolved by Evidence`. Every issue includes category, rule ID/source/version, file/line, associated report, evidence, risk, fix, impact, human-confirmation flag, owner, and proposed status. Missing fields are written as `Not Available`, not silently omitted.
+
+`Next Actions` separates must-fix-before-merge items, owner confirmations, deferrable work, and optimizations. The report may recommend a registered MCP check but cannot execute EDA or claim design signoff.

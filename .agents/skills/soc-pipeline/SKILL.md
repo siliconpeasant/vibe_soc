@@ -19,6 +19,7 @@ Coordinate work; do not implement RTL or testbench content in the coordinator.
    - CRG: `soc-crg-engineer`, only when `crg-gen` is registered
    - OpenROAD physical-design handoff: `soc-pd-engineer`
 6. Select `soc-reviewer` for post-stage, pre-commit, or validation-evidence audit. The reviewer reports findings only and never closes a pipeline stage. Use `.agents/scripts/check_loop_state.py <workspace> --mode normal` after stage work and `--mode strict` before commit readiness when a workspace is available.
+7. Reviewer dispatch includes relevant review domains, reports and delivery inputs, knowledge-base scope, and the structured output contract from `13_review_gate.md`. Missing knowledge-base rules require `Need Human Confirmation`; they are never synthesized from memory.
 
 ## Delegation
 
