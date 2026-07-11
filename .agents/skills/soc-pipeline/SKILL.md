@@ -38,7 +38,7 @@ After each pipeline-stage role returns, query state immediately and verify statu
 
 ## Execution contract
 
-- Canonical paths: `docs/`, `de/rtl/`, `de/syn/`, `dv/tb/`, `dv/sim/`.
+- Canonical artifact paths: `docs/`, `de/rtl/`, `de/run/`, `de/syn/`, `dv/tb/`, `dv/sim/`.
 - Architecture handoff artifacts stay under `docs/` and must cover IP selection, technology/process selection, and the integration architecture before the doc stage consumes them.
 - EDA execution uses registered MCP tools. Verification calls `soc-build.soc_sim`; synthesis calls `soc-build.soc_syn`; physical-design handoff calls `soc-openroad.soc_openroad_*`. No direct EDA shell fallback.
 - `doc -> rtl`; verification and synthesis may run independently after RTL passes.

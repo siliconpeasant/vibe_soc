@@ -31,7 +31,7 @@ Activate only when the `crg-gen` MCP server and `crg_gen` tool are registered. I
    - YAML/notes/CSV/DFT lists: `docs/generated/`
 5. Call `soc-build.soc_flist` to create `de/rtl/filelist.f`.
 6. Call `soc-build.soc_lint` with `rtl_top=<task_name>_top`; no direct Verilator or shell fallback.
-7. Run `scripts/check_rtl_quality.py <workspace> --module <task_name>_top`.
+7. Run `<project_root>/.agents/scripts/check_rtl_quality.py <workspace> --module <task_name>_top`.
 8. Mark `rtl done` only with existing generated RTL/filelist/SDC artifacts and passing generator/lint/quality checks. Otherwise mark `rtl fail`.
 9. Report `update_state.py` stdout, generator version, workbook, generated files, and checks.
 

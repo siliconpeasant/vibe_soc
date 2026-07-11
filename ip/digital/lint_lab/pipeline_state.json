@@ -1,10 +1,10 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "module": "lint_lab",
   "workspace": "ip/digital/lint_lab",
   "mode": "single",
   "created_at": "2026-06-29T08:52:25Z",
-  "last_updated": "2026-06-29T08:52:25Z",
+  "last_updated": "2026-07-11T00:32:43Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -15,7 +15,10 @@
       "started_at": null,
       "completed_at": null,
       "artifacts": [],
+      "artifact_evidence": {},
       "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": ""
     },
     "rtl": {
@@ -29,7 +32,10 @@
       "started_at": null,
       "completed_at": null,
       "artifacts": [],
+      "artifact_evidence": {},
       "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": ""
     },
     "verif": {
@@ -43,7 +49,10 @@
       "started_at": null,
       "completed_at": null,
       "artifacts": [],
+      "artifact_evidence": {},
       "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": ""
     },
     "syn": {
@@ -57,7 +66,10 @@
       "started_at": null,
       "completed_at": null,
       "artifacts": [],
+      "artifact_evidence": {},
       "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": ""
     }
   },
@@ -67,5 +79,12 @@
       "action": "spawn soc-doc-engineer",
       "reason": "dependencies [] satisfied"
     }
-  ]
+  ],
+  "migration": {
+    "normalized_from_schema": 2,
+    "normalization": "current-checkout snapshot; legacy checks not re-executed",
+    "migrated_from_schema": 2,
+    "validated_at": "2026-07-11T00:32:43Z",
+    "policy": "done retained only with current real evidence"
+  }
 }

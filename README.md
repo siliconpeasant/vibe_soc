@@ -261,7 +261,7 @@ python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 | Excel 寄存器生成 | `excel-yml-gen` | 从 Excel 生成 YAML、regfile RTL、wrapper 等 |
 | CRG 需求转设计表 | `crg-req-to-design` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |
 | 时钟/复位树图 | `cr-tree-diag-gen` | 从设计表生成 Draw.io 和 Excalidraw 图 |
-| 流程编排 | `soc-pipeline` | 协调架构、doc、RTL、验证、综合、PD handoff |
+| 流程编排 | `vibe-soc-loop` → `soc-pipeline` | 前者分类与路由，后者协调架构、doc、RTL、验证、综合、PD handoff |
 
 EDA 阶段应走注册工具入口：验证调用 `soc-build.soc_sim`，综合调用 `soc-build.soc_syn`，OpenROAD 调用 `soc-openroad.soc_openroad_*`。自动化流程不使用直接 `make`、`iverilog`、`vvp`、`yosys`、`openroad` 等 shell fallback。
 

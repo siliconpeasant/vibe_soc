@@ -1,10 +1,10 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "module": "npu",
-  "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/ip/digital/npu",
+  "workspace": "ip/digital/npu",
   "mode": "single",
   "created_at": "2026-07-07T02:12:44Z",
-  "last_updated": "2026-07-07T05:57:14Z",
+  "last_updated": "2026-07-11T00:32:41Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -20,6 +20,40 @@
         "docs/regmap.md",
         "docs/verification_plan.md"
       ],
+      "artifact_evidence": {
+        "docs/design_spec.md": {
+          "sha256": "9732676983d563f95cfff7b72fc8be091d05c4f5a5a954b793f2a695ca9bc3fe",
+          "size": 17022,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/interface_spec.md": {
+          "sha256": "3be84f14881107a4e60177b69d140a89f036587d1526cfa7c26f039c6c2f3d44",
+          "size": 7964,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/regmap.md": {
+          "sha256": "af3577a5fedb2352ed62f240e0fd651a77c10163cdcdfbc15ea7c21d21393b2f",
+          "size": 11198,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/verification_plan.md": {
+          "sha256": "b936323e105b339999ce5b27a213d03a5ed7579e07ff4ffa158125b12e0bb46d",
+          "size": 11729,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        }
+      },
       "check_results": [
         {
           "tool": "doc_completeness",
@@ -27,8 +61,11 @@
           "note": ""
         }
       ],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
       "notes": "NPU minimal inference evolution docs completed; downstream RTL/verif/syn require rerun",
-      "last_updated": "2026-07-07T03:19:51Z"
+      "last_updated": "2026-07-07T03:19:51Z",
+      "evidence_policy": "legacy_migrated"
     },
     "rtl": {
       "step_id": "rtl",
@@ -48,6 +85,88 @@
         "de/rtl/filelist.f",
         "de/syn/npu.sdc"
       ],
+      "artifact_evidence": {
+        "de/rtl/npu.v": {
+          "sha256": "c8ca2cd1912c845120dea9d48bf92d6a2ed691732949ef3a371f4536781301c7",
+          "size": 10163,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu_regs.v": {
+          "sha256": "212d487cdac0fd8a799fd03650f5909bd9b796d359cb8cab5b16ac0d6b8edd65",
+          "size": 17427,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu_spm.v": {
+          "sha256": "8ae9075a0f085745f130413196997927f71ef36f50e07dabd192ed9bdbad8ac2",
+          "size": 6334,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu_core.v": {
+          "sha256": "125c4717b17049502d7faa9d276e1d8d6cf3781d4286b931a22a05ad256b4168",
+          "size": 13890,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu_mac.v": {
+          "sha256": "97912fe8bbd6ba82e7f937e13c48565751aabae6f8c2a8edfc81c0a72c13c657",
+          "size": 1076,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu_requant.v": {
+          "sha256": "1664492bb78578807197f1d48ad98ec3ec1c5aadfb88f228adbfbbd94a235f45",
+          "size": 2269,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/filelist.f": {
+          "sha256": "664cace6f4efb1bb6b31f914b96efbc8ca216701e46e6d3da74ac1ea7e8ebfb6",
+          "size": 224,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/syn/npu.sdc": {
+          "sha256": "a08932e4c905886223ae3c92658dcc131669b9cd0ee9927c3d99b933b45f2656",
+          "size": 306,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        }
+      },
       "check_results": [
         {
           "tool": "soc_lint",
@@ -65,8 +184,11 @@
           "note": "check_rtl_quality.py passed with no issues"
         }
       ],
+      "rtl_fingerprint": "a23770fbbd6cbe29df738d4af8e650b54e080cc7625c54ea7a825db55dd04e12",
+      "rtl_fingerprint_source": "migration_validated_snapshot",
       "notes": "Reopen RTL for behavior-preserving modular refactor of npu top; downstream verif/syn remain pending.",
-      "last_updated": "2026-07-07T04:12:50Z"
+      "last_updated": "2026-07-07T04:12:50Z",
+      "evidence_policy": "legacy_migrated"
     },
     "verif": {
       "step_id": "verif",
@@ -80,6 +202,26 @@
         "dv/tb/tb_npu.sv",
         "dv/sim/sim.log"
       ],
+      "artifact_evidence": {
+        "dv/tb/tb_npu.sv": {
+          "sha256": "54a52e1780fccfe7c1ef43b9b9b200faf00946821eb448e0f6b9df5b2a552c62",
+          "size": 53030,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "sim_log",
+            "soc_sim"
+          ]
+        },
+        "dv/sim/sim.log": {
+          "sha256": "3e2603e0fef8c15c2e4f710ec0858860f5c19bcd6d6d2970b933cc307cb94cca",
+          "size": 1355,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "sim_log",
+            "soc_sim"
+          ]
+        }
+      },
       "check_results": [
         {
           "tool": "soc_sim",
@@ -92,8 +234,17 @@
           "note": "check_sim_pass dv/sim/sim.log"
         }
       ],
+      "rtl_fingerprint": "a23770fbbd6cbe29df738d4af8e650b54e080cc7625c54ea7a825db55dd04e12",
+      "rtl_fingerprint_source": "migration_validated_snapshot",
       "notes": "Add toy MLP end-to-end inference demo",
-      "last_updated": "2026-07-07T05:57:14Z"
+      "last_updated": "2026-07-07T05:57:14Z",
+      "evidence_policy": "legacy_migrated",
+      "run_evidence": {
+        "run_id": "legacy-migrated-unavailable",
+        "source_fingerprint": "a23770fbbd6cbe29df738d4af8e650b54e080cc7625c54ea7a825db55dd04e12",
+        "tool_family": "soc_sim",
+        "recorded_at": "2026-07-11T00:32:41Z"
+      }
     },
     "syn": {
       "step_id": "syn",
@@ -108,6 +259,35 @@
         "de/syn/synth.log",
         "de/syn/npu.sdc"
       ],
+      "artifact_evidence": {
+        "de/syn/npu_netlist.v": {
+          "sha256": "05999a0ed0a8102f8ca3885ac585367968650e0908dab6c18cdee3a5964d6684",
+          "size": 17005962,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "soc_syn",
+            "synth_log_review"
+          ]
+        },
+        "de/syn/synth.log": {
+          "sha256": "12e3c53fc785b8a1bcc02a0716fd660dc13eef9d698365a7e488b9ee619d995f",
+          "size": 309907,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "soc_syn",
+            "synth_log_review"
+          ]
+        },
+        "de/syn/npu.sdc": {
+          "sha256": "a08932e4c905886223ae3c92658dcc131669b9cd0ee9927c3d99b933b45f2656",
+          "size": 306,
+          "recorded_at": "2026-07-11T00:32:41Z",
+          "provenance": [
+            "soc_syn",
+            "synth_log_review"
+          ]
+        }
+      },
       "check_results": [
         {
           "tool": "soc_syn",
@@ -120,9 +300,25 @@
           "note": "no hierarchy errors, unsupported constructs, or inferred latches, four memory-to-register replacement warnings reviewed"
         }
       ],
+      "rtl_fingerprint": "a23770fbbd6cbe29df738d4af8e650b54e080cc7625c54ea7a825db55dd04e12",
+      "rtl_fingerprint_source": "migration_validated_snapshot",
       "notes": "",
-      "last_updated": "2026-07-07T04:18:54Z"
+      "last_updated": "2026-07-07T04:18:54Z",
+      "evidence_policy": "legacy_migrated",
+      "run_evidence": {
+        "run_id": "legacy-migrated-unavailable",
+        "source_fingerprint": "a23770fbbd6cbe29df738d4af8e650b54e080cc7625c54ea7a825db55dd04e12",
+        "tool_family": "soc_syn",
+        "recorded_at": "2026-07-11T00:32:41Z"
+      }
     }
   },
-  "next_actions": []
+  "next_actions": [],
+  "migration": {
+    "normalized_from_schema": 2,
+    "normalization": "current-checkout snapshot; legacy checks not re-executed",
+    "migrated_from_schema": 2,
+    "validated_at": "2026-07-11T00:32:41Z",
+    "policy": "done retained only with current real evidence"
+  }
 }
