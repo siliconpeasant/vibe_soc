@@ -21,6 +21,6 @@ SIM_FLIST    := $(SIM_DIR)/dut.f
 CANONICAL_FLIST := $(SIM_DIR)/dut.canonical.f
 BUILD_DIR    ?= $(if $(filter de rtl,$(CURRENT_DIR)),$(RUN_DIR),$(SIM_DIR))
 BUILD_FINGERPRINT := $(BUILD_DIR)/.build.fingerprint
-REGRESS_DIR  := $(SIM_DIR)/regress
+REGRESS_DIR  := $(MODULE_PATH)/dv/sim/regress
 COV_DIR      := $(SIM_DIR)/coverage.vdb
 COV_REPORT_DIR := $(MODULE_PATH)/dv/cov/report

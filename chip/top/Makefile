@@ -6,6 +6,8 @@ LOCAL_CURRENT_DIR := $(if $(SUBDIR),$(SUBDIR),$(notdir $(CURDIR)))
 
 OT_VENDOR := 1
 OT_SMOKE_TESTS := chip_sw_uart_smoketest
+REGRESS_RECURSIVE_MAKE := 1
+REGRESS_PASS_REGEX ?= TEST PASSED CHECKS|SW TEST PASSED
 ifeq ($(TEST),default)
   TEST := chip_sw_uart_smoketest
 endif
@@ -106,13 +108,13 @@ endif
   USER_SIM_FLAGS += -xlrm hier_inst_seed -assert nopostproc
   USER_SIM_FLAGS += +UVM_TEST_SEQ=$(OT_UVM_TEST_SEQ)
   USER_SIM_FLAGS += $(OT_RUN_OPTS)
+  USER_SIM_FLAGS += $(REGRESS_CASE_ARGS)
   ifneq ($(strip $(OT_SW_IMAGES)),)
     USER_SIM_FLAGS += +sw_images=$(OT_SW_IMAGES)
   endif
   ifneq (,$(filter $(OT_SMOKE_TESTS),$(TEST)))
     OT_SMOKE_PREBUILT_SIMV ?= /project/xuanwu9000/user/silicon/opentitan-master/scratch/master/chip_earlgrey_asic-sim-vcs/default/simv
     OT_USE_PREBUILT_SIMV ?= 0
-    REGRESS_PASS_REGEX ?= TEST PASSED CHECKS|SW TEST PASSED
   endif
 include $(PROJECT_ROOT)/scripts/common.mk
 

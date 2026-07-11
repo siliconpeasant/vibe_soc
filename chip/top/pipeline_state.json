@@ -3,7 +3,7 @@
   "workspace": "/project/xuanwu9000/user/silicon/vibe_soc/chip/top",
   "mode": "single",
   "created_at": "2026-06-21T10:18:58Z",
-  "last_updated": "2026-06-28T03:57:24Z",
+  "last_updated": "2026-07-10T13:29:19Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -60,28 +60,14 @@
       "step_id": "verif",
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
-      "status": "done",
-      "started_at": "2026-06-28T03:45:59Z",
-      "completed_at": "2026-06-28T03:57:24Z",
-      "artifacts": [
-        "dv/sim/chip_sw_uart_smoketest/compile.log",
-        "dv/sim/chip_sw_uart_smoketest/sim.log"
-      ],
-      "check_results": [
-        {
-          "tool": "soc_sim",
-          "passed": true,
-          "note": "called through MCP for chip_sw_uart_smoketest seed 1 top tb; MCP client timed out at 300s but spawned VCS process completed"
-        },
-        {
-          "tool": "dv_sim_log",
-          "passed": true,
-          "note": "sim.log contains SW TEST PASSED, UVM_ERROR 0, UVM_FATAL 0, TEST PASSED CHECKS at 3782.067499 us"
-        }
-      ],
-      "notes": "Run DV smoke simulation after inherited filelist.mk refactor",
+      "status": "in_progress",
+      "started_at": "2026-07-10T13:29:19Z",
+      "completed_at": null,
+      "artifacts": [],
+      "check_results": [],
+      "notes": "Repair OpenTitan per-case batch regression and validate four authoritative non-smoke candidates",
       "blocked_by": [],
-      "last_updated": "2026-06-28T03:57:24Z"
+      "last_updated": "2026-07-10T13:29:19Z"
     },
     "syn": {
       "step_id": "syn",
