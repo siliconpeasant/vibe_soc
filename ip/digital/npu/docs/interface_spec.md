@@ -2,10 +2,15 @@
 
 ## Module Declaration
 
-The top module is `npu`. It has no public Verilog parameters. The public port list is unchanged by the minimal inference-layer evolution.
+The top module is `npu`. NPU v2 phase 1 adds four compile-time capacity parameters. The public port list, register offsets, and fixed scratchpad apertures are unchanged.
 
 ```verilog
-module npu (
+module npu #(
+    parameter integer ACT_SPM_BYTES  = 64,
+    parameter integer WGT_SPM_BYTES  = 64,
+    parameter integer OUT_SPM_BYTES  = 64,
+    parameter integer BIAS_SPM_WORDS = 16
+) (
     input         clk,
     input         rst_n,
     input         mm_valid,
@@ -19,6 +24,17 @@ module npu (
     output        irq
 );
 ```
+
+## Parameter Table
+
+| Parameter | Type | Default | Legal values | Description |
+|---|---|---:|---:|---|
+| `ACT_SPM_BYTES` | Integer | 64 | 4..64, multiple of 4 | Implemented activation-byte prefix in the fixed `0x0100-0x013f` aperture. |
+| `WGT_SPM_BYTES` | Integer | 64 | 4..64, multiple of 4 | Implemented weight-byte prefix in the fixed `0x0200-0x023f` aperture. |
+| `OUT_SPM_BYTES` | Integer | 64 | 4..64, multiple of 4 | Implemented output-byte prefix in the fixed `0x0300-0x033f` aperture. |
+| `BIAS_SPM_WORDS` | Integer | 16 | 1..16 | Implemented signed INT32-word prefix in the fixed `0x0400-0x043f` aperture. |
+
+Illegal parameter values are integration/elaboration errors and need not produce a runtime `ERR_CODE`. All implemented byte capacities are word aligned. Because aperture bases and maximum extents are fixed, legal parameters cannot overlap address regions. The defaults exactly preserve 64-byte activation, weight, and output storage plus 16 bias words.
 
 ## Port Table
 
@@ -53,7 +69,7 @@ All state changes occur on the rising edge of `clk`, except hardware reset asser
 | `mm_rdata` | `32'h0000_0000` |
 | `irq` | `1'b0` |
 | FSM | `IDLE` |
-| Scratchpads | All bytes/words zero |
+| Scratchpads | All implemented bytes/words zero in the phase-1 register-array baseline |
 | Registers | Values listed in `regmap.md` |
 
 Reset deassertion is assumed to meet SoC reset timing requirements. The IP does not include a reset synchronizer.
@@ -66,7 +82,7 @@ The host interface is a simple ready/valid local target protocol:
 - If `mm_ready=1`, the request completes on that rising clock edge.
 - If `mm_ready=0`, the request has not completed and all request inputs must remain stable.
 - There are no bursts, protection bits, exclusive accesses, IDs, out-of-order responses, byte-lane endian conversions, or split responses.
-- Register requests complete without wait states.
+- Register requests complete without wait states in phase 1. A future non-resettable SRAM initialization sequence may temporarily backpressure all requests as specified below.
 - Scratchpad requests complete without wait states when `STATUS.busy=0`.
 - Scratchpad requests stall with `mm_ready=0` while `STATUS.busy=1`, then complete after the command reaches a terminal state.
 
@@ -77,14 +93,14 @@ When `mm_valid=0`, `mm_ready` may remain high and `mm_error` is zero.
 | Region | Address range | Alignment | Write strobe | Access behavior |
 |---|---:|---|---|---|
 | Registers | `0x0000-0x0034` at implemented offsets | Word aligned | `4'b1111` for writable registers | Reads and writes require `mm_addr[1:0]=0`. Read-only register writes return `RO_WRITE`. |
-| Activation scratchpad | `0x0100-0x013f` | Word aligned transfer start | Any `mm_wstrb` | Reads return four bytes; writes update asserted byte lanes. |
-| Weight scratchpad | `0x0200-0x023f` | Word aligned transfer start | Any `mm_wstrb` | Reads return four bytes; writes update asserted byte lanes. |
-| Output scratchpad | `0x0300-0x033f` | Word aligned transfer start | Any `mm_wstrb` | Reads return four bytes; writes update asserted byte lanes when idle. |
-| Bias scratchpad | `0x0400-0x043f` | Word aligned | `4'b1111` for writes | Reads and writes one signed INT32 bias word. |
+| Activation scratchpad | Reserved `0x0100-0x013f`; implemented `0x0100` through `0x0100+ACT_SPM_BYTES-1` | Word aligned transfer start | Any `mm_wstrb` | Reads return four bytes; writes update asserted byte lanes. |
+| Weight scratchpad | Reserved `0x0200-0x023f`; implemented `0x0200` through `0x0200+WGT_SPM_BYTES-1` | Word aligned transfer start | Any `mm_wstrb` | Reads return four bytes; writes update asserted byte lanes. |
+| Output scratchpad | Reserved `0x0300-0x033f`; implemented `0x0300` through `0x0300+OUT_SPM_BYTES-1` | Word aligned transfer start | Any `mm_wstrb` | Reads return four bytes; writes update asserted byte lanes when idle. |
+| Bias scratchpad | Reserved `0x0400-0x043f`; implemented `0x0400` through `0x0400+4*BIAS_SPM_WORDS-1` | Word aligned | `4'b1111` for writes | Reads and writes one signed INT32 bias word. |
 
-Valid byte scratchpad starting offsets are `0, 4, 8, ..., 60`. A byte scratchpad access to `0x013d`, `0x013e`, `0x013f`, and equivalent unaligned addresses in other windows is illegal because the 32-bit transfer start is not word aligned.
+Valid byte scratchpad starting offsets are `0, 4, 8, ..., CAPACITY-4` for the selected scratchpad. A byte scratchpad access is valid only when all four lanes are inside the implemented prefix. A word-aligned access in the unused reserved tail returns `INVALID_ADDR`; an unaligned access returns `SPM_UNALIGNED` according to the existing decode priority.
 
-Valid bias scratchpad offsets are `0, 4, 8, ..., 60`, corresponding to bias entries 0 through 15.
+Valid bias scratchpad offsets are `0, 4, ..., 4*(BIAS_SPM_WORDS-1)`. The remaining reserved bias aperture is unimplemented and returns `INVALID_ADDR`. At default parameter values, valid offsets remain `0, 4, ..., 60`.
 
 ## Register Access Timing
 
@@ -128,6 +144,16 @@ Scratchpad accesses while busy:
 - Complete using the same idle rules after the command reaches `DONE` or `ERROR`.
 
 The internal compute sequencer has priority over scratchpad arrays during a command. The host-visible stall rule avoids undefined simultaneous host/compute access behavior.
+
+Phase 1 uses behavioral register arrays and retains the current zero-wait idle scratchpad accesses. It does not claim that synthesis infers an SRAM.
+
+## Internal SRAM Replacement Boundary
+
+No SRAM signal is a public `npu` port in phase 1. A future internal replacement may give each scratchpad an independent 1R1W interface with a synchronous read request, flopped read data valid one cycle later, a synchronous write request, 32-bit write data, and four byte write enables. Bias writes normally use `4'b1111`; byte scratchpads use lane enables.
+
+The controller must adapt to that latency: compute read addresses are issued before operands are consumed, host scratchpad reads hold `mm_ready=0` until returned data is valid, and completion/status updates occur only after their dependent memory operations complete. The protocol already permits wait states, and no fixed command cycle count is part of the public contract.
+
+For a macro without storage reset, hardware-reset release and `CTRL.soft_reset` require an internal zero-fill sequence over every implemented location. Until zero fill finishes, no command or scratchpad request may complete and `mm_ready` may remain low; `busy`, sticky status, and `irq` remain at reset values. The phase-1 register-array implementation performs its clear directly and adds no such initialization wait.
 
 ## Interrupt Timing
 

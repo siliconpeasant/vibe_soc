@@ -2197,6 +2197,15 @@ def _migration_stage_reasons(
     legacy_contract: bool,
 ) -> list[str]:
     reasons = []
+    if stage in {"rtl", "verif", "syn"}:
+        current_fingerprint = compute_rtl_fingerprint(workspace)
+        recorded_fingerprint = info.get("rtl_fingerprint")
+        if (
+            current_fingerprint
+            and recorded_fingerprint
+            and recorded_fingerprint != current_fingerprint
+        ):
+            reasons.append("recorded RTL/filelist fingerprint is stale")
     artifacts = info.get("artifacts") or []
     checks = info.get("check_results") or []
     if not artifacts:
@@ -2243,8 +2252,15 @@ def migrate_state_data(
     original_version = state.get("schema_version")
     if original_version == CURRENT_SCHEMA_VERSION:
         migrated = copy.deepcopy(state)
-        issues = validate_state(migrated, workspace, verify_filesystem=True)
-        return migrated, [], issues
+        changes: list[str] = []
+        migration = migrated.get("migration")
+        if (
+            isinstance(migration, dict)
+            and migration.get("migrated_from_schema") == CURRENT_SCHEMA_VERSION
+        ):
+            for key in ("migrated_from_schema", "validated_at", "policy"):
+                migration.pop(key, None)
+            changes.append("removed self-referential schema-v3 migration metadata")
     else:
         migrated, changes = normalize_legacy_state(state, workspace)
 
@@ -2278,7 +2294,7 @@ def migrate_state_data(
                 if reasons:
                     _reset_for_migration(info, "; ".join(reasons))
                     changes.append(f"{module}/{stage}: done -> pending")
-                else:
+                elif original_version != CURRENT_SCHEMA_VERSION:
                     info["evidence_policy"] = "legacy_migrated"
                     info["artifact_evidence"] = build_artifact_evidence(
                         workspace,
@@ -2323,16 +2339,25 @@ def migrate_state_data(
 
     migrated["schema_version"] = CURRENT_SCHEMA_VERSION
     migrated["workspace"] = portable_workspace(workspace)
-    migrated["last_updated"] = now()
-    migrated.setdefault("migration", {}).update(
-        {
-            "migrated_from_schema": (
-                original_version if original_version is not None else 1
-            ),
-            "validated_at": now(),
-            "policy": "done retained only with current real evidence",
-        }
-    )
+    if original_version != CURRENT_SCHEMA_VERSION:
+        migrated["last_updated"] = now()
+        migrated.setdefault("migration", {}).update(
+            {
+                "migrated_from_schema": (
+                    original_version if original_version is not None else 1
+                ),
+                "validated_at": now(),
+                "policy": "done retained only with current real evidence",
+            }
+        )
+    elif changes:
+        migrated["last_updated"] = now()
+        migrated.setdefault("repair", {}).update(
+            {
+                "validated_at": now(),
+                "policy": "invalid current evidence downgraded without rewriting valid provenance",
+            }
+        )
     if multi:
         migrated.pop("next_actions", None)
     else:

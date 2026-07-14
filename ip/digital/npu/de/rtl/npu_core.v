@@ -3,7 +3,12 @@
 // Function   : Descriptor checks, command FSM, counters, MAC/requant sequencing
 //============================================================================
 
-module npu_core (
+module npu_core #(
+    parameter integer ACT_SPM_BYTES  = 64,
+    parameter integer WGT_SPM_BYTES  = 64,
+    parameter integer OUT_SPM_BYTES  = 64,
+    parameter integer BIAS_SPM_WORDS = 16
+) (
     input         clk,
     input         rst_n,
     input         soft_reset_i,
@@ -51,6 +56,11 @@ module npu_core (
 
     localparam ACT_NONE            = 2'd0;
     localparam ACT_RELU6           = 2'd2;
+
+    localparam [17:0] ACT_SPM_BYTES_VALUE  = ACT_SPM_BYTES[17:0];
+    localparam [17:0] WGT_SPM_BYTES_VALUE  = WGT_SPM_BYTES[17:0];
+    localparam [17:0] OUT_SPM_BYTES_VALUE  = OUT_SPM_BYTES[17:0];
+    localparam [8:0]  BIAS_SPM_WORDS_VALUE = BIAS_SPM_WORDS[8:0];
 
     localparam ST_IDLE             = 4'd0;
     localparam ST_CHECK            = 4'd1;
@@ -102,9 +112,29 @@ module npu_core (
     wire signed [7:0] desc_relu6_signed;
     wire desc_activation_bad;
     wire desc_error;
+    wire compute_addr_valid;
+    wire [5:0] act_rd_addr_calc;
+    wire [5:0] wgt_rd_addr_calc;
+    wire [3:0] bias_rd_addr_calc;
+    wire [5:0] out_wr_addr_calc;
     wire signed [31:0] mac_acc_next;
     wire [7:0] requant_byte;
     wire       requant_clip;
+
+    generate
+        if ((ACT_SPM_BYTES < 4) || (ACT_SPM_BYTES > 64) ||
+            ((ACT_SPM_BYTES % 4) != 0) ||
+            (WGT_SPM_BYTES < 4) || (WGT_SPM_BYTES > 64) ||
+            ((WGT_SPM_BYTES % 4) != 0) ||
+            (OUT_SPM_BYTES < 4) || (OUT_SPM_BYTES > 64) ||
+            ((OUT_SPM_BYTES % 4) != 0) ||
+            (BIAS_SPM_WORDS < 1) || (BIAS_SPM_WORDS > 16)) begin : g_invalid_parameters
+            initial begin
+                $display("ERROR: illegal npu_core capacity parameter");
+                $finish;
+            end
+        end
+    endgenerate
 
     assign busy_o = (state != ST_IDLE);
 
@@ -131,14 +161,25 @@ module npu_core (
 
     assign desc_error = (status_error_code_o != ERR_NONE);
 
-    assign act_rd_addr_o = desc_act_base[5:0] +
-                           (k_idx[5:0] * desc_act_stride[5:0]);
-    assign wgt_rd_addr_o = desc_wgt_base[5:0] +
-                           (out_idx[5:0] * desc_wgt_stride[5:0]) +
-                           (k_idx[5:0] * 6'd4);
-    assign out_wr_addr_o = desc_out_base[5:0] +
-                           (out_idx[5:0] * desc_out_stride[5:0]);
-    assign bias_rd_addr_o = desc_bias_base + out_idx[3:0];
+    assign act_rd_addr_calc = desc_act_base[5:0] +
+                              (k_idx[5:0] * desc_act_stride[5:0]);
+    assign wgt_rd_addr_calc = desc_wgt_base[5:0] +
+                              (out_idx[5:0] * desc_wgt_stride[5:0]) +
+                              (k_idx[5:0] * 6'd4);
+    assign out_wr_addr_calc = desc_out_base[5:0] +
+                              (out_idx[5:0] * desc_out_stride[5:0]);
+    assign bias_rd_addr_calc = desc_bias_base + out_idx[3:0];
+
+    // Keep behavioral scratchpad indices in range until ST_CHECK has accepted
+    // the complete descriptor. This internal signal is intentionally visible
+    // by hierarchy so DV can check that speculative reads remain clamped.
+    assign compute_addr_valid = (state != ST_IDLE) &&
+                                (state != ST_CHECK) &&
+                                !desc_error;
+    assign act_rd_addr_o  = compute_addr_valid ? act_rd_addr_calc : 6'd0;
+    assign wgt_rd_addr_o  = compute_addr_valid ? wgt_rd_addr_calc : 6'd0;
+    assign bias_rd_addr_o = compute_addr_valid ? bias_rd_addr_calc : 4'd0;
+    assign out_wr_addr_o  = compute_addr_valid ? out_wr_addr_calc : 6'd0;
     assign out_wr_en_o    = (state == ST_STORE);
     assign out_wr_data_o  = requant_byte_reg;
 
@@ -154,13 +195,13 @@ module npu_core (
 
     always @* begin
         status_error_code_o = ERR_NONE;
-        if (desc_act_last > 18'd63) begin
+        if (desc_act_last >= ACT_SPM_BYTES_VALUE) begin
             status_error_code_o = ERR_DESC_ACT_RANGE;
-        end else if (desc_wgt_last > 18'd63) begin
+        end else if (desc_wgt_last >= WGT_SPM_BYTES_VALUE) begin
             status_error_code_o = ERR_DESC_WGT_RANGE;
-        end else if (desc_out_last > 18'd63) begin
+        end else if (desc_out_last >= OUT_SPM_BYTES_VALUE) begin
             status_error_code_o = ERR_DESC_OUT_RANGE;
-        end else if (desc_bias_last > 9'd15) begin
+        end else if (desc_bias_last >= BIAS_SPM_WORDS_VALUE) begin
             status_error_code_o = ERR_DESC_BIAS_RANGE;
         end else if (desc_quant_shift > 6'd31) begin
             status_error_code_o = ERR_DESC_Q_SHIFT;
