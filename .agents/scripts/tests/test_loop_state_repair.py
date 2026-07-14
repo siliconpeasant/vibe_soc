@@ -47,6 +47,102 @@ class DownstreamRepairTest(unittest.TestCase):
         )
         return workspace
 
+    def test_current_schema_migration_invalidates_stale_downstream_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            workspace = self._closed_rtl_workspace(Path(temp))
+            fingerprint = core.compute_rtl_fingerprint(workspace)
+
+            core.update_state(str(workspace), "verif", "in_progress")
+            write(workspace / "dv/tb/tb_d.sv", "module tb_d; endmodule\n")
+            write(workspace / "dv/sim/sim.log", "RESULT: ALL TESTS PASS\n")
+            core.update_state(
+                str(workspace),
+                "verif",
+                "done",
+                artifacts=["dv/tb/tb_d.sv", "dv/sim/sim.log"],
+                checks=["soc_sim:passed", "sim_log:passed"],
+                source_fingerprint=fingerprint,
+                run_id="soc_sim-before-drift",
+            )
+            core.update_state(str(workspace), "syn", "in_progress")
+            write(workspace / "de/syn/d_netlist.v", "module d; endmodule\n")
+            write(workspace / "de/syn/synth.log", "synthesis completed\n")
+            core.update_state(
+                str(workspace),
+                "syn",
+                "done",
+                artifacts=["de/syn/d_netlist.v", "de/syn/synth.log"],
+                checks=["soc_syn:passed"],
+                source_fingerprint=fingerprint,
+                run_id="soc_syn-before-drift",
+            )
+
+            state = json.loads(
+                (workspace / "pipeline_state.json").read_text(encoding="utf-8")
+            )
+            stale_fingerprint = "0" * 64
+            for stage in ("verif", "syn"):
+                state["pipeline"][stage]["rtl_fingerprint"] = stale_fingerprint
+                state["pipeline"][stage]["run_evidence"][
+                    "source_fingerprint"
+                ] = stale_fingerprint
+            migrated, changes, issues = core.migrate_state_data(state, workspace)
+
+            self.assertFalse(core.state_errors(issues))
+            self.assertEqual(migrated["pipeline"]["doc"]["status"], "done")
+            self.assertEqual(migrated["pipeline"]["rtl"]["status"], "done")
+            self.assertEqual(migrated["pipeline"]["verif"]["status"], "pending")
+            self.assertEqual(migrated["pipeline"]["syn"]["status"], "pending")
+            self.assertIn("demo/verif: done -> pending", changes)
+            self.assertIn("demo/syn: done -> pending", changes)
+
+    def test_current_schema_migration_preserves_valid_run_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            workspace = self._closed_rtl_workspace(Path(temp))
+            fingerprint = core.compute_rtl_fingerprint(workspace)
+
+            core.update_state(str(workspace), "verif", "in_progress")
+            write(workspace / "dv/tb/tb_d.sv", "module tb_d; endmodule\n")
+            write(workspace / "dv/sim/sim.log", "RESULT: ALL TESTS PASS\n")
+            core.update_state(
+                str(workspace),
+                "verif",
+                "done",
+                artifacts=["dv/tb/tb_d.sv", "dv/sim/sim.log"],
+                checks=["soc_sim:passed", "sim_log:passed"],
+                source_fingerprint=fingerprint,
+                run_id="soc_sim-valid-v3",
+            )
+            core.update_state(str(workspace), "syn", "in_progress")
+            write(workspace / "de/syn/d_netlist.v", "module d; endmodule\n")
+            write(workspace / "de/syn/synth.log", "synthesis completed\n")
+            core.update_state(
+                str(workspace),
+                "syn",
+                "done",
+                artifacts=["de/syn/d_netlist.v", "de/syn/synth.log"],
+                checks=["soc_syn:passed"],
+                source_fingerprint=fingerprint,
+                run_id="soc_syn-valid-v3",
+            )
+
+            state = json.loads(
+                (workspace / "pipeline_state.json").read_text(encoding="utf-8")
+            )
+            migrated, changes, issues = core.migrate_state_data(state, workspace)
+
+            self.assertEqual(changes, [])
+            self.assertFalse(core.state_errors(issues))
+            self.assertEqual(migrated, state)
+            self.assertEqual(
+                migrated["pipeline"]["verif"]["run_evidence"]["run_id"],
+                "soc_sim-valid-v3",
+            )
+            self.assertEqual(
+                migrated["pipeline"]["syn"]["run_evidence"]["run_id"],
+                "soc_syn-valid-v3",
+            )
+
     def test_verification_repair_can_close_and_invalidates_synthesis(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             repo = Path(temp)

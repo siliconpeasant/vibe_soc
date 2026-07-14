@@ -56,10 +56,84 @@ module tb_npu;
     logic        mm_error;
     logic        irq;
 
+    // Phase-1 reduced-capacity configuration.  Its bus is intentionally
+    // independent so the complete default-parameter regression above remains
+    // unchanged while one real elaboration exercises both legal builds.
+    logic        red_mm_valid;
+    logic        red_mm_write;
+    logic [15:0] red_mm_addr;
+    logic [31:0] red_mm_wdata;
+    logic [3:0]  red_mm_wstrb;
+    logic [31:0] red_mm_rdata;
+    logic        red_mm_ready;
+    logic        red_mm_error;
+    logic        red_irq;
+
+    // Minimum legal phase-1 capacity configuration.
+    logic        min_mm_valid;
+    logic        min_mm_write;
+    logic [15:0] min_mm_addr;
+    logic [31:0] min_mm_wdata;
+    logic [3:0]  min_mm_wstrb;
+    logic [31:0] min_mm_rdata;
+    logic        min_mm_ready;
+    logic        min_mm_error;
+    logic        min_irq;
+
     int unsigned error_cnt;
     int unsigned check_cnt;
     int unsigned test_cnt;
     int unsigned rand_state;
+
+    localparam int COV_CFG_DEFAULT       = 0;
+    localparam int COV_CFG_REDUCED       = 1;
+    localparam int COV_CFG_MIN           = 2;
+    localparam int COV_DEF_EP_ACT        = 3;
+    localparam int COV_DEF_EP_WGT        = 4;
+    localparam int COV_DEF_EP_OUT        = 5;
+    localparam int COV_DEF_EP_BIAS       = 6;
+    localparam int COV_RED_EP_ACT        = 7;
+    localparam int COV_RED_EP_WGT        = 8;
+    localparam int COV_RED_EP_OUT        = 9;
+    localparam int COV_RED_EP_BIAS       = 10;
+    localparam int COV_MIN_EP_ACT        = 11;
+    localparam int COV_MIN_EP_WGT        = 12;
+    localparam int COV_MIN_EP_OUT        = 13;
+    localparam int COV_MIN_EP_BIAS       = 14;
+    localparam int COV_RED_TAIL_ACT      = 15;
+    localparam int COV_RED_TAIL_WGT      = 16;
+    localparam int COV_RED_TAIL_OUT      = 17;
+    localparam int COV_RED_TAIL_BIAS     = 18;
+    localparam int COV_MIN_TAIL_ACT      = 19;
+    localparam int COV_MIN_TAIL_WGT      = 20;
+    localparam int COV_MIN_TAIL_OUT      = 21;
+    localparam int COV_MIN_TAIL_BIAS     = 22;
+    localparam int COV_RED_DESC_ACT_OK   = 23;
+    localparam int COV_RED_DESC_WGT_OK   = 24;
+    localparam int COV_RED_DESC_OUT_OK   = 25;
+    localparam int COV_RED_DESC_BIAS_OK  = 26;
+    localparam int COV_RED_DESC_ACT_BAD  = 27;
+    localparam int COV_RED_DESC_WGT_BAD  = 28;
+    localparam int COV_RED_DESC_OUT_BAD  = 29;
+    localparam int COV_RED_DESC_BIAS_BAD = 30;
+    localparam int COV_MIN_DESC_ACT_OK   = 31;
+    localparam int COV_MIN_DESC_WGT_OK   = 32;
+    localparam int COV_MIN_DESC_OUT_OK   = 33;
+    localparam int COV_MIN_DESC_BIAS_OK  = 34;
+    localparam int COV_MIN_DESC_ACT_BAD  = 35;
+    localparam int COV_MIN_DESC_WGT_BAD  = 36;
+    localparam int COV_MIN_DESC_OUT_BAD  = 37;
+    localparam int COV_MIN_DESC_BIAS_BAD = 38;
+    localparam int COV_RESET_DEF_HW      = 39;
+    localparam int COV_RESET_DEF_SOFT    = 40;
+    localparam int COV_RESET_RED_HW      = 41;
+    localparam int COV_RESET_RED_SOFT    = 42;
+    localparam int COV_RESET_MIN_HW      = 43;
+    localparam int COV_RESET_MIN_SOFT    = 44;
+    localparam int COV_RED_ADDR_GUARD    = 45;
+    localparam int COV_MIN_ADDR_GUARD    = 46;
+    localparam int PHASE1_COV_COUNT      = 47;
+    bit phase1_cov [0:PHASE1_COV_COUNT-1];
 
     logic [7:0]  act_model [0:63];
     logic [7:0]  wgt_model [0:63];
@@ -78,6 +152,44 @@ module tb_npu;
         .mm_ready (mm_ready),
         .mm_error (mm_error),
         .irq      (irq)
+    );
+
+    npu #(
+        .ACT_SPM_BYTES  (16),
+        .WGT_SPM_BYTES  (16),
+        .OUT_SPM_BYTES  (8),
+        .BIAS_SPM_WORDS (2)
+    ) u_dut_reduced (
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .mm_valid (red_mm_valid),
+        .mm_write (red_mm_write),
+        .mm_addr  (red_mm_addr),
+        .mm_wdata (red_mm_wdata),
+        .mm_wstrb (red_mm_wstrb),
+        .mm_rdata (red_mm_rdata),
+        .mm_ready (red_mm_ready),
+        .mm_error (red_mm_error),
+        .irq      (red_irq)
+    );
+
+    npu #(
+        .ACT_SPM_BYTES  (4),
+        .WGT_SPM_BYTES  (4),
+        .OUT_SPM_BYTES  (4),
+        .BIAS_SPM_WORDS (1)
+    ) u_dut_min (
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .mm_valid (min_mm_valid),
+        .mm_write (min_mm_write),
+        .mm_addr  (min_mm_addr),
+        .mm_wdata (min_mm_wdata),
+        .mm_wstrb (min_mm_wstrb),
+        .mm_rdata (min_mm_rdata),
+        .mm_ready (min_mm_ready),
+        .mm_error (min_mm_error),
+        .irq      (min_irq)
     );
 
     initial begin
@@ -138,6 +250,67 @@ module tb_npu;
             end
         end
     endtask
+
+    task automatic cov_hit(input int bin_idx, input string bin_name);
+        begin
+            if (!phase1_cov[bin_idx]) begin
+                phase1_cov[bin_idx] = 1'b1;
+                $display("[COVER] HIT bin=%0d name=%s", bin_idx, bin_name);
+            end
+        end
+    endtask
+
+    task automatic require_phase1_coverage;
+        int i;
+        int hit_count;
+        int miss_count;
+        begin
+            hit_count = 0;
+            miss_count = 0;
+            for (i = 0; i < PHASE1_COV_COUNT; i++) begin
+                if (phase1_cov[i]) begin
+                    hit_count++;
+                end else begin
+                    miss_count++;
+                    $display("[COVER] MISS bin=%0d", i);
+                end
+            end
+            $display("[COVERAGE] phase1 hit=%0d total=%0d missed=%0d",
+                     hit_count, PHASE1_COV_COUNT, miss_count);
+            check_cnt++;
+            if (miss_count != 0) begin
+                error_cnt++;
+                $display("[FAIL] phase-1 functional coverage incomplete");
+            end
+        end
+    endtask
+
+    // The RTL deliberately exposes compute_addr_valid for DV.  Check every
+    // cycle in which a behavioral array address is allowed to reach the SPM.
+    always @(posedge clk) begin
+        if (rst_n && u_dut_reduced.u_npu_core.compute_addr_valid) begin
+            check_cnt++;
+            cov_hit(COV_RED_ADDR_GUARD, "reduced compute addresses guarded");
+            if (((u_dut_reduced.u_npu_core.act_rd_addr_o + 7'd3) >= 7'd16) ||
+                ((u_dut_reduced.u_npu_core.wgt_rd_addr_o + 7'd3) >= 7'd16) ||
+                (u_dut_reduced.u_npu_core.bias_rd_addr_o >= 5'd2) ||
+                (u_dut_reduced.u_npu_core.out_wr_addr_o >= 7'd8)) begin
+                error_cnt++;
+                $display("[FAIL] reduced compute address escaped configured capacity");
+            end
+        end
+        if (rst_n && u_dut_min.u_npu_core.compute_addr_valid) begin
+            check_cnt++;
+            cov_hit(COV_MIN_ADDR_GUARD, "minimum compute addresses guarded");
+            if (((u_dut_min.u_npu_core.act_rd_addr_o + 7'd3) >= 7'd4) ||
+                ((u_dut_min.u_npu_core.wgt_rd_addr_o + 7'd3) >= 7'd4) ||
+                (u_dut_min.u_npu_core.bias_rd_addr_o >= 5'd1) ||
+                (u_dut_min.u_npu_core.out_wr_addr_o >= 7'd4)) begin
+                error_cnt++;
+                $display("[FAIL] minimum compute address escaped configured capacity");
+            end
+        end
+    end
 
     task automatic reset_models;
         int i;
@@ -652,6 +825,12 @@ module tb_npu;
                 mm_read(ADDR_BIAS_SPM + i[15:0], 1'b0, data);
                 check_eq32("BIAS_SPM reset", data, 32'h0000_0000);
             end
+            cov_hit(COV_CFG_DEFAULT, "default capacity configuration");
+            cov_hit(COV_DEF_EP_ACT, "default ACT endpoint");
+            cov_hit(COV_DEF_EP_WGT, "default WGT endpoint");
+            cov_hit(COV_DEF_EP_OUT, "default OUT endpoint");
+            cov_hit(COV_DEF_EP_BIAS, "default BIAS endpoint");
+            cov_hit(COV_RESET_DEF_HW, "default hardware reset");
             check_eq1("irq reset low", irq, 1'b0);
         end
     endtask
@@ -1197,6 +1376,7 @@ module tb_npu;
             expect_read("soft reset BIAS_SPM", ADDR_BIAS_SPM, 32'h0000_0000);
             expect_read("soft reset STATUS", ADDR_STATUS, 32'h0000_0000);
             check_eq1("soft reset irq", irq, 1'b0);
+            cov_hit(COV_RESET_DEF_SOFT, "default soft reset");
         end
     endtask
 
@@ -1242,13 +1422,652 @@ module tb_npu;
         end
     endtask
 
+    task automatic red_drive_idle;
+        begin
+            red_mm_valid = 1'b0;
+            red_mm_write = 1'b0;
+            red_mm_addr  = 16'h0000;
+            red_mm_wdata = 32'h0000_0000;
+            red_mm_wstrb = 4'h0;
+        end
+    endtask
+
+    task automatic red_access(
+        input  bit          write,
+        input  [15:0]       addr,
+        input  [31:0]       wdata,
+        input  [3:0]        wstrb,
+        input  bit          exp_error,
+        output [31:0]       rdata,
+        input  string       name
+    );
+        bit accepted;
+        bit ready_at_edge;
+        int unsigned timeout;
+        begin
+            accepted = 1'b0;
+            timeout = 0;
+            @(negedge clk);
+            red_mm_valid = 1'b1;
+            red_mm_write = write;
+            red_mm_addr  = addr;
+            red_mm_wdata = wdata;
+            red_mm_wstrb = wstrb;
+
+            while (!accepted && (timeout < 200)) begin
+                @(posedge clk);
+                ready_at_edge = red_mm_ready;
+                #1;
+                check_cnt++;
+                if ($isunknown({red_mm_rdata, red_mm_ready, red_mm_error, red_irq})) begin
+                    error_cnt++;
+                    $display("[FAIL] %s reduced visible output contains X/Z", name);
+                end
+                if (ready_at_edge) begin
+                    accepted = 1'b1;
+                    rdata = red_mm_rdata;
+                    check_eq1({name, " reduced mm_error"}, red_mm_error, exp_error);
+                end else begin
+                    timeout++;
+                    check_eq1({name, " reduced stable valid"}, red_mm_valid, 1'b1);
+                    check_eq1({name, " reduced stable write"}, red_mm_write, write);
+                    check_eq32({name, " reduced stable addr"},
+                               {16'h0000, red_mm_addr}, {16'h0000, addr});
+                    check_eq32({name, " reduced stable wdata"}, red_mm_wdata, wdata);
+                    check_eq32({name, " reduced stable wstrb"},
+                               {28'h0, red_mm_wstrb}, {28'h0, wstrb});
+                end
+            end
+            if (!accepted) begin
+                fail({name, " reduced access timeout"});
+                rdata = 32'hxxxx_xxxx;
+            end
+            @(negedge clk);
+            red_drive_idle();
+        end
+    endtask
+
+    task automatic red_write(input [15:0] addr, input [31:0] data,
+                             input [3:0] strb, input bit exp_error,
+                             input string name);
+        logic [31:0] unused;
+        begin
+            red_access(1'b1, addr, data, strb, exp_error, unused, name);
+        end
+    endtask
+
+    task automatic red_read(input [15:0] addr, input bit exp_error,
+                            output [31:0] data, input string name);
+        begin
+            red_access(1'b0, addr, 32'h0000_0000, 4'h0,
+                       exp_error, data, name);
+        end
+    endtask
+
+    task automatic red_expect_read(input string name, input [15:0] addr,
+                                   input [31:0] exp);
+        logic [31:0] data;
+        begin
+            red_read(addr, 1'b0, data, name);
+            check_eq32(name, data, exp);
+        end
+    endtask
+
+    task automatic red_expect_error_code(input string name,
+                                         input [4:0] exp_code);
+        logic [31:0] data;
+        begin
+            red_read(ADDR_ERR_CODE, 1'b0, data, name);
+            check_eq32(name, data, {27'h0, exp_code});
+        end
+    endtask
+
+    task automatic red_soft_reset;
+        begin
+            red_write(ADDR_CTRL, 32'h0000_0002, 4'hf, 1'b0,
+                      "reduced soft reset");
+            repeat (2) @(posedge clk);
+        end
+    endtask
+
+    task automatic red_program_command(
+        input int unsigned k_m1,
+        input int unsigned act_base,
+        input int unsigned wgt_base,
+        input int unsigned out_base,
+        input int unsigned out_count_m1,
+        input int unsigned out_stride_m1,
+        input int unsigned wgt_stride_m1,
+        input int unsigned bias_base
+    );
+        begin
+            red_write(ADDR_CFG, make_cfg(k_m1, 3), 4'hf, 1'b0, "reduced cfg");
+            red_write(ADDR_ACT_BASE, {24'h0, act_base[7:0]}, 4'hf, 1'b0,
+                      "reduced act base");
+            red_write(ADDR_WGT_BASE, {24'h0, wgt_base[7:0]}, 4'hf, 1'b0,
+                      "reduced wgt base");
+            red_write(ADDR_OUT_BASE, {24'h0, out_base[7:0]}, 4'hf, 1'b0,
+                      "reduced out base");
+            red_write(ADDR_ACC_INIT, 32'h0000_0000, 4'hf, 1'b0,
+                      "reduced acc init");
+            red_write(ADDR_OUT_CFG,
+                      make_out_cfg(out_count_m1, out_stride_m1, wgt_stride_m1),
+                      4'hf, 1'b0, "reduced out cfg");
+            red_write(ADDR_BIAS_BASE, {28'h0, bias_base[3:0]}, 4'hf, 1'b0,
+                      "reduced bias base");
+            red_write(ADDR_QUANT_MULT, 32'h0000_0001, 4'hf, 1'b0,
+                      "reduced quant mult");
+            red_write(ADDR_QUANT_CFG,
+                      make_quant_cfg(0, 8'h00, ACT_NONE, 8'h7f),
+                      4'hf, 1'b0, "reduced quant cfg");
+        end
+    endtask
+
+    task automatic red_start_expect(input string name, input bit exp_success,
+                                    input [4:0] exp_code);
+        logic [31:0] status;
+        int unsigned timeout;
+        begin
+            red_write(ADDR_STATUS, 32'h0000_000e, 4'hf, 1'b0,
+                      {name, " clear status"});
+            red_write(ADDR_CTRL, 32'h0000_0001, 4'hf, 1'b0,
+                      {name, " start"});
+            status = 32'h0;
+            timeout = 0;
+            while (((status & 32'h0000_0006) == 0) && (timeout < 200)) begin
+                red_read(ADDR_STATUS, 1'b0, status, {name, " poll"});
+                timeout++;
+            end
+            if (timeout >= 200) begin
+                fail({name, " reduced command timeout"});
+            end
+            check_eq1({name, " reduced done"}, status[1], exp_success);
+            check_eq1({name, " reduced error"}, status[2], !exp_success);
+            if (!exp_success) begin
+                red_expect_error_code({name, " reduced err_code"}, exp_code);
+                red_expect_read({name, " reduced no output count"},
+                                ADDR_LAST_OUT_COUNT, 32'h0000_0000);
+            end
+        end
+    endtask
+
+    task automatic red_check_all_zero(input string prefix);
+        logic [31:0] data;
+        int i;
+        begin
+            for (i = 0; i < 16; i += 4) begin
+                red_read(ADDR_ACT_SPM + i[15:0], 1'b0, data, prefix);
+                check_eq32({prefix, " ACT zero"}, data, 32'h0000_0000);
+                red_read(ADDR_WGT_SPM + i[15:0], 1'b0, data, prefix);
+                check_eq32({prefix, " WGT zero"}, data, 32'h0000_0000);
+            end
+            for (i = 0; i < 8; i += 4) begin
+                red_read(ADDR_OUT_SPM + i[15:0], 1'b0, data, prefix);
+                check_eq32({prefix, " OUT zero"}, data, 32'h0000_0000);
+                red_read(ADDR_BIAS_SPM + i[15:0], 1'b0, data, prefix);
+                check_eq32({prefix, " BIAS zero"}, data, 32'h0000_0000);
+            end
+        end
+    endtask
+
+    task automatic red_fill_all;
+        int i;
+        begin
+            for (i = 0; i < 16; i += 4) begin
+                red_write(ADDR_ACT_SPM + i[15:0], 32'h1111_1111 + i, 4'hf,
+                          1'b0, "reduced fill ACT");
+                red_write(ADDR_WGT_SPM + i[15:0], 32'h2222_2222 + i, 4'hf,
+                          1'b0, "reduced fill WGT");
+            end
+            for (i = 0; i < 8; i += 4) begin
+                red_write(ADDR_OUT_SPM + i[15:0], 32'h3333_3333 + i, 4'hf,
+                          1'b0, "reduced fill OUT");
+                red_write(ADDR_BIAS_SPM + i[15:0], 32'h4444_4444 + i, 4'hf,
+                          1'b0, "reduced fill BIAS");
+            end
+        end
+    endtask
+
+    task automatic test_reduced_capacity_reset_and_tails;
+        logic [31:0] data;
+        begin
+            note_test("reduced capacities reset and inactive tails");
+            drive_idle();
+            red_drive_idle();
+
+            red_fill_all();
+            rst_n = 1'b0;
+            repeat (4) @(posedge clk);
+            rst_n = 1'b1;
+            repeat (2) @(posedge clk);
+            red_check_all_zero("reduced hardware reset");
+            cov_hit(COV_CFG_REDUCED, "reduced capacity configuration");
+            cov_hit(COV_RESET_RED_HW, "reduced hardware reset");
+
+            red_fill_all();
+            red_soft_reset();
+            red_check_all_zero("reduced soft reset");
+            check_eq1("reduced soft reset irq", red_irq, 1'b0);
+            cov_hit(COV_RESET_RED_SOFT, "reduced soft reset");
+
+            red_write(ADDR_ACT_SPM + 16'h000c, 32'ha1a2_a3a4, 4'hf, 1'b0,
+                      "reduced ACT last word");
+            red_write(ADDR_WGT_SPM + 16'h000c, 32'hb1b2_b3b4, 4'hf, 1'b0,
+                      "reduced WGT last word");
+            red_write(ADDR_OUT_SPM + 16'h0004, 32'hc1c2_c3c4, 4'hf, 1'b0,
+                      "reduced OUT last word");
+            red_write(ADDR_BIAS_SPM + 16'h0004, 32'hd1d2_d3d4, 4'hf, 1'b0,
+                      "reduced BIAS last word");
+            red_expect_read("reduced ACT last read", ADDR_ACT_SPM + 16'h000c,
+                            32'ha1a2_a3a4);
+            red_expect_read("reduced WGT last read", ADDR_WGT_SPM + 16'h000c,
+                            32'hb1b2_b3b4);
+            red_expect_read("reduced OUT last read", ADDR_OUT_SPM + 16'h0004,
+                            32'hc1c2_c3c4);
+            red_expect_read("reduced BIAS last read", ADDR_BIAS_SPM + 16'h0004,
+                            32'hd1d2_d3d4);
+            cov_hit(COV_RED_EP_ACT, "reduced ACT endpoint");
+            cov_hit(COV_RED_EP_WGT, "reduced WGT endpoint");
+            cov_hit(COV_RED_EP_OUT, "reduced OUT endpoint");
+            cov_hit(COV_RED_EP_BIAS, "reduced BIAS endpoint");
+
+            red_write(ADDR_ACT_SPM + 16'h0010, 32'hffff_ffff, 4'hf, 1'b1,
+                      "reduced ACT first tail write");
+            red_expect_error_code("reduced ACT tail code", ERR_INVALID_ADDR);
+            red_read(ADDR_ACT_SPM + 16'h0010, 1'b1, data,
+                     "reduced ACT first tail read");
+            red_expect_error_code("reduced ACT tail read code", ERR_INVALID_ADDR);
+            red_expect_read("reduced ACT tail preserved last", ADDR_ACT_SPM + 16'h000c,
+                            32'ha1a2_a3a4);
+            cov_hit(COV_RED_TAIL_ACT, "reduced ACT inactive tail");
+
+            red_write(ADDR_WGT_SPM + 16'h0010, 32'hffff_ffff, 4'hf, 1'b1,
+                      "reduced WGT first tail write");
+            red_expect_error_code("reduced WGT tail code", ERR_INVALID_ADDR);
+            red_read(ADDR_WGT_SPM + 16'h0010, 1'b1, data,
+                     "reduced WGT first tail read");
+            red_expect_error_code("reduced WGT tail read code", ERR_INVALID_ADDR);
+            red_expect_read("reduced WGT tail preserved last", ADDR_WGT_SPM + 16'h000c,
+                            32'hb1b2_b3b4);
+            cov_hit(COV_RED_TAIL_WGT, "reduced WGT inactive tail");
+
+            red_write(ADDR_OUT_SPM + 16'h0008, 32'hffff_ffff, 4'hf, 1'b1,
+                      "reduced OUT first tail write");
+            red_expect_error_code("reduced OUT tail code", ERR_INVALID_ADDR);
+            red_read(ADDR_OUT_SPM + 16'h0008, 1'b1, data,
+                     "reduced OUT first tail read");
+            red_expect_error_code("reduced OUT tail read code", ERR_INVALID_ADDR);
+            red_expect_read("reduced OUT tail preserved last", ADDR_OUT_SPM + 16'h0004,
+                            32'hc1c2_c3c4);
+            cov_hit(COV_RED_TAIL_OUT, "reduced OUT inactive tail");
+
+            red_write(ADDR_BIAS_SPM + 16'h0008, 32'hffff_ffff, 4'hf, 1'b1,
+                      "reduced BIAS first tail write");
+            red_expect_error_code("reduced BIAS tail code", ERR_INVALID_ADDR);
+            red_read(ADDR_BIAS_SPM + 16'h0008, 1'b1, data,
+                     "reduced BIAS first tail read");
+            red_expect_error_code("reduced BIAS tail read code", ERR_INVALID_ADDR);
+            red_expect_read("reduced BIAS tail preserved last", ADDR_BIAS_SPM + 16'h0004,
+                            32'hd1d2_d3d4);
+            cov_hit(COV_RED_TAIL_BIAS, "reduced BIAS inactive tail");
+        end
+    endtask
+
+    task automatic test_reduced_descriptor_boundaries;
+        begin
+            note_test("reduced exact descriptor boundaries");
+            red_soft_reset();
+            red_write(ADDR_ACT_SPM + 16'h000c, 32'h0101_0101, 4'hf, 1'b0,
+                      "reduced boundary ACT");
+            red_write(ADDR_WGT_SPM + 16'h0004, 32'h0101_0101, 4'hf, 1'b0,
+                      "reduced boundary WGT0");
+            red_write(ADDR_WGT_SPM + 16'h000c, 32'h0202_0202, 4'hf, 1'b0,
+                      "reduced boundary WGT1");
+            red_write(ADDR_BIAS_SPM + 16'h0000, 32'h0000_000a, 4'hf, 1'b0,
+                      "reduced boundary BIAS0");
+            red_write(ADDR_BIAS_SPM + 16'h0004, 32'hffff_ffff, 4'hf, 1'b0,
+                      "reduced boundary BIAS1");
+            red_program_command(0, 12, 4, 6, 1, 0, 7, 0);
+            red_start_expect("reduced all exact boundaries", 1'b1, 5'd0);
+            red_expect_read("reduced exact output bytes", ADDR_OUT_SPM + 16'h0004,
+                            32'h070e_0000);
+            red_expect_read("reduced exact output count", ADDR_LAST_OUT_COUNT,
+                            32'h0000_0002);
+            cov_hit(COV_RED_DESC_ACT_OK, "reduced ACT exact descriptor");
+            cov_hit(COV_RED_DESC_WGT_OK, "reduced WGT exact descriptor");
+            cov_hit(COV_RED_DESC_OUT_OK, "reduced OUT exact descriptor");
+            cov_hit(COV_RED_DESC_BIAS_OK, "reduced BIAS exact descriptor");
+
+            note_test("reduced one-past descriptor errors");
+            red_soft_reset();
+            red_program_command(0, 13, 0, 0, 0, 0, 3, 0);
+            red_start_expect("reduced ACT one past", 1'b0, ERR_DESC_ACT_RANGE);
+            cov_hit(COV_RED_DESC_ACT_BAD, "reduced ACT one-past descriptor");
+
+            red_soft_reset();
+            red_program_command(0, 0, 5, 0, 1, 0, 7, 0);
+            red_start_expect("reduced WGT one past", 1'b0, ERR_DESC_WGT_RANGE);
+            cov_hit(COV_RED_DESC_WGT_BAD, "reduced WGT one-past descriptor");
+
+            red_soft_reset();
+            red_program_command(0, 0, 0, 7, 1, 0, 3, 0);
+            red_start_expect("reduced OUT one past", 1'b0, ERR_DESC_OUT_RANGE);
+            cov_hit(COV_RED_DESC_OUT_BAD, "reduced OUT one-past descriptor");
+
+            red_soft_reset();
+            red_program_command(0, 0, 0, 0, 1, 0, 3, 1);
+            red_start_expect("reduced BIAS one past", 1'b0, ERR_DESC_BIAS_RANGE);
+            cov_hit(COV_RED_DESC_BIAS_BAD, "reduced BIAS one-past descriptor");
+        end
+    endtask
+
+    task automatic min_drive_idle;
+        begin
+            min_mm_valid = 1'b0;
+            min_mm_write = 1'b0;
+            min_mm_addr  = 16'h0000;
+            min_mm_wdata = 32'h0000_0000;
+            min_mm_wstrb = 4'h0;
+        end
+    endtask
+
+    task automatic min_access(
+        input  bit          write,
+        input  [15:0]       addr,
+        input  [31:0]       wdata,
+        input  [3:0]        wstrb,
+        input  bit          exp_error,
+        output [31:0]       rdata,
+        input  string       name
+    );
+        bit accepted;
+        bit ready_at_edge;
+        int unsigned timeout;
+        begin
+            accepted = 1'b0;
+            timeout = 0;
+            @(negedge clk);
+            min_mm_valid = 1'b1;
+            min_mm_write = write;
+            min_mm_addr  = addr;
+            min_mm_wdata = wdata;
+            min_mm_wstrb = wstrb;
+            while (!accepted && (timeout < 200)) begin
+                @(posedge clk);
+                ready_at_edge = min_mm_ready;
+                #1;
+                check_cnt++;
+                if ($isunknown({min_mm_rdata, min_mm_ready, min_mm_error, min_irq})) begin
+                    error_cnt++;
+                    $display("[FAIL] %s minimum visible output contains X/Z", name);
+                end
+                if (ready_at_edge) begin
+                    accepted = 1'b1;
+                    rdata = min_mm_rdata;
+                    check_eq1({name, " minimum mm_error"}, min_mm_error, exp_error);
+                end else begin
+                    timeout++;
+                    check_eq1({name, " minimum stable valid"}, min_mm_valid, 1'b1);
+                    check_eq1({name, " minimum stable write"}, min_mm_write, write);
+                    check_eq32({name, " minimum stable addr"},
+                               {16'h0000, min_mm_addr}, {16'h0000, addr});
+                    check_eq32({name, " minimum stable wdata"}, min_mm_wdata, wdata);
+                    check_eq32({name, " minimum stable wstrb"},
+                               {28'h0, min_mm_wstrb}, {28'h0, wstrb});
+                end
+            end
+            if (!accepted) begin
+                fail({name, " minimum access timeout"});
+                rdata = 32'hxxxx_xxxx;
+            end
+            @(negedge clk);
+            min_drive_idle();
+        end
+    endtask
+
+    task automatic min_write(input [15:0] addr, input [31:0] data,
+                             input [3:0] strb, input bit exp_error,
+                             input string name);
+        logic [31:0] unused;
+        begin
+            min_access(1'b1, addr, data, strb, exp_error, unused, name);
+        end
+    endtask
+
+    task automatic min_read(input [15:0] addr, input bit exp_error,
+                            output [31:0] data, input string name);
+        begin
+            min_access(1'b0, addr, 32'h0000_0000, 4'h0,
+                       exp_error, data, name);
+        end
+    endtask
+
+    task automatic min_expect_read(input string name, input [15:0] addr,
+                                   input [31:0] exp);
+        logic [31:0] data;
+        begin
+            min_read(addr, 1'b0, data, name);
+            check_eq32(name, data, exp);
+        end
+    endtask
+
+    task automatic min_expect_error_code(input string name,
+                                         input [4:0] exp_code);
+        logic [31:0] data;
+        begin
+            min_read(ADDR_ERR_CODE, 1'b0, data, name);
+            check_eq32(name, data, {27'h0, exp_code});
+        end
+    endtask
+
+    task automatic min_soft_reset;
+        begin
+            min_write(ADDR_CTRL, 32'h0000_0002, 4'hf, 1'b0,
+                      "minimum soft reset");
+            repeat (2) @(posedge clk);
+        end
+    endtask
+
+    task automatic min_program_command(
+        input int unsigned act_base,
+        input int unsigned wgt_base,
+        input int unsigned out_base,
+        input int unsigned bias_base
+    );
+        begin
+            min_write(ADDR_CFG, make_cfg(0, 3), 4'hf, 1'b0, "minimum cfg");
+            min_write(ADDR_ACT_BASE, {24'h0, act_base[7:0]}, 4'hf, 1'b0,
+                      "minimum act base");
+            min_write(ADDR_WGT_BASE, {24'h0, wgt_base[7:0]}, 4'hf, 1'b0,
+                      "minimum wgt base");
+            min_write(ADDR_OUT_BASE, {24'h0, out_base[7:0]}, 4'hf, 1'b0,
+                      "minimum out base");
+            min_write(ADDR_ACC_INIT, 32'h0000_0000, 4'hf, 1'b0,
+                      "minimum acc init");
+            min_write(ADDR_OUT_CFG, make_out_cfg(0, 0, 3), 4'hf, 1'b0,
+                      "minimum out cfg");
+            min_write(ADDR_BIAS_BASE, {28'h0, bias_base[3:0]}, 4'hf, 1'b0,
+                      "minimum bias base");
+            min_write(ADDR_QUANT_MULT, 32'h0000_0001, 4'hf, 1'b0,
+                      "minimum quant mult");
+            min_write(ADDR_QUANT_CFG,
+                      make_quant_cfg(0, 8'h00, ACT_NONE, 8'h7f),
+                      4'hf, 1'b0, "minimum quant cfg");
+        end
+    endtask
+
+    task automatic min_start_expect(input string name, input bit exp_success,
+                                    input [4:0] exp_code);
+        logic [31:0] status;
+        int unsigned timeout;
+        begin
+            min_write(ADDR_STATUS, 32'h0000_000e, 4'hf, 1'b0,
+                      {name, " clear status"});
+            min_write(ADDR_CTRL, 32'h0000_0001, 4'hf, 1'b0, {name, " start"});
+            status = 32'h0;
+            timeout = 0;
+            while (((status & 32'h0000_0006) == 0) && (timeout < 200)) begin
+                min_read(ADDR_STATUS, 1'b0, status, {name, " poll"});
+                timeout++;
+            end
+            if (timeout >= 200) begin
+                fail({name, " minimum command timeout"});
+            end
+            check_eq1({name, " minimum done"}, status[1], exp_success);
+            check_eq1({name, " minimum error"}, status[2], !exp_success);
+            if (!exp_success) begin
+                min_expect_error_code({name, " minimum err_code"}, exp_code);
+                min_expect_read({name, " minimum no output count"},
+                                ADDR_LAST_OUT_COUNT, 32'h0000_0000);
+            end
+        end
+    endtask
+
+    task automatic min_fill_all;
+        begin
+            min_write(ADDR_ACT_SPM, 32'h1111_1111, 4'hf, 1'b0,
+                      "minimum fill ACT");
+            min_write(ADDR_WGT_SPM, 32'h2222_2222, 4'hf, 1'b0,
+                      "minimum fill WGT");
+            min_write(ADDR_OUT_SPM, 32'h3333_3333, 4'hf, 1'b0,
+                      "minimum fill OUT");
+            min_write(ADDR_BIAS_SPM, 32'h4444_4444, 4'hf, 1'b0,
+                      "minimum fill BIAS");
+        end
+    endtask
+
+    task automatic min_check_all_zero(input string prefix);
+        begin
+            min_expect_read({prefix, " ACT zero"}, ADDR_ACT_SPM, 32'h0000_0000);
+            min_expect_read({prefix, " WGT zero"}, ADDR_WGT_SPM, 32'h0000_0000);
+            min_expect_read({prefix, " OUT zero"}, ADDR_OUT_SPM, 32'h0000_0000);
+            min_expect_read({prefix, " BIAS zero"}, ADDR_BIAS_SPM, 32'h0000_0000);
+        end
+    endtask
+
+    task automatic test_min_capacity_reset_and_tails;
+        logic [31:0] data;
+        begin
+            note_test("minimum legal capacities reset and inactive tails");
+            drive_idle();
+            red_drive_idle();
+            min_drive_idle();
+
+            min_fill_all();
+            rst_n = 1'b0;
+            repeat (4) @(posedge clk);
+            rst_n = 1'b1;
+            repeat (2) @(posedge clk);
+            min_check_all_zero("minimum hardware reset");
+            cov_hit(COV_CFG_MIN, "minimum legal capacity configuration");
+            cov_hit(COV_RESET_MIN_HW, "minimum hardware reset");
+
+            min_fill_all();
+            min_soft_reset();
+            min_check_all_zero("minimum soft reset");
+            check_eq1("minimum soft reset irq", min_irq, 1'b0);
+            cov_hit(COV_RESET_MIN_SOFT, "minimum soft reset");
+
+            min_write(ADDR_ACT_SPM, 32'ha1a2_a3a4, 4'hf, 1'b0,
+                      "minimum ACT endpoint");
+            min_write(ADDR_WGT_SPM, 32'hb1b2_b3b4, 4'hf, 1'b0,
+                      "minimum WGT endpoint");
+            min_write(ADDR_OUT_SPM, 32'hc1c2_c3c4, 4'hf, 1'b0,
+                      "minimum OUT endpoint");
+            min_write(ADDR_BIAS_SPM, 32'hd1d2_d3d4, 4'hf, 1'b0,
+                      "minimum BIAS endpoint");
+            min_expect_read("minimum ACT endpoint read", ADDR_ACT_SPM, 32'ha1a2_a3a4);
+            min_expect_read("minimum WGT endpoint read", ADDR_WGT_SPM, 32'hb1b2_b3b4);
+            min_expect_read("minimum OUT endpoint read", ADDR_OUT_SPM, 32'hc1c2_c3c4);
+            min_expect_read("minimum BIAS endpoint read", ADDR_BIAS_SPM, 32'hd1d2_d3d4);
+            cov_hit(COV_MIN_EP_ACT, "minimum ACT endpoint");
+            cov_hit(COV_MIN_EP_WGT, "minimum WGT endpoint");
+            cov_hit(COV_MIN_EP_OUT, "minimum OUT endpoint");
+            cov_hit(COV_MIN_EP_BIAS, "minimum BIAS endpoint");
+
+            min_write(ADDR_ACT_SPM + 16'h0004, 32'hffff_ffff, 4'hf, 1'b1,
+                      "minimum ACT tail write");
+            min_expect_error_code("minimum ACT tail code", ERR_INVALID_ADDR);
+            min_read(ADDR_ACT_SPM + 16'h0004, 1'b1, data, "minimum ACT tail read");
+            min_expect_read("minimum ACT tail preserved", ADDR_ACT_SPM, 32'ha1a2_a3a4);
+            cov_hit(COV_MIN_TAIL_ACT, "minimum ACT inactive tail");
+
+            min_write(ADDR_WGT_SPM + 16'h0004, 32'hffff_ffff, 4'hf, 1'b1,
+                      "minimum WGT tail write");
+            min_expect_error_code("minimum WGT tail code", ERR_INVALID_ADDR);
+            min_read(ADDR_WGT_SPM + 16'h0004, 1'b1, data, "minimum WGT tail read");
+            min_expect_read("minimum WGT tail preserved", ADDR_WGT_SPM, 32'hb1b2_b3b4);
+            cov_hit(COV_MIN_TAIL_WGT, "minimum WGT inactive tail");
+
+            min_write(ADDR_OUT_SPM + 16'h0004, 32'hffff_ffff, 4'hf, 1'b1,
+                      "minimum OUT tail write");
+            min_expect_error_code("minimum OUT tail code", ERR_INVALID_ADDR);
+            min_read(ADDR_OUT_SPM + 16'h0004, 1'b1, data, "minimum OUT tail read");
+            min_expect_read("minimum OUT tail preserved", ADDR_OUT_SPM, 32'hc1c2_c3c4);
+            cov_hit(COV_MIN_TAIL_OUT, "minimum OUT inactive tail");
+
+            min_write(ADDR_BIAS_SPM + 16'h0004, 32'hffff_ffff, 4'hf, 1'b1,
+                      "minimum BIAS tail write");
+            min_expect_error_code("minimum BIAS tail code", ERR_INVALID_ADDR);
+            min_read(ADDR_BIAS_SPM + 16'h0004, 1'b1, data, "minimum BIAS tail read");
+            min_expect_read("minimum BIAS tail preserved", ADDR_BIAS_SPM, 32'hd1d2_d3d4);
+            cov_hit(COV_MIN_TAIL_BIAS, "minimum BIAS inactive tail");
+        end
+    endtask
+
+    task automatic test_min_descriptor_boundaries;
+        begin
+            note_test("minimum exact endpoint compute");
+            min_soft_reset();
+            min_write(ADDR_ACT_SPM, 32'h0101_0101, 4'hf, 1'b0,
+                      "minimum compute ACT");
+            min_write(ADDR_WGT_SPM, 32'h0202_0202, 4'hf, 1'b0,
+                      "minimum compute WGT");
+            min_write(ADDR_BIAS_SPM, 32'h0000_0001, 4'hf, 1'b0,
+                      "minimum compute BIAS");
+            min_program_command(0, 0, 3, 0);
+            min_start_expect("minimum all exact boundaries", 1'b1, 5'd0);
+            min_expect_read("minimum exact output", ADDR_OUT_SPM, 32'h0900_0000);
+            min_expect_read("minimum exact output count", ADDR_LAST_OUT_COUNT,
+                            32'h0000_0001);
+            cov_hit(COV_MIN_DESC_ACT_OK, "minimum ACT exact descriptor");
+            cov_hit(COV_MIN_DESC_WGT_OK, "minimum WGT exact descriptor");
+            cov_hit(COV_MIN_DESC_OUT_OK, "minimum OUT exact descriptor");
+            cov_hit(COV_MIN_DESC_BIAS_OK, "minimum BIAS exact descriptor");
+
+            note_test("minimum one-past descriptor errors");
+            min_soft_reset();
+            min_program_command(1, 0, 0, 0);
+            min_start_expect("minimum ACT one past", 1'b0, ERR_DESC_ACT_RANGE);
+            cov_hit(COV_MIN_DESC_ACT_BAD, "minimum ACT one-past descriptor");
+
+            min_soft_reset();
+            min_program_command(0, 1, 0, 0);
+            min_start_expect("minimum WGT one past", 1'b0, ERR_DESC_WGT_RANGE);
+            cov_hit(COV_MIN_DESC_WGT_BAD, "minimum WGT one-past descriptor");
+
+            min_soft_reset();
+            min_program_command(0, 0, 4, 0);
+            min_start_expect("minimum OUT one past", 1'b0, ERR_DESC_OUT_RANGE);
+            cov_hit(COV_MIN_DESC_OUT_BAD, "minimum OUT one-past descriptor");
+
+            min_soft_reset();
+            min_program_command(0, 0, 0, 1);
+            min_start_expect("minimum BIAS one past", 1'b0, ERR_DESC_BIAS_RANGE);
+            cov_hit(COV_MIN_DESC_BIAS_BAD, "minimum BIAS one-past descriptor");
+        end
+    endtask
+
     initial begin
         error_cnt = 0;
         check_cnt = 0;
         test_cnt = 0;
         rand_state = 32'h0000_0001;
+        phase1_cov = '{default:1'b0};
         rst_n = 1'b0;
         drive_idle();
+        red_drive_idle();
+        min_drive_idle();
         reset_models();
 
         test_reset_defaults();
@@ -1268,8 +2087,13 @@ module tb_npu;
         test_irq_done_error();
         test_soft_reset();
         test_seeded_random_cases();
+        test_reduced_capacity_reset_and_tails();
+        test_reduced_descriptor_boundaries();
+        test_min_capacity_reset_and_tails();
+        test_min_descriptor_boundaries();
 
         repeat (5) @(posedge clk);
+        require_phase1_coverage();
         $display("[SUMMARY] tests=%0d checks=%0d errors=%0d", test_cnt, check_cnt, error_cnt);
         if (error_cnt == 0) begin
             $display("RESULT: ALL TESTS PASS");
@@ -1279,4 +2103,58 @@ module tb_npu;
         $finish;
     end
 
+endmodule
+
+// Expected-negative elaboration tops.  Each has no operational stimulus; a
+// representative illegal parameter must terminate at time zero through the
+// RTL guard and print the exact guard message.
+module npu_illegal_harness #(
+    parameter ACT_SPM_BYTES  = 64,
+    parameter WGT_SPM_BYTES  = 64,
+    parameter OUT_SPM_BYTES  = 64,
+    parameter BIAS_SPM_WORDS = 16
+);
+    wire [31:0] mm_rdata;
+    wire        mm_ready;
+    wire        mm_error;
+    wire        irq;
+
+    npu #(
+        .ACT_SPM_BYTES  (ACT_SPM_BYTES),
+        .WGT_SPM_BYTES  (WGT_SPM_BYTES),
+        .OUT_SPM_BYTES  (OUT_SPM_BYTES),
+        .BIAS_SPM_WORDS (BIAS_SPM_WORDS)
+    ) u_illegal (
+        .clk      (1'b0),
+        .rst_n    (1'b0),
+        .mm_valid (1'b0),
+        .mm_write (1'b0),
+        .mm_addr  (16'h0000),
+        .mm_wdata (32'h0000_0000),
+        .mm_wstrb (4'h0),
+        .mm_rdata (mm_rdata),
+        .mm_ready (mm_ready),
+        .mm_error (mm_error),
+        .irq      (irq)
+    );
+endmodule
+
+module tb_npu_illegal_byte_zero;
+    npu_illegal_harness #(.ACT_SPM_BYTES(0)) u_case();
+endmodule
+
+module tb_npu_illegal_byte_over;
+    npu_illegal_harness #(.WGT_SPM_BYTES(68)) u_case();
+endmodule
+
+module tb_npu_illegal_byte_unaligned;
+    npu_illegal_harness #(.OUT_SPM_BYTES(6)) u_case();
+endmodule
+
+module tb_npu_illegal_bias_zero;
+    npu_illegal_harness #(.BIAS_SPM_WORDS(0)) u_case();
+endmodule
+
+module tb_npu_illegal_bias_over;
+    npu_illegal_harness #(.BIAS_SPM_WORDS(17)) u_case();
 endmodule

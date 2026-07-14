@@ -20,12 +20,12 @@ All addresses are local byte offsets from the NPU aperture base. Register access
 | `0x002c` | `QUANT_MULT` | RW | `0x0000_0001` | Signed INT32 fixed-point multiplier. |
 | `0x0030` | `QUANT_CFG` | RW | `0x7f00_0000` | Quant shift, output zero point, activation mode, ReLU6 clamp maximum. |
 | `0x0034` | `LAST_OUT_COUNT` | RO | `0x0000_0000` | Number of output bytes stored by the most recent command. |
-| `0x0100-0x013f` | `ACT_SPM` | RW | all zero | 64-byte activation scratchpad window. |
-| `0x0200-0x023f` | `WGT_SPM` | RW | all zero | 64-byte weight scratchpad window. |
-| `0x0300-0x033f` | `OUT_SPM` | RW | all zero | 64-byte output scratchpad window. |
-| `0x0400-0x043f` | `BIAS_SPM` | RW | all zero | 16 signed INT32 bias entries. |
+| `0x0100-0x013f` | `ACT_SPM` | RW | all zero | Fixed aperture; implemented prefix is `ACT_SPM_BYTES` (default 64) bytes. |
+| `0x0200-0x023f` | `WGT_SPM` | RW | all zero | Fixed aperture; implemented prefix is `WGT_SPM_BYTES` (default 64) bytes. |
+| `0x0300-0x033f` | `OUT_SPM` | RW | all zero | Fixed aperture; implemented prefix is `OUT_SPM_BYTES` (default 64) bytes. |
+| `0x0400-0x043f` | `BIAS_SPM` | RW | all zero | Fixed aperture; implemented prefix is `BIAS_SPM_WORDS` (default 16) signed INT32 entries. |
 
-Addresses not listed above are illegal and return `mm_error=1`.
+Addresses not listed above, including unused tails of parameter-reduced scratchpad apertures, are illegal and return `mm_error=1` with `ERR_CODE=INVALID_ADDR`. Default parameters preserve the complete ranges shown above.
 
 ## CTRL - Offset `0x0000`
 
@@ -68,7 +68,7 @@ Writing 1 to bits `[1]`, `[2]`, or `[3]` clears the matching sticky bit. Writing
 
 | Bits | Field | Access | Reset | Description |
 |---:|---|---|---:|---|
-| `[7:0]` | `act_base` | RW | `0x00` | Activation scratchpad byte base. Start range check requires the final accessed activation byte to be `<= 63`. |
+| `[7:0]` | `act_base` | RW | `0x00` | Activation scratchpad byte base. Start range check requires the final accessed activation byte to be `< ACT_SPM_BYTES`. |
 | `[31:8]` | `reserved` | RO | 0 | Reads as zero; writes ignored. |
 
 ## WGT_BASE - Offset `0x0010`
@@ -110,14 +110,14 @@ Writes to `ACC_RESULT` are illegal and return `mm_error=1` with `ERR_CODE=RO_WRI
 |---:|---|---|
 | `0` | `NONE` | No sticky error. |
 | `1` | `START_BUSY` | `CTRL.start` written while a command was busy. |
-| `2` | `DESC_ACT_RANGE` | Activation descriptor exceeded `ACT_SPM[0:63]`. |
-| `3` | `DESC_WGT_RANGE` | Weight descriptor exceeded `WGT_SPM[0:63]`. |
-| `4` | `DESC_OUT_RANGE` | Output descriptor exceeded `OUT_SPM[0:63]`. |
+| `2` | `DESC_ACT_RANGE` | Activation descriptor exceeded `ACT_SPM[0:ACT_SPM_BYTES-1]`. |
+| `3` | `DESC_WGT_RANGE` | Weight descriptor exceeded `WGT_SPM[0:WGT_SPM_BYTES-1]`. |
+| `4` | `DESC_OUT_RANGE` | Output descriptor exceeded `OUT_SPM[0:OUT_SPM_BYTES-1]`. |
 | `5` | `INVALID_ADDR` | Host accessed an unimplemented address. |
 | `6` | `REG_UNALIGNED` | Host accessed register space with an unaligned address. |
 | `7` | `BAD_REG_WSTRB` | Host wrote a writable register without full-word write strobes. |
 | `8` | `SPM_UNALIGNED` | Host accessed a scratchpad window with an unaligned transfer start. |
-| `9` | `DESC_BIAS_RANGE` | Bias descriptor exceeded `BIAS_SPM[0:15]`. |
+| `9` | `DESC_BIAS_RANGE` | Bias descriptor exceeded `BIAS_SPM[0:BIAS_SPM_WORDS-1]`. |
 | `10` | `DESC_QUANT_SHIFT` | `QUANT_CFG.quant_shift > 31`. |
 | `11` | `DESC_ACTIVATION` | Activation mode or ReLU6 clamp configuration is illegal. |
 | `12` | `RO_WRITE` | Host wrote a read-only register. |
@@ -179,6 +179,8 @@ Writes to `LAST_OUT_COUNT` are illegal and return `mm_error=1` with `ERR_CODE=RO
 
 Activation, weight, and output scratchpad windows are byte-addressed arrays accessed by word-aligned 32-bit host transfers.
 
+The window ranges are reserved apertures, not unconditional implemented capacity. `ACT_SPM_BYTES`, `WGT_SPM_BYTES`, and `OUT_SPM_BYTES` are legal from 4 through 64 in multiples of four. `BIAS_SPM_WORDS` is legal from 1 through 16. Each implemented region begins at its fixed base, so the windows cannot overlap. A host word access is valid only if the entire word lies in the implemented prefix.
+
 For a byte scratchpad read at aligned address `A`, where `offset = A - window_base`:
 
 ```text
@@ -190,7 +192,7 @@ mm_rdata[31:24] = spm[offset + 3]
 
 For a byte scratchpad write, lane `n` updates `spm[offset+n]` only when `mm_wstrb[n]=1`.
 
-The bias scratchpad is a 16-entry signed INT32 array:
+At the default `BIAS_SPM_WORDS=16`, the bias scratchpad is:
 
 | Address | Entry |
 |---:|---:|
@@ -200,3 +202,5 @@ The bias scratchpad is a 16-entry signed INT32 array:
 | `0x043c` | `BIAS_SPM[15]` |
 
 The compute engine reads `ACT_SPM`, `WGT_SPM`, and `BIAS_SPM`. It writes one byte per output element to `OUT_SPM[out_base + out_idx * out_stride]` on successful execution. Host writes to `OUT_SPM` are allowed when idle so software can clear or seed output bytes.
+
+Hardware reset and `CTRL.soft_reset` zero every implemented location. Phase 1 implements this storage as behavioral register arrays. A later internal 1R1W synchronous SRAM replacement must preserve the same register map and reset-visible contents; any zero-fill or one-cycle read latency is absorbed with `mm_ready` backpressure and controller sequencing as specified in `interface_spec.md`.

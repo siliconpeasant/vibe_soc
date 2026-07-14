@@ -3,7 +3,12 @@
 // Function   : Tiny software-managed signed INT8 inference-layer accelerator
 //============================================================================
 
-module npu (
+module npu #(
+    parameter integer ACT_SPM_BYTES  = 64,
+    parameter integer WGT_SPM_BYTES  = 64,
+    parameter integer OUT_SPM_BYTES  = 64,
+    parameter integer BIAS_SPM_WORDS = 16
+) (
     input         clk,
     input         rst_n,
     input         mm_valid,
@@ -83,6 +88,21 @@ module npu (
     wire [31:0] spm_act_word;
     wire [31:0] spm_wgt_word;
     wire [31:0] spm_bias_word;
+
+    generate
+        if ((ACT_SPM_BYTES < 4) || (ACT_SPM_BYTES > 64) ||
+            ((ACT_SPM_BYTES % 4) != 0) ||
+            (WGT_SPM_BYTES < 4) || (WGT_SPM_BYTES > 64) ||
+            ((WGT_SPM_BYTES % 4) != 0) ||
+            (OUT_SPM_BYTES < 4) || (OUT_SPM_BYTES > 64) ||
+            ((OUT_SPM_BYTES % 4) != 0) ||
+            (BIAS_SPM_WORDS < 1) || (BIAS_SPM_WORDS > 16)) begin : g_invalid_parameters
+            initial begin
+                $display("ERROR: illegal npu scratchpad capacity parameter");
+                $finish;
+            end
+        end
+    endgenerate
 
     assign reg_region      = (mm_addr < 16'h0100);
     assign act_window      = (mm_addr >= ACT_BASE_ADDR) &&
@@ -183,7 +203,12 @@ module npu (
         .relu6_max_o                 (relu6_max_reg)
     );
 
-    npu_spm u_npu_spm (
+    npu_spm #(
+        .ACT_SPM_BYTES              (ACT_SPM_BYTES),
+        .WGT_SPM_BYTES              (WGT_SPM_BYTES),
+        .OUT_SPM_BYTES              (OUT_SPM_BYTES),
+        .BIAS_SPM_WORDS             (BIAS_SPM_WORDS)
+    ) u_npu_spm (
         .clk                         (clk),
         .rst_n                       (rst_n),
         .soft_reset_i                (soft_reset_pulse),
@@ -213,7 +238,12 @@ module npu (
         .out_wr_data_i               (core_out_wr_data)
     );
 
-    npu_core u_npu_core (
+    npu_core #(
+        .ACT_SPM_BYTES              (ACT_SPM_BYTES),
+        .WGT_SPM_BYTES              (WGT_SPM_BYTES),
+        .OUT_SPM_BYTES              (OUT_SPM_BYTES),
+        .BIAS_SPM_WORDS             (BIAS_SPM_WORDS)
+    ) u_npu_core (
         .clk                         (clk),
         .rst_n                       (rst_n),
         .soft_reset_i                (soft_reset_pulse),

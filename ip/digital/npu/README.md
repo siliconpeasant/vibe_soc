@@ -1,52 +1,41 @@
 # npu IP
 
-## 简介
+`npu` 是一个软件管理的 INT8 GEMV/线性层加速器，支持四路 INT8 MAC、
+INT32 bias、定点 requantization、output zero point、ReLU/ReLU6 和 INT8
+饱和输出。
 
-npu 是自研 IP 模块。
+## 当前配置
 
-## 目录结构
+顶层模块为 `npu`，使用单时钟、低有效异步复位和本地 32-bit MMIO target
+接口。NPU v2 phase 1 提供四个编译期容量参数：
 
-```
-npu/
-├── de/
-│   ├── rtl/      # RTL 源码
-│   ├── lint/     # Lint 脚本/报告
-│   ├── cdc/      # CDC 配置
-│   ├── syn/      # 综合约束/脚本
-│   ├── formal/   # 形式验证
-│   └── run/      # 设计生成文件
-├── dv/
-│   ├── tb/       # Testbench (可独立编译仿真)
-│   ├── verif/    # 验证脚本
-│   ├── tests/    # Test case
-│   └── sim/      # 验证生成文件
-├── Makefile      # IP 级仿真入口
-└── README.md     # 本文档
-```
+| 参数 | 默认值 | 合法范围 |
+|---|---:|---:|
+| `ACT_SPM_BYTES` | 64 | 4..64，4-byte 对齐 |
+| `WGT_SPM_BYTES` | 64 | 4..64，4-byte 对齐 |
+| `OUT_SPM_BYTES` | 64 | 4..64，4-byte 对齐 |
+| `BIAS_SPM_WORDS` | 16 | 1..16 |
 
-## 独立仿真
+固定地址 aperture 和寄存器映射保持不变。缩容后的未实现 aperture 尾部返回
+`INVALID_ADDR`。当前 scratchpad 是可复位的行为级寄存器数组；本阶段不宣称
+SRAM inference。未来同步 1R1W SRAM 替换契约见 `docs/interface_spec.md`。
 
-```bash
-cd ip/digital/npu       # 根目录执行
-cd ip/digital/npu/de    # de 目录下也能执行
-cd ip/digital/npu/dv    # dv 目录下也能执行
-make comp    # 编译
-make sim     # 运行仿真
-make clean   # 清理
-```
+## 接口
 
-## 集成到 Chip
+| 信号 | 方向 | 位宽 | 说明 |
+|---|---|---:|---|
+| `clk` | input | 1 | 工作时钟 |
+| `rst_n` | input | 1 | 低有效异步复位 |
+| `mm_valid` | input | 1 | MMIO 请求有效 |
+| `mm_write` | input | 1 | 写请求选择 |
+| `mm_addr` | input | 16 | 本地 byte address |
+| `mm_wdata` | input | 32 | 写数据 |
+| `mm_wstrb` | input | 4 | byte write strobes |
+| `mm_rdata` | output | 32 | 读数据 |
+| `mm_ready` | output | 1 | 请求完成/读数据有效 |
+| `mm_error` | output | 1 | 当前请求错误 |
+| `irq` | output | 1 | done/error level interrupt |
 
-将 RTL 文件放入 `chip/periph/de/rtl/` 或 `chip/bus/de/rtl/` 等对应目录，
-然后在 `chip/top/de/rtl/` 的顶层模块中实例化。
-
-## 端口说明
-
-| 信号名 | 方向 | 位宽 | 说明 |
-|--------|------|------|------|
-| clk    | input | 1 | 时钟 |
-| rst_n  | input | 1 | 异步复位，低有效 |
-| data_in | input | 8 | 输入数据 |
-| valid_in | input | 1 | 输入有效 |
-| data_out | output | 8 | 输出数据 |
-| valid_out | output | 1 | 输出有效 |
+完整行为、寄存器和验证要求见 `docs/`。RTL 位于 `de/rtl/`，testbench 位于
+`dv/tb/`，综合约束和结果位于 `de/syn/`。Agent 执行 lint、编译、仿真和综合时
+必须使用注册的 `soc-build` MCP 工具，并通过 `pipeline_state.json` 门控。

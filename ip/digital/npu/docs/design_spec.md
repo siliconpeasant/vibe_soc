@@ -2,7 +2,9 @@
 
 ## Scope
 
-`npu` is a tiny software-managed INT8 inference-layer accelerator. It keeps the existing `npu` top module and local memory-mapped target interface, and evolves the prior single-output dot-product demo into a minimal quantized linear/GEMV tile engine.
+`npu` is a tiny software-managed INT8 inference-layer accelerator. It keeps the existing `npu` top module, local memory-mapped target interface, register offsets, and default software-visible capacities, and evolves the prior single-output dot-product demo into a minimal quantized linear/GEMV tile engine.
+
+NPU v2 phase 1 is limited to a backward-compatible scratchpad baseline. It makes the four local capacities compile-time parameters inside the existing fixed address apertures and defines an internal replacement contract for a future synchronous SRAM implementation. This phase does not add DMA, banking, larger apertures, external SRAM ports, or MAC-lane changes. The first implementation remains a behavioral register-array model; this document does not claim SRAM inference.
 
 The IP computes one command at a time. A command may produce one or more signed INT8 output elements from a shared activation vector, row-strided signed INT8 weights, signed INT32 bias values, fixed-point requantization, output zero-point addition, optional clamp activation, and signed INT8 saturation.
 
@@ -14,6 +16,8 @@ The implementation target remains portable Verilog-2005. The IP does not include
 - The same Google paper page states that bias is represented as INT32 with zero-point 0 and accumulator scale because bias quantization error can shift outputs.
 - `tutorials/npu/zsc_v2_npu_tutorial/markdown/chapter5.md:314` identifies INT8 quantization, zero-point/scale, per-channel quantization, and fused activation as key inference-accelerator techniques, and notes that ReLU6/clamp is simple in hardware.
 - Earlier NPU knowledge-base evidence selected scratchpad-dominant storage for predictable tensor data with software/DMA scheduling, and required a preserved datapath/controller partition.
+- `tutorials/npu/zsc_npu_tutorial/markdown/chapter5.md` states that scratchpads provide deterministic access and should be parameterized. This supports compile-time capacity parameters while retaining software-managed local storage.
+- `CaliptraIntegrationSpecification.md:137` describes parameterized 1R1W SRAMs with flopped read data and byte write enables. This is reference evidence for the future internal replacement boundary; no Caliptra macro or external memory port is instantiated in phase 1.
 
 ## Functional Blocks
 
@@ -21,7 +25,7 @@ The implementation target remains portable Verilog-2005. The IP does not include
 |---|---|
 | Memory-mapped frontend | Samples one host request when `mm_valid && mm_ready`, decodes register and scratchpad addresses, returns `mm_rdata`, `mm_ready`, and `mm_error`. |
 | Register file | Stores control, descriptors, quantization controls, status, interrupt enable, accumulator seed/result, and last error code. |
-| Scratchpads | Four local windows: 64-byte activation, 64-byte weight, 64-byte output, and 16-entry signed INT32 bias. |
+| Scratchpads | Four parameterized local-capacity prefixes inside fixed 64-byte apertures. Defaults are 64-byte activation, 64-byte weight, 64-byte output, and 16-entry signed INT32 bias. Phase 1 storage is behavioral register arrays. |
 | Load/store sequencer | Latches descriptors on `start`, validates ranges, and generates activation, weight, output, and bias addresses for each output element and K step. |
 | MAC datapath | Multiplies four signed INT8 activation values by four signed INT8 weight values and adds the four signed products into a signed INT32 accumulator. |
 | Bias and requantization | Adds signed INT32 bias, multiplies by signed INT32 quant multiplier in a signed 64-bit temporary, applies deterministic rounding/right shift, then adds signed INT8 output zero point. |
@@ -108,16 +112,27 @@ With those settings, `ACC_RESULT` equals the signed INT32 dot product and `OUT_S
 
 ## Scratchpad Organization
 
-| Scratchpad | Address window | Size | Internal index |
+| Scratchpad | Reserved address aperture | Implemented capacity | Internal index |
 |---|---:|---:|---|
-| Activation | `0x0100-0x013f` | 64 bytes | `mm_addr - 0x0100` |
-| Weight | `0x0200-0x023f` | 64 bytes | `mm_addr - 0x0200` |
-| Output | `0x0300-0x033f` | 64 bytes | `mm_addr - 0x0300` |
-| Bias | `0x0400-0x043f` | 16 signed INT32 words | `(mm_addr - 0x0400) >> 2` |
+| Activation | `0x0100-0x013f` | `ACT_SPM_BYTES`, default 64 bytes | `mm_addr - 0x0100` |
+| Weight | `0x0200-0x023f` | `WGT_SPM_BYTES`, default 64 bytes | `mm_addr - 0x0200` |
+| Output | `0x0300-0x033f` | `OUT_SPM_BYTES`, default 64 bytes | `mm_addr - 0x0300` |
+| Bias | `0x0400-0x043f` | `BIAS_SPM_WORDS`, default 16 signed INT32 words | `(mm_addr - 0x0400) >> 2` |
+
+The legal parameter contract is:
+
+| Parameter | Legal values | Alignment rule |
+|---|---:|---|
+| `ACT_SPM_BYTES` | 4 through 64 | Multiple of 4 bytes. |
+| `WGT_SPM_BYTES` | 4 through 64 | Multiple of 4 bytes. |
+| `OUT_SPM_BYTES` | 4 through 64 | Multiple of 4 bytes. |
+| `BIAS_SPM_WORDS` | 1 through 16 | Integral 32-bit words; implemented byte capacity is `4 * BIAS_SPM_WORDS`. |
+
+Each implemented region is the contiguous prefix beginning at its fixed aperture base. The four reserved apertures remain fixed and non-overlapping for every legal parameter combination; parameters cannot move a base or consume another aperture. An aligned host transfer is implemented only when all four transferred bytes fall within the selected capacity. An access to an unused tail inside a reserved aperture is an `INVALID_ADDR` access. Default parameter values preserve the full legacy windows and all prior valid addresses.
 
 Activation, weight, and output scratchpad host transfers are 32-bit word transfers at word-aligned addresses. Byte writes are supported through `mm_wstrb[3:0]`, where lane `n` updates byte `word_base+n`. Reads return four bytes in little-endian lane order.
 
-Bias scratchpad host transfers are 32-bit word transfers at word-aligned addresses. Bias writes require `mm_wstrb=4'b1111` and store one signed INT32 word. Bias reads return one signed INT32 word. Bias values are treated as INT32 with zero point 0 and accumulator scale.
+Bias scratchpad host transfers are 32-bit word transfers at word-aligned addresses. Bias writes require `mm_wstrb=4'b1111` and store one signed INT32 word. Bias reads return one signed INT32 word. Bias values are treated as INT32 with zero point 0 and accumulator scale. The last implemented bias word index is `BIAS_SPM_WORDS-1`.
 
 While a command is busy, host accesses to any scratchpad window stall by holding `mm_ready=0`. Register accesses still complete. Software must hold `mm_valid`, `mm_write`, `mm_addr`, `mm_wdata`, and `mm_wstrb` stable while `mm_ready=0`.
 
@@ -145,10 +160,10 @@ Descriptor checks occur on accepted `start` before any scratchpad read or output
 
 | Check | Error |
 |---|---|
-| `ACT_BASE.act_base + CFG.k_count_m1 * (CFG.act_stride_bytes_m1 + 1) + 3 > 63` | `DESC_ACT_RANGE` |
-| `WGT_BASE.wgt_base + OUT_CFG.out_count_m1 * (OUT_CFG.wgt_stride_bytes_m1 + 1) + CFG.k_count_m1 * 4 + 3 > 63` | `DESC_WGT_RANGE` |
-| `OUT_BASE.out_base + OUT_CFG.out_count_m1 * (OUT_CFG.out_stride_bytes_m1 + 1) > 63` | `DESC_OUT_RANGE` |
-| `BIAS_BASE.bias_base + OUT_CFG.out_count_m1 > 15` | `DESC_BIAS_RANGE` |
+| `ACT_BASE.act_base + CFG.k_count_m1 * (CFG.act_stride_bytes_m1 + 1) + 3 >= ACT_SPM_BYTES` | `DESC_ACT_RANGE` |
+| `WGT_BASE.wgt_base + OUT_CFG.out_count_m1 * (OUT_CFG.wgt_stride_bytes_m1 + 1) + CFG.k_count_m1 * 4 + 3 >= WGT_SPM_BYTES` | `DESC_WGT_RANGE` |
+| `OUT_BASE.out_base + OUT_CFG.out_count_m1 * (OUT_CFG.out_stride_bytes_m1 + 1) >= OUT_SPM_BYTES` | `DESC_OUT_RANGE` |
+| `BIAS_BASE.bias_base + OUT_CFG.out_count_m1 >= BIAS_SPM_WORDS` | `DESC_BIAS_RANGE` |
 | `QUANT_CFG.quant_shift > 31` | `DESC_QUANT_SHIFT` |
 | `QUANT_CFG.activation_mode > 2`, or ReLU6 mode with signed `relu6_max < out_zero_point` | `DESC_ACTIVATION` |
 
@@ -180,6 +195,22 @@ Sticky bits clear as follows:
 
 Clearing `error` also clears `ERR_CODE`. Clearing `done` does not clear `ACC_RESULT`, `LAST_OUT_COUNT`, or output scratchpad contents.
 
+Only the implemented capacity of each scratchpad has architected contents. Hardware reset and `CTRL.soft_reset` zero every implemented byte or word for the selected parameters. In the phase-1 behavioral register-array baseline, this clear is performed by the existing reset/soft-reset logic and does not introduce an initialization wait state.
+
+## Future SRAM-Replacement Contract
+
+The SRAM boundary is internal to `npu`; phase 1 adds no top-level SRAM ports. A later implementation may replace each behavioral array with one independently addressed, parameterized 1-read/1-write memory having these semantics:
+
+- One synchronous read request and one synchronous write request may be issued in the same cycle.
+- Read data is flopped and becomes valid one rising edge after the read request.
+- Activation, weight, and output memories use a 32-bit data path with four byte write enables. Bias uses a 32-bit data path; normal bias writes assert all four enables.
+- Address width is derived from the selected capacity. Out-of-range addresses must be rejected before a memory request is issued.
+- Read-during-write behavior to the same word is not architecturally relied upon. Host scratchpad accesses remain stalled while compute owns the memories, so the controller must avoid such collisions.
+
+A synchronous one-cycle macro cannot be substituted without controller changes. The replacement implementation must pipeline each compute read address one cycle ahead of operand consumption, capture read data only when valid, and delay accumulator, bias, requantization, output-store, `LAST_OUT_COUNT`, and `done` updates as needed. A host scratchpad read must retain its request and return `mm_ready` only when the flopped read data is available. Host/register ordering, descriptor errors, output values, and interrupt semantics must remain unchanged; the specification deliberately does not require a fixed command latency.
+
+The architectural zero-after-reset contract also applies to a macro that has no storage reset. Such an implementation must zero the active capacity with a controller/wrapper initialization sequence after hardware-reset deassertion and after an accepted `CTRL.soft_reset`. During that sequence, `busy`, sticky status, and `irq` remain at reset values, no command or scratchpad access may complete, and `mm_ready` may be held low until clearing is complete. Register contents retain their documented reset values. If the selected macro supplies an equivalent guaranteed initialization mechanism, it may be used instead. Any future implementation that cannot preserve these visible reset and backpressure rules must reopen the doc stage.
+
 ## Error Behavior
 
 Errors are deterministic and sticky until explicitly cleared. `mm_error` is a one-transaction response signal; `STATUS.error` and `ERR_CODE` are sticky architectural state.
@@ -187,14 +218,14 @@ Errors are deterministic and sticky until explicitly cleared. `mm_error` is a on
 | Error | Condition | `mm_error` | Sticky effect |
 |---|---|---:|---|
 | `START_BUSY` | `CTRL.start` written while `busy=1` | 0 | Abort active command, set `STATUS.error`, set `ERR_CODE=1`. |
-| `DESC_ACT_RANGE` | Activation descriptor exceeds `ACT_SPM[0:63]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=2`. |
-| `DESC_WGT_RANGE` | Weight descriptor exceeds `WGT_SPM[0:63]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=3`. |
-| `DESC_OUT_RANGE` | Output descriptor exceeds `OUT_SPM[0:63]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=4`. |
+| `DESC_ACT_RANGE` | Activation descriptor exceeds `ACT_SPM[0:ACT_SPM_BYTES-1]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=2`. |
+| `DESC_WGT_RANGE` | Weight descriptor exceeds `WGT_SPM[0:WGT_SPM_BYTES-1]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=3`. |
+| `DESC_OUT_RANGE` | Output descriptor exceeds `OUT_SPM[0:OUT_SPM_BYTES-1]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=4`. |
 | `INVALID_ADDR` | Address outside implemented registers and scratchpad windows. | 1 | Set `STATUS.error`, set `ERR_CODE=5`. |
 | `REG_UNALIGNED` | Register access with `mm_addr[1:0] != 2'b00`. | 1 | Set `STATUS.error`, set `ERR_CODE=6`. |
 | `BAD_REG_WSTRB` | Writable register write with invalid strobes. | 1 | Set `STATUS.error`, set `ERR_CODE=7`. |
 | `SPM_UNALIGNED` | Scratchpad access with `mm_addr[1:0] != 2'b00`. | 1 | Set `STATUS.error`, set `ERR_CODE=8`. |
-| `DESC_BIAS_RANGE` | Bias descriptor exceeds `BIAS_SPM[0:15]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=9`. |
+| `DESC_BIAS_RANGE` | Bias descriptor exceeds `BIAS_SPM[0:BIAS_SPM_WORDS-1]`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=9`. |
 | `DESC_QUANT_SHIFT` | `QUANT_CFG.quant_shift > 31`. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=10`. |
 | `DESC_ACTIVATION` | Invalid activation mode or invalid ReLU6 clamp range. | 0 | Command enters `ERROR`, no output write, set `ERR_CODE=11`. |
 | `RO_WRITE` | Host writes a read-only register. | 1 | Set `STATUS.error`, set `ERR_CODE=12`. |
@@ -219,7 +250,8 @@ irq = CTRL.irq_en && (STATUS.done || STATUS.error)
 - Do not instantiate vendor primitives, clock gates, SRAM macros, PLLs, synchronizers for other domains, or latches.
 - Use clock-enable style control for datapath and scratchpad updates.
 - Keep arithmetic explicitly signed in RTL to preserve INT8, signed INT32 bias, signed INT32 accumulation, signed multiplier, and signed saturation semantics.
-- The small scratchpads may be implemented as resettable register arrays for the first RTL. If an SRAM macro is later required, the doc and RTL stages must be reopened to define macro ports, reset behavior, MBIST hooks, and access latency.
+- Phase 1 implements scratchpads as behavioral resettable register arrays with compile-time capacities. No memory inference result is assumed or claimed.
+- The internal future replacement boundary is 1R1W with one-cycle flopped read data and byte write enables as specified above. Selecting a concrete macro, adding MBIST/repair hooks, or exposing memory ports requires reopening the doc stage.
 - No numeric frequency target is approved in this doc stage. Timing constraints are limited to the later SDC stage and must use the SoC-selected process/library assumptions.
 
 ## Assumptions
