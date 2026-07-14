@@ -13,25 +13,26 @@ The executable low-power experiment inserts clamp-0 isolation on `PD_SW` outputs
 
 ## Reproduce power intent
 
-The workbook is rebuilt from the project-local `upf-gen` filled template, then strict generation and deterministic post-processing are run:
+`de/syn/power_intent.xlsx` is the single power-intent source. Start it from the project-local `upf-gen` template and edit the workbook directly; changing the design does not require generating or modifying a Python overlay. The current case uses:
+
+- `Supplies`, `Domains`, `PowerStates`, `Isolation_LS`, and `Control` for the two domains, all six rails, both LS directions, isolation, and hierarchical controls.
+- `DomainSupplies` for `PD_AO.extra_supplies_1` through `extra_supplies_5`.
+- `HardMacros` and `MacroPG` for macro model attributes, diagram membership, and all eleven explicit PG-pin bindings.
+- `PortAttributes` and `CellMaps` for IO/analog intent and the two teaching-cell mappings.
+
+Generate the complete canonical UPF and diagrams in one strict invocation:
 
 ```bash
 PYTHON=${SILICON_CREW_PYTHON:-python3}
 PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../../.. && pwd -P)}
 UPF_GEN=$PROJECT_ROOT/.agents/skills/upf-gen/scripts/generate_upf.py
 env -u PYTHONHOME -u PYTHONPATH TMPDIR=/tmp \
-  "$PYTHON" de/syn/build_power_intent.py
-env -u PYTHONHOME -u PYTHONPATH TMPDIR=/tmp \
   "$PYTHON" "$UPF_GEN" \
   --input de/syn/power_intent.xlsx --out-dir de/syn/upf \
   --basename upf_dc_demo --strict
-env -u PYTHONHOME -u PYTHONPATH TMPDIR=/tmp \
-  "$PYTHON" de/syn/postprocess_generated_upf.py
 ```
 
-`de/syn/power_intent.xlsx` and everything under `de/syn/upf/` are local generated artifacts and are intentionally not committed. Install `upf-gen` project-locally before running these commands.
-
-`postprocess_generated_upf.py` supplies only schema gaps: numbered additional supplies, macro PG bindings including the pre-instantiated switch anchor, AO-to-SW LS, IO supply attributes, teaching-cell mappings, and diagram membership annotations. It asserts required tokens and rejects extra domains or retention.
+The local workbook and everything under `de/syn/upf/` are intentionally not committed. Install the enhanced `upf-gen` project-locally and copy `assets/power_intent_filled.xlsx` to `de/syn/power_intent.xlsx` before filling a fresh case. There is no `build_power_intent.py` or `postprocess_generated_upf.py`; the workbook contains all required input information.
 
 DC loads the complete canonical `upf_dc_demo.upf` after linking PG-aware macro Liberty views. No RTL-PG reconciliation or `convert_pg` step is needed. `write_file -pg` must emit `VDD_SW_IN`, `u_power_switch_macro.VIN(VDD_SW_IN)`, and `VOUT(VDD_SW)`; `save_upf -full_upf` must retain abstract `PSW_SW`.
 

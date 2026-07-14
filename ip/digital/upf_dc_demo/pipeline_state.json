@@ -4,7 +4,7 @@
   "workspace": "ip/digital/upf_dc_demo",
   "mode": "single",
   "created_at": "2026-07-14T03:11:43Z",
-  "last_updated": "2026-07-14T07:03:28Z",
+  "last_updated": "2026-07-14T08:39:32Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -81,8 +81,8 @@
       "agent": "soc-rtl-designer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-14T07:03:28Z",
-      "completed_at": "2026-07-14T07:03:28Z",
+      "started_at": "2026-07-14T08:33:42Z",
+      "completed_at": "2026-07-14T08:36:32Z",
       "artifacts": [
         "de/rtl/filelist.f",
         "de/rtl/upf_dc_demo.v",
@@ -93,10 +93,8 @@
         "de/rtl/upf_dc_demo_sram_16x8.v",
         "de/rtl/upf_dc_demo_pad_in.v",
         "de/rtl/upf_dc_demo_pad_out.v",
-        "de/syn/build_power_intent.py",
         "de/syn/build_teaching_mv_lib.py",
         "de/syn/macro_pg_stub.lib",
-        "de/syn/postprocess_generated_upf.py",
         "de/syn/upf_dc_demo.sdc",
         "de/syn/dc_upf_synth.tcl"
       ],
@@ -104,7 +102,7 @@
         "de/rtl/filelist.f": {
           "sha256": "a8cc2ad0c0fda3646b36c2f697fecb6a6a29b9777a7de4063f3f97a822c2266e",
           "size": 463,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -116,7 +114,7 @@
         "de/rtl/upf_dc_demo.v": {
           "sha256": "b6a86cae316a186ade2730d6dc60907aed512e7e4b31e7b4ded01dfec75cf4e9",
           "size": 2422,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -128,7 +126,7 @@
         "de/rtl/upf_dc_demo_aon_ctrl.v": {
           "sha256": "fe3c34af5cca099711a9a6070731f6e02ea047711005beaad003028d32649c21",
           "size": 2176,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -140,7 +138,7 @@
         "de/rtl/upf_dc_demo_sw_core.v": {
           "sha256": "d056967499eaa4b5e9f7660eae1eb1515284bc4d43ea47ad1dd09b3b4a381207",
           "size": 612,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -152,7 +150,7 @@
         "de/rtl/upf_dc_demo_power_switch_macro.v": {
           "sha256": "3c6e39f6d6952785a7a7193afc41b0329e66340563ad558cac2c8d7e757fbe38",
           "size": 273,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -164,7 +162,7 @@
         "de/rtl/upf_dc_demo_pll_macro.v": {
           "sha256": "e20ce5023f0f6ea042c91bfbbca1ea2b446d5ca46b58dfe9498061f0fab95237",
           "size": 636,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -176,7 +174,7 @@
         "de/rtl/upf_dc_demo_sram_16x8.v": {
           "sha256": "dc296308d2730338d2e7687b3f786411b2045d2f61eef154cdb72749f8746e7d",
           "size": 742,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -188,7 +186,7 @@
         "de/rtl/upf_dc_demo_pad_in.v": {
           "sha256": "1e167b119018768c679a2d1ca3804852365d5551f8e87e8200d17d7fe5e18cf7",
           "size": 136,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -200,19 +198,7 @@
         "de/rtl/upf_dc_demo_pad_out.v": {
           "sha256": "098539e5d57860093b518f53185e7d3725a8a6cbf9e5bd9af292e70c4db62e74",
           "size": 137,
-          "recorded_at": "2026-07-14T07:03:28Z",
-          "provenance": [
-            "rtl_pg_scan",
-            "rtl_quality",
-            "soc_comp",
-            "soc_lint",
-            "upf_gen_strict"
-          ]
-        },
-        "de/syn/build_power_intent.py": {
-          "sha256": "7d1315097cc850fdd58946b8c7ea48589a1a9cd0fe60000317e84d0b7807e446",
-          "size": 2593,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -224,7 +210,7 @@
         "de/syn/build_teaching_mv_lib.py": {
           "sha256": "295884d68a24981fa79ae116a979abd41825f42190c38272c7aec848e292f67e",
           "size": 7314,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -236,19 +222,7 @@
         "de/syn/macro_pg_stub.lib": {
           "sha256": "8d000ef974d5ab6386fdb88165e84848659ec788f5c894d80bd6607c45a94dde",
           "size": 5304,
-          "recorded_at": "2026-07-14T07:03:28Z",
-          "provenance": [
-            "rtl_pg_scan",
-            "rtl_quality",
-            "soc_comp",
-            "soc_lint",
-            "upf_gen_strict"
-          ]
-        },
-        "de/syn/postprocess_generated_upf.py": {
-          "sha256": "01ca6faa09986e954c36a8e4608a1d4ffb89ba6276d1c6af8a6ee3e07f1ab5a1",
-          "size": 13170,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -260,7 +234,7 @@
         "de/syn/upf_dc_demo.sdc": {
           "sha256": "ccd0c7742698267adba2f09295ede3d8968de67307507b906ae74a7ee38f0873",
           "size": 768,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -272,7 +246,7 @@
         "de/syn/dc_upf_synth.tcl": {
           "sha256": "bec885e6d9ab61b20415b9906722c43b8303fe049794973c6f778537e6473e7a",
           "size": 12962,
-          "recorded_at": "2026-07-14T07:03:28Z",
+          "recorded_at": "2026-07-14T08:36:32Z",
           "provenance": [
             "rtl_pg_scan",
             "rtl_quality",
@@ -286,22 +260,22 @@
         {
           "tool": "soc_lint",
           "passed": true,
-          "note": "registered Verilator lint"
+          "note": "registered Verilator lint clean"
         },
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "registered VCS compile and elaboration only"
+          "note": "registered VCS compile/elaboration up to date"
         },
         {
           "tool": "rtl_quality",
           "passed": true,
-          "note": "complete eight-file signal-only RTL filelist"
+          "note": "eight-file signal-only RTL filelist"
         },
         {
           "tool": "upf_gen_strict",
           "passed": true,
-          "note": "canonical source generated five extra supplies and eleven PG paths"
+          "note": "workbook directly generated complete canonical UPF without overlay scripts"
         },
         {
           "tool": "rtl_pg_scan",
@@ -311,8 +285,8 @@
       ],
       "rtl_fingerprint": "78fe16b30dc3b546a8d49f0c9982e1e92e2c903878ae11ac167139a5987ba4a5",
       "rtl_fingerprint_source": "recorded_at_transition",
-      "notes": "Validated by registered DC run soc_syn-2c6d44b42f4e4061830895ce3895dfa8; syn reset pending because generated evidence is excluded from commit",
-      "last_updated": "2026-07-14T07:03:28Z"
+      "notes": "Structured workbook is the sole power-intent source; no builder or postprocessor",
+      "last_updated": "2026-07-14T08:36:32Z"
     },
     "verif": {
       "step_id": "verif",
@@ -327,8 +301,8 @@
       "check_results": [],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "Commit-readiness: remove local-only upf-gen input/output files from recorded source artifacts",
-      "last_updated": "2026-07-14T03:39:15Z"
+      "notes": "Replace demo-specific workbook/postprocess scripts with structured upf-gen tables",
+      "last_updated": "2026-07-14T08:33:42Z"
     },
     "syn": {
       "step_id": "syn",
@@ -343,8 +317,8 @@
       "check_results": [],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "Validated locally by soc_syn-2c6d44b42f4e4061830895ce3895dfa8; generated artifacts excluded from commit",
-      "last_updated": "2026-07-14T07:02:56Z"
+      "notes": "Validated locally by soc_syn-1543dca3cbaf4d6492784091d0530191; generated workbook/UPF/reports are intentionally excluded from commit",
+      "last_updated": "2026-07-14T08:39:32Z"
     }
   },
   "next_actions": [
