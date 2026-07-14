@@ -16,11 +16,9 @@ on:
         required: false
         default: "main"
 
-permissions:
-  # Retained as a fallback until the repository GitHub App credentials are
-  # configured. Normal operation uses the short-lived App installation token.
-  contents: write
-  pull-requests: write
+# All PR mutations use the scoped App token below. Keep the built-in
+# GITHUB_TOKEN unprivileged so it cannot silently become an approval bypass.
+permissions: {}
 
 concurrency:
   group: auto-pr-automerge-${{ github.event_name == 'workflow_dispatch' && inputs.head_branch || github.ref_name }}
@@ -35,8 +33,7 @@ jobs:
       HEAD_BRANCH: ${{ github.event_name == 'workflow_dispatch' && inputs.head_branch || github.ref_name }}
 
     steps:
-      - name: Detect GitHub App credentials
-        id: app-config
+      - name: Validate GitHub App credentials
         shell: bash
         env:
           APP_CLIENT_ID: ${{ vars.PR_AUTOMATION_APP_CLIENT_ID }}
@@ -44,18 +41,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ -n "$APP_CLIENT_ID" && -n "$APP_PRIVATE_KEY" ]]; then
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-          elif [[ -z "$APP_CLIENT_ID" && -z "$APP_PRIVATE_KEY" ]]; then
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::GitHub App credentials are not configured; falling back to GITHUB_TOKEN. PR-triggered workflows may require manual approval."
-          else
-            echo "::error::Configure both PR_AUTOMATION_APP_CLIENT_ID and PR_AUTOMATION_APP_PRIVATE_KEY, or remove both to use the fallback."
+          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+            echo "::error::Configure both PR_AUTOMATION_APP_CLIENT_ID and PR_AUTOMATION_APP_PRIVATE_KEY. GITHUB_TOKEN fallback is intentionally disabled."
             exit 1
           fi
 
       - name: Generate scoped GitHub App token
-        if: steps.app-config.outputs.configured == 'true'
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
@@ -68,7 +59,7 @@ jobs:
         id: pr
         uses: actions/github-script@v7
         with:
-          github-token: ${{ steps.app-token.outputs.token || github.token }}
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -149,7 +140,7 @@ jobs:
         env:
           PULL_REQUEST_ID: ${{ steps.pr.outputs.node_id }}
         with:
-          github-token: ${{ steps.app-token.outputs.token || github.token }}
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const pullRequestId = process.env.PULL_REQUEST_ID;
             if (!pullRequestId) {
