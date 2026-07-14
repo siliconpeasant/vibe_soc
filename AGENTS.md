@@ -67,17 +67,21 @@ branch.
 
 ## Agent-Specific Instructions
 
-For RTL creation or material refactoring, follow the gated `doc -> rtl -> {verif, syn}` workflow and update `pipeline_state.json` when applicable. EDA stages must use registered MCP tools such as `soc-build.soc_sim`, `soc-build.soc_syn`, and `soc-openroad`; do not bypass them with direct shell simulator or synthesis invocations.
+For RTL creation or material refactoring, enter the repository Loop and update
+`pipeline_state.json` when applicable. Daily single-module work uses the `dev`
+inner loop; the gated `doc -> rtl -> {verif, syn}` closure runs once in `merge`
+or `signoff`. EDA stages must use registered MCP tools such as
+`soc-build.soc_sim`, `soc-build.soc_syn`, and `soc-openroad`; do not bypass them
+with direct shell simulator or synthesis invocations.
 
 ## Codex Loop Workflow
 
 For feature, RTL, integration, verification, synthesis, or physical-design tasks, use the repository loop instead of an ad hoc edit-and-run flow:
 
-1. Read the relevant `.agents/rules` files before planning. Pipeline dispatch requires `01_swarm_flow.md`, `02_toolchain.md`, and `05_pipeline_state.md`; read coding style, exception, and design-knowledge rules when the task touches those areas.
-2. Classify the request as docs-only, RTL/material refactor, top integration, register generation, CRG design, verification, synthesis, OpenROAD physical-design handoff, or review/commit readiness.
-3. Use the matching repo skill or MCP tool. Prefer `vibe-soc-loop` as the high-level entrypoint when the task spans multiple stages.
-4. Mark pipeline stages `in_progress`, `done`, `fail`, or invalidated `pending` through the validated `pipeline_state.json` flow when the task is governed by the module pipeline.
-5. If a stage fails, inspect the real log/report artifact first, identify the earliest affected stage, and loop back there. Do not continue downstream from a failed or stale stage.
-6. A stage is complete only when required artifacts exist, recorded checks pass, and the result was produced by the registered MCP flow. Never claim simulation, synthesis, timing, or physical-design success from estimated or fabricated evidence.
-7. After pipeline-governed work, use `soc-reviewer` or the review gate when preparing to commit, when validation success is claimed, or when the loop touched RTL, verification, synthesis, integration, or PD handoff. Do not add a review stage to `pipeline_state.json`.
-8. When the same mistake recurs, propose a targeted update to `AGENTS.md`, `.agents/rules`, a repo skill, or a hook so future sessions inherit the correction.
+1. Run `python3 .agents/scripts/loop_context.py <workspace> --format text` before planning. Its compact packet selects `dev`, `merge`, or `signoff`, automatically raises risky changes, and lists only the rules that must be read.
+2. Use `vibe-soc-loop` as the high-level dispatcher and the matching repo skill or registered MCP tool as executor.
+3. In `dev`, use one stage owner, keep material RTL work `rtl in_progress`, and run targeted registered lint/compile/simulation. Do not close delivery stages or run synthesis/reviewer on every edit.
+4. Before PR or delivery, rerun with `--mode merge`, complete only stale stages, and run `soc-reviewer normal`. Verify readiness afterward with `--review-result pass --check-ready`. High-risk changes automatically use `signoff` and `soc-reviewer strict`.
+5. Mark stages `in_progress`, `done`, `fail`, or invalidated `pending` only through the validated state helpers. Use `query_state.py <workspace> --compact` for routine coordination.
+6. If a stage fails, inspect the real log/report first and loop back to the earliest affected stage. Never continue from stale evidence or fabricate simulation, synthesis, timing, or PD success.
+7. When the same mistake recurs, update the smallest applicable rule, skill, checker, or hook so later sessions inherit the correction.

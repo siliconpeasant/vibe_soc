@@ -1755,7 +1755,83 @@ def _print_stats(pipeline: dict) -> tuple[int, int, int]:
     return total, done, failed
 
 
-def query_state(module_dir: str) -> dict:
+def _compact_pipeline(pipeline: dict, current_fingerprint: str | None) -> dict:
+    stages = {}
+    for stage in STAGE_ORDER:
+        info = pipeline.get(stage, {})
+        checks = info.get("check_results") or []
+        recorded_fingerprint = info.get("rtl_fingerprint")
+        fingerprint_current = None
+        if stage in {"rtl", "verif", "syn"} and info.get("status") == "done":
+            fingerprint_current = bool(
+                current_fingerprint and recorded_fingerprint == current_fingerprint
+            )
+        stages[stage] = {
+            "status": info.get("status", "missing"),
+            "artifacts": len(info.get("artifacts") or []),
+            "checks": {
+                "passed": sum(1 for item in checks if item.get("passed")),
+                "total": len(checks),
+            },
+            "fingerprint_current": fingerprint_current,
+        }
+    return stages
+
+
+def compact_state_summary(
+    state: dict,
+    workspace: Path,
+    *,
+    issues: list[dict] | None = None,
+) -> dict:
+    """Return agent-sized state metadata without artifact hashes or check notes."""
+    workspace = workspace.expanduser().resolve()
+    issues = issues if issues is not None else validate_state(
+        state, workspace, verify_filesystem=True, allow_legacy=True
+    )
+    current_fingerprint = compute_rtl_fingerprint(workspace)
+    errors = state_errors(issues)
+    summary = {
+        "present": True,
+        "schema_version": state.get("schema_version"),
+        "workspace": state.get("workspace"),
+        "mode": state.get("mode", "single"),
+        "valid": not errors,
+        "issues": {
+            "errors": len(errors),
+            "warnings": sum(1 for issue in issues if issue.get("severity") == "warning"),
+            "codes": sorted(
+                {
+                    str(issue.get("code"))
+                    for issue in issues
+                    if issue.get("code")
+                }
+            ),
+        },
+        "current_rtl_fingerprint": current_fingerprint,
+        "last_updated": state.get("last_updated"),
+    }
+    if state.get("mode") == "multi_module":
+        summary["ip"] = state.get("ip", workspace.name)
+        summary["modules"] = {
+            module: {
+                "stages": _compact_pipeline(
+                    module_state.get("pipeline", {}), current_fingerprint
+                ),
+                "next_actions": module_state.get("next_actions") or [],
+            }
+            for module, module_state in sorted(state.get("modules", {}).items())
+        }
+    else:
+        summary["module"] = state.get("module", workspace.name)
+        summary["stages"] = _compact_pipeline(
+            state.get("pipeline", {}), current_fingerprint
+        )
+        summary["next_actions"] = state.get("next_actions") or []
+    return summary
+
+
+def query_state(module_dir: str, *, compact: bool = False) -> dict:
     workspace = Path(module_dir).expanduser().resolve()
     state_path = workspace / "pipeline_state.json"
     if not state_path.is_file():
@@ -1765,6 +1841,16 @@ def query_state(module_dir: str) -> dict:
         state, workspace, verify_filesystem=True, allow_legacy=True
     )
     errors = state_errors(issues)
+    result = {"state": state, "issues": issues, "valid": not errors}
+    if compact:
+        print(
+            json.dumps(
+                compact_state_summary(state, workspace, issues=issues),
+                separators=(",", ":"),
+                sort_keys=True,
+            )
+        )
+        return result
     if errors:
         print(f"State Validity: INVALID ({len(errors)} errors)")
     elif issues:
@@ -1813,15 +1899,20 @@ def query_state(module_dir: str) -> dict:
             print(f"  → [{action['stage']}] {action['action']}: {action['reason']}")
         total, done, failed = _print_stats(state.get("pipeline", {}))
         print(f"\nProgress: {done}/{total} done, {failed} failed")
-    return {"state": state, "issues": issues, "valid": not errors}
+    return result
 
 
 def query_main() -> int:
     parser = argparse.ArgumentParser(description="Query pipeline state")
     parser.add_argument("module_dir")
+    parser.add_argument(
+        "--compact",
+        action="store_true",
+        help="emit a compact JSON summary without artifact hashes or check notes",
+    )
     args = parser.parse_args()
     try:
-        result = query_state(args.module_dir)
+        result = query_state(args.module_dir, compact=args.compact)
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
         print(f"query_state: {exc}", file=sys.stderr)
         return 1

@@ -2,6 +2,16 @@
 
 Every independently developed module or IP package owns `pipeline_state.json` at its workspace root. It is a validated coordination signal, not an informal log.
 
+Agents should consume the compact view during routine work:
+
+```bash
+python3 <project_root>/.agents/scripts/query_state.py <workspace> --compact
+```
+
+The full JSON retains detailed evidence for backward compatibility; do not paste
+it into stage prompts. `loop_context.py --write` stores the current compact
+packet under transient `de/run/loop_evidence/`.
+
 Architecture planning by `soc-architect` is a pre-doc handoff and is not represented as a `pipeline_state.json` stage. Architecture artifacts live under `docs/architecture*.md`; affected modules enter this state machine only when their doc-stage handoff is ready.
 
 ## Initialization
@@ -45,6 +55,16 @@ done -> in_progress            (RTL reopen with --note; downstream stages are in
 - `blocked` is dependency-derived and cannot be set manually.
 - Writes are locked and atomic. Repeated `--check` options are preserved.
 
+## Mode behavior
+
+- `dev`: start or reopen `rtl in_progress` once, which invalidates stale
+  downstream results. Keep it open across bounded iterations. Targeted checks
+  are development evidence and do not close `rtl`, `verif`, or `syn`.
+- `merge`: settle documentation and close the final `rtl` snapshot, then close
+  only `verif` or `syn` stages that the compact packet marks stale.
+- `signoff`: use the same state transitions as `merge` plus the risk-specific
+  checks selected by the router. Do not add a `signoff` pipeline stage.
+
 Example:
 
 ```bash
@@ -67,10 +87,12 @@ python3 <project_root>/.agents/scripts/update_state.py <workspace> verif done \
   --source-fingerprint <source_fingerprint> --run-id <run_id>
 ```
 
-Before dispatching a stage and immediately after a role agent returns, the coordinator runs:
+For `merge` and `signoff`, query compact state before dispatching a stage and
+immediately after a role owner returns. In `dev`, query once before the owner
+starts and again only after a failure or intentional delivery transition:
 
 ```bash
-python3 <project_root>/.agents/scripts/query_state.py <workspace>
+python3 <project_root>/.agents/scripts/query_state.py <workspace> --compact
 ```
 
 Each pipeline-stage dispatch prompt must include the absolute workspace, module name, state mode, and requirement to report the `update_state.py` stdout line. `soc-architect` dispatch prompts instead include the project root, architecture objective, required handoff documents, and explicit instruction not to update `pipeline_state.json`. A failed stage blocks new dispatch until retried.

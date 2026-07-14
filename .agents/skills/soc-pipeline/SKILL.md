@@ -5,25 +5,33 @@ description: Orchestrate SoC architecture planning plus gated RTL creation, refa
 
 # SoC Pipeline
 
-Coordinate work; do not implement RTL or testbench content in the coordinator.
+Coordinate delivery work. A `dev` request uses one stage owner; `merge` and
+`signoff` coordinate only the stages marked stale by the compact context packet.
+Do not implement RTL or testbench content in the coordinator.
 
 ## Preflight
 
-1. Read `../../rules/01_swarm_flow.md`, `../../rules/02_toolchain.md`, `../../rules/05_pipeline_state.md`, and `../../rules/13_review_gate.md` when review or commit readiness is in scope. Read coding style or exceptions only when relevant. For any architecture, documentation, RTL, verification, synthesis, physical-design, or material refactoring task, also read `../../rules/06_design_knowledge.md` and query `soc-ai-kb` before design decisions.
+1. Run `loop_context.py <workspace>` and read only the returned rules. Never
+   lower its selected `dev`, `merge`, or `signoff` mode.
 2. Resolve the absolute module workspace and module name.
-3. Query `pipeline_state.json`; initialize it only when absent. Never overwrite existing state implicitly.
+3. Query compact state; initialize only when absent. Never overwrite state.
 4. For chip-level, subsystem-level, or multi-module requirements without an approved architecture handoff, dispatch `soc-architect` first for IP selection, technology/process selection, and the overall SoC integration architecture plan. Treat it as pre-doc planning, not a `pipeline_state.json` stage.
 5. Select the RTL role:
    - normal logic: `soc-rtl-designer`
    - top integration: `soc-integrator`
    - CRG: `soc-crg-engineer`, only when `crg-gen` is registered
    - OpenROAD physical-design handoff: `soc-pd-engineer`
-6. Select `soc-reviewer` for post-stage, pre-commit, or validation-evidence audit. The reviewer reports findings only and never closes a pipeline stage. Use `.agents/scripts/check_loop_state.py <workspace> --mode normal` after stage work and `--mode strict` before commit readiness when a workspace is available.
+6. Do not select a reviewer for `dev`. Select `soc-reviewer normal` once for
+   `merge` and `strict` for `signoff`; it never closes a pipeline stage.
 7. Reviewer dispatch includes relevant review domains, reports and delivery inputs, knowledge-base scope, and the structured output contract from `13_review_gate.md`. Missing knowledge-base rules require `Need Human Confirmation`; they are never synthesized from memory.
 
 ## Delegation
 
-Use named role agents when supported. Otherwise spawn a generic subagent with the matching file under `../../agents/` as its role contract. Respect host delegation policy and do not silently replace a required role agent with coordinator-authored RTL.
+Use one named RTL role in `dev` when supported. Otherwise use a generic
+subagent with the matching contract. Do not fan out doc, verification,
+synthesis, and review roles until `merge/signoff` requires their stale stages.
+Respect host delegation policy and do not replace a required role with
+coordinator-authored RTL.
 
 For large stage tasks, the coordinator may split work across multiple agents automatically when the host allows it. Keep one role agent as the stage owner. Sidecar agents must have explicit, disjoint write ownership and may not independently close the stage. The stage owner integrates sidecar work, runs the required registered MCP checks, validates artifacts, and updates `pipeline_state.json`.
 
@@ -35,7 +43,10 @@ Every dispatch prompt includes:
 - single- or multi-module state mode
 - for pipeline-stage agents only, requirement to update state and quote the `update_state.py` stdout line
 
-After each pipeline-stage role returns, query state immediately and verify status, artifacts, and all checks. After `soc-architect` returns, verify that architecture artifacts exist and are ready for the doc stage. When review is requested or commit readiness matters, dispatch `soc-reviewer` after the stage owner reports and before claiming the loop is closed. Do not dispatch downstream work after failure.
+In `dev`, query again only after failure or transition to delivery. In
+`merge/signoff`, query after each stale-stage owner returns and verify status,
+artifacts, and checks. Dispatch the mapped reviewer after closure. Do not
+dispatch downstream work after failure.
 
 ## Execution contract
 

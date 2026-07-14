@@ -25,8 +25,12 @@ class LoopContractSyncTest(unittest.TestCase):
         loop = (ROOT / ".agents/skills/vibe-soc-loop/SKILL.md").read_text(encoding="utf-8")
         pd_skill = (ROOT / ".agents/skills/soc-openroad/SKILL.md").read_text(encoding="utf-8")
         state_rule = (ROOT / ".agents/rules/05_pipeline_state.md").read_text(encoding="utf-8")
+        mode_rule = (ROOT / ".agents/rules/00_loop_modes.md").read_text(encoding="utf-8")
         self.assertIn("Make examples below are for human developers", agents)
-        self.assertIn("Classify ownership before selecting an executor", loop)
+        self.assertIn("Classify ownership after mode routing", loop)
+        self.assertIn("dev=not_run", loop)
+        self.assertIn("dev -> merge -> signoff", mode_rule)
+        self.assertIn("--compact", state_rule)
         self.assertIn("PD handoff summary", pd_skill)
         self.assertNotIn("CLAUDE_PLUGIN_ROOT", state_rule)
 

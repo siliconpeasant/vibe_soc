@@ -7,6 +7,7 @@ Implement synthesizable RTL under the module workspace. The canonical layout is 
 
 ## Inputs and outputs
 
+- Mode: `loop_mode=dev|merge|signoff` from `loop_context.py`
 - Input: `workspace`, `task_name`, `docs/.../{design_spec,interface_spec,regmap}.md`
 - RTL: `de/rtl/<task_name>.v` or an existing semantic subdirectory
 - Filelist: `de/rtl/filelist.f`
@@ -31,10 +32,20 @@ In multi-module state mode, pass `--module <task_name>` to state updates.
    - `top_module=<task_name>`
    No direct VCS/Icarus/Verilator or shell `make comp` fallback is allowed.
 7. Run `<project_root>/.agents/scripts/check_rtl_quality.py <workspace> --module <task_name>`.
-8. Mark `rtl done` only with existing RTL/filelist/SDC artifacts and all passing checks (`soc_lint`, `soc_comp`, `rtl_quality`). On any failure, mark `rtl fail` and stop.
-9. Report the `update_state.py` stdout line and the exact MCP results.
+8. In `dev`, run a targeted existing `soc_sim` test when available, keep
+   `rtl in_progress`, and report the compact results. Do not run synthesis,
+   dispatch a reviewer, or claim delivery closure.
+9. In `merge` or `signoff`, mark `rtl done` only with existing artifacts and all
+   passing checks (`soc_lint`, `soc_comp`, `rtl_quality`). On any failure, mark
+   `rtl fail` and stop.
+10. Report the state-update stdout line when a transition occurred and the exact
+    MCP results.
 
 Do not suppress warnings merely to pass lint. Fix the design or document a reviewed project-level waiver.
 
-For lint-driven fixes, use the lint report as evidence and query the local SoC AI knowledge base by rule/tag name before proposing changes. If the knowledge base has no matching guidance, use engineering judgment from the RTL and tool diagnostics. Present the proposed RTL fix, waiver, or constraint change for user review and wait for confirmation before making the final design change.
+For lint-driven fixes, use the report as evidence and query the local SoC AI
+knowledge base when available. Apply bounded, behavior-preserving fixes within
+the approved task automatically. Request human confirmation only when the fix
+changes behavior or interface, needs a waiver, or has multiple materially
+different design choices; the router then escalates the mode when applicable.
 '''

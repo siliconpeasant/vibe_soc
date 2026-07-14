@@ -7,35 +7,41 @@ description: Coordinate the vibe_soc Codex loop for feature development, RTL/mat
 
 ## Overview
 
-Use this skill as the high-level dispatcher for `vibe_soc`. It selects the correct repo rules, skills, MCP tools, and state transitions without duplicating the lower-level skill contracts.
+Use this skill as the high-level dispatcher for `vibe_soc`. It first builds a
+compact context packet, then selects the minimum safe execution mode, rules,
+skills, MCP tools, and state transitions.
 
 ## Preflight
 
-1. Read repository `AGENTS.md`.
-2. Read required rules before planning:
-   - always for pipeline work: `../../rules/01_swarm_flow.md`, `../../rules/02_toolchain.md`, `../../rules/05_pipeline_state.md`
-   - material RTL change: `../../rules/10_rtl_change_gate.md`
-   - verification failure/recovery: `../../rules/11_verif_recovery_gate.md`
-   - synthesis or PD: `../../rules/12_syn_pd_gate.md`
-   - review or commit readiness: `../../rules/13_review_gate.md`
-   - manual RTL style: `../../rules/04_coding_style.md`
-   - design decisions: `../../rules/06_design_knowledge.md`
-3. Resolve the absolute project root, workspace, state module name, RTL top, and testbench top separately. For `chip/top`, the state module is `vibe_soc_top` while the current RTL top is `chip_earlgrey_asic`; never infer one from the other.
-4. Query existing `pipeline_state.json` before stage work. Initialize only when absent and only through the validated state helper.
-5. For review requests, select `review_mode=quick|normal|strict`; default to `normal`, use `quick` for dry-run planning, and use `strict` before commit or PR.
+1. Read repository `AGENTS.md` and `../../rules/00_loop_modes.md`.
+2. Resolve the absolute project root and workspace, then run
+   `python3 <project_root>/.agents/scripts/loop_context.py <workspace> --format text`.
+   `LOOP_MODE` or `--mode` is a minimum; never downgrade the router result.
+3. Read only the rule paths returned by the packet. This replaces repeatedly
+   loading every pipeline and reviewer contract during `dev`.
+4. Resolve the state module, RTL top, and testbench top separately. For
+   `chip/top`, the state module is `vibe_soc_top` and the current RTL top is
+   `chip_earlgrey_asic`.
+5. Query state with `query_state.py <workspace> --compact`. Initialize only when
+   absent and only through the validated state helper.
+6. Map review depth from mode: `dev=not_run`, `merge=normal`,
+   `signoff=strict`. An explicit read-only audit may request `quick`.
 
 ## Classification
 
-Classify ownership before selecting an executor. Any generated top, wrapper, register RTL, CRG RTL, RTL/filelist, interface, or constraint change is pipeline-governed and must be owned by `soc-pipeline` plus the applicable stage role. Lower-level skills and MCP tools execute work for that owner; they do not bypass state gates.
+Classify ownership after mode routing. Lower-level skills and MCP tools execute
+work for the selected owner; they never bypass registered-tool or evidence
+gates.
 
-| Task class | Owner | Executor |
-|---|---|---|
-| architecture, material RTL, generated RTL/top/wrapper, multi-stage recovery | `soc-pipeline` / stage role | matching generator, `soc-integrate`, or `soc-build` |
-| standalone lint/compile/simulation/regression/coverage/synthesis request | applicable stage role | `soc-build` |
-| read-only port extraction, snapshot, or interface diff | coordinator | `soc-integrate` |
-| OpenROAD physical-design handoff | `soc-pd-engineer` | `soc-openroad` |
-| loop audit, validation evidence, commit readiness | `soc-reviewer` | `check_loop_state.py` and read-only inspection |
-| approved source-table conversion with no RTL output | coordinator | `excel-yml-gen`, `crg-req-to-design`, or `cr-tree-diag-gen` |
+| Task class | Minimum mode | Owner | Executor |
+|---|---|---|---|
+| single-module RTL iteration | `dev` | one RTL stage owner | matching generator or `soc-build` |
+| final module delivery | `merge` | `soc-pipeline` / stale stage roles | matching generator, `soc-integrate`, or `soc-build` |
+| interface/top/clock/reset/register/constraint/multi-module/PD | `signoff` | `soc-pipeline` / specialized roles | registered integration, build, or PD tool |
+| standalone EDA request | router-selected | applicable stage role | `soc-build` |
+| read-only port extraction, snapshot, or diff | `dev` | coordinator | `soc-integrate` |
+| explicit loop audit | requested review depth | `soc-reviewer` | `check_loop_state.py` and read-only inspection |
+| source-table conversion with no RTL output | `dev` | coordinator | matching deterministic generator |
 
 If a required owner role or executor is missing, stop with a precise blocker. Do not hand-roll generated tops, generated CRG logic, direct simulator runs, direct synthesis runs, or OpenROAD shell fallbacks.
 
@@ -43,19 +49,25 @@ If a required owner role or executor is missing, stop with a precise blocker. Do
 
 For pipeline-governed work:
 
-1. Mark the owned stage `in_progress` before editing stage artifacts.
-2. Keep artifacts under the approved roots: `docs/`, `de/rtl/`, `de/run/`, `de/syn/`, `dv/tb/`, and `dv/sim/`.
-3. Run required checks through registered MCP tools. Treat MCP unavailability as a stage blocker or failure, not permission to bypass the flow.
-4. On failure, read the real log/report, classify the failure, update state when applicable, and loop back to the earliest affected stage.
-5. Close a stage only when artifacts exist, all recorded checks pass, and `pipeline_state.json` records the real evidence.
-6. If a downstream stage repairs RTL, apply the invalidation rules from `01_swarm_flow.md` and `05_pipeline_state.md` before declaring closure.
-7. For post-stage review or commit readiness, dispatch `soc-reviewer` after the stage owner finishes. Treat review findings as follow-up work; do not add a `review` stage to `pipeline_state.json`.
-8. When a module workspace is available, run `.agents/scripts/check_loop_state.py <workspace> --mode <review_mode>` as read-only evidence for the reviewer or final response.
-9. Reviewer dispatches include the implicated review domains, available reports/deliverables, `knowledge_scope`, and requested top-risk count. Require the structured report sections and source-authority gate from `13_review_gate.md`. Only `soc/review/rule_library/` may supply project rules; other knowledge-base sources are reference evidence, and empty placeholders require `Need Human Confirmation`.
+1. Mark the owned stage `in_progress` before editing and keep artifacts under
+   `docs/`, `de/rtl/`, `de/run/`, `de/syn/`, `dv/tb/`, and `dv/sim/`.
+2. In `dev`, keep one owner and leave `rtl in_progress`. Run the packet's
+   registered targeted checks, store optional compact evidence under
+   `de/run/loop_evidence/`, and do not claim stage closure.
+3. Before delivery, rerun the packet with `--mode merge`. Dispatch only stale
+   stages; a fresh fingerprint-bound stage is reused without rerunning it.
+4. In `merge` or `signoff`, close a stage only when artifacts and registered
+   checks pass and state records current evidence. Run the mapped reviewer once
+   after stage closure.
+5. On failure, read the real log/report, update state, and loop back to the
+   earliest affected stage. MCP unavailability is not permission for a shell
+   fallback.
+6. If a downstream stage repairs RTL, apply the existing invalidation rules.
+   Never add review or signoff as pipeline stages.
 
 ## Reporting
 
-Final responses for loop work must include:
+Delivery responses must include:
 
 - task classification and selected lower-level skill/tool
 - files changed
@@ -63,6 +75,9 @@ Final responses for loop work must include:
 - checks run with pass/fail evidence, or why checks were not run
 - reviewer outcome when review was run or why review was not needed
 - next blocked or recommended stage
+
+For `dev`, keep reporting compact: mode, files, targeted checks, current open
+stage, and the next delivery action. Do not emit a full reviewer-style report.
 
 ## Evidence Summary
 
