@@ -4,7 +4,7 @@
   "workspace": "ip/digital/upf_dc_demo",
   "mode": "single",
   "created_at": "2026-07-14T03:11:43Z",
-  "last_updated": "2026-07-14T03:39:15Z",
+  "last_updated": "2026-07-14T04:09:02Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -12,8 +12,8 @@
       "agent": "soc-doc-engineer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-14T03:30:36Z",
-      "completed_at": "2026-07-14T03:31:14Z",
+      "started_at": "2026-07-14T03:52:56Z",
+      "completed_at": "2026-07-14T03:54:20Z",
       "artifacts": [
         "docs/architecture.md",
         "docs/design_spec.md",
@@ -23,25 +23,25 @@
       ],
       "artifact_evidence": {
         "docs/architecture.md": {
-          "sha256": "93c65cc79148abbbebda5279e44033fbcfdf50ccc473d77eb51f426f37f2476a",
-          "size": 12484,
-          "recorded_at": "2026-07-14T03:31:14Z",
+          "sha256": "8f983dd9a50c8bff333e94c88fbfa58b7f10585feab39059c0dafad59c3ca342",
+          "size": 12749,
+          "recorded_at": "2026-07-14T03:54:20Z",
           "provenance": [
             "doc_completeness"
           ]
         },
         "docs/design_spec.md": {
-          "sha256": "59af93fa722b21df019cecde03b5d1602d2bf892c989d2cb929899c24dc6d735",
-          "size": 5484,
-          "recorded_at": "2026-07-14T03:31:14Z",
+          "sha256": "920cdae549aa7d570e81c6fa2ea657e736848b00641ed96ace45e80ae53172b0",
+          "size": 5638,
+          "recorded_at": "2026-07-14T03:54:20Z",
           "provenance": [
             "doc_completeness"
           ]
         },
         "docs/interface_spec.md": {
-          "sha256": "d20c12755d5e3a080f1066a712394521fdc256ca09903f1dbce0eb371d91961c",
-          "size": 6470,
-          "recorded_at": "2026-07-14T03:31:14Z",
+          "sha256": "2ced318c71620f11c36b4dc57139295bf8eb30d56182e319e4955aae8df37498",
+          "size": 5865,
+          "recorded_at": "2026-07-14T03:54:20Z",
           "provenance": [
             "doc_completeness"
           ]
@@ -49,15 +49,15 @@
         "docs/regmap.md": {
           "sha256": "055e3f5e778647a1f5c3195216ec643e1d374cfbfdb4f8619cc817992191bd62",
           "size": 708,
-          "recorded_at": "2026-07-14T03:31:14Z",
+          "recorded_at": "2026-07-14T03:54:20Z",
           "provenance": [
             "doc_completeness"
           ]
         },
         "docs/verification_plan.md": {
-          "sha256": "cb2e69a1f167ee160909200167c2da0018db862f4d12ed215deb7f474040a3ce",
-          "size": 5979,
-          "recorded_at": "2026-07-14T03:31:14Z",
+          "sha256": "e0109186700b79700559ec381e1fa0af89f59e983966c29af61ec9dc8bf0decd",
+          "size": 6097,
+          "recorded_at": "2026-07-14T03:54:20Z",
           "provenance": [
             "doc_completeness"
           ]
@@ -67,13 +67,13 @@
         {
           "tool": "doc_completeness",
           "passed": true,
-          "note": "restored previous VDD_SW_IN top-level supply-port specification"
+          "note": "functional RTL is signal-only; PG owned by UPF and Liberty"
         }
       ],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "Restore previous VDD_SW_IN top-level supply-port specification",
-      "last_updated": "2026-07-14T03:31:14Z"
+      "notes": "Specify functional RTL without PG ports and synthesis-generated PG netlist",
+      "last_updated": "2026-07-14T03:54:20Z"
     },
     "rtl": {
       "step_id": "rtl",
@@ -81,8 +81,8 @@
       "agent": "soc-rtl-designer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-14T03:39:15Z",
-      "completed_at": "2026-07-14T03:39:15Z",
+      "started_at": "2026-07-14T04:05:30Z",
+      "completed_at": "2026-07-14T04:05:30Z",
       "artifacts": [
         "de/rtl/filelist.f",
         "de/rtl/upf_dc_demo.v",
@@ -103,8 +103,9 @@
         "de/rtl/filelist.f": {
           "sha256": "ac34b8c61e5cfe782406d610136bffed77e1bc3c0b277e7ba4e5e3896cfc3616",
           "size": 395,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -112,10 +113,11 @@
           ]
         },
         "de/rtl/upf_dc_demo.v": {
-          "sha256": "3a6936d4299048fd930f63f1f5e49eb116212efedbb29c8198b8a5e30fd1ee08",
-          "size": 2577,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "sha256": "abd2f43d0b779ce8d18c498a1adc3116bead6ffa499e0244d282eaaa02d9b367",
+          "size": 2187,
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -125,8 +127,9 @@
         "de/rtl/upf_dc_demo_aon_ctrl.v": {
           "sha256": "fe3c34af5cca099711a9a6070731f6e02ea047711005beaad003028d32649c21",
           "size": 2176,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -136,8 +139,9 @@
         "de/rtl/upf_dc_demo_sw_core.v": {
           "sha256": "d056967499eaa4b5e9f7660eae1eb1515284bc4d43ea47ad1dd09b3b4a381207",
           "size": 612,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -145,10 +149,11 @@
           ]
         },
         "de/rtl/upf_dc_demo_pll_macro.v": {
-          "sha256": "5f653fe55019eba760de9e1af839e53cff4e75967e2ecd52e6de17169a0f0637",
-          "size": 752,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "sha256": "e20ce5023f0f6ea042c91bfbbca1ea2b446d5ca46b58dfe9498061f0fab95237",
+          "size": 636,
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -156,10 +161,11 @@
           ]
         },
         "de/rtl/upf_dc_demo_sram_16x8.v": {
-          "sha256": "5fcc1abe7d6c46943ff49ff4a0b8b3d0ad988b2acf5b2bfacf49db805d4823e2",
-          "size": 915,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "sha256": "dc296308d2730338d2e7687b3f786411b2045d2f61eef154cdb72749f8746e7d",
+          "size": 742,
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -167,10 +173,11 @@
           ]
         },
         "de/rtl/upf_dc_demo_pad_in.v": {
-          "sha256": "02a5781fd9a33cf3fec7c5e2a2d82f0b5452c86ef738c4d6d6914124cde4ef01",
-          "size": 252,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "sha256": "1e167b119018768c679a2d1ca3804852365d5551f8e87e8200d17d7fe5e18cf7",
+          "size": 136,
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -178,10 +185,11 @@
           ]
         },
         "de/rtl/upf_dc_demo_pad_out.v": {
-          "sha256": "24775856b08ae00984e52bf6984aee030f04520165f556c08edd9493486a6002",
-          "size": 253,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "sha256": "098539e5d57860093b518f53185e7d3725a8a6cbf9e5bd9af292e70c4db62e74",
+          "size": 137,
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -191,8 +199,9 @@
         "de/syn/build_power_intent.py": {
           "sha256": "7d1315097cc850fdd58946b8c7ea48589a1a9cd0fe60000317e84d0b7807e446",
           "size": 2593,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -202,8 +211,9 @@
         "de/syn/build_teaching_mv_lib.py": {
           "sha256": "295884d68a24981fa79ae116a979abd41825f42190c38272c7aec848e292f67e",
           "size": 7314,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -213,8 +223,9 @@
         "de/syn/macro_pg_stub.lib": {
           "sha256": "baef4a4cc0e06ebc5cef7dbef266a04f530a37b86dd91fcea5f583de6003db0a",
           "size": 4549,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -222,10 +233,11 @@
           ]
         },
         "de/syn/postprocess_generated_upf.py": {
-          "sha256": "d26a51f5e920dd629c501ba86de3570249637fedf6ef5d9179e51d30f9e7079e",
-          "size": 14298,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "sha256": "0a3807e957662fa4a181aff5bd3676ed8ebb75015cfbb2a2c6b99880378a9775",
+          "size": 12029,
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -235,8 +247,9 @@
         "de/syn/upf_dc_demo.sdc": {
           "sha256": "ccd0c7742698267adba2f09295ede3d8968de67307507b906ae74a7ee38f0873",
           "size": 768,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -244,10 +257,11 @@
           ]
         },
         "de/syn/dc_upf_synth.tcl": {
-          "sha256": "ffd913eb2ba81681c2fc990ab87b038a0a4b49ac75a3d9ea3efe8419edc60449",
-          "size": 14156,
-          "recorded_at": "2026-07-14T03:39:15Z",
+          "sha256": "a17c09ac737a742c69efba6b1966781c21d958cd2648d45cd97d33cc90f14711",
+          "size": 12652,
+          "recorded_at": "2026-07-14T04:05:30Z",
           "provenance": [
+            "rtl_pg_scan",
             "rtl_quality",
             "soc_comp",
             "soc_lint",
@@ -259,28 +273,33 @@
         {
           "tool": "rtl_quality",
           "passed": true,
-          "note": "complete filelist"
+          "note": ""
         },
         {
           "tool": "soc_lint",
           "passed": true,
-          "note": "registered Verilator lint"
+          "note": ""
         },
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "registered VCS compile and elaboration"
+          "note": ""
         },
         {
           "tool": "upf_gen_strict",
           "passed": true,
-          "note": "local generated artifacts verified before exclusion from commit"
+          "note": ""
+        },
+        {
+          "tool": "rtl_pg_scan",
+          "passed": true,
+          "note": ""
         }
       ],
-      "rtl_fingerprint": "dbd6e98b47288a0525a7df56e11f5a56e4a2fb6c4069095e7619ec9ccafeac00",
+      "rtl_fingerprint": "16aebc2242f0a669965426eaf54f971d54b01e19483d8ff6ecffd934267fc49d",
       "rtl_fingerprint_source": "recorded_at_transition",
-      "notes": "Commit-readiness: remove local-only upf-gen input/output files from recorded source artifacts",
-      "last_updated": "2026-07-14T03:39:15Z"
+      "notes": "Functional RTL has no PG ports; DC PG audit refreshed after registered synthesis",
+      "last_updated": "2026-07-14T04:05:30Z"
     },
     "verif": {
       "step_id": "verif",
@@ -311,8 +330,8 @@
       "check_results": [],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "Commit-readiness: remove local-only upf-gen input/output files from recorded source artifacts",
-      "last_updated": "2026-07-14T03:39:15Z"
+      "notes": "Validated locally with registered DC run soc_syn-aea08626b64743e19961cdd7901e38f7; generated synthesis artifacts are intentionally excluded from version control",
+      "last_updated": "2026-07-14T04:09:02Z"
     }
   },
   "next_actions": [

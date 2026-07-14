@@ -22,13 +22,7 @@ module upf_dc_demo (
     input  wire       pad_in_i,
     output wire       pad_in_core_o,
     input  wire       pad_out_core_i,
-    output wire       pad_out_o,
-    inout  wire       VDD_AO,
-    inout  wire       VDD_PLL,
-    inout  wire       VDD_MEM,
-    inout  wire       VDDIO,
-    inout  wire       VDD_SW_IN,
-    inout  wire       VSS
+    output wire       pad_out_o
 );
 
   wire       sw_en;
@@ -57,26 +51,20 @@ module upf_dc_demo (
 
   upf_dc_demo_pll_macro u_pll_macro (
       .ref_clk_i(clk), .rst_n(rst_n), .enable_i(pll_enable_i),
-      .pll_clk_o(pll_clk_mon_o), .locked_o(pll_locked_o),
-      .VDD(VDD_PLL), .VSS(VSS)
+      .pll_clk_o(pll_clk_mon_o), .locked_o(pll_locked_o)
   );
 
   upf_dc_demo_sram_16x8 u_sram_macro (
       .clk(clk), .rst_n(rst_n), .cs_i(mem_cs_i), .we_i(mem_we_i),
       .addr_i(mem_addr_i), .wdata_i(mem_wdata_i),
-      .rdata_o(mem_rdata_o), .rvalid_o(mem_rvalid_o),
-      .VDD(VDD_MEM), .VSS(VSS)
+      .rdata_o(mem_rdata_o), .rvalid_o(mem_rvalid_o)
   );
 
   upf_dc_demo_pad_in u_pad_in (
-      .pad_i(pad_in_i), .core_o(pad_in_core_o),
-      .VDDIO(VDDIO), .VSSIO(VSS)
+      .pad_i(pad_in_i), .core_o(pad_in_core_o)
   );
 
   upf_dc_demo_pad_out u_pad_out (
-      .core_i(pad_out_core_i), .pad_o(pad_out_o),
-      .VDDIO(VDDIO), .VSSIO(VSS)
+      .core_i(pad_out_core_i), .pad_o(pad_out_o)
   );
-
-  // VDD_AO and VDD_SW_IN are intentional top UPF supply connection points.
 endmodule

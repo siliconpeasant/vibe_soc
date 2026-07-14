@@ -40,13 +40,11 @@ foreach path [list $filelist $sdc $setup_tcl] {
 }
 set syn_dir [file dirname $sdc]
 set upf_file [file join $syn_dir upf upf_dc_demo.upf]
-set runtime_upf [file join $syn_dir upf upf_dc_demo_runtime.upf]
 set upf_out [file join $syn_dir upf upf_dc_demo_synth.upf]
-set converted_pg_upf [file join $report_dir converted_pg.pre_compile.upf]
+set loaded_upf [file join $report_dir loaded_upf.pre_compile.upf]
 set timing_out [file join $syn_dir timing.rpt]
 set timing_summary_out [file join $syn_dir timing_summary.rpt]
 if {![file exists $upf_file]} { fatal "missing strict generated UPF: $upf_file" }
-if {![file exists $runtime_upf]} { fatal "missing derived DC runtime UPF: $runtime_upf" }
 
 file mkdir $work_dir
 file mkdir $report_dir
@@ -64,10 +62,6 @@ file mkdir $alib_dir
 define_design_lib WORK -path $work_dir
 set_app_var alib_library_analysis_path $alib_dir
 set_app_var hdlin_enable_upf_compatible_naming true
-set_app_var dc_allow_rtl_pg true
-# Allow an RTL top-level PG port to be promoted to the same-named UPF supply
-# port. This is a Power Compiler Tcl switch (not a dc_shell app var).
-set upf_allow_rtl_pgnet_name_space_conflict true
 set_app_var verilogout_no_tri true
 source $setup_tcl
 if {$target_lib ne ""} { set_app_var target_library [split_words $target_lib] }
@@ -117,40 +111,13 @@ set sw_core [get_cells -quiet u_sw_core]
 if {[sizeof_collection $sw_core] != 1} { fatal "missing u_sw_core" }
 set_ungroup $sw_core false
 
-# Audit the ordinary RTL-PG connections before loading the conflict-free
-# runtime intent.  convert_pg will translate these wires/ports into UPF supply
-# ports and hierarchical connect_supply_net commands.
+# Prove the source RTL is signal-only before UPF creates supply objects.
 set reconcile [open [file join $report_dir pg_reconciliation.rpt] w]
-# Preserve the two top supply entry ports that do not directly feed a macro.
-# DC otherwise removes their empty logic nets before convert_pg can promote
-# them.  All six ports are audited as ordinary RTL-PG connection points.
 foreach supply_name {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW_IN VSS} {
-  set supply_port [get_ports -quiet $supply_name]
-  if {[sizeof_collection $supply_port] == 0} {
-    # RTL ports connected only to Liberty pg_pin objects are consumed into
-    # Power Compiler's RTL-PG connection data during link.  convert_pg emits
-    # them again as supply ports.  The two unconnected entry rails must remain
-    # ordinary logic objects until that conversion.
-    if {[lsearch -exact {VDD_PLL VDD_MEM VDDIO VSS} $supply_name] >= 0} {
-      puts $reconcile "RTL_PG_TOP port=$supply_name captured_by_macro_pg=true"
-      continue
-    }
-    create_port $supply_name -direction inout
-    set supply_port [get_ports -quiet $supply_name]
+  if {[sizeof_collection [get_ports -quiet $supply_name]] != 0} {
+    fatal "functional RTL unexpectedly exposes PG port '$supply_name'"
   }
-  if {[sizeof_collection $supply_port] != 1} {
-    fatal "top RTL-PG port '$supply_name' must resolve exactly once"
-  }
-  set supply_logic_net [get_nets -quiet -of_objects $supply_port]
-  if {[sizeof_collection $supply_logic_net] == 0} {
-    create_net $supply_name
-    set supply_logic_net [get_nets -quiet $supply_name]
-    connect_net $supply_logic_net $supply_port
-  }
-  if {[sizeof_collection $supply_logic_net] != 1} {
-    fatal "top RTL-PG port '$supply_name' must have exactly one logic net"
-  }
-  puts $reconcile "RTL_PG_TOP port=$supply_name net=[get_object_name $supply_logic_net]"
+  puts $reconcile "RTL_PG_ABSENT port=$supply_name"
 }
 set macro_pg_map {
   u_pll_macro/VDD VDD_PLL
@@ -174,19 +141,13 @@ foreach {pin_path expected_net} $macro_pg_map {
   if {[lsearch -exact $macro_cell_names $ref_name] < 0} {
     fatal "PG path '$pin_path' resolves to unexpected ref '$ref_name'"
   }
-  # pg_pin objects are intentionally absent from get_lib_pins in this DC
-  # release.  The post-convert saved UPF check below is the executable proof
-  # that each library PG pin and its RTL connection were reconciled.
-  puts $reconcile "RTL_PG pin=$pin_path ref=$ref_name pg_pin=$pin_name expected_net=$expected_net"
-}
-if {[sizeof_collection [get_nets -quiet VDD_SW]] != 0} {
-  fatal "VDD_SW must not exist as an RTL logic net before load_upf"
+  puts $reconcile "LIBERTY_PG pin=$pin_path ref=$ref_name pg_pin=$pin_name expected_net=$expected_net"
 }
 close $reconcile
 
 require_command load_upf
 set load_status [catch {
-  redirect -tee -variable load_transcript {load_upf $runtime_upf}
+  redirect -tee -variable load_transcript {load_upf $upf_file}
 } load_message]
 if {$load_status} { fatal "load_upf failed: $load_message" }
 set load_fd [open [file join $report_dir load_upf_transcript.rpt] w]
@@ -195,12 +156,9 @@ close $load_fd
 if {[regexp -nocase {(^|\n)Error:|UPF-048|UPF_DC_DEMO_FATAL} $load_transcript]} {
   fatal "load_upf transcript contains an error diagnostic"
 }
-if {[llength [info commands convert_pg]] != 0} {
-  if {[catch {convert_pg} convert_message]} { fatal "convert_pg failed: $convert_message" }
-}
-save_upf -full_upf $converted_pg_upf
-if {![file exists $converted_pg_upf] || [file size $converted_pg_upf] == 0} {
-  fatal "convert_pg did not produce an auditable UPF"
+save_upf -full_upf $loaded_upf
+if {![file exists $loaded_upf] || [file size $loaded_upf] == 0} {
+  fatal "loaded canonical UPF did not produce an auditable saved view"
 }
 
 require_command get_power_domains
@@ -231,7 +189,7 @@ foreach token {SS_VDD_PLL_VSS SS_VDD_MEM_VSS SS_VDDIO_VSS} {
     fatal "PD_AO report is missing additional supply '$token'"
   }
 }
-set connectivity_fd [open $converted_pg_upf r]
+set connectivity_fd [open $loaded_upf r]
 set connectivity_text [read $connectivity_fd]
 close $connectivity_fd
 foreach pin_path $macro_pg_paths {
@@ -318,12 +276,30 @@ save_upf -full_upf $upf_out
 foreach path [list $ddc $netlist $sdc_out $upf_out $timing_out $timing_summary_out] {
   if {![file exists $path] || [file size $path] == 0} { fatal "missing output: $path" }
 }
+set netlist_fd [open $netlist r]
+set netlist_text [read $netlist_fd]
+close $netlist_fd
+# The abstract UPF power switch is preserved in the saved UPF rather than
+# emitted as a physical switch instance by this teaching flow.  Therefore its
+# input supply VDD_SW_IN need not survive as a Verilog port; require the
+# switched rail and every supply that feeds emitted cells/macros here, while
+# the saved-UPF audit below covers VDD_SW_IN and PSW_SW.
+foreach pg_token {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW VSS} {
+  if {[string first $pg_token $netlist_text] < 0} {
+    fatal "PG netlist is missing synthesized supply '$pg_token'"
+  }
+}
 set saved_upf_fd [open $upf_out r]
 set saved_upf_text [read $saved_upf_fd]
 close $saved_upf_fd
+foreach upf_token {VDD_SW_IN VDD_SW PSW_SW} {
+  if {[string first $upf_token $saved_upf_text] < 0} {
+    fatal "saved UPF is missing power-switch token '$upf_token'"
+  }
+}
 foreach pin_path $macro_pg_paths {
   if {[string first $pin_path $saved_upf_text] < 0} {
-    fatal "saved UPF is missing converted PG path '$pin_path'"
+    fatal "saved UPF is missing macro PG path '$pin_path'"
   }
 }
 puts "DC netlist: $netlist"

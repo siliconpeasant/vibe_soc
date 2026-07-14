@@ -9,7 +9,7 @@ import re
 
 HERE = Path(__file__).resolve().parent
 UPF = HERE / "upf" / "upf_dc_demo.upf"
-RUNTIME_UPF = HERE / "upf" / "upf_dc_demo_runtime.upf"
+LEGACY_RUNTIME_UPF = HERE / "upf" / "upf_dc_demo_runtime.upf"
 SUMMARY = HERE / "upf" / "upf_dc_demo.summary.md"
 DRAWIO = HERE / "upf" / "upf_dc_demo.drawio"
 EXCALIDRAW = HERE / "upf" / "upf_dc_demo.excalidraw"
@@ -192,47 +192,8 @@ for required in (
     if required not in text:
         raise RuntimeError(f"missing required final UPF token: {required}")
 UPF.write_text(text, encoding="utf-8")
-
-# Power Compiler's RTL-PG flow loads power intent first, then convert_pg turns
-# ordinary RTL PG wires/ports into supply ports and connect_supply_net commands.
-# Loading the canonical, already-expanded connections would therefore report
-# UPF-310/UPF-048 before convert_pg gets a chance to reconcile them.  Derive a
-# deterministic runtime view that omits only those RTL-owned declarations; the
-# canonical UPF above remains the reviewed, explicit description and save_upf
-# recreates the full executable result after convert_pg.
-runtime_text = text
-top_supply_blocks = (
-    "create_supply_port VDD_AO \\\n    -direction in\n",
-    "create_supply_port VDD_PLL \\\n    -direction in\n",
-    "create_supply_port VDD_MEM \\\n    -direction in\n",
-    "create_supply_port VDDIO \\\n    -direction in\n",
-    "create_supply_port VDD_SW_IN \\\n    -direction in\n",
-    "create_supply_port VSS \\\n    -direction in\n",
-    "connect_supply_net VDD_AO \\\n    -ports {VDD_AO}\n",
-    "connect_supply_net VDD_PLL \\\n    -ports {VDD_PLL}\n",
-    "connect_supply_net VDD_MEM \\\n    -ports {VDD_MEM}\n",
-    "connect_supply_net VDDIO \\\n    -ports {VDDIO}\n",
-    "connect_supply_net VDD_SW_IN \\\n    -ports {VDD_SW_IN}\n",
-    "connect_supply_net VSS \\\n    -ports {VSS}\n",
-)
-macro_connect_lines = (
-    "connect_supply_net VDD_PLL -ports {u_pll_macro/VDD}\n",
-    "connect_supply_net VSS -ports {u_pll_macro/VSS}\n",
-    "connect_supply_net VDD_MEM -ports {u_sram_macro/VDD}\n",
-    "connect_supply_net VSS -ports {u_sram_macro/VSS}\n",
-    "connect_supply_net VDDIO -ports {u_pad_in/VDDIO}\n",
-    "connect_supply_net VSS -ports {u_pad_in/VSSIO}\n",
-    "connect_supply_net VDDIO -ports {u_pad_out/VDDIO}\n",
-    "connect_supply_net VSS -ports {u_pad_out/VSSIO}\n",
-)
-for block in top_supply_blocks + macro_connect_lines:
-    if runtime_text.count(block) != 1:
-        raise RuntimeError(f"runtime UPF expected exactly one block: {block.strip()}")
-    runtime_text = runtime_text.replace(block, "", 1)
-for forbidden_runtime in ("create_supply_port VDD_AO", "u_pll_macro/VDD", "u_pad_out/VSSIO"):
-    if forbidden_runtime in runtime_text:
-        raise RuntimeError(f"runtime UPF still contains RTL-owned PG object: {forbidden_runtime}")
-RUNTIME_UPF.write_text(runtime_text, encoding="utf-8")
+if LEGACY_RUNTIME_UPF.exists():
+    LEGACY_RUNTIME_UPF.unlink()
 
 with SUMMARY.open("a", encoding="utf-8") as stream:
     stream.write("""
@@ -249,9 +210,9 @@ with SUMMARY.open("a", encoding="utf-8") as stream:
 - The co-located SW-to-AO isolation and low-to-high strategies map to one
   dual-rail enable-level-shifter cell inside `PD_SW`.
 - No retention strategy or additional power domain is introduced.
-- `upf_dc_demo_runtime.upf` is a deterministic DC-only view.  It omits the
-  top-level and macro connections already present as ordinary RTL PG wiring;
-  `convert_pg` recreates those commands in the saved synthesis UPF.
+- Functional RTL contains no PG ports. DC loads this complete canonical UPF
+  directly against the macro Liberty `pg_pin` objects and emits PG only in
+  synthesis outputs.
 """)
 
 # Add explicit macro boxes inside the generated PD_AO container.

@@ -34,7 +34,7 @@ EDA checks use registered tools. Direct Make, simulator, or synthesis shell fall
 | U-09 | `u_pll_macro/VDD -> VDD_PLL` and `u_pll_macro/VSS -> VSS` |
 | U-10 | `u_sram_macro/VDD -> VDD_MEM` and `u_sram_macro/VSS -> VSS` |
 | U-11 | Both pad `VDDIO` pins connect to `VDDIO`; both `VSSIO` pins connect to `VSS` |
-| U-12 | Every macro PG declaration is `inout` in behavioral and blackbox views |
+| U-12 | Functional RTL and behavioral macro views contain no PG ports; every macro PG terminal resolves from a Liberty `pg_pin` through UPF |
 | U-13 | No retention strategy exists |
 
 Every macro PG row requires an explicit hierarchical `connect_supply_net`, not name inference. Dedicated rails are additional supply associations within `PD_AO`, not domain boundaries. Evidence basis: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 for domain/multiple-supply concepts, p. 268 for numbered `extra_supplies_#`, and p. 258 for hierarchical macro PG binding.
@@ -61,7 +61,7 @@ The expected protected switchable response width is nine bits. Reset crossing is
 - `u_sw_core` performs eight-bit plus-one and loses state on behavioral power loss.
 - The SRAM is 16 x 8, single-port, and always-on.
 - PLL lock delay is four reference edges and its clock output drives no sequential logic.
-- Pad stubs are bounded pass-through models with the exact PG interfaces.
+- Pad RTL stubs are bounded signal-only pass-through models; their synthesis-only PG interfaces come from the Liberty macro views.
 
 These receive no functional PASS until a future authorized registered simulation run.
 

@@ -46,7 +46,7 @@ The numeric `extra_supplies_1`, `extra_supplies_2`, and `extra_supplies_3` handl
 
 ## 4. Exact macro PG-pin mapping
 
-The RTL macro interfaces expose explicit `inout` supply pins so DC can preserve and resolve hierarchical connectivity. Signal-pin naming may be adapted only if the matching UPF and stub declarations change together; the PG mapping below is normative.
+Functional RTL and behavioral macro models contain signal ports only. The synthesis macro views come from `macro_pg_stub.db`, where the supply terminals are Liberty `pg_pin` objects; canonical UPF binds those objects hierarchically. The PG mapping below is normative and appears only in the UPF-aware synthesis outputs, not in source RTL.
 
 | Instance | Domain membership | PG pin | Connected supply net | Supply-set role |
 |---|---|---|---|---|
@@ -59,7 +59,7 @@ The RTL macro interfaces expose explicit `inout` supply pins so DC can preserve 
 | `u_pad_out` | `PD_AO` | `VDDIO` | `VDDIO` | `SS_VDDIO_VSS.power` |
 | `u_pad_out` | `PD_AO` | `VSSIO` | `VSS` | `SS_VDDIO_VSS.ground` |
 
-The `connect_supply_net` object paths must resolve after RTL elaboration. Hierarchical macro PG-pin binding is the intended mechanism described by *Power Compiler User Guide*, U-2022.12-SP3, p. 258. The shared `VSS` connection is repeated explicitly for auditability rather than inferred from naming.
+The `connect_supply_net` object paths must resolve after synthesis links the Liberty macro views. Hierarchical macro PG-pin binding is the intended mechanism described by *Power Compiler User Guide*, U-2022.12-SP3, p. 258. The shared `VSS` connection is repeated explicitly for auditability rather than inferred from naming.
 
 ## 5. Bounded functional interfaces
 
@@ -141,13 +141,13 @@ This architecture stage does not run simulation. Behavioral macro correctness, p
 ## 9. Assumptions, limitations, and blockers
 
 - A licensed DC/Power Compiler installation with UPF support is available for the later synthesis stage.
-- The generated stub Liberty/DB, if required for link, matches the RTL black-box port lists including PG pins.
+- The generated stub Liberty/DB matches each behavioral macro's functional signal ports and adds the synthesis-only Liberty `pg_pin` objects referenced by UPF.
 - The installed tool accepts the documented `extra_supplies_#` association syntax. If it does not, that tool-version diagnostic is a blocker and the UPF must not silently create macro-specific domains as a workaround.
 - Exact low-power-cell mapping depends on the local Sky130 HD teaching DB. Missing or voltage-incompatible cells are a known blocker to mapped/signoff-quality results, but not to demonstrating and reporting UPF intent.
 - Macro rails are logical UPF supplies only; no real PLL, SRAM, pad, power-switch, voltage-regulator, or analog model is supplied.
 - Nominal voltages are pedagogical annotations. They do not establish electrical compatibility.
 
-Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 (power-domain concept and association of multiple supplies), p. 268 (numbered `extra_supplies_#` syntax/restrictions), and p. 258 (hierarchical `connect_supply_net` use for macro PG connectivity).
+Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 (power-domain concept and association of multiple supplies), p. 268 (numbered `extra_supplies_#` syntax/restrictions), p. 258 (hierarchical `connect_supply_net` use for macro PG connectivity), and p. 259 (`write_file -pg` emits complete PG connections from a UPF flow without requiring RTL PG ports).
 
 ## 10. Pipeline handoff
 

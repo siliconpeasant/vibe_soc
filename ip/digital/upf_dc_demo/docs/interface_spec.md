@@ -2,7 +2,7 @@
 
 ## Top module
 
-The exact top is `upf_dc_demo`; it has no parameters. Supply ports and macro PG pins are `inout` logical teaching connections, not electrical models.
+The exact functional RTL top is `upf_dc_demo`; it has no parameters and contains no power/ground ports. Top supply ports and macro PG pins are created by UPF and Liberty during synthesis and appear only in PG-aware synthesis outputs.
 
 | Signal | Direction | Width | Description |
 |---|---|---:|---|
@@ -29,14 +29,7 @@ The exact top is `upf_dc_demo`; it has no parameters. Supply ports and macro PG 
 | `pad_in_core_o` | output | 1 | 1.8 V core-side pad observation |
 | `pad_out_core_i` | input | 1 | 1.8 V core-side pad drive |
 | `pad_out_o` | output | 1 | External 3.3 V-side pad observation |
-| `VDD_AO` | inout | 1 | Logical 1.8 V always-on primary rail |
-| `VDD_PLL` | inout | 1 | Logical 1.8 V PLL additional rail |
-| `VDD_MEM` | inout | 1 | Logical 1.8 V SRAM additional rail |
-| `VDDIO` | inout | 1 | Logical 3.3 V pad additional rail |
-| `VDD_SW_IN` | inout | 1 | Logical 1.2 V unswitched source |
-| `VSS` | inout | 1 | Shared logical ground |
-
-`VDD_SW` is created internally by UPF and is not a top RTL port.
+`VDD_AO`, `VDD_PLL`, `VDD_MEM`, `VDDIO`, `VDD_SW_IN`, `VDD_SW`, and `VSS` are UPF supply objects, not functional RTL ports.
 
 ## Child interfaces
 
@@ -76,8 +69,6 @@ The exact top is `upf_dc_demo`; it has no parameters. Supply ports and macro PG 
 | `enable_i` | input | 1 | Behavioral enable |
 | `pll_clk_o` | output | 1 | Observation-only modeled clock |
 | `locked_o` | output | 1 | Lock status after four reference edges |
-| `VDD` | inout | 1 | PG pin connected to `VDD_PLL` |
-| `VSS` | inout | 1 | PG pin connected to shared `VSS` |
 
 ### `upf_dc_demo_sram_16x8 u_sram_macro`
 
@@ -91,8 +82,6 @@ The exact top is `upf_dc_demo`; it has no parameters. Supply ports and macro PG 
 | `wdata_i` | input | 8 | Write data |
 | `rdata_o` | output | 8 | Registered read data |
 | `rvalid_o` | output | 1 | Read response qualifier |
-| `VDD` | inout | 1 | PG pin connected to `VDD_MEM` |
-| `VSS` | inout | 1 | PG pin connected to shared `VSS` |
 
 ### `upf_dc_demo_pad_in u_pad_in`
 
@@ -100,8 +89,6 @@ The exact top is `upf_dc_demo`; it has no parameters. Supply ports and macro PG 
 |---|---|---:|---|
 | `pad_i` | input | 1 | External 3.3 V-side digital input |
 | `core_o` | output | 1 | Core-side digital output |
-| `VDDIO` | inout | 1 | PG pin connected to `VDDIO` |
-| `VSSIO` | inout | 1 | PG pin connected to shared `VSS` |
 
 ### `upf_dc_demo_pad_out u_pad_out`
 
@@ -109,8 +96,6 @@ The exact top is `upf_dc_demo`; it has no parameters. Supply ports and macro PG 
 |---|---|---:|---|
 | `core_i` | input | 1 | Core-side digital drive |
 | `pad_o` | output | 1 | External 3.3 V-side output |
-| `VDDIO` | inout | 1 | PG pin connected to `VDDIO` |
-| `VSSIO` | inout | 1 | PG pin connected to shared `VSS` |
 
 ## UPF attributes, timing, and protocol
 
@@ -118,4 +103,4 @@ Always-on digital inputs/outputs use `SS_VDD_AO_VSS` as their driver/receiver su
 
 Always-on logic and macros use rising `clk`; `u_sw_core` uses rising `sw_clk`. Both nominal periods are 10.000 ns. `pll_clk_mon_o` has no sequential endpoint. Hold reset low through both clock domains and release synchronously in this bounded teaching setup. Requests are accepted only after power is enabled and isolation released. Power-down asserts isolation before removing power. SRAM and pad interfaces are direct point-to-point connections, not buses.
 
-UPF must use `extra_supplies_1/2/3` and hierarchical `connect_supply_net` for all PG pins. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, pp. 227, 268, and 258 respectively for multiple supplies, numbered additional supplies, and hierarchical PG connectivity.
+UPF must use `extra_supplies_1/2/3` and hierarchical `connect_supply_net` for all synthesis-only Liberty PG pins. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, pp. 227, 268, 258, and 259 respectively for multiple supplies, numbered additional supplies, hierarchical PG connectivity, and PG-netlist emission from UPF.

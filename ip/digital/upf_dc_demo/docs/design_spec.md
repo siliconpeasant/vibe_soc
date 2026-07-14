@@ -33,7 +33,7 @@ Exactly two power domains exist. `PD_AO` owns the top extent and every instance 
 
 Active-high `sw_en`, generated in `PD_AO`, controls the abstract `VDD_SW_IN` to `VDD_SW` switch. `VSS` is common. The switch may remain unmapped if the teaching DB lacks a compatible cell.
 
-All macro PG ports are `inout` in behavioral and blackbox views. UPF shall bind them explicitly with hierarchical `connect_supply_net`:
+Behavioral RTL macro views have no PG ports. Synthesis links PG-aware Liberty blackbox views, and UPF shall bind their `pg_pin` objects explicitly with hierarchical `connect_supply_net`:
 
 | Hierarchical pin | Net |
 |---|---|
@@ -60,6 +60,6 @@ The SRAM is always-on and provides synchronous 16 x 8 single-port read/write beh
 
 UPF shall create exactly the memberships and supplies above, use explicit `extra_supplies_1/2/3`, and connect every macro PG pin hierarchically. AO-to-SW request/control paths require 1.8-to-1.2 high-to-low level shifting. SW-to-AO response paths require clamp-0 isolation plus 1.2-to-1.8 low-to-high shifting, co-located at the `PD_SW` boundary in one dual-rail enable-level-shifter cell powered by `VDD_SW` and always-on `VDD_AO`. `sw_clk` enters directly at the `PD_SW` voltage. Pad ports retain explicit IO/AO supply attributes but are analog-exempt from core LS insertion.
 
-Later synthesis uses 10.000 ns `clk` and `sw_clk`, 0.10 ns clock uncertainty and transition, 1.0 ns digital IO delays, and 0.05 pF output load. Preserve macro instances and link exact-port PG-aware blackbox DB views. Validation is document completeness, `upf-gen --strict`, registered `soc_lint`, `soc_comp`, `soc_syn`, and real DC domain/supply/strategy/PG/cell reports. `soc_sim` is not run.
+Later synthesis uses 10.000 ns `clk` and `sw_clk`, 0.10 ns clock uncertainty and transition, 1.0 ns digital IO delays, and 0.05 pF output load. Preserve macro instances, link functional signal ports against PG-aware blackbox DB views, load complete UPF connectivity, and emit the final PG netlist with `write_file -pg`. Validation is document completeness, `upf-gen --strict`, registered `soc_lint`, `soc_comp`, `soc_syn`, and real DC domain/supply/strategy/PG/cell reports. `soc_sim` is not run.
 
 Tool/license absence, an extra domain, unresolved PG pins, wrong supply association, missing isolation coverage, or unsupported LS mapping is reported honestly. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 for domains with multiple supplies, p. 268 for numbered `extra_supplies_#` syntax/restrictions, and p. 258 for hierarchical `connect_supply_net` to macro PG pins.
