@@ -2,7 +2,7 @@
 
 ## Top module
 
-The exact functional RTL top is `upf_dc_demo`; it has no parameters and contains no power/ground ports. PLL/SRAM/IO macro PG pins are created by their Liberty views and bound by UPF during synthesis. The abstract switch supplies are UPF objects and need not appear as Verilog PG ports when no synthesized leaf PG pin consumes them.
+The exact functional RTL top is `upf_dc_demo`; it has no parameters and contains no power/ground ports. PLL/SRAM/IO macro PG pins are created by their Liberty views and bound by UPF inside the synthesis MV database. No supply or PG interface is exported in the ordinary Verilog deliverable.
 
 | Signal | Direction | Width | Description |
 |---|---|---:|---|
@@ -103,4 +103,11 @@ Always-on digital inputs/outputs use `SS_VDD_AO_VSS` as their driver/receiver su
 
 Always-on logic and macros use rising `clk`; `u_sw_core` uses rising `sw_clk`. Both nominal periods are 10.000 ns. `pll_clk_mon_o` has no sequential endpoint. Hold reset low through both clock domains and release synchronously in this bounded teaching setup. Requests are accepted only after power is enabled and isolation released. Power-down asserts isolation before removing power. SRAM and pad interfaces are direct point-to-point connections, not buses.
 
-UPF must use `extra_supplies_1` through `extra_supplies_3` and hierarchical `connect_supply_net` only for the PLL, SRAM, and IO Liberty PG pins. `VDD_SW_IN` and `VDD_SW` remain UPF supply objects but are not `PD_AO` additional supplies and have no switch-macro PG ports. `PSW_SW` must contain its input supply, output supply, control `u_aon_ctrl/sw_en_o`, and active-high ON state. No switch cell or switch interface is present in RTL or synthesis; backend creates and connects the physical implementation. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, pp. 227, 268, and 258 respectively for multiple supplies, numbered additional supplies, and hierarchical macro PG connectivity; pp. 358–359 define `create_power_switch` as a virtual/generic switch rule that Power Compiler does not insert and instead passes to IC Compiler II.
+UPF must use `extra_supplies_1` through `extra_supplies_3` and hierarchical `connect_supply_net` only for the PLL, SRAM, and IO Liberty PG pins. `VDD_SW_IN` and `VDD_SW` remain UPF supply objects but are not `PD_AO` additional supplies and have no switch-macro PG ports. `PSW_SW` must contain its input supply, output supply, control `u_aon_ctrl/sw_en_o`, and active-high ON state. No switch cell or switch interface is present in RTL or synthesis; backend creates and connects the physical implementation.
+
+Two synthesis artifacts carry complementary interfaces:
+
+- The saved full UPF retains all supply objects, eight PLL/SRAM/IO MacroPG bindings, strategies, power states, and virtual switch intent for backend.
+- `upf_dc_demo_netlist.v` is ordinary non-PG Verilog. Its top port list is exactly the functional signal table above. Macro and low-power-cell instances contain functional pins only; no named PG connection such as `.VDD(...)`, `.VSS(...)`, `.VDDIO(...)`, `.VSSIO(...)`, `.VGND(...)`, `.VPWR(...)`, or `.VPWRIN(...)` is allowed, and no corresponding supply net/port is allowed.
+
+The non-PG netlist still exposes the synthesized low-power structure: nine ELS isolation instances plus eleven pure high-to-low level shifters, or twenty level-shifter instances when ELS cells are included. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, pp. 227, 268, and 258 respectively for multiple supplies, numbered additional supplies, and hierarchical macro PG connectivity; pp. 358–359 define the virtual switch handoff; p. 416 and pp. 418–419 show that the omitted `write_file -pg` form would instead emit complete supply connections, named PG pins, and supply nets.

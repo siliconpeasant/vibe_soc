@@ -281,7 +281,10 @@ required_report [file join $report_dir constraints.rpt] {report_constraint -all_
 
 change_names -rules verilog -hierarchy
 write_file -format ddc -hierarchy -output $ddc
-write_file -format verilog -hierarchy -pg -output $netlist
+# The committed handoff is ordinary functional Verilog. UPF and the PG-aware
+# libraries remain active internally, while complete PG connectivity is kept
+# in the saved UPF rather than emitted through write_file -pg (PC UG p.416).
+write_file -format verilog -hierarchy -output $netlist
 write_sdc $sdc_out
 write_sdf $sdf
 save_upf -full_upf $upf_out
@@ -291,15 +294,34 @@ foreach path [list $ddc $netlist $sdc_out $upf_out $timing_out $timing_summary_o
 set netlist_fd [open $netlist r]
 set netlist_text [read $netlist_fd]
 close $netlist_fd
-# Power Compiler preserves PSW_SW as abstract UPF and does not instantiate a
-# switch. Only the PLL/SRAM/IO leaf macros require PG-netlist rail retention.
-foreach pg_token {VDD_AO VDD_PLL VDD_MEM VDDIO VSS} {
-  if {[string first $pg_token $netlist_text] < 0} {
-    fatal "PG netlist is missing synthesized supply '$pg_token'"
+# Ordinary Verilog must contain functional connectivity and inserted low-power
+# cells only. Supply objects and named PG-pin connections belong to saved UPF.
+foreach supply_name {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW_IN VDD_SW VSS} {
+  if {[string first $supply_name $netlist_text] >= 0} {
+    fatal "non-PG netlist contains forbidden supply name '$supply_name'"
+  }
+}
+foreach pg_pin {VDD VSS VDDIO VSSIO VGND VPWR VPWRIN LOWLVPWR VNB VPB VDDH VDDL VNW VPW} {
+  set pg_pin_pattern [format {\.%s[[:space:]]*\(} $pg_pin]
+  if {[regexp $pg_pin_pattern $netlist_text]} {
+    fatal "non-PG netlist contains forbidden named PG-pin connection '$pg_pin'"
   }
 }
 if {[string first "u_power_switch_macro" $netlist_text] >= 0} {
-  fatal "PG netlist contains forbidden power-switch macro instance"
+  fatal "non-PG netlist contains forbidden power-switch macro instance"
+}
+
+# The 20 total level shifters comprise 11 dedicated HL cells plus the 9 ELS
+# cells that implement both isolation and low-to-high level shifting.
+set els_netlist_count [regexp -all -line \
+    {^[[:space:]]*upf_dc_demo_els_lh_1v2_1v8[[:space:]]+} $netlist_text]
+set hl_ls_netlist_count [regexp -all -line \
+    {^[[:space:]]*upf_dc_demo_ls_hl_1v8_1v2[[:space:]]+} $netlist_text]
+if {$els_netlist_count != 9} {
+  fatal "non-PG netlist has $els_netlist_count ELS instances; expected 9"
+}
+if {$hl_ls_netlist_count != 11} {
+  fatal "non-PG netlist has $hl_ls_netlist_count dedicated HL LS instances; expected 11"
 }
 set saved_upf_fd [open $upf_out r]
 set saved_upf_text [read $saved_upf_fd]

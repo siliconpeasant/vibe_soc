@@ -44,11 +44,11 @@ Only the numeric `extra_supplies_1` through `extra_supplies_3` handles are assoc
 
 `VDD_SW` is the output of the logical UPF power switch `PSW_SW`, driven by active-high always-on control `sw_en`. `PSW_SW` is only a virtual/generic switch rule: UPF records its input supply, output supply, control, and ON condition, while the physical switch cell and its rail hookup are owned by backend implementation. RTL and synthesis shall not pre-instantiate, map, or preserve a power-switch cell, and UPF shall not use hierarchical `MacroPG` connections for one.
 
-This boundary follows *Power Compiler User Guide*, U-2022.12-SP3, pp. 358–359: `create_power_switch` creates a virtual instance and tells the tool that a generic switch resides at a scope; Power Compiler does not perform power-switch insertion, but passes the information to IC Compiler II for implementation. Consequently, neither `VDD_SW_IN` nor `VDD_SW` is required to survive as a PG-aware Verilog port solely to prove the rule. The authoritative synthesis handoff is the saved UPF switch object, not a leaf switch macro in the synthesized hierarchy.
+This boundary follows *Power Compiler User Guide*, U-2022.12-SP3, pp. 358–359: `create_power_switch` creates a virtual instance and tells the tool that a generic switch resides at a scope; Power Compiler does not perform power-switch insertion, but passes the information to IC Compiler II for implementation. The authoritative synthesis handoff is the saved UPF switch object, not a leaf switch macro in the synthesized hierarchy.
 
 ## 4. Exact macro PG-pin mapping
 
-Functional RTL and behavioral macro models contain signal ports only. The synthesis macro views come from `macro_pg_stub.db`, where the supply terminals are Liberty `pg_pin` objects; canonical UPF binds those objects hierarchically. The PG mapping below is normative and appears only in the UPF-aware synthesis outputs, not in source RTL.
+Functional RTL and behavioral macro models contain signal ports only. The synthesis macro views come from `macro_pg_stub.db`, where the supply terminals are Liberty `pg_pin` objects; canonical UPF binds those objects hierarchically. The PG mapping below is normative for the in-memory MV database, PG reports, and saved full UPF. It does not appear in source RTL or the delivered ordinary Verilog netlist.
 
 | Instance | Domain membership | PG pin | Connected supply net | Supply-set role |
 |---|---|---|---|---|
@@ -130,11 +130,19 @@ create_power_switch PSW_SW \
   -on_state {normal TVDD {NSLEEPIN}}
 ```
 
-The final generated UPF must also define supply states, isolation/level-shifter strategies, control polarity, and cell mappings where compatible teaching cells exist. `PSW_SW` must retain the four abstract rule elements shown above. No switch `HardMacros`, switch `MacroPG`, `map_power_switch`, or top-level PG-netlist-port retention requirement is part of synthesis. Exact command spelling must be validated against the installed Power Compiler UPF version.
+The final generated UPF must also define supply states, isolation/level-shifter strategies, control polarity, and cell mappings where compatible teaching cells exist. `PSW_SW` must retain the four abstract rule elements shown above. No switch `HardMacros`, switch `MacroPG`, or `map_power_switch` implementation mapping is part of synthesis. Exact command spelling must be validated against the installed Power Compiler UPF version.
 
-## 8. DC experiment and acceptance evidence
+## 8. Synthesis database and deliverables
 
-The synthesis experiment should verify, using DC/Power Compiler reports and the generated netlist:
+DC/Power Compiler shall load UPF and the PG-aware Liberty views so that domain ownership, all eight PLL/SRAM/IO MacroPG connections, power-switch intent, and inserted low-power cells can be checked in the internal MV database. It shall save a complete full UPF for backend implementation.
+
+The Verilog handoff has a different purpose. `upf_dc_demo_netlist.v` shall be written as ordinary non-PG Verilog without `write_file -pg`. It contains functional connectivity and the inserted low-power cell instances, but it must omit all supply ports, PG supply nets, and PG-pin named connections. Prohibited Verilog content includes supply objects or pins named `VDD*`, `VSS*`, `VDDIO`, `VSSIO`, `VGND`, `VPWR`, and `VPWRIN`. The eight MacroPG bindings remain visible in UPF/reports only.
+
+This is an intentional two-artifact contract. *Power Compiler User Guide*, U-2022.12-SP3, p. 416 states that `write_file -pg` writes complete PG supply connections, including leaf-cell connections; pp. 418–419 show that form emitting named PG pins, supply nets, and power-switch output nets. Because this demo's Verilog deliverable must be non-PG, synthesis omits the `-pg` option while retaining the separate saved full UPF.
+
+## 9. DC experiment and acceptance evidence
+
+The synthesis experiment should verify, using DC/Power Compiler reports, saved full UPF, and the ordinary generated netlist:
 
 1. Exactly two domains exist: `PD_AO` and `PD_SW`; no macro-specific domain exists.
 2. `PD_AO.primary` resolves to `SS_VDD_AO_VSS`, and only its three macro extra supplies resolve in the documented numbered slots without `UPF-707a`.
@@ -143,13 +151,16 @@ The synthesis experiment should verify, using DC/Power Compiler reports and the 
 5. Isolation is inserted on switchable-domain outputs and is powered from the always-on supply.
 6. 1.8 V↔1.2 V level-shifter strategies are inserted or produce an explicit, attributable teaching-library mapping limitation.
 7. The 3.3 V IO supply attributes and analog exemptions are preserved; no core standard-cell LS is inserted on pad-boundary nets.
-8. The PLL, SRAM, and pads remain black boxes, their signal ports link successfully, and their PG connectivity is not optimized away.
+8. The PLL, SRAM, and pads remain black boxes, their signal ports link successfully, and their PG connectivity remains provable in the internal reports and saved UPF.
 9. No switch macro appears in RTL, linked macro views, hard-macro declarations, hierarchical PG bindings, or the synthesized hierarchy; backend consumes the saved UPF rule for physical implementation.
 10. No sequential endpoint uses the PLL stub output as a clock.
+11. The ordinary Verilog contains nine ELS isolation instances and eleven pure high-to-low LS instances, for twenty total level-shifter instances when ELS cells are included.
+12. The ordinary Verilog contains no supply port/net or PG-pin named connection, including `VDD*`, `VSS*`, `VDDIO`, `VSSIO`, `VGND`, `VPWR`, and `VPWRIN`.
+13. The saved full UPF retains all six supply sets, all eight PLL/SRAM/IO MacroPG bindings, isolation/level-shifter strategies, power states, and virtual `PSW_SW`.
 
 This architecture stage does not run simulation. Behavioral macro correctness, pad electrical behavior, analog behavior, CDC, gate-level simulation, formal equivalence, STA signoff, IR/EM, DRC/LVS, and physical implementation are outside this document's acceptance scope.
 
-## 9. Assumptions, limitations, and blockers
+## 10. Assumptions, limitations, and blockers
 
 - A licensed DC/Power Compiler installation with UPF support is available for the later synthesis stage.
 - The generated stub Liberty/DB matches each behavioral macro's functional signal ports and adds the synthesis-only Liberty `pg_pin` objects referenced by UPF.
@@ -158,8 +169,8 @@ This architecture stage does not run simulation. Behavioral macro correctness, p
 - Macro rails are logical UPF supplies only; no real PLL, SRAM, pad, voltage-regulator, or analog model is supplied. No physical or characterized power-switch implementation is part of RTL or synthesis.
 - Nominal voltages are pedagogical annotations. They do not establish electrical compatibility.
 
-Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 (power-domain concept and association of multiple supplies), p. 268 (numbered `extra_supplies_#` syntax/restrictions), p. 258 (hierarchical `connect_supply_net` use for PLL/SRAM/IO macro PG connectivity), p. 259 (`write_file -pg` emits macro PG connections from a UPF flow without requiring RTL PG ports), and pp. 358–359 (`create_power_switch` is virtual/generic, Power Compiler does not insert it, and the information is passed to IC Compiler II).
+Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 (power-domain concept and association of multiple supplies), p. 268 (numbered `extra_supplies_#` syntax/restrictions), p. 258 (hierarchical `connect_supply_net` use for PLL/SRAM/IO macro PG connectivity), pp. 358–359 (`create_power_switch` is virtual/generic, Power Compiler does not insert it, and the information is passed to IC Compiler II), and pp. 416, 418–419 (`write_file -pg` emits complete PG supply connections, named leaf PG pins, and relevant supply nets).
 
-## 10. Pipeline handoff
+## 11. Pipeline handoff
 
 Because this document changes the domain model and invalidates any previously generated RTL/UPF assumptions, the repository `doc` stage must be rerun and accepted before RTL, UPF, synthesis constraints, or DC scripts are regenerated. Downstream stages must remain pending until that gate completes.
