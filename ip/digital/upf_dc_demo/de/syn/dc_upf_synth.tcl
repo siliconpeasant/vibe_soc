@@ -74,7 +74,7 @@ set logic_filelist [file join $work_dir logic_rtl.f]
 set source_fd [open $filelist r]
 set logic_fd [open $logic_filelist w]
 foreach line [split [read $source_fd] "\n"] {
-  if {![regexp {upf_dc_demo_(power_switch_macro|pll_macro|sram_16x8|pad_in|pad_out)\.v$} $line]} {
+  if {![regexp {upf_dc_demo_(pll_macro|sram_16x8|pad_in|pad_out)\.v$} $line]} {
     puts $logic_fd $line
   }
 }
@@ -87,13 +87,12 @@ link
 uniquify
 
 set macro_cell_names {
-  upf_dc_demo_power_switch_macro
   upf_dc_demo_pll_macro
   upf_dc_demo_sram_16x8
   upf_dc_demo_pad_in
   upf_dc_demo_pad_out
 }
-set macro_instance_names {u_power_switch_macro u_pll_macro u_sram_macro u_pad_in u_pad_out}
+set macro_instance_names {u_pll_macro u_sram_macro u_pad_in u_pad_out}
 set macro_audit [open [file join $report_dir macro_blackbox_audit.rpt] w]
 foreach cell_name $macro_cell_names {
   set objects [get_lib_cells -quiet */$cell_name]
@@ -108,22 +107,22 @@ foreach instance_name $macro_instance_names {
   puts $macro_audit "INSTANCE=$instance_name DONT_TOUCH=true"
 }
 close $macro_audit
+if {[sizeof_collection [get_cells -hierarchical -quiet *u_power_switch_macro*]] != 0} {
+  fatal "RTL/synthesis hierarchy contains forbidden power-switch macro instance"
+}
 set sw_core [get_cells -quiet u_sw_core]
 if {[sizeof_collection $sw_core] != 1} { fatal "missing u_sw_core" }
 set_ungroup $sw_core false
 
 # Prove the source RTL is signal-only before UPF creates supply objects.
 set reconcile [open [file join $report_dir pg_reconciliation.rpt] w]
-foreach supply_name {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW_IN VSS} {
+foreach supply_name {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW_IN VDD_SW VSS} {
   if {[sizeof_collection [get_ports -quiet $supply_name]] != 0} {
     fatal "functional RTL unexpectedly exposes PG port '$supply_name'"
   }
   puts $reconcile "RTL_PG_ABSENT port=$supply_name"
 }
 set macro_pg_map {
-  u_power_switch_macro/VIN VDD_SW_IN
-  u_power_switch_macro/VOUT VDD_SW
-  u_power_switch_macro/VSS VSS
   u_pll_macro/VDD VDD_PLL
   u_pll_macro/VSS VSS
   u_sram_macro/VDD VDD_MEM
@@ -188,9 +187,14 @@ required_report [file join $report_dir supply_connectivity.pre_compile.rpt] {rep
 set domain_fd [open [file join $report_dir power_domains.pre_compile.rpt] r]
 set domain_text [read $domain_fd]
 close $domain_fd
-foreach token {SS_VDD_PLL_VSS SS_VDD_MEM_VSS SS_VDDIO_VSS SS_VDD_SW_IN_VSS SS_VDD_SW_VSS} {
+foreach token {SS_VDD_PLL_VSS SS_VDD_MEM_VSS SS_VDDIO_VSS} {
   if {[string first $token $domain_text] < 0} {
     fatal "PD_AO report is missing additional supply '$token'"
+  }
+}
+foreach forbidden_handle {extra_supplies_4 extra_supplies_5} {
+  if {[string first $forbidden_handle $domain_text] >= 0} {
+    fatal "PD_AO report contains forbidden switch-rail handle '$forbidden_handle'"
   }
 }
 set connectivity_fd [open $loaded_upf r]
@@ -213,6 +217,9 @@ if {[regexp -nocase {(^|\n)Error:} $compile_transcript]} {
   fatal "compile_ultra transcript contains an error diagnostic"
 }
 link
+if {[sizeof_collection [get_cells -hierarchical -quiet *u_power_switch_macro*]] != 0} {
+  fatal "compiled hierarchy contains forbidden power-switch macro instance"
+}
 
 # Expected macro blackboxes are permitted. No other unmapped/GTECH/SEQGEN leaf
 # is accepted in the digital mapped design.
@@ -285,28 +292,38 @@ set netlist_fd [open $netlist r]
 set netlist_text [read $netlist_fd]
 close $netlist_fd
 # Power Compiler preserves PSW_SW as abstract UPF and does not instantiate a
-# switch. The pre-instantiated signal-only switch macro supplies leaf Liberty
-# PG loads so both the input and output rails must survive write_file -pg.
-foreach pg_token {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW_IN VDD_SW VSS} {
+# switch. Only the PLL/SRAM/IO leaf macros require PG-netlist rail retention.
+foreach pg_token {VDD_AO VDD_PLL VDD_MEM VDDIO VSS} {
   if {[string first $pg_token $netlist_text] < 0} {
     fatal "PG netlist is missing synthesized supply '$pg_token'"
   }
 }
-foreach connection {
-  {.VIN(VDD_SW_IN)}
-  {.VOUT(VDD_SW)}
-  {.VSS(VSS)}
-} {
-  if {[string first $connection $netlist_text] < 0} {
-    fatal "PG netlist is missing switch-macro connection '$connection'"
-  }
+if {[string first "u_power_switch_macro" $netlist_text] >= 0} {
+  fatal "PG netlist contains forbidden power-switch macro instance"
 }
 set saved_upf_fd [open $upf_out r]
 set saved_upf_text [read $saved_upf_fd]
 close $saved_upf_fd
-foreach upf_token {VDD_SW_IN VDD_SW PSW_SW} {
+foreach upf_token {
+  {create_power_switch PSW_SW}
+  {-input_supply_port {TVDD VDD_SW_IN}}
+  {-output_supply_port {VDD VDD_SW}}
+  {-control_port {NSLEEPIN u_aon_ctrl/sw_en_o}}
+  {-on_state {normal TVDD {NSLEEPIN}}}
+} {
   if {[string first $upf_token $saved_upf_text] < 0} {
-    fatal "saved UPF is missing power-switch token '$upf_token'"
+    fatal "saved UPF is missing abstract power-switch clause '$upf_token'"
+  }
+}
+foreach forbidden_switch_token {
+  upf_dc_demo_power_switch_macro
+  u_power_switch_macro/VIN
+  u_power_switch_macro/VOUT
+  u_power_switch_macro/VSS
+  map_power_switch
+} {
+  if {[string first $forbidden_switch_token $saved_upf_text] >= 0} {
+    fatal "saved UPF contains forbidden switch implementation token '$forbidden_switch_token'"
   }
 }
 foreach pin_path $macro_pg_paths {

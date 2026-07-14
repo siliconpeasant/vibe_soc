@@ -1,6 +1,5 @@
 /*
- * Teaching-only black-box library for power-switch, PLL, SRAM, and pad
- * integration.
+ * Teaching-only black-box library for PLL, SRAM, and pad integration.
  * It provides interface direction and PG-pin semantics only.  It contains no
  * characterized timing, power, area, noise, ESD, or physical information and
  * must never be used as signoff evidence.
@@ -16,8 +15,6 @@ library (upf_dc_demo_macro_pg_stub) {
   nom_process : 1.0;
   nom_temperature : 25.0;
   nom_voltage : 1.8;
-  voltage_map (VDD_SW_IN, 1.2);
-  voltage_map (VDD_SW, 1.2);
   voltage_map (VDD_PLL, 1.8);
   voltage_map (VDD_MEM, 1.8);
   voltage_map (VDDIO, 3.3);
@@ -30,35 +27,6 @@ library (upf_dc_demo_macro_pg_stub) {
     tree_type : balanced_tree;
   }
   default_operating_conditions : stub_1v8;
-
-  /*
-   * Pre-instantiated connectivity anchor for the abstract UPF PSW_SW.
-   * Power Compiler does not instantiate this cell. The RTL view carries only
-   * en_i; these PG pins make both switch rails visible in write_file -pg.
-   */
-  cell (upf_dc_demo_power_switch_macro) {
-    area : 0.0;
-    dont_use : true;
-    is_macro_cell : true;
-
-    pg_pin (VIN) {
-      pg_type : primary_power;
-      voltage_name : VDD_SW_IN;
-    }
-    pg_pin (VOUT) {
-      pg_type : primary_power;
-      voltage_name : VDD_SW;
-    }
-    pg_pin (VSS) {
-      pg_type : primary_ground;
-      voltage_name : VSS;
-    }
-
-    pin (en_i) {
-      direction : input;
-      capacitance : 0.0;
-    }
-  }
 
   type (bus_4_3_0) {
     base_type : array;

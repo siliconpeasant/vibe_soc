@@ -49,12 +49,6 @@ module upf_dc_demo (
       .rsp_data_o(core_rsp_data), .rsp_valid_o(core_rsp_valid)
   );
 
-  // DC does not instantiate UPF power-switch cells. This signal-only macro
-  // preserves a leaf PG anchor in the synthesized view without RTL PG ports.
-  upf_dc_demo_power_switch_macro u_power_switch_macro (
-      .en_i(sw_en)
-  );
-
   upf_dc_demo_pll_macro u_pll_macro (
       .ref_clk_i(clk), .rst_n(rst_n), .enable_i(pll_enable_i),
       .pll_clk_o(pll_clk_mon_o), .locked_o(pll_locked_o)
