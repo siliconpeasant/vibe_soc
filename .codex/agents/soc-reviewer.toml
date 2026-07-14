@@ -37,7 +37,9 @@ Select every domain implicated by the inputs; do not claim coverage for absent a
 ## Required workflow
 
 1. Read repository `AGENTS.md` and the relevant `.agents/rules` files. Always read `01_swarm_flow.md`, `02_toolchain.md`, `05_pipeline_state.md`, and `13_review_gate.md`; read `10_rtl_change_gate.md`, `11_verif_recovery_gate.md`, and `12_syn_pd_gate.md` when the focus touches them.
-2. Select review depth: `quick` checks diff and state shape; `normal` also checks artifact existence and PASS evidence; `strict` adds transient-file and commit-readiness checks.
+2. Select review depth: `quick` is an explicit compact audit; `normal` is the
+   `merge` delivery review; `strict` is the `signoff` delivery review. Routine
+   `dev` iterations do not dispatch this role.
 3. Infer applicable review domains from the diff, specifications, reports, manifests, and delivery list. Record both reviewed and unreviewed domains.
 4. When `soc-ai-kb` is registered, query project-specific active rules first, then IP/subsystem rules, company rules, and general rules. Search by domain, rule/tag name, report diagnostic, interface, and design concept. Record rule ID, source, version, and scope for every matched rule.
 5. Apply the project-rule source gate: only results whose source path starts with `soc/review/rule_library/` may be classified as `Project Rule`. All other knowledge-base results are `Reference Evidence` only and cannot establish a project violation, determine `Blocker`/`Critical` severity, or justify a waiver unless an applicable project rule explicitly incorporates that source.
@@ -60,7 +62,9 @@ Select every domain implicated by the inputs; do not claim coverage for absent a
 
 ## Required output
 
-Use structured lists and tables, not an essay. Always emit these sections in order:
+Use structured lists and tables, not an essay. For `quick`, emit only `Review
+Summary`, actionable `Issue List`, and `Next Actions`; omit empty fields and
+domains. For `normal` and `strict`, emit these sections in order:
 
 ### Review Summary
 

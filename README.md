@@ -2,7 +2,10 @@
 
 `vibe_soc` 是一个 silicon-crew 风格的 SoC 前端开发仓库，覆盖模块/IP 创建、RTL 集成、lint/编译/仿真/回归/覆盖率、综合、OpenROAD 物理设计 handoff、寄存器生成、CRG 需求设计和时钟/复位树图生成。
 
-当前仓库采用统一模块布局和门控流程：`doc -> rtl -> {verif, syn}`。EDA 执行由注册的 MCP 工具驱动，避免在 agent 阶段绕过项目 Make/MCP 约束直接调用仿真器、综合器或 OpenROAD。
+当前仓库采用分层 Loop：日常单模块修改走轻量 `dev` 内环，准备交付时走
+`merge`，接口、时钟复位、约束、Top、跨模块和 PD 等高风险修改自动升级
+为 `signoff`。最终门控依然是 `doc -> rtl -> {verif, syn}`。EDA 执行由
+注册的 MCP 工具驱动，禁止 agent 直接调用仿真器、综合器或 OpenROAD。
 
 ## 仓库布局
 
@@ -91,6 +94,7 @@ OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug �
 | Workflow | 触发方式 | 用途 |
 |---|---|---|
 | `auto-pr-automerge` | `codex/**`、`feature/**`、`fix/**` 分支 push、手动 | 自动创建/复用 PR，并尝试启用 GitHub 原生 auto-merge |
+| `loop-policy` | PR、手动 | 校验 Loop 路由、状态工具、规则和 Agent 契约 |
 | `top-smoke` | PR、手动、定时 | `chip/top` UART smoke CI 门禁 |
 | `cd-release-branch` | `release/**` 分支 push、手动 | 发布分支候选包构建 |
 | `cd-release` | `v*` tag、手动 | 正式 release 包和 GitHub Release |
@@ -236,11 +240,17 @@ SKY130HD_DC_DB := /path/to/sky130_fd_sc_hd__tt_025C_1v80.db
 
 ## 门控开发流程
 
-RTL 创建或实质修改遵循：
+RTL 创建或实质修改先自动选择 Loop 模式：
 
 ```text
-architecture handoff，可选 -> doc -> rtl -> {verif, syn}
+dev:     单模块 RTL owner -> targeted lint/compile/sim -> 保持 rtl in_progress
+merge:   doc delta -> rtl -> {verif, syn} -> reviewer normal
+signoff: architecture 可选 -> doc -> rtl -> {verif, syn} -> risk checks -> reviewer strict
 ```
+
+`LOOP_MODE` 是最低模式而不是绕过开关。filelist 和验证 collateral 至少升级
+到 `merge`；新模块、接口/寄存器、时钟复位、约束、生成 Top/wrapper、
+chip-top RTL、跨模块、UPF 和 PD 自动升级到 `signoff`。
 
 | 阶段 | 角色 | 典型产物 |
 |---|---|---|
@@ -257,13 +267,30 @@ PD handoff 使用 `soc-pd-engineer` 协调 OpenROAD，但它不是 `pipeline_sta
 
 ```bash
 python3 .agents/scripts/init_state.py <workspace> <module>
-python3 .agents/scripts/query_state.py <workspace>
+python3 .agents/scripts/loop_context.py <workspace> --format text
+python3 .agents/scripts/query_state.py <workspace> --compact
 python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 ```
+
+准备 PR 前先生成最终阶段计划：
+
+```bash
+python3 .agents/scripts/loop_context.py <workspace> \
+  --mode merge --format text
+# 完成 packet 指定的 stale stages 和 reviewer 后：
+python3 .agents/scripts/loop_context.py <workspace> \
+  --mode merge --review-result pass --check-ready --format text
+```
+
+router 只输出需要读取的规则、需要执行的检查和 fingerprint 缓存命中。
+详细状态仍保留在 `pipeline_state.json`，日常 Agent 不再把完整 artifact hash
+和 check note 放进上下文。加 `--write` 可把紧凑 packet 写到被忽略的
+`de/run/loop_evidence/loop_context.json`。
 
 状态规则要点：
 
 - `done` 必须有真实、非空 artifact 和至少一个 passing check。
+- `dev` 只保留一个 stage owner，RTL 可跨多次迭代保持 `in_progress`；综合和独立 reviewer 延后到交付，不会被当作 PASS。
 - `verif` 和 `syn` 在 RTL 完成后可以并行，但结果只对当时消费的 RTL snapshot 有效。
 - 验证阶段可在 `verif in_progress` 内多次修 RTL，只在阶段完成/失败时结算一次；若 RTL 变更，`syn` 必须退回 `pending` 并重跑。
 - 综合阶段同理；若综合修 RTL，`verif` 必须退回 `pending` 并重跑。
@@ -284,14 +311,18 @@ python3 .agents/scripts/update_state.py <workspace> rtl in_progress
 | Excel 寄存器生成 | `excel-yml-gen` | 从 Excel 生成 YAML、regfile RTL、wrapper 等 |
 | CRG 需求转设计表 | `crg-req-to-design` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |
 | 时钟/复位树图 | `cr-tree-diag-gen` | 从设计表生成 Draw.io 和 Excalidraw 图 |
-| 流程编排 | `vibe-soc-loop` → `soc-pipeline` | 前者分类与路由，后者协调架构、doc、RTL、验证、综合、PD handoff |
+| 流程编排 | `vibe-soc-loop` → `soc-pipeline` | 自动选择 `dev/merge/signoff`，只协调失效阶段和所需 PD handoff |
 | 独立设计审查 | `soc-reviewer` + `soc-ai-kb` | 对设计交付物做只读第一轮 Review，输出结构化风险、Issue、waiver 和交付清单，不执行 EDA 或宣称 signoff |
 
 EDA 阶段应走注册工具入口：验证调用 `soc-build.soc_sim`，综合调用 `soc-build.soc_syn`，OpenROAD 调用 `soc-openroad.soc_openroad_*`。自动化流程不使用直接 `make`、`iverilog`、`vvp`、`yosys`、`openroad` 等 shell fallback。
 
 ## SoC Reviewer 与知识库
 
-`soc-reviewer` 用于 post-stage、提交前、PR 前或独立设计审查。它是只读审查角色，不修改 RTL、testbench、约束、waiver 或 `pipeline_state.json`，也不运行仿真、综合、STA 和 OpenROAD。Review 结果只作为人工二轮评审输入，不代表设计 signoff。
+`soc-reviewer` 在 `merge` 中执行一次 normal review，在 `signoff` 中执行
+strict review，也可用于显式独立审查；普通 `dev` 迭代不派发。它是只读
+审查角色，不修改 RTL、testbench、约束、waiver 或 `pipeline_state.json`，
+也不运行仿真、综合、STA 和 OpenROAD。Review 结果只作为人工二轮评审
+输入，不代表设计 signoff。
 
 审查范围按实际输入选择，可覆盖 RTL coding/lint、clock/reset、CDC/RDC、总线协议、寄存器和地址映射、顶层集成、UPF/low power、DFT、SDC/STA、综合 QoR、LEC/Formality、Formal、验证/regression/coverage、X-prop/GLS、安全、waiver、交付复现性和文档完整性。固定输出包括：
 

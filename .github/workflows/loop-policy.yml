@@ -1,0 +1,43 @@
+name: loop-policy
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loop-policy-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  loop_policy:
+    name: loop policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate generated contracts
+        run: |
+          python3 scripts/sync_loop_contracts.py --check
+          python3 scripts/sync_agent_profiles.py --check
+          python3 scripts/sync_loop_state_entrypoints.py --check
+
+      - name: Run loop state and routing tests
+        run: |
+          python3 -m unittest discover -s .agents/scripts/tests -p 'test_*.py'
+          python3 scripts/tests/test_loop_contract_sync.py
+          python3 scripts/tests/test_soc_reviewer_contract.py
+
+      - name: Show compact routing packet
+        run: python3 .agents/scripts/loop_context.py . --format text

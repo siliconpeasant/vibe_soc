@@ -1,8 +1,14 @@
-# SoC gated design flow
+# SoC staged design flow
 
-Creating or materially refactoring RTL follows a coordinated flow with an optional architecture handoff followed by the gated module pipeline. The primary agent coordinates; role agents own their stage artifacts and checks.
+Creating or materially refactoring RTL enters the Loop, but daily iteration does
+not repeatedly close the full delivery pipeline. `00_loop_modes.md` selects the
+execution mode. One role agent owns a `dev` inner loop; coordinated stage roles
+close the final diff in `merge` or `signoff`.
 
-For chip-level, subsystem-level, or multi-module requirements, dispatch `soc-architect` before the gated doc stage to select IP, select technology/process assumptions, and produce the SoC integration architecture document under `docs/`. This is a pre-doc planning role, not a `pipeline_state.json` stage; the gated dependency chain remains `doc -> rtl -> {verif, syn}`.
+For chip-level, subsystem-level, or multi-module requirements, the router selects
+`signoff`; dispatch `soc-architect` before the gated doc stage to select IP,
+technology/process assumptions, and the integration architecture. Architecture
+remains a pre-doc handoff rather than a `pipeline_state.json` stage.
 
 | Stage | Role | Canonical deliverables |
 |---|---|---|
@@ -11,11 +17,14 @@ For chip-level, subsystem-level, or multi-module requirements, dispatch `soc-arc
 | rtl | `soc-rtl-designer` | `de/rtl/<module>.v`, `de/rtl/filelist.f`, `de/syn/<module>.sdc` |
 | verif | `soc-verification-engineer` | `dv/tb/tb_<module>.*`, `dv/sim/sim.log` |
 | syn | `soc-synthesis-engineer` | `de/syn/<module>_netlist.v`, `de/syn/synth.log` |
-| review gate (post-stage or pre-commit) | `soc-reviewer` | findings with evidence, no state transition |
+| delivery review (`merge`/`signoff`) | `soc-reviewer` | findings with evidence, no state transition |
 
 ## Review gate
 
-Dispatch `soc-reviewer` after pipeline-governed work when preparing to commit, when a task claims validation success, or when an independent audit is requested. The reviewer is not a pipeline stage and does not update `pipeline_state.json`; use `13_review_gate.md` for the audit contract.
+Do not dispatch an independent reviewer for ordinary `dev` iterations. Dispatch
+`soc-reviewer normal` once for `merge`, `soc-reviewer strict` for `signoff`, or
+the requested mode for an explicit audit. The reviewer is not a pipeline stage
+and does not update `pipeline_state.json`.
 
 RTL specialization:
 
@@ -24,7 +33,11 @@ RTL specialization:
 
 ## Large task decomposition
 
-When a stage is too large for one role agent to handle efficiently, the coordinator may decompose the work across multiple agents automatically. One role agent remains the stage owner and is responsible for final artifact validation, required MCP gate execution, and `pipeline_state.json` updates.
+Keep one stage owner in `dev`; do not create doc, verification, synthesis, and
+review handoffs for every edit. In `merge` or `signoff`, or when a stage is
+genuinely too large for one owner, the coordinator may decompose disjoint work
+across agents. One role agent remains responsible for final validation, MCP
+gates, and state updates.
 
 Parallel agents must have explicit, disjoint write ownership. For example, an RTL refactor may split ownership by files such as `npu_top.v`, `npu_mac.v`, `npu_requant.v`, and `npu_spm.v`; a verification task may split bus functional model, reference model, and directed-test implementation. Do not let two agents edit the same file unless the stage owner serializes and reviews the merge.
 

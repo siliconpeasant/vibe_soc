@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FILES = (
     "AGENTS.md",
     "README.md",
+    ".agents/rules/00_loop_modes.md",
     ".agents/rules/01_swarm_flow.md",
     ".agents/rules/02_toolchain.md",
     ".agents/rules/03_exceptions.md",
@@ -60,12 +61,9 @@ def normalize(relative: str, text: str) -> str:
             relative,
         )
     elif relative == "README.md":
-        text = replace_once(
-            text,
-            "| 流程编排 | `soc-pipeline` | 协调架构、doc、RTL、验证、综合、PD handoff |",
-            "| 流程编排 | `vibe-soc-loop` → `soc-pipeline` | 前者分类与路由，后者协调架构、doc、RTL、验证、综合、PD handoff |",
-            relative,
-        )
+        # The mode-aware table is canonical; retain only historical migrations
+        # in older branches rather than rewriting current wording.
+        pass
     elif relative.endswith("01_swarm_flow.md"):
         text = replace_once(
             text,
@@ -81,12 +79,9 @@ def normalize(relative: str, text: str) -> str:
             relative,
         )
     elif relative.endswith("03_exceptions.md"):
-        text = replace_once(
-            text,
-            "- 阶段 2 RTL 改动如果是 1-2 行 + 不改接口,可主 Agent 自己改;**改接口或多于 1 个模块的必须 spawn `soc-rtl-designer`**",
-            "- 阶段 2 即使只有 1-2 行 RTL 改动也由 `soc-rtl-designer` stage owner 实施；主 Agent 只负责协调和状态握手",
-            relative,
-        )
+        # Mode routing replaced the historical line-count exception. The rule
+        # file is now canonical rather than a migration target.
+        pass
     elif relative.endswith("05_pipeline_state.md"):
         text = text.replace("${CLAUDE_PLUGIN_ROOT}/scripts/", "<project_root>/.agents/scripts/")
     elif relative.endswith("06_design_knowledge.md"):
@@ -104,38 +99,9 @@ def normalize(relative: str, text: str) -> str:
             relative,
         )
     elif relative.endswith("vibe-soc-loop/SKILL.md"):
-        text = replace_once(
-            text,
-            "3. Resolve the absolute project root, module workspace, and module name. For the active top, use `chip/top` and `vibe_soc_top` unless the user specifies another module.",
-            "3. Resolve the absolute project root, workspace, state module name, RTL top, and testbench top separately. For `chip/top`, the state module is `vibe_soc_top` while the current RTL top is `chip_earlgrey_asic`; never infer one from the other.",
-            relative,
-        )
-        classification = """## Classification
-
-Classify ownership before selecting an executor. Any generated top, wrapper, register RTL, CRG RTL, RTL/filelist, interface, or constraint change is pipeline-governed and must be owned by `soc-pipeline` plus the applicable stage role. Lower-level skills and MCP tools execute work for that owner; they do not bypass state gates.
-
-| Task class | Owner | Executor |
-|---|---|---|
-| architecture, material RTL, generated RTL/top/wrapper, multi-stage recovery | `soc-pipeline` / stage role | matching generator, `soc-integrate`, or `soc-build` |
-| standalone lint/compile/simulation/regression/coverage/synthesis request | applicable stage role | `soc-build` |
-| read-only port extraction, snapshot, or interface diff | coordinator | `soc-integrate` |
-| OpenROAD physical-design handoff | `soc-pd-engineer` | `soc-openroad` |
-| loop audit, validation evidence, commit readiness | `soc-reviewer` | `check_loop_state.py` and read-only inspection |
-| approved source-table conversion with no RTL output | coordinator | `excel-yml-gen`, `crg-req-to-design`, or `cr-tree-diag-gen` |
-
-If a required owner role or executor is missing, stop with a precise blocker. Do not hand-roll generated tops, generated CRG logic, direct simulator runs, direct synthesis runs, or OpenROAD shell fallbacks.
-
-## Loop Contract
-"""
-        text, count = re.subn(
-            r"## Classification\n.*?## Loop Contract\n",
-            classification,
-            text,
-            count=1,
-            flags=re.DOTALL,
-        )
-        if count != 1 and classification not in text:
-            raise ValueError(f"{relative}: classification block not found")
+        # The mode-aware dispatcher is canonical. Keep this sync pass from
+        # replacing it with the retired all-stages classification block.
+        pass
     elif relative.endswith("soc-pipeline/SKILL.md"):
         text = replace_once(
             text,

@@ -1,6 +1,8 @@
 # Review gate
 
-Use this rule for independent review after a pipeline-governed change, before commit, or whenever a task claims simulation, synthesis, timing, physical-design, or integration success.
+Use this rule for independent delivery review, explicit audit, or any claim of
+simulation, synthesis, timing, physical-design, or integration success. Routine
+`dev` iterations do not dispatch an independent reviewer.
 
 ## Reviewer role
 
@@ -20,9 +22,9 @@ Hard source gate: only results with a source path beginning `soc/review/rule_lib
 
 Use the narrowest review mode that matches the risk:
 
-- `quick`: inspect `git status`, relevant diffs, and pipeline-state shape. Use for planning and dry-run checks.
-- `normal`: also validate artifact paths, stage checks, and basic PASS evidence. Use after stage work.
-- `strict`: also check transient/generated files and commit-readiness risks. Use before commit or PR.
+- `quick`: optional explicit audit of diff and state shape; emit findings only.
+- `normal`: required once for `merge`; validate artifacts, checks, and PASS evidence.
+- `strict`: required for `signoff`; add transient/generated and commit-readiness risks.
 
 Run `.agents/scripts/check_loop_state.py <workspace> --mode <quick|normal|strict>` when a module workspace is in scope. This checker is read-only and does not replace reviewer judgment.
 
@@ -50,6 +52,15 @@ A review result does not replace the module pipeline state machine. Do not add a
 
 ## Structured report contract
 
-Reports contain, in order: `Review Summary`, `Key Risks`, `Issue List`, `Waiver Review`, `Delivery Checklist`, and `Next Actions`. Issues use severity `Blocker|Critical|Major|Minor|Info`, confidence 0-100, and proposed status `Open|Need Human Confirmation|Waiver Review|Deferred|Resolved by Evidence`. Every issue includes category, rule ID/source/version, rule authority (`Project Rule|Reference Evidence|Local Evidence`), file/line, associated report, evidence, risk, fix, impact, human-confirmation flag, owner, and proposed status. Missing fields are written as `Not Available`, not silently omitted.
+`quick` reports contain only `Review Summary`, actionable `Issue List`, and
+`Next Actions`; omit empty domains and fields. `normal` and `strict` reports
+contain, in order: `Review Summary`, `Key Risks`, `Issue List`, `Waiver Review`,
+`Delivery Checklist`, and `Next Actions`. Their issues use severity
+`Blocker|Critical|Major|Minor|Info`, confidence 0-100, and proposed status
+`Open|Need Human Confirmation|Waiver Review|Deferred|Resolved by Evidence`.
+Every delivery issue includes category, rule source, rule authority
+(`Project Rule|Reference Evidence|Local Evidence`), location, evidence, risk,
+fix, impact, owner, and proposed status. Missing delivery fields are written as
+`Not Available`.
 
 `Next Actions` separates must-fix-before-merge items, owner confirmations, deferrable work, and optimizations. The report may recommend a registered MCP check but cannot execute EDA or claim design signoff.

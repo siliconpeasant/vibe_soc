@@ -9,6 +9,7 @@ Convert an approved requirement into four implementation-grade documents. Do not
 
 - `workspace`: absolute module/IP workspace path
 - `task_name`: Verilog module name
+- `loop_mode`: `dev`, `merge`, or `signoff` from the compact context packet
 - `objective`: approved requirement
 - optional `excel_regfile` and `sheet_name`
 
@@ -24,8 +25,13 @@ Read `pipeline_state.json`. In multi-module mode use `docs/<task_name>/` and pas
    - `regmap.md`: registers and fields, or an explicit “not applicable” statement.
    - `verification_plan.md`: test matrix, assertions/checks, coverage goals, pass/fail criteria.
 4. Run `<project_root>/.agents/scripts/check_doc_completeness.py <workspace> [--module <task_name>]`.
-5. On PASS, mark `doc done` with all four artifact paths and `--check doc_completeness:passed`. On failure, mark `doc fail` with a failed check and remediation note.
-6. Report the `update_state.py` stdout line and any explicit assumptions.
+5. In `dev`, keep `doc in_progress` after a passing delta check and report the
+   result without claiming delivery closure.
+6. In `merge` or `signoff`, mark `doc done` with all four artifact paths and
+   `--check doc_completeness:passed`. On failure in any mode, mark `doc fail`
+   with a failed check and remediation note.
+7. Report the state-update stdout line when a transition occurred and any
+   explicit assumptions.
 
 Do not return `done` if a required document is missing, empty, or contains unresolved design-critical ambiguity.
 '''

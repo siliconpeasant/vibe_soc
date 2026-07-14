@@ -12,7 +12,12 @@ Treat a task as a material RTL change when it modifies or creates any of:
 - synthesis constraints or handoff assumptions under `de/syn/`
 - generated top, wrapper, register-file, or CRG artifacts
 
-Material RTL changes require the gated `doc -> rtl -> {verif, syn}` flow unless an existing rule grants a documented exception.
+Material RTL changes enter the Loop. A low-risk, single-module change may use
+`dev` for repeated edits, but it must remain `rtl in_progress` and cannot claim
+delivery closure. Before PR or delivery, `merge` closes the final
+`doc -> rtl -> {verif, syn}` evidence once. Router-detected interface,
+clock/reset, register, constraint, integration, generated-top, multi-module, or
+PD risk automatically uses `signoff`.
 
 ## Lightweight changes
 
@@ -22,12 +27,15 @@ Do not reopen the full pipeline for comment-only edits, documentation-only edits
 
 Before editing material RTL:
 
-1. Read `01_swarm_flow.md`, `02_toolchain.md`, and `05_pipeline_state.md`.
-2. Read `04_coding_style.md` before manual RTL edits.
-3. Read `06_design_knowledge.md` and query `soc-ai-kb` before design decisions when available.
-4. Query the module `pipeline_state.json`; initialize it only when absent.
-5. Mark the owned stage `in_progress` before stage work starts.
+1. Run `loop_context.py <workspace>` and use its selected mode.
+2. Read only the rules listed in the compact packet, including coding style and design knowledge when selected.
+3. Query compact module state; initialize it only when absent.
+4. Mark the owned stage `in_progress` before stage work starts.
 
 ## Closure
 
-Close a material RTL stage only after artifacts exist, registered MCP checks pass, and `pipeline_state.json` records the result. If verification or synthesis repairs RTL, follow the downstream invalidation rules in `01_swarm_flow.md` and `05_pipeline_state.md`.
+Do not close a material RTL stage in `dev`. In `merge` or `signoff`, close it
+only after artifacts exist, registered MCP checks pass, and state records the
+current fingerprint. Reuse a downstream result only when the compact packet
+marks it fresh. RTL repaired by verification or synthesis still follows the
+downstream invalidation rules.

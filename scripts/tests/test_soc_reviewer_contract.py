@@ -44,7 +44,7 @@ class SocReviewerContractTest(unittest.TestCase):
         gate = (ROOT / ".agents/rules/13_review_gate.md").read_text(encoding="utf-8")
         self.assertIn("project-specific rules first", gate)
         self.assertIn("Need Human Confirmation", gate)
-        self.assertIn("rule ID/source/version", gate)
+        self.assertIn("rule ID, source, version", gate)
         self.assertIn("Hard source gate", gate)
         self.assertIn("cannot independently establish a project violation", gate)
         self.assertIn("Project Rule|Reference Evidence|Local Evidence", gate)

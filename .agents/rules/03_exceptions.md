@@ -1,28 +1,20 @@
-# SoC swarm 流程例外规则
+# Loop exceptions and escalation
 
-以下场景允许跳过部分阶段。**不在例外清单内的一律严格走 4 阶段**。
+Do not use line count or the words "bug" and "feature" to choose a flow. Run
+`loop_context.py`; its selected mode is authoritative.
 
-## 例外 1: std_cell 简单组合逻辑
+- Comment, formatting, and documentation-only changes use the closest relevant
+  non-EDA validation and do not reopen RTL stages.
+- A single-module RTL fix or feature may iterate in `dev`, with one RTL stage
+  owner and targeted registered checks. Synthesis and independent review are
+  deferred, not waived.
+- Filelist, verification-collateral, or delivery-manifest changes use at least
+  `merge`.
+- New modules, interface/parameter/register changes, cross-module work,
+  clocks/resets, constraints, generated tops/wrappers, chip-top RTL, UPF, and PD
+  work use `signoff`.
 
-`std_cell/` 目录下的简单组合逻辑标准单元(如 AND/OR/MUX/INV 等):
-
-- **可跳过阶段 1**，但必须将 `doc` 状态标记为 `skipped` 并记录本例外
-- 阶段 2/3/4 仍**必须**走 subagent
-- 接口约定靠现有 std_cell 模板(如 `std_cell_mux.v`)推断即可
-
-## 例外 2: Bug 修复 / 小改动
-
-定位明确、改动 < 20 行的 bug 修复或参数调整:
-
-- **可跳过阶段 1**，但必须将 `doc` 状态标记为 `skipped` 并记录本例外
-- 阶段 2 即使只有 1-2 行 RTL 改动也由 `soc-rtl-designer` stage owner 实施；主 Agent 只负责协调和状态握手
-- 阶段 3 验证**必须**重新跑通,确保回归 PASS
-- 阶段 4 综合**必须**重新跑,确保面积/时序无回退
-
-## 不算例外(必须走完整 4 阶段)
-
-- 新模块创建,无论多简单
-- 改接口(端口增删、位宽变化、参数变化)
-- 跨模块的重构
-- 任何带状态机/时序逻辑的改动
-- 任何用户标注"新功能"或"feature"的工作
+An approved doc-stage skip remains available only when the existing interface
+and behavior contract is unchanged. Record the reason in `pipeline_state.json`
+before RTL closure. No exception permits direct EDA shell fallback or fabricated
+PASS/timing evidence.
