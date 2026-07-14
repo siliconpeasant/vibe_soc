@@ -91,11 +91,11 @@ OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug �
 | Workflow | 触发方式 | 用途 |
 |---|---|---|
 | `auto-pr-automerge` | `codex/**`、`feature/**`、`fix/**` 分支 push、手动 | 自动创建/复用 PR，并尝试启用 GitHub 原生 auto-merge |
-| `top-smoke` | `codex/**`、`feature/**`、`fix/**` 分支 push、PR、手动、定时 | `chip/top` UART smoke CI 门禁 |
+| `top-smoke` | PR、手动、定时 | `chip/top` UART smoke CI 门禁 |
 | `cd-release-branch` | `release/**` 分支 push、手动 | 发布分支候选包构建 |
 | `cd-release` | `v*` tag、手动 | 正式 release 包和 GitHub Release |
 
-推荐合并链路是：push 功能分支 -> 自动创建/复用 PR -> PR CI 跑门禁 -> GitHub auto-merge 在 required checks 满足后合入默认分支。
+推荐合并链路是：push 内部功能分支 -> GitHub App 自动创建/复用 PR -> PR CI 自动跑门禁 -> GitHub auto-merge 在 required checks 满足后合入默认分支。外部 Fork PR 不进入自动创建/自动合并路径，继续使用 GitHub 的人工批准门禁。
 
 每个新任务必须从最新默认分支创建唯一 fresh branch。已经合并过 PR 的分支禁止复用，继续向旧分支 push 会被 `auto-pr-automerge` 主动拒绝：
 
@@ -105,15 +105,28 @@ scripts/prepare_task_branch.sh <task-slug>
 git push -u origin "$(git branch --show-current)"
 ```
 
-脚本生成 `codex/<task>-<UTC timestamp>` 分支。push 后 workflow 会自动创建 PR，并以 squash 方式启用 GitHub auto-merge。
+脚本生成 `codex/<task>-<UTC timestamp>` 分支。push 后 workflow 会自动创建 PR，并以 squash 方式启用 GitHub auto-merge。`auto-pr-automerge` 只接受同仓库的 `codex/**`、`feature/**`、`fix/**` 分支；手动触发也不能把 Fork 或其他前缀送入自动合并路径。
 
-要让 auto-merge 生效，需要：
+要让内部 PR 无需逐次批准即可触发 `pull_request` CI，需要创建一个仓库专用 GitHub App：
 
-1. 在仓库 `Settings -> General -> Pull Requests` 打开 `Allow auto-merge`。
-2. 给默认分支设置 branch protection，并把关键 CI check 设为 required status check。
-3. 保持 `auto-pr-automerge` workflow 的 `pull-requests: write` 和 `contents: write` 权限。
+1. 注册 GitHub App，例如 `vibe-soc-pr-bot`；Webhook 可以关闭。
+2. Repository permissions 设置为 `Contents: Read and write`、`Pull requests: Read and write`，并且只安装到 `vibe_soc`。
+3. 把 App Client ID 保存为 Actions variable `PR_AUTOMATION_APP_CLIENT_ID`。
+4. 生成 App private key，把完整 PEM 保存为 Actions secret `PR_AUTOMATION_APP_PRIVATE_KEY`。
+5. 在仓库 `Settings -> General -> Pull Requests` 打开 `Allow auto-merge`。
+6. 给默认分支设置 branch protection，并把关键 CI check 设为 required status check。
+7. 在 `Settings -> Actions -> General` 的 Fork pull request workflow 设置中，要求所有外部贡献者运行 workflow 前经过批准，并保持 Fork workflow 的 write token 和 secrets 关闭。
 
-如果仓库没有打开 `Allow auto-merge`，workflow 仍会创建 PR，但启用 auto-merge 的步骤会以 warning 形式跳过。
+安装 App 并生成 private key 后，可以用 `gh` 写入仓库配置；不要把 PEM 文件提交到仓库：
+
+```bash
+gh variable set PR_AUTOMATION_APP_CLIENT_ID --body "<app-client-id>"
+gh secret set PR_AUTOMATION_APP_PRIVATE_KEY < /secure/path/to/app-private-key.pem
+```
+
+配置完成后，workflow 使用一小时内有效、仅限当前仓库的 GitHub App installation token 创建 PR，因此内部 PR 可以正常触发后续 workflow。App private key 只出现在受信分支的 `push` workflow 中，不会传给 `pull_request` job 或 Fork PR。
+
+如果两个 App 配置项都还没有设置，workflow 会回退到内置 `GITHUB_TOKEN`，继续创建 PR，但后续 PR workflow 仍可能要求人工批准；如果只设置其中一个，workflow 会直接失败并指出缺少的配置。如果仓库没有打开 `Allow auto-merge`，workflow 仍会创建 PR，但启用 auto-merge 的步骤会以 warning 形式跳过。
 
 发布分支建议使用 `release/<version>` 命名。发布分支允许做小修，但修复应同步回主线，避免 release 分支长期漂移。
 
