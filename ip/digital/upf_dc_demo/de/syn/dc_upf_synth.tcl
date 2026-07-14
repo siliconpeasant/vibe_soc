@@ -74,7 +74,7 @@ set logic_filelist [file join $work_dir logic_rtl.f]
 set source_fd [open $filelist r]
 set logic_fd [open $logic_filelist w]
 foreach line [split [read $source_fd] "\n"] {
-  if {![regexp {upf_dc_demo_(pll_macro|sram_16x8|pad_in|pad_out)\.v$} $line]} {
+  if {![regexp {upf_dc_demo_(power_switch_macro|pll_macro|sram_16x8|pad_in|pad_out)\.v$} $line]} {
     puts $logic_fd $line
   }
 }
@@ -87,12 +87,13 @@ link
 uniquify
 
 set macro_cell_names {
+  upf_dc_demo_power_switch_macro
   upf_dc_demo_pll_macro
   upf_dc_demo_sram_16x8
   upf_dc_demo_pad_in
   upf_dc_demo_pad_out
 }
-set macro_instance_names {u_pll_macro u_sram_macro u_pad_in u_pad_out}
+set macro_instance_names {u_power_switch_macro u_pll_macro u_sram_macro u_pad_in u_pad_out}
 set macro_audit [open [file join $report_dir macro_blackbox_audit.rpt] w]
 foreach cell_name $macro_cell_names {
   set objects [get_lib_cells -quiet */$cell_name]
@@ -120,6 +121,9 @@ foreach supply_name {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW_IN VSS} {
   puts $reconcile "RTL_PG_ABSENT port=$supply_name"
 }
 set macro_pg_map {
+  u_power_switch_macro/VIN VDD_SW_IN
+  u_power_switch_macro/VOUT VDD_SW
+  u_power_switch_macro/VSS VSS
   u_pll_macro/VDD VDD_PLL
   u_pll_macro/VSS VSS
   u_sram_macro/VDD VDD_MEM
@@ -184,7 +188,7 @@ required_report [file join $report_dir supply_connectivity.pre_compile.rpt] {rep
 set domain_fd [open [file join $report_dir power_domains.pre_compile.rpt] r]
 set domain_text [read $domain_fd]
 close $domain_fd
-foreach token {SS_VDD_PLL_VSS SS_VDD_MEM_VSS SS_VDDIO_VSS} {
+foreach token {SS_VDD_PLL_VSS SS_VDD_MEM_VSS SS_VDDIO_VSS SS_VDD_SW_IN_VSS SS_VDD_SW_VSS} {
   if {[string first $token $domain_text] < 0} {
     fatal "PD_AO report is missing additional supply '$token'"
   }
@@ -252,6 +256,7 @@ foreach pattern {
   {MV-046}
   {\(MV-229\)}
   {UPF-814}
+  {UPF-707a}
   {doesn't match -applies_to_boundary filter}
 } {
   if {[regexp -nocase $pattern $mv_text]} { fatal "unresolved MV diagnostic: $pattern" }
@@ -279,14 +284,21 @@ foreach path [list $ddc $netlist $sdc_out $upf_out $timing_out $timing_summary_o
 set netlist_fd [open $netlist r]
 set netlist_text [read $netlist_fd]
 close $netlist_fd
-# The abstract UPF power switch is preserved in the saved UPF rather than
-# emitted as a physical switch instance by this teaching flow.  Therefore its
-# input supply VDD_SW_IN need not survive as a Verilog port; require the
-# switched rail and every supply that feeds emitted cells/macros here, while
-# the saved-UPF audit below covers VDD_SW_IN and PSW_SW.
-foreach pg_token {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW VSS} {
+# Power Compiler preserves PSW_SW as abstract UPF and does not instantiate a
+# switch. The pre-instantiated signal-only switch macro supplies leaf Liberty
+# PG loads so both the input and output rails must survive write_file -pg.
+foreach pg_token {VDD_AO VDD_PLL VDD_MEM VDDIO VDD_SW_IN VDD_SW VSS} {
   if {[string first $pg_token $netlist_text] < 0} {
     fatal "PG netlist is missing synthesized supply '$pg_token'"
+  }
+}
+foreach connection {
+  {.VIN(VDD_SW_IN)}
+  {.VOUT(VDD_SW)}
+  {.VSS(VSS)}
+} {
+  if {[string first $connection $netlist_text] < 0} {
+    fatal "PG netlist is missing switch-macro connection '$connection'"
   }
 }
 set saved_upf_fd [open $upf_out r]

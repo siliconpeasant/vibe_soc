@@ -97,10 +97,26 @@ The exact functional RTL top is `upf_dc_demo`; it has no parameters and contains
 | `core_i` | input | 1 | Core-side digital drive |
 | `pad_o` | output | 1 | External 3.3 V-side output |
 
+### `upf_dc_demo_power_switch_macro u_power_switch_macro`
+
+| Signal | Direction | Width | Description |
+|---|---|---:|---|
+| `en_i` | input | 1 | Active-high always-on control, connected to `sw_en`; the only RTL port |
+
+The linked Liberty view adds synthesis-only `pg_pin` terminals `VIN`, `VOUT`, and `VSS`. Canonical UPF connects them to `VDD_SW_IN`, `VDD_SW`, and `VSS`, respectively. They are absent from RTL source and simulation interfaces. The instance is a PG-netlist retention anchor; abstract `PSW_SW`, not this signal-only RTL shell, defines switch behavior.
+
+No additional RTL port may be added to make the shell look like a physical
+power switch. In particular, `VIN`, `VOUT`, and `VSS` are not Verilog ports,
+and the shell does not transfer or generate a supply. This preserves the
+distinction documented by *Power Compiler User Guide*, U-2022.12-SP3,
+p. 359 and pp. 418–419: DC retains abstract switch intent without
+instantiating a switch cell, while a leaf Liberty PG load is needed to prevent
+otherwise-unused PG nets and ports from being omitted.
+
 ## UPF attributes, timing, and protocol
 
 Always-on digital inputs/outputs use `SS_VDD_AO_VSS` as their driver/receiver supply except the external pad sides, which use `SS_VDDIO_VSS`. At macro boundaries, driver/receiver attributes document `u_pad_in/core_o` as a 3.3 V-relative source into a 1.8 V receiver and `u_pad_out/core_i` as a 3.3 V-relative receiver driven by a 1.8 V source. Those four point-to-point pad boundary ports are also marked analog so Power Compiler does not insert core standard-cell LS/repeaters where a real characterized IO macro must own the conversion. This creates no additional domain or pad core PG pins. `sw_clk` is attributed to `SS_VDD_SW_VSS` and enters `PD_SW` directly.
 
 Always-on logic and macros use rising `clk`; `u_sw_core` uses rising `sw_clk`. Both nominal periods are 10.000 ns. `pll_clk_mon_o` has no sequential endpoint. Hold reset low through both clock domains and release synchronously in this bounded teaching setup. Requests are accepted only after power is enabled and isolation released. Power-down asserts isolation before removing power. SRAM and pad interfaces are direct point-to-point connections, not buses.
 
-UPF must use `extra_supplies_1/2/3` and hierarchical `connect_supply_net` for all synthesis-only Liberty PG pins. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, pp. 227, 268, 258, and 259 respectively for multiple supplies, numbered additional supplies, hierarchical PG connectivity, and PG-netlist emission from UPF.
+UPF must use `extra_supplies_1` through `extra_supplies_5` and hierarchical `connect_supply_net` for all synthesis-only Liberty PG pins. `extra_supplies_4/5` make `VDD_SW_IN/VDD_SW` available to the `PD_AO` switch macro and prevent `UPF-707a`. In particular, `u_power_switch_macro/VIN`, `/VOUT`, and `/VSS` must bind to `VDD_SW_IN`, `VDD_SW`, and `VSS`, and `PSW_SW` must remain in the UPF. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, pp. 227, 268, 258, and 259 respectively for multiple supplies, numbered additional supplies, hierarchical PG connectivity, and PG-netlist emission from UPF; p. 359 and pp. 418–419 explain deferred switch insertion, non-instantiation in Power Compiler, and omission of unloaded PG nets/ports.

@@ -26,7 +26,9 @@ domain_replacement = """create_power_domain PD_AO \\
     -supply {primary SS_VDD_AO_VSS} \\
     -supply {extra_supplies_1 SS_VDD_PLL_VSS} \\
     -supply {extra_supplies_2 SS_VDD_MEM_VSS} \\
-    -supply {extra_supplies_3 SS_VDDIO_VSS}"""
+    -supply {extra_supplies_3 SS_VDDIO_VSS} \\
+    -supply {extra_supplies_4 SS_VDD_SW_IN_VSS} \\
+    -supply {extra_supplies_5 SS_VDD_SW_VSS}"""
 text, count = domain_pattern.subn(domain_replacement, text)
 if count != 1:
     raise RuntimeError("expected one generated PD_AO command")
@@ -102,6 +104,7 @@ text = text.replace(section_anchor, extra_supply_sets + section_anchor, 1)
 # SYNTHESIS.  No port-function workaround is needed or valid here.
 hard_macro_block = """
 set_design_attributes -models {
+    upf_dc_demo_power_switch_macro
     upf_dc_demo_pll_macro
     upf_dc_demo_sram_16x8
     upf_dc_demo_pad_in
@@ -115,7 +118,12 @@ text = text.replace(scope_anchor, scope_anchor + hard_macro_block, 1)
 
 # Explicit macro PG bindings are required and must not be inferred by name.
 pg_block = """
-# Hierarchical macro PG bindings: all macros remain in PD_AO.
+# Hierarchical macro PG bindings: all macros remain in PD_AO. The switch
+# macro is a pre-instantiated leaf PG anchor; PSW_SW remains the abstract
+# switch that defines behavior.
+connect_supply_net VDD_SW_IN -ports {u_power_switch_macro/VIN}
+connect_supply_net VDD_SW -ports {u_power_switch_macro/VOUT}
+connect_supply_net VSS -ports {u_power_switch_macro/VSS}
 connect_supply_net VDD_PLL -ports {u_pll_macro/VDD}
 connect_supply_net VSS -ports {u_pll_macro/VSS}
 connect_supply_net VDD_MEM -ports {u_sram_macro/VDD}
@@ -176,6 +184,10 @@ for required in (
     "extra_supplies_1 SS_VDD_PLL_VSS",
     "extra_supplies_2 SS_VDD_MEM_VSS",
     "extra_supplies_3 SS_VDDIO_VSS",
+    "extra_supplies_4 SS_VDD_SW_IN_VSS",
+    "extra_supplies_5 SS_VDD_SW_VSS",
+    "u_power_switch_macro/VIN", "u_power_switch_macro/VOUT",
+    "u_power_switch_macro/VSS",
     "u_pll_macro/VDD", "u_pll_macro/VSS", "u_sram_macro/VDD",
     "u_sram_macro/VSS", "u_pad_in/VDDIO", "u_pad_in/VSSIO",
     "u_pad_out/VDDIO", "u_pad_out/VSSIO", "LS_AO_TO_SW",
@@ -200,10 +212,13 @@ with SUMMARY.open("a", encoding="utf-8") as stream:
 
 ## Deterministic post-processing
 
-- `PD_AO` retains the top extent and associates PLL, memory, and IO supply sets
-  as `extra_supplies_1`, `extra_supplies_2`, and `extra_supplies_3`.
-- All eight macro PG pins are bound by explicit hierarchical
-  `connect_supply_net` commands; the macros remain inside `PD_AO`.
+- `PD_AO` retains the top extent and associates PLL, memory, IO, and both
+  switch-macro rails as numbered extra supplies 1 through 5. The final two
+  make `VDD_SW_IN` and `VDD_SW` available to the `PD_AO` boundary macro.
+- All eleven macro PG pins are bound by explicit hierarchical
+  `connect_supply_net` commands; the macros remain inside `PD_AO`. The three
+  switch-macro pins retain `VDD_SW_IN` and `VDD_SW` in the PG netlist while
+  abstract `PSW_SW` remains the authoritative switch behavior.
 - AO-to-SW input LS intent and same-domain IO driver/receiver supply attributes
   are added. Pad-boundary signals are analog-exempt because the hard IO macro,
   powered by `VDDIO/VSS`, owns the 1.8 V/3.3 V conversion.
@@ -222,6 +237,7 @@ drawio_cells = """
 <mxCell id="AO_MEM_BOX" value="u_sram_macro" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2E7D32;" vertex="1" parent="1"><mxGeometry x="570" y="615" width="120" height="26" as="geometry" /></mxCell>
 <mxCell id="AO_PAD_IN_BOX" value="u_pad_in" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2E7D32;" vertex="1" parent="1"><mxGeometry x="710" y="615" width="120" height="26" as="geometry" /></mxCell>
 <mxCell id="AO_PAD_OUT_BOX" value="u_pad_out" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2E7D32;" vertex="1" parent="1"><mxGeometry x="850" y="615" width="120" height="26" as="geometry" /></mxCell>
+<mxCell id="AO_PSW_BOX" value="u_power_switch_macro" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2E7D32;" vertex="1" parent="1"><mxGeometry x="990" y="615" width="130" height="26" as="geometry" /></mxCell>
 """
 if drawio.count("</root>") != 1:
     raise RuntimeError("unexpected Draw.io root structure")
@@ -237,18 +253,21 @@ ao_rect = next((
 text_template = next((e for e in diagram.get("elements", []) if e.get("type") == "text"), None)
 if ao_rect is None or text_template is None:
     raise RuntimeError("cannot locate Excalidraw PD_AO templates")
-for index, name in enumerate(("u_pll_macro", "u_sram_macro", "u_pad_in", "u_pad_out")):
+for index, name in enumerate((
+    "u_pll_macro", "u_sram_macro", "u_pad_in", "u_pad_out",
+    "u_power_switch_macro",
+)):
     box = copy.deepcopy(ao_rect)
     box.update({
         "id": f"AO_MACRO_BOX_{index}", "x": 430 + 140 * index,
-        "y": 615, "width": 120, "height": 26,
+        "y": 615, "width": 130 if index == 4 else 120, "height": 26,
         "backgroundColor": "#ffffff", "seed": 9100 + index,
         "versionNonce": 9200 + index,
     })
     label = copy.deepcopy(text_template)
     label.update({
         "id": f"AO_MACRO_TEXT_{index}", "x": 444 + 140 * index,
-        "y": 620, "width": 92, "height": 18, "text": name,
+        "y": 620, "width": 116 if index == 4 else 92, "height": 18, "text": name,
         "originalText": name, "fontSize": 12, "seed": 9300 + index,
         "versionNonce": 9400 + index,
     })

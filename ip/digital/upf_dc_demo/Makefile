@@ -12,9 +12,11 @@ TEACHING_HL_LIB := $(CURDIR)/de/syn/sky130hd_teaching_hl_1v8_1v2.lib
 TEACHING_HL_DB  := $(CURDIR)/de/syn/sky130hd_teaching_hl_1v8_1v2.db
 include $(PROJECT_ROOT)/scripts/common.mk
 
-# The behavioral macro models are used by lint/compile only.  DC links the
+# The behavioral macro models are used by lint/compile only. DC links the
 # same cell names from this PG-aware teaching stub so supplies exist only as
-# Liberty pg_pin objects connected by the complete canonical UPF.
+# Liberty pg_pin objects connected by the complete canonical UPF. The
+# signal-only switch macro is pre-instantiated because DC preserves PSW_SW as
+# intent but does not instantiate a physical power-switch cell.
 # The local Sky130 file is characterized only at 1.8 V.  Two generated,
 # explicitly non-signoff variants provide the library voltage maps needed to
 # exercise 1.2 V standard cells and both LS directions in Power Compiler.

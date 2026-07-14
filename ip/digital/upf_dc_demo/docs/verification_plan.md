@@ -24,20 +24,28 @@ EDA checks use registered tools. Direct Make, simulator, or synthesis shell fall
 | ID | Required result |
 |---|---|
 | U-01 | Exactly `PD_AO` and `PD_SW` exist |
-| U-02 | `u_aon_ctrl`, `u_pll_macro`, `u_sram_macro`, `u_pad_in`, and `u_pad_out` belong to `PD_AO` |
+| U-02 | `u_aon_ctrl`, `u_pll_macro`, `u_sram_macro`, `u_pad_in`, `u_pad_out`, and `u_power_switch_macro` belong to `PD_AO` |
 | U-03 | Only `u_sw_core` belongs to `PD_SW` |
 | U-04 | `PD_AO.primary = SS_VDD_AO_VSS` using 1.8 V `VDD_AO` and shared `VSS` |
 | U-05 | `extra_supplies_1 = SS_VDD_PLL_VSS` using 1.8 V `VDD_PLL` |
 | U-06 | `extra_supplies_2 = SS_VDD_MEM_VSS` using 1.8 V `VDD_MEM` |
 | U-07 | `extra_supplies_3 = SS_VDDIO_VSS` using 3.3 V `VDDIO` |
+| U-07a | `extra_supplies_4 = SS_VDD_SW_IN_VSS` makes switch-macro `VIN` available in `PD_AO` |
+| U-07b | `extra_supplies_5 = SS_VDD_SW_VSS` makes switch-macro `VOUT` available in `PD_AO` while remaining `PD_SW.primary` |
 | U-08 | `VDD_SW_IN` feeds abstract switch output `VDD_SW`; `PD_SW.primary = SS_VDD_SW_VSS`, nominal 1.2 V ON |
 | U-09 | `u_pll_macro/VDD -> VDD_PLL` and `u_pll_macro/VSS -> VSS` |
 | U-10 | `u_sram_macro/VDD -> VDD_MEM` and `u_sram_macro/VSS -> VSS` |
 | U-11 | Both pad `VDDIO` pins connect to `VDDIO`; both `VSSIO` pins connect to `VSS` |
 | U-12 | Functional RTL and behavioral macro views contain no PG ports; every macro PG terminal resolves from a Liberty `pg_pin` through UPF |
-| U-13 | No retention strategy exists |
+| U-13 | RTL pre-instantiates `upf_dc_demo_power_switch_macro u_power_switch_macro` with only `en_i`, and that signal is driven by always-on `sw_en` |
+| U-14 | The linked switch-macro Liberty view exposes `VIN`, `VOUT`, and `VSS` `pg_pin` objects connected by canonical UPF to `VDD_SW_IN`, `VDD_SW`, and `VSS` |
+| U-15 | `PSW_SW` remains an abstract UPF switch; no DC-instantiated switch cell is required or claimed |
+| U-16 | The `write_file -pg` netlist retains `VDD_SW_IN` and `VDD_SW` and shows the three exact PG connections on `u_power_switch_macro` |
+| U-17 | No retention strategy exists |
+| U-18 | Saved UPF contains `PSW_SW`, synthesized hierarchy contains exactly the pre-instantiated `u_power_switch_macro`, and no additional DC-created power-switch instance appears |
+| U-19 | Source RTL confirms `u_power_switch_macro` has only `en_i`; linked Liberty and PG reports, not Verilog ports, provide `VIN`, `VOUT`, and `VSS` |
 
-Every macro PG row requires an explicit hierarchical `connect_supply_net`, not name inference. Dedicated rails are additional supply associations within `PD_AO`, not domain boundaries. Evidence basis: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 for domain/multiple-supply concepts, p. 268 for numbered `extra_supplies_#`, and p. 258 for hierarchical macro PG binding.
+Every macro PG row requires an explicit hierarchical `connect_supply_net`, not name inference. Dedicated rails are additional supply associations within `PD_AO`, not domain boundaries. The switch macro requires `extra_supplies_4/5`; the final MV report must not contain `UPF-707a`. The switch macro and `PSW_SW` must both be present because they serve different purposes: leaf PG connectivity for netlist retention versus abstract switch behavior. U-18 and U-19 must be evaluated independently; retaining the macro does not prove the abstract switch, and retaining `PSW_SW` does not prove the PG ports survived netlist emission. Evidence basis: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 for domain/multiple-supply concepts, p. 268 for numbered `extra_supplies_#`, p. 258 for hierarchical macro PG binding, p. 359 for deferred switch insertion, and pp. 418–419 for non-instantiation of switch cells and omission of unloaded PG nets/ports.
 
 ## Crossing checks
 
@@ -62,6 +70,7 @@ The expected protected switchable response width is nine bits. Reset crossing is
 - The SRAM is 16 x 8, single-port, and always-on.
 - PLL lock delay is four reference edges and its clock output drives no sequential logic.
 - Pad RTL stubs are bounded signal-only pass-through models; their synthesis-only PG interfaces come from the Liberty macro views.
+- The switch macro RTL shell has only `en_i`; no `VIN`, `VOUT`, or `VSS` source-level port is permitted, and no functional supply-switching behavior is inferred from it.
 
 These receive no functional PASS until a future authorized registered simulation run.
 
@@ -71,6 +80,6 @@ If simulation is later authorized, cover legal power-up, request/response includ
 
 ## Pass/fail criteria
 
-The doc stage passes only when all four canonical documents pass completeness and the stale-term scan is empty. Later low-power structural PASS requires exactly the two documented domains, all numbered additional supplies, all hierarchical PG bindings, the abstract switch, isolation, and LS strategies in real tool reports.
+The doc stage passes only when all four canonical documents pass completeness and the stale-term scan is empty. Later low-power structural PASS requires exactly the two documented domains, all numbered additional supplies, all hierarchical PG bindings, abstract `PSW_SW`, the separate pre-instantiated switch-macro anchor, retained `VDD_SW_IN` in the PG netlist, isolation, and LS strategies in real tool reports.
 
-An extra domain, wrong membership, missing numbered supply, unresolved or multiply connected PG pin, wrong isolation polarity/location, missing protected bit, silent unsupported LS claim, or PLL clock used sequentially is failure. Tool/license absence is NOT RUN or failure, never synthetic PASS. No result is foundry, PVT, electrical, physical, reliability, or tapeout signoff.
+An extra domain, wrong membership, missing numbered supply, `UPF-707a`, unresolved or multiply connected PG pin, missing `PSW_SW`, absent switch-macro PG connection, omitted `VDD_SW_IN` PG-netlist port, wrong isolation polarity/location, missing protected bit, silent unsupported LS claim, or PLL clock used sequentially is failure. Tool/license absence is NOT RUN or failure, never synthetic PASS. No result is foundry, PVT, electrical, physical, reliability, or tapeout signoff.
