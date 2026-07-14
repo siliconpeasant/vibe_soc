@@ -117,6 +117,13 @@ git push -u origin "$(git branch --show-current)"
 6. 给默认分支设置 branch protection，并把关键 CI check 设为 required status check。
 7. 在 `Settings -> Actions -> General` 的 Fork pull request workflow 设置中，要求所有外部贡献者运行 workflow 前经过批准，并保持 Fork workflow 的 write token 和 secrets 关闭。
 
+安装 App 并生成 private key 后，可以用 `gh` 写入仓库配置；不要把 PEM 文件提交到仓库：
+
+```bash
+gh variable set PR_AUTOMATION_APP_CLIENT_ID --body "<app-client-id>"
+gh secret set PR_AUTOMATION_APP_PRIVATE_KEY < /secure/path/to/app-private-key.pem
+```
+
 配置完成后，workflow 使用一小时内有效、仅限当前仓库的 GitHub App installation token 创建 PR，因此内部 PR 可以正常触发后续 workflow。App private key 只出现在受信分支的 `push` workflow 中，不会传给 `pull_request` job 或 Fork PR。
 
 如果两个 App 配置项都还没有设置，workflow 会回退到内置 `GITHUB_TOKEN`，继续创建 PR，但后续 PR workflow 仍可能要求人工批准；如果只设置其中一个，workflow 会直接失败并指出缺少的配置。如果仓库没有打开 `Allow auto-merge`，workflow 仍会创建 PR，但启用 auto-merge 的步骤会以 warning 形式跳过。
