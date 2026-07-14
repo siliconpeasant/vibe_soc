@@ -11,16 +11,18 @@ The switch is backend-owned. UPF retains only abstract `create_power_switch PSW_
 
 The executable low-power experiment inserts clamp-0 isolation on `PD_SW` outputs and level shifting in both AO/SW directions. The SW-to-AO isolation and low-to-high strategies share a dual-rail enable-level-shifter cell placed inside `PD_SW`: its low-side rail is `VDD_SW`, while its high-side output/control rail is always-on `VDD_AO`. IO voltage intent is represented with port supply attributes inside `PD_AO`; the hard pad macro, powered by `VDDIO/VSS`, owns the 1.8/3.3 V conversion, so no core standard-cell LS is inserted at the analog-exempt pad boundary.
 
-## Reproduce power intent
+## Local power-intent source
 
-`de/syn/power_intent.xlsx` is the single power-intent source. Start it from the project-local `upf-gen` template and edit the workbook directly; changing the design does not require generating or modifying a Python overlay. The current case uses:
+`de/syn/power_intent.xlsx` is the local single power-intent source. It is deliberately ignored and is not included in the pushed Git history. Create it from the project-local `upf-gen` template and edit the workbook directly; changing the design does not require generating or modifying a Python overlay. The current local case uses:
 
-- `Supplies`, `Domains`, `PowerStates`, `Isolation_LS`, and `Control` for the two domains, all six rails, both LS directions, isolation, and hierarchical controls.
-- `DomainSupplies` for `PD_AO.extra_supplies_1` through `extra_supplies_3`.
-- `HardMacros` and `MacroPG` for PLL/SRAM/IO macro model attributes, diagram membership, and eight explicit PG-pin bindings; the power switch has no rows in either table.
-- `PortAttributes` and `CellMaps` for IO/analog intent and the two teaching-cell mappings.
+- `Supplies`, `Domains`, and `PowerStates` for the two domains, all six rails, domain controls, the three `PD_AO` additional supplies, and system states.
+- `Isolation_LS` for isolation, both LS directions, supply-side intent, and the two teaching-cell mappings.
+- `HardMacros` for PLL/SRAM/IO macro attributes, category, domain membership, and eight explicit `PIN=NET` PG bindings; the abstract power switch has no macro row.
+- `PortAttributes` for IO and analog port intent.
 
-Generate the complete canonical UPF and diagrams in one strict invocation:
+The workbook has exactly seven sheets: `README`, `Supplies`, `Domains`, `PowerStates`, `Isolation_LS`, `HardMacros`, and `PortAttributes`. The legacy split sheets `Control`, `DomainSupplies`, `MacroPG`, and `CellMaps` are intentionally absent because their data is merged into the owning tables above.
+
+After creating the local workbook, agents generate the complete canonical UPF and diagrams from the repository root with the registered `upf-gen.upf_generate` MCP tool using `input_path=ip/digital/upf_dc_demo/de/syn/power_intent.xlsx`, `output_dir=ip/digital/upf_dc_demo/de/syn/upf`, `basename=upf_dc_demo`, `outputs=all`, and `strict=true`. Human developers running from this module directory can use the equivalent CLI:
 
 ```bash
 PYTHON=${SILICON_CREW_PYTHON:-python3}
@@ -32,7 +34,7 @@ env -u PYTHONHOME -u PYTHONPATH TMPDIR=/tmp \
   --basename upf_dc_demo --strict
 ```
 
-The local workbook and everything under `de/syn/upf/` are intentionally not committed. Install the enhanced `upf-gen` project-locally and copy `assets/power_intent_filled.xlsx` to `de/syn/power_intent.xlsx` before filling a fresh case. There is no `build_power_intent.py` or `postprocess_generated_upf.py`; the workbook contains all required input information.
+The filled workbook remains local-only. Canonical `upf_dc_demo.upf`, Draw.io, Excalidraw, and summary outputs are committed as reviewed handoff collateral. DC's generated `upf_dc_demo_synth.upf`, databases, logs, reports, and netlist remain ignored. Install `soc_build/upf-gen` project-locally as `.agents/skills/upf-gen` and create the local workbook before regenerating the case. There is no `build_power_intent.py` or `postprocess_generated_upf.py`; the compact workbook contains all required input information.
 
 DC loads the complete canonical `upf_dc_demo.upf` after linking the PLL/SRAM/IO PG-aware macro Liberty views. That internal database is used for MV checks, all eight macro PG-path audits, isolation/level-shifter insertion, and `save_upf -full_upf` backend handoff.
 
