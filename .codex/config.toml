@@ -34,6 +34,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 
 [mcp_servers.upf-gen]
+enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/upf-gen/mcp_server.py"]
@@ -65,6 +66,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 7500
 
 [mcp_servers.openroad-mcp]
+enabled = false
 command = "/usr/bin/env"
 cwd = "."
 args = ["-u", "PYTHONHOME", "-u", "PYTHONPATH", "FASTMCP_SHOW_SERVER_BANNER=false", "LOG_LEVEL=ERROR", ".openroad-mcp-venv/bin/openroad-mcp", "--log-level", "ERROR"]
@@ -85,6 +87,6 @@ matcher = "Bash|functions.exec_command|exec_command"
 
 [[hooks.PreToolUse.hooks]]
 type = "command"
-command = '/usr/bin/python3 "$(git rev-parse --show-toplevel)/.codex/hooks/pre_tool_use_policy.py"'
-timeout = 10
+command = 'bash "$(git rev-parse --show-toplevel)/.codex/hooks/pre-tool-use.sh"'
+timeout = 30
 statusMessage = "Checking EDA command policy"

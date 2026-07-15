@@ -84,6 +84,7 @@ def render_codex(manifest: dict[str, Any]) -> str:
         lines.extend(
             [
                 f"[mcp_servers.{server['name']}]",
+                f"enabled = {str(server['default_enabled']).lower()}",
                 f"command = {toml_string(command)}",
                 *cwd_line,
                 f"args = {json.dumps(args, ensure_ascii=False)}",
@@ -95,6 +96,15 @@ def render_codex(manifest: dict[str, Any]) -> str:
 
     lines.extend(
         [
+            "[[hooks.SessionStart]]",
+            'matcher = "startup|resume|clear|compact"',
+            "",
+            "[[hooks.SessionStart.hooks]]",
+            'type = "command"',
+            'command = \'bash "$(git rev-parse --show-toplevel)/.codex/hooks/session-start.sh"\'',
+            "timeout = 30",
+            'statusMessage = "Loading silicon-crew workflow"',
+            "",
             "[[hooks.PreToolUse]]",
             'matcher = "Bash|functions.exec_command|exec_command"',
             "",
