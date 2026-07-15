@@ -54,6 +54,8 @@ def load_manifest() -> dict[str, Any]:
             value = server.get(field)
             if not isinstance(value, int) or value <= 0:
                 raise ValueError(f"server {name}: {field} must be a positive integer")
+        if not isinstance(server.get("default_enabled"), bool):
+            raise ValueError(f"server {name}: default_enabled must be boolean")
         names.add(name)
     return manifest
 
@@ -93,22 +95,13 @@ def render_codex(manifest: dict[str, Any]) -> str:
 
     lines.extend(
         [
-            "[[hooks.SessionStart]]",
-            'matcher = "startup|resume|clear|compact"',
-            "",
-            "[[hooks.SessionStart.hooks]]",
-            'type = "command"',
-            "command = 'bash \"$(git rev-parse --show-toplevel)/.codex/hooks/session-start.sh\"'",
-            "timeout = 30",
-            'statusMessage = "Loading silicon-crew workflow"',
-            "",
             "[[hooks.PreToolUse]]",
             'matcher = "Bash|functions.exec_command|exec_command"',
             "",
             "[[hooks.PreToolUse.hooks]]",
             'type = "command"',
-            "command = '/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/pre_tool_use_policy.py\"'",
-            "timeout = 10",
+            "command = 'bash \"$(git rev-parse --show-toplevel)/.codex/hooks/pre-tool-use.sh\"'",
+            "timeout = 30",
             'statusMessage = "Checking EDA command policy"',
             "",
         ]

@@ -26,6 +26,13 @@ HELPER_RE = re.compile(
     r"(?<![A-Za-z0-9_./-])scripts/(" + "|".join(re.escape(name) for name in HELPERS) + r")"
 )
 
+# Root sessions keep only commonly useful generators enabled. These role-local
+# overrides activate heavyweight servers only for the agent that owns them.
+ROLE_MCP_SERVERS = {
+    "soc-integrator": ("soc-integrate",),
+    "soc-pd-engineer": ("soc-openroad",),
+}
+
 
 def parse_contract(path: Path) -> tuple[str, str, str, str]:
     text = path.read_text(encoding="utf-8")
@@ -60,13 +67,16 @@ def render_markdown(frontmatter: str, body: str) -> str:
 def render_toml(name: str, description: str, body: str) -> str:
     if "'''" in body:
         raise ValueError(f"role body contains unsupported TOML delimiter: {name}")
-    return (
+    rendered = (
         f"name = {json.dumps(name, ensure_ascii=False)}\n"
         f"description = {json.dumps(description, ensure_ascii=False)}\n"
         "developer_instructions = '''\n"
         f"{body.rstrip()}\n"
         "'''\n"
     )
+    for server in ROLE_MCP_SERVERS.get(name, ()):
+        rendered += f"\n[mcp_servers.{server}]\nenabled = true\n"
+    return rendered
 
 
 def expected() -> dict[Path, str]:

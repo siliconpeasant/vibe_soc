@@ -16,6 +16,7 @@ import getpass
 import json
 import os
 import re
+import shutil
 import sys
 import uuid
 from pathlib import Path
@@ -197,6 +198,65 @@ def _make(
     return _run(command, cwd=str(path), timeout=timeout)
 
 
+def _native_evidence_files(path: Path, tool_family: str) -> list[Path]:
+    """Return native log/report/netlist candidates, excluding prior evidence."""
+    patterns = (
+        ("dv/sim/**/sim.log", "dv/sim/**/*.log")
+        if tool_family == "soc_sim"
+        else (
+            "de/syn/**/*.log",
+            "de/syn/**/*.rpt",
+            "de/syn/**/*netlist*.v",
+            "de/syn/**/*netlist*.sv",
+        )
+    )
+    files: set[Path] = set()
+    for pattern in patterns:
+        for candidate in path.glob(pattern):
+            relative = candidate.relative_to(path)
+            if candidate.is_file() and "loop_evidence" not in relative.parts:
+                files.add(candidate)
+    return sorted(files)
+
+
+def _artifact_signatures(paths: list[Path]) -> dict[Path, tuple[int, int]]:
+    return {
+        path: (stat.st_mtime_ns, stat.st_size)
+        for path in paths
+        if (stat := path.stat()).st_size > 0
+    }
+
+
+def _capture_loop_artifacts(
+    path: Path,
+    tool_family: str,
+    run_id: str,
+    output: str,
+    before: dict[Path, tuple[int, int]],
+) -> list[str]:
+    """Capture command output and changed native products under a unique run ID."""
+    base = path / ("dv/sim" if tool_family == "soc_sim" else "de/syn")
+    evidence_dir = base / "loop_evidence" / run_id
+    evidence_dir.mkdir(parents=True, exist_ok=False)
+    primary = evidence_dir / ("sim.log" if tool_family == "soc_sim" else "synth.log")
+    primary.write_text(
+        output.rstrip() + "\n" if output.strip() else "registered command produced no stdout\n",
+        encoding="utf-8",
+    )
+    captured = [primary]
+    for candidate in _native_evidence_files(path, tool_family):
+        stat = candidate.stat()
+        signature = (stat.st_mtime_ns, stat.st_size)
+        if stat.st_size <= 0 or before.get(candidate) == signature:
+            continue
+        relative = candidate.relative_to(path)
+        destination = evidence_dir / "native" / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(candidate, destination)
+        captured.append(destination)
+    return [item.relative_to(path).as_posix() for item in captured]
+
+
 def _make_with_loop_evidence(
     module_dir: str,
     targets: list[str],
@@ -214,6 +274,7 @@ def _make_with_loop_evidence(
             "cannot create loop evidence: resolved RTL/filelist fingerprint is empty"
         )
     run_id = f"{tool_family}-{uuid.uuid4().hex}"
+    before = _artifact_signatures(_native_evidence_files(path, tool_family))
     output = _make(module_dir, targets, variables, timeout)
     final_fingerprint = compute_rtl_fingerprint(path)
     if final_fingerprint != source_fingerprint:
@@ -224,6 +285,9 @@ def _make_with_loop_evidence(
         "run_id": run_id,
         "source_fingerprint": source_fingerprint,
         "tool_family": tool_family,
+        "artifacts": _capture_loop_artifacts(
+            path, tool_family, run_id, str(output), before
+        ),
     }
     return str(output).rstrip() + "\nLOOP_EVIDENCE=" + json.dumps(
         evidence, sort_keys=True
@@ -367,7 +431,7 @@ def soc_sim(
     top_module: str = "",
     fsdb: bool = False,
 ) -> str:
-    """编译并运行指定模块的一次仿真。
+    """编译并运行一次仿真，返回含不可变日志路径的 LOOP_EVIDENCE。
 
     Args:
         module_dir: 包含 Makefile 的模块目录
@@ -475,7 +539,7 @@ def soc_coverage(
 
 @mcp.tool()
 def soc_syn(module_dir: str, rtl_top: str = "", syn_tool: str = "yosys") -> str:
-    """通过项目 Makefile 对指定 RTL 顶层执行综合。
+    """综合指定 RTL 顶层，返回含不可变日志/网表路径的 LOOP_EVIDENCE。
 
     Args:
         module_dir: 包含 Makefile 和 syn 目标的模块目录

@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -297,46 +298,123 @@ def default_work_dir(db_path: Path) -> Path:
     return db_path.parent / "lc_work"
 
 
+def default_tcl_path(db_path: Path, work_dir: Path) -> Path:
+    return work_dir / f"{db_path.stem}.lc.tcl"
+
+
+def reject_path_collisions(paths: dict[str, Path]) -> None:
+    resolved_paths: dict[Path, str] = {}
+    for label, path in paths.items():
+        resolved = path.expanduser().resolve()
+        previous = resolved_paths.get(resolved)
+        if previous is not None:
+            raise ValueError(
+                f"path collision: {label} and {previous} resolve to {resolved}"
+            )
+        resolved_paths[resolved] = label
+
+
+def staging_db_path(db_path: Path) -> Path:
+    return db_path.with_name(f".{db_path.name}.{uuid.uuid4().hex}.tmp.db")
+
+
 def run_lc_shell(lc_shell: str, tcl_path: Path, work_dir: Path) -> None:
     exe = shutil.which(lc_shell) or lc_shell
     work_dir.mkdir(parents=True, exist_ok=True)
     subprocess.run([exe, "-f", str(tcl_path.resolve())], cwd=work_dir, check=True)
 
 
+def run_lc_shell_and_finalize_tcl(
+    lc_shell: str,
+    tcl_path: Path,
+    work_dir: Path,
+    staged_db_path: Path,
+    db_path: Path,
+    lib_path: Path,
+    lib_name: str,
+    *,
+    keep_tcl: bool,
+) -> None:
+    # Cleanup intentionally happens only after lc_shell succeeds. A failed
+    # conversion leaves the exact command file available for diagnosis.
+    run_lc_shell(lc_shell, tcl_path, work_dir)
+    if not staged_db_path.is_file() or staged_db_path.stat().st_size == 0:
+        raise RuntimeError(
+            "lc_shell completed without a non-empty current-run DB output: "
+            f"{staged_db_path}"
+        )
+    staged_db_path.replace(db_path)
+    if keep_tcl:
+        # Preserve a reusable command file that targets the final DB path.
+        # On failure, the untouched Tcl continues to reference the staged path.
+        write_lc_tcl(lib_path, db_path, tcl_path, lib_name)
+        print(f"[LIBDB] Tcl retained: {tcl_path}")
+        return
+    tcl_path.unlink(missing_ok=True)
+    print(f"[LIBDB] Tcl removed after successful conversion: {tcl_path}")
+
+
 def cmd_convert(args: argparse.Namespace) -> int:
     lib_path = Path(args.lib)
     db_path = Path(args.db)
+    work_dir = Path(args.work_dir) if args.work_dir else default_work_dir(db_path)
+    tcl_path = Path(args.tcl) if args.tcl else default_tcl_path(db_path, work_dir)
+    reject_path_collisions(
+        {
+            "--lib": lib_path,
+            "--db": db_path,
+            "--tcl": tcl_path,
+        }
+    )
     if not lib_path.is_file():
         raise FileNotFoundError(lib_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     lib_name = args.library_name or parse_lib_name(lib_path)
-    tcl_path = Path(args.tcl) if args.tcl else db_path.with_suffix(".lc.tcl")
-    work_dir = Path(args.work_dir) if args.work_dir else default_work_dir(db_path)
-    write_lc_tcl(lib_path, db_path, tcl_path, lib_name)
+    run_db_path = db_path if args.no_run else staging_db_path(db_path)
+    write_lc_tcl(lib_path, run_db_path, tcl_path, lib_name)
     print(f"[LIBDB] Tcl:  {tcl_path}")
     print(f"[LIBDB] Work: {work_dir}")
     if args.no_run:
         print("[LIBDB] --no-run set; not invoking lc_shell")
         return 0
-    run_lc_shell(args.lc_shell, tcl_path, work_dir)
+    run_lc_shell_and_finalize_tcl(
+        args.lc_shell,
+        tcl_path,
+        work_dir,
+        run_db_path,
+        db_path,
+        lib_path,
+        lib_name,
+        keep_tcl=args.keep_tcl,
+    )
     print(f"[LIBDB] DB:   {db_path}")
     return 0
 
 
 def cmd_stub(args: argparse.Namespace) -> int:
     top_v = Path(args.top_v)
+    lib_path = Path(args.lib)
+    db_path = Path(args.db)
+    work_dir = Path(args.work_dir) if args.work_dir else default_work_dir(db_path)
+    tcl_path = Path(args.tcl) if args.tcl else default_tcl_path(db_path, work_dir)
+    reject_path_collisions(
+        {
+            "--top-v": top_v,
+            "--lib": lib_path,
+            "--db": db_path,
+            "--tcl": tcl_path,
+        }
+    )
     if not top_v.is_file():
         raise FileNotFoundError(top_v)
     module, ports, warnings = parse_verilog_ports(top_v, args.top)
-    lib_path = Path(args.lib)
-    db_path = Path(args.db)
     lib_path.parent.mkdir(parents=True, exist_ok=True)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     library_name = args.library_name or f"{module}_stub_lib"
     lib_path.write_text(generate_stub_lib(library_name, module, ports), encoding="utf-8")
-    tcl_path = Path(args.tcl) if args.tcl else db_path.with_suffix(".lc.tcl")
-    work_dir = Path(args.work_dir) if args.work_dir else default_work_dir(db_path)
-    write_lc_tcl(lib_path, db_path, tcl_path, liberty_name(library_name))
+    lib_name = liberty_name(library_name)
+    run_db_path = db_path if args.no_run else staging_db_path(db_path)
+    write_lc_tcl(lib_path, run_db_path, tcl_path, lib_name)
     print(f"[LIBDB] Parsed module: {module}")
     print(f"[LIBDB] Ports: {len(ports)}")
     for warning in warnings:
@@ -347,7 +425,16 @@ def cmd_stub(args: argparse.Namespace) -> int:
     if args.no_run:
         print("[LIBDB] --no-run set; not invoking lc_shell")
         return 0
-    run_lc_shell(args.lc_shell, tcl_path, work_dir)
+    run_lc_shell_and_finalize_tcl(
+        args.lc_shell,
+        tcl_path,
+        work_dir,
+        run_db_path,
+        db_path,
+        lib_path,
+        lib_name,
+        keep_tcl=args.keep_tcl,
+    )
     print(f"[LIBDB] DB:      {db_path}")
     return 0
 
@@ -361,10 +448,15 @@ def main() -> int:
     convert.add_argument("--lc-shell", default=argparse.SUPPRESS)
     convert.add_argument("--lib", required=True)
     convert.add_argument("--db", required=True)
-    convert.add_argument("--tcl")
+    convert.add_argument("--tcl", help="override the temporary Library Compiler Tcl path")
     convert.add_argument("--work-dir")
     convert.add_argument("--library-name")
     convert.add_argument("--no-run", action="store_true")
+    convert.add_argument(
+        "--keep-tcl",
+        action="store_true",
+        help="retain the Library Compiler Tcl after a successful conversion",
+    )
     convert.set_defaults(func=cmd_convert)
 
     stub = sub.add_parser("stub", help="Generate stub Liberty from a Verilog top module and optionally compile to .db")
@@ -373,10 +465,15 @@ def main() -> int:
     stub.add_argument("--top")
     stub.add_argument("--lib", required=True)
     stub.add_argument("--db", required=True)
-    stub.add_argument("--tcl")
+    stub.add_argument("--tcl", help="override the temporary Library Compiler Tcl path")
     stub.add_argument("--work-dir")
     stub.add_argument("--library-name")
     stub.add_argument("--no-run", action="store_true")
+    stub.add_argument(
+        "--keep-tcl",
+        action="store_true",
+        help="retain the Library Compiler Tcl after a successful conversion",
+    )
     stub.set_defaults(func=cmd_stub)
 
     args = parser.parse_args()

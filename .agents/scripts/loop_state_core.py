@@ -388,8 +388,10 @@ def _fingerprint_label(path: Path, repo: Path) -> str:
         return "external/" + path.name
 
 
-def compute_rtl_fingerprint(workspace: Path) -> str | None:
-    """Hash the resolved compile manifest and every source it consumes."""
+def _compute_rtl_fingerprint(
+    workspace: Path, *, include_generated_manifest: bool
+) -> str | None:
+    """Hash the resolved compile sources with optional legacy manifest bytes."""
     workspace = workspace.expanduser().resolve()
     repo = find_repo_root(workspace)
     rtl_dir = workspace / "de" / "rtl"
@@ -401,11 +403,18 @@ def compute_rtl_fingerprint(workspace: Path) -> str | None:
             if path.is_file() and path.suffix.lower() in RTL_FINGERPRINT_SUFFIXES
         )
     seen: set[Path] = set()
-    for manifest in (
-        workspace / "de" / "run" / "rtl.f",
-        rtl_dir / "filelist.f",
-    ):
-        material.update(_manifest_material(manifest, repo, seen))
+    source_manifest = rtl_dir / "filelist.f"
+    material.update(_manifest_material(source_manifest, repo, seen))
+
+    # de/run/rtl.f is a generated resolver output.  It may reveal composed
+    # child-IP sources that are not expressible by the local filelist alone,
+    # but its presence and absolute-path spelling must not change the source
+    # fingerprint.  Hash the sources it resolves, not the transient manifest.
+    resolved_manifest = workspace / "de" / "run" / "rtl.f"
+    resolved_material = _manifest_material(resolved_manifest, repo, seen)
+    if not include_generated_manifest:
+        resolved_material.discard(resolved_manifest.resolve())
+    material.update(resolved_material)
     files = sorted(
         (path for path in material if path.is_file()),
         key=lambda path: _fingerprint_label(path, repo),
@@ -423,6 +432,11 @@ def compute_rtl_fingerprint(workspace: Path) -> str | None:
         digest.update(data)
         digest.update(b"\0")
     return digest.hexdigest()
+
+
+def compute_rtl_fingerprint(workspace: Path) -> str | None:
+    """Hash stable source manifests and every RTL source they resolve."""
+    return _compute_rtl_fingerprint(workspace, include_generated_manifest=False)
 
 
 def _tool_matches(tool: str, family: str) -> bool:
@@ -1309,11 +1323,17 @@ def _run_binding(
             f"{stage} closure requires --source-fingerprint from the MCP run"
         )
     claimed = source_fingerprint or current
+    normalized_legacy_fingerprint = False
     if claimed != current:
-        raise ValueError(
-            f"{stage} MCP run consumed source fingerprint {claimed}, "
-            f"but current source fingerprint is {current}"
+        legacy_current = _compute_rtl_fingerprint(
+            workspace, include_generated_manifest=True
         )
+        if claimed != legacy_current:
+            raise ValueError(
+                f"{stage} MCP run consumed source fingerprint {claimed}, "
+                f"but current source fingerprint is {current}"
+            )
+        normalized_legacy_fingerprint = True
     if not run_id and not legacy:
         raise ValueError(f"{stage} closure requires --run-id from the MCP run")
     tool_family = "soc_sim" if stage == "verif" else "soc_syn"
@@ -1330,10 +1350,17 @@ def _run_binding(
     ]
     evidence = {
         "run_id": run_id or "legacy-unavailable",
-        "source_fingerprint": claimed,
+        "source_fingerprint": current,
         "tool_family": matching[0] if matching else tool_family,
         "recorded_at": now(),
     }
+    if normalized_legacy_fingerprint:
+        evidence.update(
+            {
+                "reported_source_fingerprint": claimed,
+                "fingerprint_normalization": "generated_manifest_v1",
+            }
+        )
     return current, evidence, legacy
 
 
@@ -1778,6 +1805,59 @@ def _compact_pipeline(pipeline: dict, current_fingerprint: str | None) -> dict:
     return stages
 
 
+def _compact_issue_actions(issues: list[dict]) -> list[dict]:
+    """Turn validation failures into bounded, executable recovery actions."""
+    actions: list[dict] = []
+    seen: set[tuple[str, str, str]] = set()
+    evidence_terms = (
+        "artifact",
+        "digest",
+        "fingerprint",
+        "run_id",
+        "source_fingerprint",
+        "check",
+        "evidence",
+    )
+    for issue in issues:
+        if issue.get("severity") != "error":
+            continue
+        stage = str(issue.get("stage") or "pipeline")
+        message = " ".join(str(issue.get("message") or "invalid state").split())
+        action = (
+            "repair_evidence"
+            if stage in STAGE_ORDER and any(term in message.lower() for term in evidence_terms)
+            else "repair_state"
+        )
+        reason = message[:240]
+        key = (stage, action, reason)
+        if key in seen:
+            continue
+        seen.add(key)
+        actions.append({"stage": stage, "action": action, "reason": reason})
+        if len(actions) == 6:
+            break
+    return actions
+
+
+def _merge_compact_actions(*groups: list[dict]) -> list[dict]:
+    merged: list[dict] = []
+    seen: set[tuple[str, str, str]] = set()
+    for group in groups:
+        for action in group:
+            key = (
+                str(action.get("stage") or "pipeline"),
+                str(action.get("action") or "repair_state"),
+                str(action.get("reason") or ""),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            merged.append(action)
+            if len(merged) == 8:
+                return merged
+    return merged
+
+
 def compact_state_summary(
     state: dict,
     workspace: Path,
@@ -1818,7 +1898,16 @@ def compact_state_summary(
                 "stages": _compact_pipeline(
                     module_state.get("pipeline", {}), current_fingerprint
                 ),
-                "next_actions": module_state.get("next_actions") or [],
+                "next_actions": _merge_compact_actions(
+                    _compact_issue_actions(
+                        [
+                            issue
+                            for issue in errors
+                            if not issue.get("module") or issue.get("module") == module
+                        ]
+                    ),
+                    module_state.get("next_actions") or [],
+                ),
             }
             for module, module_state in sorted(state.get("modules", {}).items())
         }
@@ -1827,7 +1916,9 @@ def compact_state_summary(
         summary["stages"] = _compact_pipeline(
             state.get("pipeline", {}), current_fingerprint
         )
-        summary["next_actions"] = state.get("next_actions") or []
+        summary["next_actions"] = _merge_compact_actions(
+            _compact_issue_actions(errors), state.get("next_actions") or []
+        )
     return summary
 
 

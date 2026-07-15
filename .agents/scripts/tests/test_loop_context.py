@@ -60,10 +60,12 @@ class LoopContextCase(unittest.TestCase):
         impacts: set[str] | None = None,
         review_result: str | None = None,
         risk_checks_passed: bool = False,
+        scope: str = "auto",
     ) -> dict:
         return loop_context.build_context(
             self.workspace,
             requested_mode=mode,
+            scope=scope,
             base_ref="HEAD",
             changed_paths=paths,
             impacts=impacts or set(),
@@ -78,6 +80,11 @@ class LoopContextCase(unittest.TestCase):
         self.assertFalse(result["close_pipeline"])
         self.assertEqual(result["review_mode"], "not_run")
         self.assertNotIn("soc_syn", result["required_checks"])
+        self.assertNotIn("soc_comp", result["required_checks"])
+        self.assertIn("targeted_soc_sim_or_soc_comp", result["required_checks"])
+        actions = " ".join(result["next_actions"])
+        self.assertIn("otherwise soc_comp", actions)
+        self.assertNotIn("compile, and simulation", actions)
         self.assertLess(len(json.dumps(result)), 4096)
 
     def test_filelist_escalates_to_merge(self) -> None:
@@ -122,11 +129,61 @@ class LoopContextCase(unittest.TestCase):
         self.assertIn("interface", new_module["detected_impacts"])
         self.assertEqual(multi["mode"], "signoff")
 
+    def test_discovered_unrelated_workspace_changes_do_not_escalate_dev(self) -> None:
+        other = self.repo / "chip" / "top" / "dv" / "tb" / "tb_top.sv"
+        write(other, "module tb_top; endmodule\n")
+        result = loop_context.build_context(
+            self.workspace,
+            requested_mode="dev",
+            base_ref="HEAD",
+        )
+        self.assertEqual(result["mode"], "dev")
+        self.assertEqual(result["scope"], "workspace")
+        self.assertEqual(result["changed_paths"], [])
+        self.assertEqual(result["ignored_path_count"], 1)
+        self.assertFalse(result["pipeline_governed"])
+
+    def test_delivery_scope_still_detects_cross_workspace_changes(self) -> None:
+        result = self.context(
+            [
+                "ip/digital/demo/de/rtl/demo.sv",
+                "ip/digital/other/de/rtl/other.sv",
+            ],
+            mode="merge",
+        )
+        self.assertEqual(result["scope"], "repo")
+        self.assertEqual(result["mode"], "signoff")
+
+    def test_test_manifest_is_lightweight_and_does_not_reopen_pipeline(self) -> None:
+        result = self.context(["ip/digital/demo/dv/tests/tests.yml"])
+        self.assertFalse(result["pipeline_governed"])
+        self.assertEqual(result["mode"], "dev")
+        self.assertEqual(result["required_checks"], ["closest_non_eda_validation"])
+        self.assertIn("lightweight verification manifest", result["reasons"][0])
+
+    def test_testbench_only_dev_runs_sim_without_rtl_checks(self) -> None:
+        result = self.context(["ip/digital/demo/dv/tb/tb_demo.sv"])
+        self.assertEqual(result["mode"], "dev")
+        self.assertEqual(result["required_checks"], ["soc_sim", "sim_log"])
+        self.assertNotIn("soc_lint", result["required_checks"])
+        self.assertIn("start or keep verif in_progress", result["next_actions"])
+        self.assertFalse(
+            any("stale delivery stages" in item for item in result["next_actions"])
+        )
+
+    def test_synthesis_script_only_dev_runs_synthesis_check(self) -> None:
+        result = self.context(["ip/digital/demo/de/syn/setup.tcl"])
+        self.assertEqual(result["mode"], "dev")
+        self.assertEqual(result["owner"], "soc-synthesis-engineer")
+        self.assertEqual(result["required_checks"], ["soc_syn"])
+        self.assertIn("start or keep syn in_progress", result["next_actions"])
+
     def test_requested_mode_is_a_floor(self) -> None:
         result = self.context(
             ["ip/digital/demo/de/rtl/demo.sv"], mode="merge"
         )
         self.assertEqual(result["mode"], "merge")
+        self.assertEqual(result["scope"], "repo")
 
     def test_loop_mode_environment_sets_the_floor_for_auto(self) -> None:
         with patch.dict("os.environ", {"LOOP_MODE": "merge"}):
@@ -151,7 +208,7 @@ class LoopContextCase(unittest.TestCase):
         self.assertEqual(result["mode"], "dev")
         self.assertEqual(result["affected_stages"], ["doc"])
         self.assertEqual(result["required_checks"], ["doc_delta"])
-        self.assertEqual(result["rules"], [".agents/rules/00_loop_modes.md"])
+        self.assertEqual(result["rules"], [])
         self.assertIn("start or keep doc in_progress", result["next_actions"])
 
     def test_write_uses_module_de_run_and_refuses_repo_root(self) -> None:
@@ -179,12 +236,11 @@ class LoopContextCase(unittest.TestCase):
             "README.md",
             "--write",
         ]
-        with (
-            patch.object(sys, "argv", root_args),
-            contextlib.redirect_stdout(io.StringIO()),
-            contextlib.redirect_stderr(io.StringIO()),
-        ):
-            self.assertEqual(loop_context.main(), 1)
+        with patch.object(sys, "argv", root_args):
+            with contextlib.redirect_stdout(
+                io.StringIO()
+            ), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(loop_context.main(), 1)
         self.assertFalse((self.repo / "de").exists())
 
     def close_pipeline(self) -> None:

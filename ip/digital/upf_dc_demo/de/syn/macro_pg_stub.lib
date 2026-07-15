@@ -1,0 +1,211 @@
+/*
+ * Teaching-only black-box library for PLL, SRAM, and pad integration.
+ * It provides interface direction and PG-pin semantics only.  It contains no
+ * characterized timing, power, area, noise, ESD, or physical information and
+ * must never be used as signoff evidence.
+ */
+library (upf_dc_demo_macro_pg_stub) {
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1mA";
+  pulling_resistance_unit : "1kohm";
+  leakage_power_unit : "1nW";
+  capacitive_load_unit (1, pf);
+  nom_process : 1.0;
+  nom_temperature : 25.0;
+  nom_voltage : 1.8;
+  voltage_map (VDD_PLL, 1.8);
+  voltage_map (VDD_MEM, 1.8);
+  voltage_map (VDDIO, 3.3);
+  voltage_map (VSS, 0.0);
+
+  operating_conditions (stub_1v8) {
+    process : 1.0;
+    temperature : 25.0;
+    voltage : 1.8;
+    tree_type : balanced_tree;
+  }
+  default_operating_conditions : stub_1v8;
+
+  type (bus_4_3_0) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 4;
+    bit_from : 3;
+    bit_to : 0;
+    downto : true;
+  }
+
+  type (bus_8_7_0) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 8;
+    bit_from : 7;
+    bit_to : 0;
+    downto : true;
+  }
+
+  cell (upf_dc_demo_pll_macro) {
+    area : 0.0;
+    dont_use : true;
+    is_macro_cell : true;
+
+    pg_pin (VDD) {
+      pg_type : primary_power;
+      voltage_name : VDD_PLL;
+    }
+    pg_pin (VSS) {
+      pg_type : primary_ground;
+      voltage_name : VSS;
+    }
+
+    pin (ref_clk_i) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (rst_n) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (enable_i) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (pll_clk_o) {
+      direction : output;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (locked_o) {
+      direction : output;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+  }
+
+  cell (upf_dc_demo_sram_16x8) {
+    area : 0.0;
+    dont_use : true;
+    is_macro_cell : true;
+
+    pg_pin (VDD) {
+      pg_type : primary_power;
+      voltage_name : VDD_MEM;
+    }
+    pg_pin (VSS) {
+      pg_type : primary_ground;
+      voltage_name : VSS;
+    }
+
+    pin (clk) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (rst_n) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (cs_i) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (we_i) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    bus (addr_i) {
+      bus_type : bus_4_3_0;
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    bus (wdata_i) {
+      bus_type : bus_8_7_0;
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    bus (rdata_o) {
+      bus_type : bus_8_7_0;
+      direction : output;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+    pin (rvalid_o) {
+      direction : output;
+      related_power_pin : VDD;
+      related_ground_pin : VSS;
+    }
+  }
+
+  cell (upf_dc_demo_pad_in) {
+    area : 0.0;
+    dont_use : true;
+    is_macro_cell : true;
+
+    pg_pin (VDDIO) {
+      pg_type : primary_power;
+      voltage_name : VDDIO;
+    }
+    pg_pin (VSSIO) {
+      pg_type : primary_ground;
+      voltage_name : VSS;
+    }
+
+    pin (pad_i) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDDIO;
+      related_ground_pin : VSSIO;
+    }
+    pin (core_o) {
+      direction : output;
+      related_power_pin : VDDIO;
+      related_ground_pin : VSSIO;
+    }
+  }
+
+  cell (upf_dc_demo_pad_out) {
+    area : 0.0;
+    dont_use : true;
+    is_macro_cell : true;
+
+    pg_pin (VDDIO) {
+      pg_type : primary_power;
+      voltage_name : VDDIO;
+    }
+    pg_pin (VSSIO) {
+      pg_type : primary_ground;
+      voltage_name : VSS;
+    }
+
+    pin (core_i) {
+      direction : input;
+      capacitance : 0.0;
+      related_power_pin : VDDIO;
+      related_ground_pin : VSSIO;
+    }
+    pin (pad_o) {
+      direction : output;
+      related_power_pin : VDDIO;
+      related_ground_pin : VSSIO;
+    }
+  }
+}

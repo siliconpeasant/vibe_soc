@@ -104,12 +104,20 @@ OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug �
 每个新任务必须从最新默认分支创建唯一 fresh branch。已经合并过 PR 的分支禁止复用，继续向旧分支 push 会被 `auto-pr-automerge` 主动拒绝：
 
 ```bash
+# 当前 checkout 干净时
 scripts/prepare_task_branch.sh <task-slug>
+
+# 当前 checkout 有未完成工作时，直接创建隔离 worktree
+scripts/prepare_task_worktree.sh <task-slug>
+# 按输出的 Start with 路径进入新 worktree
+
 # 完成修改和提交后
 git push -u origin "$(git branch --show-current)"
 ```
 
-脚本生成 `codex/<task>-<UTC timestamp>` 分支。push 后 workflow 会自动创建 PR，并以 squash 方式启用 GitHub auto-merge。`auto-pr-automerge` 只接受同仓库的 `codex/**`、`feature/**`、`fix/**` 分支；手动触发也不能把 Fork 或其他前缀送入自动合并路径。
+两个准备脚本都生成 `codex/<task>-<UTC timestamp>` 分支；worktree 版本不会改动或要求清理当前 checkout。分支合入默认分支后，可用 `scripts/cleanup_task_worktree.sh <path>` 安全回收；它只删除干净、已有 ancestor 或 GitHub merged-PR 证据的本地任务分支（兼容 squash merge），不删除远端分支。
+
+push 后 workflow 会自动创建 PR，并以 squash 方式启用 GitHub auto-merge。`auto-pr-automerge` 只接受同仓库的 `codex/**`、`feature/**`、`fix/**` 分支；手动触发也不能把 Fork 或其他前缀送入自动合并路径。
 
 要让内部 PR 无需逐次批准即可触发 `pull_request` CI，需要创建一个仓库专用 GitHub App：
 

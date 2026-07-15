@@ -2,6 +2,7 @@
 # Edit the manifest, then run: python3 scripts/sync_mcp_configs.py --write
 
 [mcp_servers.soc-build]
+enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-build/mcp_server.py"]
@@ -9,6 +10,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 43200
 
 [mcp_servers.soc-integrate]
+enabled = false
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-integrate/mcp_server.py"]
@@ -16,6 +18,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 
 [mcp_servers.yml2reg]
+enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/yml2reg/mcp_server.py"]
@@ -23,6 +26,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 
 [mcp_servers.excel-yml-gen]
+enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/excel-yml-gen/mcp_server.py"]
@@ -37,6 +41,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 
 [mcp_servers.crg-req-to-design]
+enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/crg-req-to-design/mcp_server.py"]
@@ -44,6 +49,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 
 [mcp_servers.cr-tree-diag-gen]
+enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/cr-tree-diag-gen/mcp_server.py"]
@@ -51,6 +57,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 
 [mcp_servers.soc-openroad]
+enabled = false
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-openroad/mcp_server.py"]

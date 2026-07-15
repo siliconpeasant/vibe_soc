@@ -26,11 +26,14 @@ class LoopContractSyncTest(unittest.TestCase):
         pd_skill = (ROOT / ".agents/skills/soc-openroad/SKILL.md").read_text(encoding="utf-8")
         state_rule = (ROOT / ".agents/rules/05_pipeline_state.md").read_text(encoding="utf-8")
         mode_rule = (ROOT / ".agents/rules/00_loop_modes.md").read_text(encoding="utf-8")
-        self.assertIn("Make examples below are for human developers", agents)
-        self.assertIn("Classify ownership after mode routing", loop)
-        self.assertIn("dev=not_run", loop)
-        self.assertIn("dev -> merge -> signoff", mode_rule)
+        self.assertIn("prepare_task_worktree.sh", agents)
+        self.assertIn("do not run both by default", agents)
+        self.assertIn("fewest useful tool loops", loop)
+        self.assertIn("compact state", loop)
+        for mode in ("dev", "merge", "signoff"):
+            self.assertIn(mode, mode_rule)
         self.assertIn("--compact", state_rule)
+        self.assertIn("immutable artifact paths", state_rule)
         self.assertIn("PD handoff summary", pd_skill)
         self.assertNotIn("CLAUDE_PLUGIN_ROOT", state_rule)
 

@@ -1,0 +1,28 @@
+de/run/
+dv/sim/
+dv/cov/
+.pipeline_state.lock
+*.vcd
+*.vpd
+*.log
+de/syn/macro_pg_stub.db
+de/syn/macro_pg_stub.lc.tcl
+de/syn/macro_pg_lc_work/
+de/syn/sky130hd_teaching_*.lib
+de/syn/sky130hd_teaching_*.db
+de/syn/sky130hd_teaching_*.lc.tcl
+de/syn/teaching_*_lc_work/
+de/syn/upf_dc_demo_synth.sdc
+
+# Keep the filled workbook local-only. Track only the reviewed canonical
+# upf-gen handoff; DC's saved full-UPF and other synthesis outputs stay transient.
+de/syn/power_intent.xlsx
+!de/syn/upf/
+de/syn/upf/*
+!de/syn/upf/upf_dc_demo.upf
+!de/syn/upf/upf_dc_demo.drawio
+!de/syn/upf/upf_dc_demo.excalidraw
+!de/syn/upf/upf_dc_demo.summary.md
+!de/syn/dc_upf_synth.tcl
+!de/syn/macro_pg_stub.lib
+!de/syn/build_teaching_mv_lib.py
