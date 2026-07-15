@@ -2234,14 +2234,15 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_flash_init_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=25_000_000"
+      ]
     },
     "chip_sw_flash_rma_unlocked_test": {
-      "compile_opts": [
-        "+define+DISABLE_ROM_INTEGRITY_CHECK"
-      ],
+      "compile_opts": [],
       "kind": "chip_sw",
       "name": "chip_sw_flash_rma_unlocked_test",
       "provenance": {
@@ -2266,9 +2267,13 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_flash_rma_unlocked_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+flash_program_latency=5",
+        "+sw_test_timeout_ns=150_000_000"
+      ]
     },
     "chip_sw_flash_scrambling_smoketest": {
       "compile_opts": [
@@ -2371,7 +2376,7 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_gpio_vseq",
       "uvm_test": "chip_base_test",
       "waves": "fsdb"
     },
@@ -2469,7 +2474,10 @@
       "top_module": "tb",
       "uvm_sequence": "chip_sw_base_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=50_000_000"
+      ]
     },
     "chip_sw_hmac_multistream_functest": {
       "compile_opts": [
@@ -2501,7 +2509,10 @@
       "top_module": "tb",
       "uvm_sequence": "chip_sw_base_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=50_000_000"
+      ]
     },
     "chip_sw_hmac_smoketest": {
       "compile_opts": [
@@ -2564,7 +2575,7 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_i2c_device_tx_rx_vseq",
       "uvm_test": "chip_base_test",
       "waves": "fsdb"
     },
@@ -2596,9 +2607,12 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_i2c_host_tx_rx_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+i2c_idx=0"
+      ]
     },
     "chip_sw_inject_scramble_seed": {
       "compile_opts": [
@@ -2660,9 +2674,12 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_keymgr_key_derivation_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=20_000_000"
+      ]
     },
     "chip_sw_keymgr_sideload_aes_test": {
       "compile_opts": [
@@ -2692,9 +2709,12 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_keymgr_sideload_aes_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=20_000_000"
+      ]
     },
     "chip_sw_keymgr_sideload_kmac_test": {
       "compile_opts": [
@@ -2724,9 +2744,12 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_keymgr_sideload_kmac_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=20_000_000"
+      ]
     },
     "chip_sw_keymgr_sideload_otbn_test": {
       "compile_opts": [
@@ -2758,7 +2781,10 @@
       "top_module": "tb",
       "uvm_sequence": "chip_sw_base_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=20_000_000"
+      ]
     },
     "chip_sw_kmac_app_rom_test_sim_dv": {
       "compile_opts": [
@@ -2986,9 +3012,7 @@
       "waves": "fsdb"
     },
     "chip_sw_lc_ctrl_program_error": {
-      "compile_opts": [
-        "+define+DISABLE_ROM_INTEGRITY_CHECK"
-      ],
+      "compile_opts": [],
       "kind": "chip_sw",
       "name": "chip_sw_lc_ctrl_program_error",
       "provenance": {
@@ -3013,9 +3037,13 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_lc_ctrl_program_error_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+en_scb=0",
+        "+bypass_alert_ready_to_end_check=1"
+      ]
     },
     "chip_sw_lc_ctrl_scrap_test": {
       "compile_opts": [
@@ -3050,9 +3078,7 @@
       "waves": "fsdb"
     },
     "chip_sw_lc_ctrl_transition_test": {
-      "compile_opts": [
-        "+define+DISABLE_ROM_INTEGRITY_CHECK"
-      ],
+      "compile_opts": [],
       "kind": "chip_sw",
       "name": "chip_sw_lc_ctrl_transition_test",
       "provenance": {
@@ -3077,14 +3103,12 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_lc_ctrl_transition_vseq",
       "uvm_test": "chip_base_test",
       "waves": "fsdb"
     },
     "chip_sw_lc_ctrl_volatile_raw_unlock_test": {
-      "compile_opts": [
-        "+define+DISABLE_ROM_INTEGRITY_CHECK"
-      ],
+      "compile_opts": [],
       "kind": "chip_sw",
       "name": "chip_sw_lc_ctrl_volatile_raw_unlock_test",
       "provenance": {
@@ -3109,9 +3133,13 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_lc_volatile_raw_unlock_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+use_otp_image=OtpTypeLcStRaw",
+        "+exp_volatile_raw_unlock_en=0"
+      ]
     },
     "chip_sw_lc_walkthrough_test": {
       "compile_opts": [
@@ -3146,9 +3174,7 @@
       "waves": "fsdb"
     },
     "chip_sw_lc_walkthrough_testunlocks_test": {
-      "compile_opts": [
-        "+define+DISABLE_ROM_INTEGRITY_CHECK"
-      ],
+      "compile_opts": [],
       "kind": "chip_sw",
       "name": "chip_sw_lc_walkthrough_testunlocks_test",
       "provenance": {
@@ -3173,9 +3199,13 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_lc_walkthrough_testunlocks_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+use_otp_image=OtpTypeLcStRaw",
+        "+dest_dec_state=DecLcStTestUnlock7"
+      ]
     },
     "chip_sw_otbn_ecdsa_op_irq_test": {
       "compile_opts": [
@@ -3207,7 +3237,11 @@
       "top_module": "tb",
       "uvm_sequence": "chip_sw_base_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=28_000_000",
+        "+rng_srate_value=30"
+      ]
     },
     "chip_sw_otbn_mem_scramble_test": {
       "compile_opts": [
@@ -3239,7 +3273,12 @@
       "top_module": "tb",
       "uvm_sequence": "chip_sw_base_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=15_000_000",
+        "+en_scb_tl_err_chk=0",
+        "+bypass_alert_ready_to_end_check=1"
+      ]
     },
     "chip_sw_otbn_randomness_test": {
       "compile_opts": [
@@ -3271,7 +3310,11 @@
       "top_module": "tb",
       "uvm_sequence": "chip_sw_base_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+sw_test_timeout_ns=18_000_000",
+        "+rng_srate_value=30"
+      ]
     },
     "chip_sw_otbn_smoketest": {
       "compile_opts": [
