@@ -38,6 +38,29 @@ class McpRuntimeSyncTest(unittest.TestCase):
         self.assertGreaterEqual(soc_build["tool_timeout_sec"], 43200)
         openroad = next(server for server in manifest["servers"] if server["name"] == "soc-openroad")
         self.assertGreaterEqual(openroad["tool_timeout_sec"], 7200)
+        defaults = {server["name"]: server["default_enabled"] for server in manifest["servers"]}
+        self.assertTrue(defaults["soc-build"])
+        self.assertFalse(defaults["soc-integrate"])
+        self.assertFalse(defaults["soc-openroad"])
+
+    def test_codex_config_is_lazy_and_has_no_session_injection(self) -> None:
+        config = (ROOT / ".codex/config.toml").read_text(encoding="utf-8")
+        self.assertNotIn("SessionStart", config)
+        self.assertIn("pre-tool-use.sh", config)
+        self.assertRegex(
+            config,
+            r"\[mcp_servers\.soc-integrate\]\nenabled = false",
+        )
+        self.assertRegex(
+            config,
+            r"\[mcp_servers\.soc-openroad\]\nenabled = false",
+        )
+
+    def test_heavy_servers_are_enabled_only_in_owner_profiles(self) -> None:
+        integrator = (ROOT / ".codex/agents/soc-integrator.toml").read_text(encoding="utf-8")
+        pd = (ROOT / ".codex/agents/soc-pd-engineer.toml").read_text(encoding="utf-8")
+        self.assertIn("[mcp_servers.soc-integrate]\nenabled = true", integrator)
+        self.assertIn("[mcp_servers.soc-openroad]\nenabled = true", pd)
 
     def test_generated_shell_is_posix_parseable(self) -> None:
         for content in self.sync.expected_runtime_files().values():

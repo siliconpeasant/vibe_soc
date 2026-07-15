@@ -124,6 +124,42 @@ def affected_stages(paths: list[str]) -> list[str]:
     return [stage for stage in STAGE_ORDER if stage in stages]
 
 
+def _workspace_paths(
+    workspace: Path,
+    repo: Path,
+    paths: list[str],
+) -> tuple[list[str], list[str]]:
+    """Split repo changes into paths owned by one module workspace and the rest."""
+    if workspace == repo:
+        return paths, []
+    prefix = workspace.relative_to(repo).as_posix().rstrip("/") + "/"
+    selected = [path for path in paths if path.startswith(prefix)]
+    ignored = [path for path in paths if not path.startswith(prefix)]
+    return selected, ignored
+
+
+def _resolve_scope(
+    requested_scope: str,
+    workspace: Path,
+    repo: Path,
+    requested_mode: str,
+    explicit_paths: list[str] | None,
+) -> str:
+    if requested_scope not in {"auto", "workspace", "repo"}:
+        raise ValueError(f"invalid loop scope: {requested_scope}")
+    if requested_scope != "auto":
+        return requested_scope
+    if workspace == repo or requested_mode in {"merge", "signoff"}:
+        return "repo"
+    if explicit_paths is not None:
+        prefix = workspace.relative_to(repo).as_posix().rstrip("/") + "/"
+        if any(not path.startswith(prefix) for path in explicit_paths):
+            # An explicit cross-workspace list is task intent, unlike unrelated
+            # changes discovered in a reused or dirty checkout.
+            return "repo"
+    return "workspace"
+
+
 def _matches(path: str, patterns: list[str]) -> bool:
     return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
 
@@ -220,6 +256,7 @@ def load_policy(path: Path) -> dict:
         raise ValueError("loop policy is missing a mode contract")
     required_routing = {
         "material_globs",
+        "lightweight_globs",
         "merge_globs",
         "signoff_globs",
         "signoff_impacts",
@@ -238,21 +275,33 @@ def route_mode(
     routing = policy["routing"]
     detected = "dev"
     reasons: list[str] = []
-    affected = sorted({item for path in paths if (item := module_workspace(path))})
-    material = any(_matches(path, routing["material_globs"]) for path in paths)
+    material_paths = [path for path in paths if _matches(path, routing["material_globs"])]
+    pipeline_paths = [
+        path
+        for path in material_paths
+        if not _matches(path, routing["lightweight_globs"])
+    ]
+    affected = sorted(
+        {item for path in pipeline_paths if (item := module_workspace(path))}
+    )
+    material = bool(pipeline_paths)
 
-    signoff_paths = [path for path in paths if _matches(path, routing["signoff_globs"])]
-    merge_paths = [path for path in paths if _matches(path, routing["merge_globs"])]
+    signoff_paths = [
+        path for path in pipeline_paths if _matches(path, routing["signoff_globs"])
+    ]
+    merge_paths = [
+        path for path in pipeline_paths if _matches(path, routing["merge_globs"])
+    ]
     explicit_signoff = sorted(set(impacts) & set(routing["signoff_impacts"]))
     semantic_signoff = sorted(set(impacts) & {"clock/reset"})
 
-    if len(affected) > 1:
+    if material and len(affected) > 1:
         detected = "signoff"
         reasons.append(f"multiple module workspaces changed: {', '.join(affected)}")
     if signoff_paths:
         detected = "signoff"
         reasons.append(f"signoff-sensitive paths: {', '.join(signoff_paths[:4])}")
-    if explicit_signoff or semantic_signoff:
+    if material and (explicit_signoff or semantic_signoff):
         detected = "signoff"
         reasons.append(
             "signoff-sensitive impact: " + ", ".join(explicit_signoff + semantic_signoff)
@@ -264,7 +313,11 @@ def route_mode(
         reasons.append(
             "single-module low-risk inner-loop change"
             if material
-            else "no pipeline-governed risk detected"
+            else (
+                "lightweight verification manifest change"
+                if material_paths
+                else "no pipeline-governed risk detected"
+            )
         )
 
     selected = max((requested, detected), key=MODE_RANK.__getitem__)
@@ -352,10 +405,28 @@ def _load_state(workspace: Path) -> tuple[dict | None, list[dict]]:
     return state, issues
 
 
+def _dev_required_checks(stages: list[str], rtl_defaults: list[str]) -> list[str]:
+    """Select only checks that can produce feedback for the current dev delta."""
+    checks: list[str] = []
+    if "doc" in stages:
+        checks.append("doc_delta")
+    if "rtl" in stages:
+        if "verif" in stages:
+            checks.extend(("soc_lint", "rtl_quality", "soc_sim", "sim_log"))
+        else:
+            checks.extend(rtl_defaults)
+    elif "verif" in stages:
+        checks.extend(("soc_sim", "sim_log"))
+    if "syn" in stages:
+        checks.append("soc_syn")
+    return list(dict.fromkeys(checks))
+
+
 def build_context(
     workspace: Path,
     *,
     requested_mode: str | None = None,
+    scope: str = "auto",
     base_ref: str | None = None,
     changed_paths: list[str] | None = None,
     impacts: set[str] | None = None,
@@ -368,15 +439,30 @@ def build_context(
     policy_path = policy_path or Path(__file__).resolve().parents[1] / "loop_policy.json"
     policy = load_policy(policy_path)
     base_ref = base_ref or _default_base(repo)
-    paths = sorted(
+    all_paths = sorted(
         {
             _normalize_path(path, repo)
-            for path in (changed_paths or collect_changed_paths(repo, base_ref))
+            for path in (
+                changed_paths
+                if changed_paths is not None
+                else collect_changed_paths(repo, base_ref)
+            )
         }
     )
+    requested = _requested_mode(requested_mode, policy)
+    resolved_scope = _resolve_scope(
+        scope,
+        workspace,
+        repo,
+        requested,
+        all_paths if changed_paths is not None else None,
+    )
+    if resolved_scope == "workspace":
+        paths, ignored_paths = _workspace_paths(workspace, repo, all_paths)
+    else:
+        paths, ignored_paths = all_paths, []
     impacts = set(impacts or ())
     impacts.update(detect_semantic_impacts(repo, base_ref, paths))
-    requested = _requested_mode(requested_mode, policy)
     mode, reasons, governed, affected = route_mode(requested, paths, impacts, policy)
     affected_stage_list = affected_stages(paths)
     state, issues = _load_state(workspace)
@@ -402,12 +488,19 @@ def build_context(
         and (not review_required or review_result == "pass")
     )
 
-    if not governed:
-        rules = []
-    elif mode == "dev" and affected_stage_list == ["doc"]:
-        rules = [".agents/rules/00_loop_modes.md"]
-    else:
-        rules = list(mode_policy["rules"])
+    stale = [stage for stage, info in freshness.items() if not info["fresh"]]
+    reused = [stage for stage, info in freshness.items() if info["fresh"]]
+    rules = list(mode_policy["rules"]) if governed else []
+    needed_stages = set(affected_stage_list)
+    if mode in {"merge", "signoff"}:
+        needed_stages.update(stale)
+    for stage, rule in (
+        ("rtl", ".agents/rules/10_rtl_change_gate.md"),
+        ("verif", ".agents/rules/11_verif_recovery_gate.md"),
+        ("syn", ".agents/rules/12_syn_pd_gate.md"),
+    ):
+        if stage in needed_stages and rule not in rules:
+            rules.append(rule)
     if any(Path(path).suffix.lower() in RTL_SUFFIXES for path in paths):
         rules.extend(
             rule
@@ -420,14 +513,14 @@ def build_context(
 
     if not governed:
         required_checks = ["closest_non_eda_validation"]
-    elif mode == "dev" and affected_stage_list == ["doc"]:
-        required_checks = ["doc_delta"]
+    elif mode == "dev":
+        required_checks = _dev_required_checks(
+            affected_stage_list, mode_policy["required_checks"]
+        )
     else:
         required_checks = mode_policy["required_checks"]
     review_mode = mode_policy["review_mode"] if governed else "not_run"
     close_pipeline = mode_policy["close_pipeline"] if governed else False
-    stale = [stage for stage, info in freshness.items() if not info["fresh"]]
-    reused = [stage for stage, info in freshness.items() if info["fresh"]]
     checks_to_run = []
     for check in required_checks:
         stage = CHECK_STAGE.get(check)
@@ -444,9 +537,15 @@ def build_context(
         checks_to_run.append(check)
     actions = []
     if governed and mode == "dev" and "rtl" in affected_stage_list:
+        behavior_action = (
+            "run targeted soc_sim and validate its real log"
+            if "verif" in affected_stage_list
+            else "run targeted soc_sim when a meaningful test exists; otherwise soc_comp"
+        )
         actions = [
             "start or keep rtl in_progress",
-            "run registered targeted lint, compile, and simulation",
+            "run registered lint and RTL quality checks",
+            behavior_action,
             "defer pipeline closure, synthesis, and independent review",
         ]
     elif governed and mode == "dev" and affected_stage_list == ["doc"]:
@@ -455,7 +554,19 @@ def build_context(
             "run the documentation delta check",
             "defer downstream closure until merge",
         ]
-    elif governed and stale:
+    elif governed and mode == "dev" and "verif" in affected_stage_list:
+        actions = [
+            "start or keep verif in_progress",
+            "run targeted soc_sim and validate its real log",
+            "defer pipeline closure, synthesis, and independent review",
+        ]
+    elif governed and mode == "dev" and "syn" in affected_stage_list:
+        actions = [
+            "start or keep syn in_progress",
+            "run registered soc_syn for the current snapshot",
+            "defer pipeline closure, verification, and independent review",
+        ]
+    elif governed and mode in {"merge", "signoff"} and stale:
         actions = [f"complete stale delivery stages: {', '.join(stale)}"]
     elif risk_checks_required and not risk_checks_passed:
         actions = ["run the router-selected registered risk-specific checks"]
@@ -470,19 +581,37 @@ def build_context(
         compact_state_summary(state, workspace, issues=issues) if state else {"present": False}
     )
     visible_paths = paths[:100]
+    if not governed:
+        owner = "coordinator"
+    elif mode in {"merge", "signoff"} and len(affected) > 1:
+        owner = "soc-pipeline"
+    elif affected_stage_list == ["doc"]:
+        owner = "soc-doc-engineer"
+    elif "rtl" in affected_stage_list:
+        owner = "soc-rtl-designer"
+    elif "verif" in affected_stage_list:
+        owner = "soc-verification-engineer"
+    elif "syn" in affected_stage_list:
+        owner = "soc-synthesis-engineer"
+    else:
+        owner = "coordinator"
     return {
         "schema_version": 1,
         "workspace": workspace.relative_to(repo).as_posix() if workspace != repo else ".",
         "base_ref": base_ref,
         "requested_mode": requested,
         "mode": mode,
+        "scope": resolved_scope,
         "reasons": reasons,
         "pipeline_governed": governed,
         "affected_modules": affected,
         "affected_stages": affected_stage_list,
+        "all_changed_path_count": len(all_paths),
         "changed_path_count": len(paths),
         "changed_paths": visible_paths,
         "changed_paths_truncated": len(paths) > len(visible_paths),
+        "ignored_path_count": len(ignored_paths),
+        "ignored_paths": ignored_paths[:20],
         "detected_impacts": sorted(impacts),
         "rules": rules,
         "rule_set_fingerprint": _rule_set_fingerprint(repo, rules),
@@ -494,6 +623,7 @@ def build_context(
         "risk_checks_required": risk_checks_required,
         "risk_checks_passed": risk_checks_passed,
         "close_pipeline": close_pipeline,
+        "owner": owner,
         "cache": {
             "current_rtl_fingerprint": compute_rtl_fingerprint(workspace),
             "stages": freshness,
@@ -509,6 +639,11 @@ def build_context(
 def _print_text(context: dict) -> None:
     print(f"Loop mode     : {context['mode']} (requested {context['requested_mode']})")
     print(f"Workspace     : {context['workspace']}")
+    print(
+        f"Diff scope    : {context['scope']} "
+        f"({context['changed_path_count']} selected, {context['ignored_path_count']} ignored)"
+    )
+    print(f"Owner         : {context['owner']}")
     print(f"Pipeline      : {'governed' if context['pipeline_governed'] else 'not governed'}")
     print(f"Delivery ready: {'yes' if context['delivery_ready'] else 'no'}")
     print("Reasons       : " + "; ".join(context["reasons"]))
@@ -528,6 +663,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("workspace", type=Path)
     parser.add_argument("--mode", choices=("auto", "dev", "merge", "signoff"), default="auto")
+    parser.add_argument(
+        "--scope",
+        choices=("auto", "workspace", "repo"),
+        default="auto",
+        help="dev defaults to the target workspace; delivery modes use the repo diff",
+    )
     parser.add_argument("--base-ref")
     parser.add_argument(
         "--changed",
@@ -567,6 +708,7 @@ def main() -> int:
         context = build_context(
             args.workspace,
             requested_mode=args.mode,
+            scope=args.scope,
             base_ref=args.base_ref,
             changed_paths=args.changed or None,
             impacts=set(args.impact),

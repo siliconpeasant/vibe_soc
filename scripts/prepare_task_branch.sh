@@ -37,11 +37,13 @@ cd "$repo_root"
 
 if [ -n "$(git status --porcelain --untracked-files=normal)" ]; then
     echo "Refusing to create a task branch with a dirty worktree." >&2
-    echo "Commit, stash, or remove current changes first." >&2
+    echo "Use scripts/prepare_task_worktree.sh $task_slug $base_branch to preserve it." >&2
     exit 1
 fi
 
-git fetch --prune "$remote" "$base_branch"
+if [ "${GIT_PREPARE_SKIP_FETCH:-0}" != "1" ]; then
+    git fetch --prune "$remote" "$base_branch"
+fi
 base_ref="$remote/$base_branch"
 git rev-parse --verify "$base_ref^{commit}" >/dev/null
 
