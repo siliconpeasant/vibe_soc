@@ -1,113 +1,69 @@
-# UPF/DC demo interface specification
+# UPF/DC five-domain interface specification
 
-## Top module
+## Top-level functional ports
 
-The exact functional RTL top is `upf_dc_demo`; it has no parameters and contains no power/ground ports. PLL/SRAM/IO macro PG pins are created by their Liberty views and bound by UPF inside the synthesis MV database. No supply or PG interface is exported in the ordinary Verilog deliverable.
+The exact RTL top is `upf_dc_demo`. It has no parameters and no functional power/ground ports.
 
 | Signal | Direction | Width | Description |
 |---|---|---:|---|
-| `clk` | input | 1 | 100 MHz always-on reference clock |
-| `sw_clk` | input | 1 | 100 MHz switchable-domain clock, externally driven at 1.2 V |
-| `rst_n` | input | 1 | Active-low asynchronous reset; synchronous release |
-| `sw_power_req_i` | input | 1 | Desired switchable-domain ON state |
-| `req_data_i` | input | 8 | 1.8 V-side operand |
-| `req_valid_i` | input | 1 | Operand qualifier |
-| `rsp_data_o` | output | 8 | Always-on captured result |
-| `rsp_valid_o` | output | 1 | Captured response qualifier |
-| `sw_powered_o` | output | 1 | Observation of internal `sw_en` |
-| `sw_isolated_o` | output | 1 | High while `sw_iso_n` is low |
-| `mem_cs_i` | input | 1 | SRAM transaction enable |
-| `mem_we_i` | input | 1 | SRAM write selection |
-| `mem_addr_i` | input | 4 | SRAM word address |
-| `mem_wdata_i` | input | 8 | SRAM write data |
-| `mem_rdata_o` | output | 8 | SRAM registered read data |
-| `mem_rvalid_o` | output | 1 | SRAM read qualifier |
+| `clk` | input | 1 | 100 MHz AO/controller/macro clock |
+| `rst_n` | input | 1 | Active-low asynchronous reset |
+| `sw_clk` | input | 1 | 100 MHz `PD_SW` clock |
+| `sw_power_req_i` | input | 1 | Requested `PD_SW` ON state |
+| `sw_req_data_i` | input | 8 | `PD_SW` request data |
+| `sw_req_valid_i` | input | 1 | `PD_SW` request qualifier |
+| `sw_rsp_data_o` | output | 8 | Captured `PD_SW` response |
+| `sw_rsp_valid_o` | output | 1 | Captured `PD_SW` response qualifier |
+| `sw_powered_o` | output | 1 | `PD_SW` behavioral power observation |
+| `sw_isolated_o` | output | 1 | High while `PD_SW` isolation is active |
+| `acc_clk` | input | 1 | 100 MHz `PD_ACC` clock |
+| `acc_power_req_i` | input | 1 | Requested `PD_ACC` ON state |
+| `acc_req_data_i` | input | 8 | `PD_ACC` request data |
+| `acc_req_valid_i` | input | 1 | `PD_ACC` request qualifier |
+| `acc_rsp_data_o` | output | 8 | Captured `PD_ACC` response |
+| `acc_rsp_valid_o` | output | 1 | Captured `PD_ACC` response qualifier |
+| `acc_powered_o` | output | 1 | `PD_ACC` power observation |
+| `acc_isolated_o` | output | 1 | High while `PD_ACC` isolation is active |
+| `peri_clk` | input | 1 | 100 MHz `PD_PERI` clock |
+| `peri_power_req_i` | input | 1 | Requested `PD_PERI` ON state |
+| `peri_req_data_i` | input | 8 | `PD_PERI` request data |
+| `peri_req_valid_i` | input | 1 | `PD_PERI` request qualifier |
+| `peri_rsp_data_o` | output | 8 | Captured `PD_PERI` response |
+| `peri_rsp_valid_o` | output | 1 | Captured `PD_PERI` response qualifier |
+| `peri_powered_o` | output | 1 | `PD_PERI` power observation |
+| `peri_isolated_o` | output | 1 | High while `PD_PERI` isolation is active |
+| `media_clk` | input | 1 | 100 MHz `PD_MEDIA` clock |
+| `media_power_req_i` | input | 1 | Requested `PD_MEDIA` ON state |
+| `media_req_data_i` | input | 8 | `PD_MEDIA` request data |
+| `media_req_valid_i` | input | 1 | `PD_MEDIA` request qualifier |
+| `media_rsp_data_o` | output | 8 | Captured `PD_MEDIA` response |
+| `media_rsp_valid_o` | output | 1 | Captured `PD_MEDIA` response qualifier |
+| `media_powered_o` | output | 1 | `PD_MEDIA` power observation |
+| `media_isolated_o` | output | 1 | High while `PD_MEDIA` isolation is active |
+| `mem_cs_i` | input | 1 | AO SRAM access enable |
+| `mem_we_i` | input | 1 | AO SRAM write select |
+| `mem_addr_i` | input | 4 | AO SRAM word address |
+| `mem_wdata_i` | input | 8 | AO SRAM write data |
+| `mem_rdata_o` | output | 8 | AO SRAM read data |
+| `mem_rvalid_o` | output | 1 | AO SRAM read qualifier |
 | `pll_enable_i` | input | 1 | PLL teaching-model enable |
 | `pll_clk_mon_o` | output | 1 | Observation-only modeled clock |
-| `pll_locked_o` | output | 1 | Modeled lock status |
-| `pad_in_i` | input | 1 | External 3.3 V-side pad stimulus |
-| `pad_in_core_o` | output | 1 | 1.8 V core-side pad observation |
-| `pad_out_core_i` | input | 1 | 1.8 V core-side pad drive |
-| `pad_out_o` | output | 1 | External 3.3 V-side pad observation |
-`VDD_AO`, `VDD_PLL`, `VDD_MEM`, `VDDIO`, `VDD_SW_IN`, `VDD_SW`, and `VSS` are UPF supply objects, not functional RTL ports.
+| `pll_locked_o` | output | 1 | Modeled PLL lock status |
+| `pad_in_i` | input | 1 | External input-pad stimulus |
+| `pad_in_core_o` | output | 1 | AO-side input-pad observation |
+| `pad_out_core_i` | input | 1 | AO-side output-pad drive |
+| `pad_out_o` | output | 1 | External output-pad observation |
 
 ## Child interfaces
 
-### `upf_dc_demo_aon_ctrl u_aon_ctrl`
+Each of `u_aon_ctrl`, `u_acc_aon_ctrl`, `u_peri_aon_ctrl`, and `u_media_aon_ctrl` instantiates `upf_dc_demo_aon_ctrl` with `clk`, `rst_n`, one `sw_power_req_i`, 8-bit/valid core response, and outputs `sw_en_o`, `sw_iso_n_o`, `traffic_enable_o`, and 8-bit/valid captured response.
 
-| Signal | Direction | Width | Description |
-|---|---|---:|---|
-| `clk` | input | 1 | Reference clock |
-| `rst_n` | input | 1 | Active-low reset |
-| `sw_power_req_i` | input | 1 | Desired power state |
-| `core_rsp_data_i` | input | 8 | Protected switchable response |
-| `core_rsp_valid_i` | input | 1 | Protected response qualifier |
-| `sw_en_o` | output | 1 | Active-high abstract switch control |
-| `sw_iso_n_o` | output | 1 | Active-high isolation release |
-| `traffic_enable_o` | output | 1 | Request admission enable |
-| `rsp_data_o` | output | 8 | Captured/clamped result |
-| `rsp_valid_o` | output | 1 | Captured/clamped qualifier |
+Each of `u_sw_core`, `u_acc_core`, `u_peri_core`, and `u_media_core` instantiates `upf_dc_demo_sw_core` with its dedicated `clk`, common `rst_n`, AO-generated `pwr_on_i`, 8-bit/valid request, and 8-bit/valid response.
 
-### `upf_dc_demo_sw_core u_sw_core`
+PLL, SRAM, and pad child interfaces are unchanged from their RTL module declarations. Their functional interfaces contain no PG ports; synthesis-only PG pins come from Liberty and are connected by UPF.
 
-| Signal | Direction | Width | Description |
-|---|---|---:|---|
-| `clk` | input | 1 | Switchable-domain clock driven by top `sw_clk` |
-| `rst_n` | input | 1 | Active-low reset crossing from `PD_AO` |
-| `pwr_on_i` | input | 1 | Behavioral availability shadow |
-| `req_data_i` | input | 8 | Request operand |
-| `req_valid_i` | input | 1 | Request qualifier |
-| `rsp_data_o` | output | 8 | Registered operand plus one |
-| `rsp_valid_o` | output | 1 | One-cycle qualifier |
+## UPF and timing attributes
 
-### `upf_dc_demo_pll_macro u_pll_macro`
+`sw_clk`, `acc_clk`, `peri_clk`, and `media_clk` receive driver supplies `SS_VDD_SW_VSS`, `SS_VDD_ACC_VSS`, `SS_VDD_PERI_VSS`, and `SS_VDD_MEDIA_VSS`, respectively. All other ordinary top digital ports are AO-relative except the preserved IO-pad attributes. The four external/core pad paths remain analog-exempt.
 
-| Signal | Direction | Width | Description |
-|---|---|---:|---|
-| `ref_clk_i` | input | 1 | Reference clock |
-| `rst_n` | input | 1 | Behavioral reset |
-| `enable_i` | input | 1 | Behavioral enable |
-| `pll_clk_o` | output | 1 | Observation-only modeled clock |
-| `locked_o` | output | 1 | Lock status after four reference edges |
-
-### `upf_dc_demo_sram_16x8 u_sram_macro`
-
-| Signal | Direction | Width | Description |
-|---|---|---:|---|
-| `clk` | input | 1 | Synchronous port clock |
-| `rst_n` | input | 1 | Behavioral reset |
-| `cs_i` | input | 1 | Transaction enable |
-| `we_i` | input | 1 | Write when high, read when low |
-| `addr_i` | input | 4 | Word address 0 through 15 |
-| `wdata_i` | input | 8 | Write data |
-| `rdata_o` | output | 8 | Registered read data |
-| `rvalid_o` | output | 1 | Read response qualifier |
-
-### `upf_dc_demo_pad_in u_pad_in`
-
-| Signal | Direction | Width | Description |
-|---|---|---:|---|
-| `pad_i` | input | 1 | External 3.3 V-side digital input |
-| `core_o` | output | 1 | Core-side digital output |
-
-### `upf_dc_demo_pad_out u_pad_out`
-
-| Signal | Direction | Width | Description |
-|---|---|---:|---|
-| `core_i` | input | 1 | Core-side digital drive |
-| `pad_o` | output | 1 | External 3.3 V-side output |
-
-## UPF attributes, timing, and protocol
-
-Always-on digital inputs/outputs use `SS_VDD_AO_VSS` as their driver/receiver supply except the external pad sides, which use `SS_VDDIO_VSS`. At macro boundaries, driver/receiver attributes document `u_pad_in/core_o` as a 3.3 V-relative source into a 1.8 V receiver and `u_pad_out/core_i` as a 3.3 V-relative receiver driven by a 1.8 V source. Those four point-to-point pad boundary ports are also marked analog so Power Compiler does not insert core standard-cell LS/repeaters where a real characterized IO macro must own the conversion. This creates no additional domain or pad core PG pins. `sw_clk` is attributed to `SS_VDD_SW_VSS` and enters `PD_SW` directly.
-
-Always-on logic and macros use rising `clk`; `u_sw_core` uses rising `sw_clk`. Both nominal periods are 10.000 ns. `pll_clk_mon_o` has no sequential endpoint. Hold reset low through both clock domains and release synchronously in this bounded teaching setup. Requests are accepted only after power is enabled and isolation released. Power-down asserts isolation before removing power. SRAM and pad interfaces are direct point-to-point connections, not buses.
-
-UPF must use `extra_supplies_1` through `extra_supplies_3` and hierarchical `connect_supply_net` only for the PLL, SRAM, and IO Liberty PG pins. `VDD_SW_IN` and `VDD_SW` remain UPF supply objects but are not `PD_AO` additional supplies and have no switch-macro PG ports. `PSW_SW` must contain its input supply, output supply, control `u_aon_ctrl/sw_en_o`, and active-high ON state. No switch cell or switch interface is present in RTL or synthesis; backend creates and connects the physical implementation.
-
-Two synthesis artifacts carry complementary interfaces:
-
-- The saved full UPF retains all supply objects, eight PLL/SRAM/IO MacroPG bindings, strategies, power states, and virtual switch intent for backend.
-- `upf_dc_demo_netlist.v` is ordinary non-PG Verilog. Its top port list is exactly the functional signal table above. Macro and low-power-cell instances contain functional pins only; no named PG connection such as `.VDD(...)`, `.VSS(...)`, `.VDDIO(...)`, `.VSSIO(...)`, `.VGND(...)`, `.VPWR(...)`, or `.VPWRIN(...)` is allowed, and no corresponding supply net/port is allowed.
-
-The non-PG netlist still exposes the synthesized low-power structure: nine ELS isolation instances plus eleven pure high-to-low level shifters, or twenty level-shifter instances when ELS cells are included. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, pp. 227, 268, and 258 respectively for multiple supplies, numbered additional supplies, and hierarchical macro PG connectivity; pp. 358–359 define the virtual switch handoff; p. 416 and pp. 418–419 show that the omitted `write_file -pg` form would instead emit complete supply connections, named PG pins, and supply nets.
+All five clocks have a 10.000 ns nominal period. Requests are accepted only after the corresponding AO controller has enabled power and released isolation. Reset and the ten request-side signals per domain cross from AO with the power shadow for eleven H2L shifted inputs total. Nine response bits per domain cross through output ELS protection. There are no cross-domain combinational paths between switchable domains.

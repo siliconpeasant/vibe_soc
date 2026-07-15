@@ -15,7 +15,7 @@ include $(PROJECT_ROOT)/scripts/common.mk
 # The PLL, SRAM, and IO behavioral macro models are used by lint/compile only.
 # DC links the same four cell names from this PG-aware teaching stub so their
 # supplies exist only as Liberty pg_pin objects connected by canonical UPF.
-# PSW_SW remains a virtual UPF rule; backend implementation owns switch cells.
+# PSW_SW/ACC/PERI/MEDIA remain virtual UPF rules; backend owns switch cells.
 # The local Sky130 file is characterized only at 1.8 V.  Two generated,
 # explicitly non-signoff variants provide the library voltage maps needed to
 # exercise 1.2 V standard cells and both LS directions in Power Compiler.

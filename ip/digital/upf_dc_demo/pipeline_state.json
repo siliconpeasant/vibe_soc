@@ -4,7 +4,7 @@
   "workspace": "ip/digital/upf_dc_demo",
   "mode": "single",
   "created_at": "2026-07-14T03:11:43Z",
-  "last_updated": "2026-07-14T15:57:16Z",
+  "last_updated": "2026-07-15T04:38:41Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -12,8 +12,8 @@
       "agent": "soc-doc-engineer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-14T09:52:11Z",
-      "completed_at": "2026-07-14T09:55:41Z",
+      "started_at": "2026-07-15T04:16:19Z",
+      "completed_at": "2026-07-15T04:19:25Z",
       "artifacts": [
         "docs/architecture.md",
         "docs/design_spec.md",
@@ -23,48 +23,48 @@
       ],
       "artifact_evidence": {
         "docs/architecture.md": {
-          "sha256": "4b2fdd5346e0c7068f010d6ec112458d2810192a8906ae5904a42e5ce2a902cd",
-          "size": 16359,
-          "recorded_at": "2026-07-14T09:55:41Z",
+          "sha256": "d61dc8b8d06611b613ddc6238f5190d31a2c9b61398430897660834a327550e7",
+          "size": 6580,
+          "recorded_at": "2026-07-15T04:19:25Z",
           "provenance": [
             "doc_completeness",
-            "stale_netlist_wording"
+            "doc_stale_scan"
           ]
         },
         "docs/design_spec.md": {
-          "sha256": "0bb4fad11cd98973a4c4e7abbca005807315fb89b21a05aa0ff59c364b11d35d",
-          "size": 7867,
-          "recorded_at": "2026-07-14T09:55:41Z",
+          "sha256": "e84ae33b7bcaa308212d3d8de1a7000547bb5e4b8f045603fa6f2cd4fb2bb28e",
+          "size": 4583,
+          "recorded_at": "2026-07-15T04:19:25Z",
           "provenance": [
             "doc_completeness",
-            "stale_netlist_wording"
+            "doc_stale_scan"
           ]
         },
         "docs/interface_spec.md": {
-          "sha256": "5401e8ee6ab1611243276629f59fbb654f504ac8e544ea5e8c0bca205daf95e6",
-          "size": 7277,
-          "recorded_at": "2026-07-14T09:55:41Z",
+          "sha256": "61e4bc769037349c752ae041e399e238167b2b7b701d2a8a351130622f2afc16",
+          "size": 4663,
+          "recorded_at": "2026-07-15T04:19:25Z",
           "provenance": [
             "doc_completeness",
-            "stale_netlist_wording"
+            "doc_stale_scan"
           ]
         },
         "docs/regmap.md": {
-          "sha256": "055e3f5e778647a1f5c3195216ec643e1d374cfbfdb4f8619cc817992191bd62",
-          "size": 708,
-          "recorded_at": "2026-07-14T09:55:41Z",
+          "sha256": "260552a629f54afc48e115df6570887b3be8a05338489ea9aee667b0ed36c6ee",
+          "size": 742,
+          "recorded_at": "2026-07-15T04:19:25Z",
           "provenance": [
             "doc_completeness",
-            "stale_netlist_wording"
+            "doc_stale_scan"
           ]
         },
         "docs/verification_plan.md": {
-          "sha256": "5828f6d5550912b820abb11725a7d1079eef7e77717f2e7c0883de925e31bc82",
-          "size": 9915,
-          "recorded_at": "2026-07-14T09:55:41Z",
+          "sha256": "ee38b0974adeaca14af05b6dd97d910fa52741cd2dd1039168bbb36613d67ee5",
+          "size": 3654,
+          "recorded_at": "2026-07-15T04:19:25Z",
           "provenance": [
             "doc_completeness",
-            "stale_netlist_wording"
+            "doc_stale_scan"
           ]
         }
       },
@@ -72,18 +72,18 @@
         {
           "tool": "doc_completeness",
           "passed": true,
-          "note": "four canonical documents exist, are nonempty, and have headings"
+          "note": "four canonical documents nonempty with headings"
         },
         {
-          "tool": "stale_netlist_wording",
+          "tool": "doc_stale_scan",
           "passed": true,
-          "note": "no requirement to deliver final PG Verilog or invoke write_file -pg remains"
+          "note": "no stale two-domain or old low-power-cell count claims"
         }
       ],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "Synthesis audits PG-aware UPF internally and saves full UPF; delivered Verilog is strictly non-PG with 9 ELS plus 11 pure LS",
-      "last_updated": "2026-07-14T09:55:41Z"
+      "notes": "Expand approved architecture and interfaces from two to five power domains with nine explicit system power states",
+      "last_updated": "2026-07-15T04:19:25Z"
     },
     "rtl": {
       "step_id": "rtl",
@@ -91,8 +91,8 @@
       "agent": "soc-rtl-designer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-14T09:58:24Z",
-      "completed_at": "2026-07-14T10:00:35Z",
+      "started_at": "2026-07-15T04:19:25Z",
+      "completed_at": "2026-07-15T04:27:53Z",
       "artifacts": [
         "de/rtl/filelist.f",
         "de/rtl/upf_dc_demo.v",
@@ -105,139 +105,235 @@
         "de/syn/build_teaching_mv_lib.py",
         "de/syn/macro_pg_stub.lib",
         "de/syn/upf_dc_demo.sdc",
-        "de/syn/dc_upf_synth.tcl"
+        "de/syn/dc_upf_synth.tcl",
+        "de/syn/upf/upf_dc_demo.upf",
+        "de/syn/upf/upf_dc_demo.drawio",
+        "de/syn/upf/upf_dc_demo.excalidraw",
+        "de/syn/upf/upf_dc_demo.summary.md"
       ],
       "artifact_evidence": {
         "de/rtl/filelist.f": {
           "sha256": "ac34b8c61e5cfe782406d610136bffed77e1bc3c0b277e7ba4e5e3896cfc3616",
           "size": 395,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/rtl/upf_dc_demo.v": {
-          "sha256": "abd2f43d0b779ce8d18c498a1adc3116bead6ffa499e0244d282eaaa02d9b367",
-          "size": 2187,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "sha256": "650e26d5679e9e2f4ef424e16c6f74befa98fddeb3b612d270266db9574a16aa",
+          "size": 5736,
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/rtl/upf_dc_demo_aon_ctrl.v": {
           "sha256": "fe3c34af5cca099711a9a6070731f6e02ea047711005beaad003028d32649c21",
           "size": 2176,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/rtl/upf_dc_demo_sw_core.v": {
           "sha256": "d056967499eaa4b5e9f7660eae1eb1515284bc4d43ea47ad1dd09b3b4a381207",
           "size": 612,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/rtl/upf_dc_demo_pll_macro.v": {
           "sha256": "e20ce5023f0f6ea042c91bfbbca1ea2b446d5ca46b58dfe9498061f0fab95237",
           "size": 636,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/rtl/upf_dc_demo_sram_16x8.v": {
           "sha256": "dc296308d2730338d2e7687b3f786411b2045d2f61eef154cdb72749f8746e7d",
           "size": 742,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/rtl/upf_dc_demo_pad_in.v": {
           "sha256": "1e167b119018768c679a2d1ca3804852365d5551f8e87e8200d17d7fe5e18cf7",
           "size": 136,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/rtl/upf_dc_demo_pad_out.v": {
           "sha256": "098539e5d57860093b518f53185e7d3725a8a6cbf9e5bd9af292e70c4db62e74",
           "size": 137,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/syn/build_teaching_mv_lib.py": {
           "sha256": "295884d68a24981fa79ae116a979abd41825f42190c38272c7aec848e292f67e",
           "size": 7314,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/syn/macro_pg_stub.lib": {
           "sha256": "baef4a4cc0e06ebc5cef7dbef266a04f530a37b86dd91fcea5f583de6003db0a",
           "size": 4549,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/syn/upf_dc_demo.sdc": {
-          "sha256": "ccd0c7742698267adba2f09295ede3d8968de67307507b906ae74a7ee38f0873",
-          "size": 768,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "sha256": "ff3b2761e6d6fa51a9bbd70acce723386da9d7d82083d5247694fdecf0aaae56",
+          "size": 1631,
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         },
         "de/syn/dc_upf_synth.tcl": {
-          "sha256": "56c344a54da6673e866fae22db52c88f7599f3bff8203335b4a096c313b2fef2",
-          "size": 14830,
-          "recorded_at": "2026-07-14T10:00:35Z",
+          "sha256": "cd4e825896b4c3fa3a76636ca5969619b81fdc1bf7ab7a33b089482c0b1a0e75",
+          "size": 17359,
+          "recorded_at": "2026-07-15T04:27:53Z",
           "provenance": [
-            "non_pg_handoff_static",
+            "rtl_pg_switch_scan",
             "rtl_quality",
             "soc_comp",
-            "soc_lint"
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
+          ]
+        },
+        "de/syn/upf/upf_dc_demo.upf": {
+          "sha256": "6e8dab5f19af934ce67d9f34fc810552be0c45c8fb350a48d3f5b0905cd3a9b0",
+          "size": 18043,
+          "recorded_at": "2026-07-15T04:27:53Z",
+          "provenance": [
+            "rtl_pg_switch_scan",
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
+          ]
+        },
+        "de/syn/upf/upf_dc_demo.drawio": {
+          "sha256": "3f2dc0341a947368a7e0bb0f0c116520fd17e69587e274cd95d32934b8949d84",
+          "size": 65868,
+          "recorded_at": "2026-07-15T04:27:53Z",
+          "provenance": [
+            "rtl_pg_switch_scan",
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
+          ]
+        },
+        "de/syn/upf/upf_dc_demo.excalidraw": {
+          "sha256": "28bba1bc9bc8256661e666573ecae73f9b2deef3738da9f69fadcec4dd605c54",
+          "size": 188152,
+          "recorded_at": "2026-07-15T04:27:53Z",
+          "provenance": [
+            "rtl_pg_switch_scan",
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
+          ]
+        },
+        "de/syn/upf/upf_dc_demo.summary.md": {
+          "sha256": "5b1c6d995450e934bb757a553f0ba366be342e79100d1db6f2e3ca046a552df7",
+          "size": 944,
+          "recorded_at": "2026-07-15T04:27:53Z",
+          "provenance": [
+            "rtl_pg_switch_scan",
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint",
+            "tcl_complete",
+            "upf_generate_strict",
+            "upf_static"
           ]
         }
       },
@@ -245,28 +341,43 @@
         {
           "tool": "soc_lint",
           "passed": true,
-          "note": "Verilator upf_dc_demo with empty lint.log"
+          "note": "registered Verilator complete seven-entry filelist with empty lint.log"
         },
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "registered VCS compile and elaboration up to date"
+          "note": "registered VCS compile and elaboration fingerprint db88c0a836a55014bc22742a73355b202f6d99966757b6b454b21f79fb4d0269"
         },
         {
           "tool": "rtl_quality",
           "passed": true,
-          "note": "seven canonical RTL modules"
+          "note": "seven canonical RTL source modules and resolved filelist"
         },
         {
-          "tool": "non_pg_handoff_static",
+          "tool": "upf_generate_strict",
           "passed": true,
-          "note": "ordinary Verilog no executable write_file -pg supply and named PG rejection ELS 9 dedicated LS 11 saved UPF and eight MacroPG audits retained"
+          "note": "registered MCP generated UPF Drawio Excalidraw and summary with UPF_ARTIFACTS"
+        },
+        {
+          "tool": "upf_static",
+          "passed": true,
+          "note": "five domains four switches twelve supply sets four isolation eight LS nine PST states with sixteen explicit conditions each and eight MacroPG paths"
+        },
+        {
+          "tool": "tcl_complete",
+          "passed": true,
+          "note": "DC handoff Tcl structurally complete with provisional non-signoff LP counts"
+        },
+        {
+          "tool": "rtl_pg_switch_scan",
+          "passed": true,
+          "note": "no physical switch module instance or RTL PG ports"
         }
       ],
-      "rtl_fingerprint": "16aebc2242f0a669965426eaf54f971d54b01e19483d8ff6ecffd934267fc49d",
+      "rtl_fingerprint": "ee971675d9e96c7bf3214a2f11166955c6f494644fb19e64d56dc7465f05839e",
       "rtl_fingerprint_source": "recorded_at_transition",
-      "notes": "",
-      "last_updated": "2026-07-14T10:00:35Z"
+      "notes": "Ignored power_intent.xlsx is the local seven-sheet source and is not a commit artifact; no simulation or synthesis run; 36 ELS and 44 pure H2L counts remain provisional for the synthesis owner",
+      "last_updated": "2026-07-15T04:27:53Z"
     },
     "verif": {
       "step_id": "verif",
@@ -288,28 +399,360 @@
       "step_id": "syn",
       "name": "逻辑综合与时序分析",
       "agent": "soc-synthesis-engineer",
-      "status": "pending",
+      "status": "done",
       "blocked_by": [],
-      "started_at": null,
-      "completed_at": null,
-      "artifacts": [],
-      "artifact_evidence": {},
-      "check_results": [],
-      "rtl_fingerprint": null,
-      "rtl_fingerprint_source": null,
-      "notes": "Validated locally by registered DC/Power Compiler run soc_syn-6844c4740a1b42b3a711b7a2d87ad44d; synthesis databases, reports, logs, saved full-UPF, and netlist remain transient and are intentionally not committed. Re-run soc-build.soc_syn to close syn in a fresh workspace.",
-      "last_updated": "2026-07-14T15:44:47Z"
+      "started_at": "2026-07-15T04:30:11Z",
+      "completed_at": "2026-07-15T04:38:41Z",
+      "artifacts": [
+        "de/syn/upf_dc_demo_netlist.v",
+        "de/syn/upf_dc_demo.ddc",
+        "de/syn/synth.log",
+        "de/syn/upf_dc_demo_synth.sdc",
+        "de/syn/timing_summary.rpt",
+        "de/syn/upf/upf_dc_demo_synth.upf",
+        "de/syn/dc/reports/loaded_upf.pre_compile.upf",
+        "de/syn/dc/reports/load_upf_transcript.rpt",
+        "de/syn/dc/reports/compile_transcript.rpt",
+        "de/syn/dc/reports/power_domains.rpt",
+        "de/syn/dc/reports/supply_nets.rpt",
+        "de/syn/dc/reports/mv_check.rpt",
+        "de/syn/dc/reports/inserted_low_power_cells.rpt",
+        "de/syn/dc/reports/macro_blackbox_audit.rpt",
+        "de/syn/dc/reports/pg_reconciliation.rpt",
+        "de/syn/dc/reports/area.rpt",
+        "de/syn/dc/reports/qor.rpt",
+        "de/syn/dc/reports/constraints.rpt"
+      ],
+      "artifact_evidence": {
+        "de/syn/upf_dc_demo_netlist.v": {
+          "sha256": "8f26d75b194c787961436c409dd4460e5ff92e77d1ffc98ac60e5d8ca3bc3061",
+          "size": 45229,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/upf_dc_demo.ddc": {
+          "sha256": "74fccd2700cc0b6d53c5aa793fdb208891cf7613a91634681a9d13ff7e50f109",
+          "size": 98048,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/synth.log": {
+          "sha256": "23ce54b645d871864f76ed17d79ae985cc59f5c83762798200c01174320f0171",
+          "size": 178251,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/upf_dc_demo_synth.sdc": {
+          "sha256": "c6c099023c2c44c8839470555050148dc0495b1b09e3ca19546d7560f399094b",
+          "size": 12848,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/timing_summary.rpt": {
+          "sha256": "c60597a852254d998bd254400dcb652ad489ccc1f0a5ccb35f2f5bd03987f1ad",
+          "size": 4194,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/upf/upf_dc_demo_synth.upf": {
+          "sha256": "250f39f79f36eb2418aad352460a1e537e1380e0e98be9294baf4f46b1c37638",
+          "size": 26388,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/loaded_upf.pre_compile.upf": {
+          "sha256": "d0b0ccb404bbb0efe2ff88a052d86f9962b244aa705f957f99b0e6f0ae740cc8",
+          "size": 13624,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/load_upf_transcript.rpt": {
+          "sha256": "5129b9490ca3392fab3379de16918c4c8f6672b9b0808ea99406f5a6a165009f",
+          "size": 19194,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/compile_transcript.rpt": {
+          "sha256": "95a4bab4f157a81bf04551624fa2fc61418ca9e74358f7536b87a07e8543e3e4",
+          "size": 19629,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/power_domains.rpt": {
+          "sha256": "0c6e423a38aa4016d6b503bf520a21d3692eb630e69765060db1cc15d0c7c2cc",
+          "size": 6387,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/supply_nets.rpt": {
+          "sha256": "4d62287402ff7218bab057dea3dedc9e50ae64462b2d26c218db4eed0da7b7cd",
+          "size": 10292,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/mv_check.rpt": {
+          "sha256": "cd4e0fb83e0b3314855383337e6c29e776cd2d70086bb2f6d0d710358aef8737",
+          "size": 6270,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/inserted_low_power_cells.rpt": {
+          "sha256": "d38ae427985e8193c4b6c3f58fe8523459386d6a0943faa8e0ddc1bb65b43a26",
+          "size": 10456,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/macro_blackbox_audit.rpt": {
+          "sha256": "b27043104f20c01c824910c4dbf0558de20cf027b0f917a4d6f391a00d84810f",
+          "size": 315,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/pg_reconciliation.rpt": {
+          "sha256": "85121fd9e098f9479009fdd1580bac2ffc37954d990abe65dabcc0e2fda1306f",
+          "size": 1050,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/area.rpt": {
+          "sha256": "6db80bd3ddd8564dd168b766eccdf43ec935cbcd22bddfb7742a91f8d06588d9",
+          "size": 3182,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/qor.rpt": {
+          "sha256": "e2f0516ead8a2dd262f38fcf1fdf03ed3d0f0fdbc9dd34e55321bbd7dbfe2a22",
+          "size": 4247,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        },
+        "de/syn/dc/reports/constraints.rpt": {
+          "sha256": "06d2101f73082eef383eb27be39612b686063323ad9c1f46ca32de8ae4546f0b",
+          "size": 500,
+          "recorded_at": "2026-07-15T04:38:41Z",
+          "provenance": [
+            "low_power_cells",
+            "macro_pg",
+            "mv_final",
+            "non_pg_netlist",
+            "power_intent",
+            "saved_upf",
+            "soc_syn",
+            "timing"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_syn",
+          "passed": true,
+          "note": "registered_DC_Power_Compiler"
+        },
+        {
+          "tool": "timing",
+          "passed": true,
+          "note": "five_clock_groups_WNS_TNS_nonnegative"
+        },
+        {
+          "tool": "power_intent",
+          "passed": true,
+          "note": "5_domains_4_abstract_switches_12_supply_sets_9_system_states"
+        },
+        {
+          "tool": "low_power_cells",
+          "passed": true,
+          "note": "ELS36_dedicated_H2L44_total_LS80"
+        },
+        {
+          "tool": "non_pg_netlist",
+          "passed": true,
+          "note": "13_supply_names_and_named_PG_zero_switch_impl_zero"
+        },
+        {
+          "tool": "macro_pg",
+          "passed": true,
+          "note": "4_hard_macros_8_Liberty_PG_in_PD_AO"
+        },
+        {
+          "tool": "saved_upf",
+          "passed": true,
+          "note": "4_abstract_switches_no_map_power_switch"
+        },
+        {
+          "tool": "mv_final",
+          "passed": true,
+          "note": "no_final_error_fatal_MV611"
+        }
+      ],
+      "rtl_fingerprint": "ee971675d9e96c7bf3214a2f11166955c6f494644fb19e64d56dc7465f05839e",
+      "rtl_fingerprint_source": "recorded_at_transition",
+      "notes": "Registered five-domain DC/Power Compiler pass after restoring ignored paired teaching .lib/.db from local archive. Exact evidence: 36 ELS isolation/L2H, 44 dedicated H2L, total LS 80; five clock groups meet WNS/TNS. Final MV retains expected analog-pad and teaching-library ambiguity warnings. Precompile has four non-driving temporary-cell LINT-1 warnings. max_leakage_power actual 2.06 exceeds teaching target 0.00 by 2.06 and is non-signoff. No RTL/filelist/UPF/Tcl/SDC changes during synthesis; no simulation by explicit user request.",
+      "last_updated": "2026-07-15T04:38:41Z",
+      "run_evidence": {
+        "run_id": "soc_syn-3cf66eee1e3f458698138bcecf600ec4",
+        "source_fingerprint": "ee971675d9e96c7bf3214a2f11166955c6f494644fb19e64d56dc7465f05839e",
+        "tool_family": "soc_syn",
+        "recorded_at": "2026-07-15T04:38:41Z"
+      }
     }
   },
   "next_actions": [
     {
       "stage": "verif",
       "action": "spawn soc-verification-engineer",
-      "reason": "dependencies ['rtl'] satisfied"
-    },
-    {
-      "stage": "syn",
-      "action": "spawn soc-synthesis-engineer",
       "reason": "dependencies ['rtl'] satisfied"
     }
   ]
