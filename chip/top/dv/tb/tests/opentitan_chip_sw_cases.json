@@ -3142,9 +3142,7 @@
       ]
     },
     "chip_sw_lc_walkthrough_test": {
-      "compile_opts": [
-        "+define+DISABLE_ROM_INTEGRITY_CHECK"
-      ],
+      "compile_opts": [],
       "kind": "chip_sw",
       "name": "chip_sw_lc_walkthrough_test",
       "provenance": {
@@ -3169,9 +3167,15 @@
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
-      "uvm_sequence": "chip_sw_base_vseq",
+      "uvm_sequence": "chip_sw_lc_walkthrough_vseq",
       "uvm_test": "chip_base_test",
-      "waves": "fsdb"
+      "waves": "fsdb",
+      "run_opts": [
+        "+flash_program_latency=5",
+        "+use_otp_image=OtpTypeLcStRaw",
+        "+dest_dec_state=DecLcStRma",
+        "+sw_test_timeout_ns=300_000_000"
+      ]
     },
     "chip_sw_lc_walkthrough_testunlocks_test": {
       "compile_opts": [],
