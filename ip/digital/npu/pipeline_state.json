@@ -4,7 +4,7 @@
   "workspace": "ip/digital/npu",
   "mode": "single",
   "created_at": "2026-07-07T02:12:44Z",
-  "last_updated": "2026-07-13T10:06:02Z",
+  "last_updated": "2026-07-15T02:54:48Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -72,20 +72,43 @@
       "agent": "soc-rtl-designer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-13T09:54:08Z",
-      "completed_at": "2026-07-13T09:56:06Z",
+      "started_at": "2026-07-15T02:49:06Z",
+      "completed_at": "2026-07-15T02:54:48Z",
       "artifacts": [
-        "de/rtl/npu.v",
+        "de/rtl/npu_mac.v",
+        "de/rtl/npu_requant.v",
+        "de/rtl/npu_regs.v",
         "de/rtl/npu_spm.v",
         "de/rtl/npu_core.v",
+        "de/rtl/npu.v",
         "de/rtl/filelist.f",
         "de/syn/npu.sdc"
       ],
       "artifact_evidence": {
-        "de/rtl/npu.v": {
-          "sha256": "7fc9fea08f765db529ba1ae25fcab9870ca6955682472c70bb416cabc42fb5b3",
-          "size": 11359,
-          "recorded_at": "2026-07-13T09:56:06Z",
+        "de/rtl/npu_mac.v": {
+          "sha256": "97912fe8bbd6ba82e7f937e13c48565751aabae6f8c2a8edfc81c0a72c13c657",
+          "size": 1076,
+          "recorded_at": "2026-07-15T02:54:48Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu_requant.v": {
+          "sha256": "1664492bb78578807197f1d48ad98ec3ec1c5aadfb88f228adbfbbd94a235f45",
+          "size": 2269,
+          "recorded_at": "2026-07-15T02:54:48Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu_regs.v": {
+          "sha256": "212d487cdac0fd8a799fd03650f5909bd9b796d359cb8cab5b16ac0d6b8edd65",
+          "size": 17427,
+          "recorded_at": "2026-07-15T02:54:48Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -95,7 +118,7 @@
         "de/rtl/npu_spm.v": {
           "sha256": "4be6101f9102653a9f32bb3ca551a72f08fd93ccf9ad00ba331376bded6bd312",
           "size": 8956,
-          "recorded_at": "2026-07-13T09:56:06Z",
+          "recorded_at": "2026-07-15T02:54:48Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -105,7 +128,17 @@
         "de/rtl/npu_core.v": {
           "sha256": "1a0f7d97c46c53e73216c603aeaf3d04af618c93b9c2ffb0a8e08b04ddd0dc06",
           "size": 15831,
-          "recorded_at": "2026-07-13T09:56:06Z",
+          "recorded_at": "2026-07-15T02:54:48Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/npu.v": {
+          "sha256": "7fc9fea08f765db529ba1ae25fcab9870ca6955682472c70bb416cabc42fb5b3",
+          "size": 11359,
+          "recorded_at": "2026-07-15T02:54:48Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -115,7 +148,7 @@
         "de/rtl/filelist.f": {
           "sha256": "664cace6f4efb1bb6b31f914b96efbc8ca216701e46e6d3da74ac1ea7e8ebfb6",
           "size": 224,
-          "recorded_at": "2026-07-13T09:56:06Z",
+          "recorded_at": "2026-07-15T02:54:48Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -125,7 +158,7 @@
         "de/syn/npu.sdc": {
           "sha256": "a08932e4c905886223ae3c92658dcc131669b9cd0ee9927c3d99b933b45f2656",
           "size": 306,
-          "recorded_at": "2026-07-13T09:56:06Z",
+          "recorded_at": "2026-07-15T02:54:48Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -137,159 +170,75 @@
         {
           "tool": "soc_lint",
           "passed": true,
-          "note": "verilator clean"
+          "note": "verilator"
         },
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "VCS parse elaboration compile and link completed"
+          "note": "verilator_npu_top"
         },
         {
           "tool": "rtl_quality",
           "passed": true,
-          "note": "no issues"
+          "note": ""
         }
       ],
       "rtl_fingerprint": "3e6ef3216e73acf850fcb1ff0ad569f1967217c3df1cb1cc822961680cc1fbd5",
       "rtl_fingerprint_source": "recorded_at_transition",
-      "notes": "Strict review fixes: integer capacity parameter contract and safe clamped compute addresses before descriptor acceptance",
-      "last_updated": "2026-07-13T09:56:06Z"
+      "notes": "Representative Loop smoke: lint, RTL-top compile, and structural quality passed; VCS unavailable due license",
+      "last_updated": "2026-07-15T02:54:48Z"
     },
     "verif": {
       "step_id": "verif",
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
-      "status": "done",
+      "status": "pending",
       "blocked_by": [],
-      "started_at": "2026-07-13T09:58:19Z",
-      "completed_at": "2026-07-13T10:06:02Z",
-      "artifacts": [
-        "dv/tb/tb_npu.sv",
-        "dv/sim/sim.log"
-      ],
-      "artifact_evidence": {
-        "dv/tb/tb_npu.sv": {
-          "sha256": "86bd8444ab2a7ec49a68dd907f0eaf1914577ca72b25af518852e241e6133dea",
-          "size": 89890,
-          "recorded_at": "2026-07-13T10:06:02Z",
-          "provenance": [
-            "negative_parameter_guards",
-            "sim_log",
-            "soc_sim"
-          ]
-        },
-        "dv/sim/sim.log": {
-          "sha256": "08b5b21fc763fa9c33cfbcc4a2ff2d337fd55e830ef2a3e6b6e2aff7a2ba2834",
-          "size": 4036,
-          "recorded_at": "2026-07-13T10:06:02Z",
-          "provenance": [
-            "negative_parameter_guards",
-            "sim_log",
-            "soc_sim"
-          ]
-        }
-      },
-      "check_results": [
-        {
-          "tool": "soc_sim",
-          "passed": true,
-          "note": "VCS npu_spm_params_v2 seed=1; 23 tests, 2841 checks, 0 errors, phase1 coverage 47/47"
-        },
-        {
-          "tool": "negative_parameter_guards",
-          "passed": true,
-          "note": "5/5 registered VCS runs exact guard at time 0 and no normal RESULT"
-        },
-        {
-          "tool": "sim_log",
-          "passed": true,
-          "note": "exactly one PASS marker and no failure markers"
-        }
-      ],
-      "rtl_fingerprint": "3e6ef3216e73acf850fcb1ff0ad569f1967217c3df1cb1cc822961680cc1fbd5",
-      "rtl_fingerprint_source": "recorded_at_transition",
-      "notes": "",
-      "last_updated": "2026-07-13T10:06:02Z",
-      "run_evidence": {
-        "run_id": "soc_sim-3f511e578f4a48579e03eb9d55ce0aa1",
-        "source_fingerprint": "3e6ef3216e73acf850fcb1ff0ad569f1967217c3df1cb1cc822961680cc1fbd5",
-        "tool_family": "soc_sim",
-        "recorded_at": "2026-07-13T10:06:02Z"
-      }
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "artifact_evidence": {},
+      "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
+      "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
+      "last_updated": "2026-07-15T02:49:05Z"
     },
     "syn": {
       "step_id": "syn",
       "name": "逻辑综合与时序分析",
       "agent": "soc-synthesis-engineer",
-      "status": "done",
+      "status": "pending",
       "blocked_by": [],
-      "started_at": "2026-07-13T09:58:15Z",
-      "completed_at": "2026-07-13T09:59:50Z",
-      "artifacts": [
-        "de/syn/npu_netlist.v",
-        "de/syn/synth.log",
-        "de/syn/npu.sdc"
-      ],
-      "artifact_evidence": {
-        "de/syn/npu_netlist.v": {
-          "sha256": "20120d38823f18a78c4d3f5deb2c2347647e50d89350950df40551a56499bc0b",
-          "size": 14213593,
-          "recorded_at": "2026-07-13T09:59:50Z",
-          "provenance": [
-            "soc_syn",
-            "synth_log"
-          ]
-        },
-        "de/syn/synth.log": {
-          "sha256": "5455a860600cc718b45a9b9c19c8f281a361706e3a1d81a1eac9ea15086559d6",
-          "size": 442207,
-          "recorded_at": "2026-07-13T09:59:50Z",
-          "provenance": [
-            "soc_syn",
-            "synth_log"
-          ]
-        },
-        "de/syn/npu.sdc": {
-          "sha256": "a08932e4c905886223ae3c92658dcc131669b9cd0ee9927c3d99b933b45f2656",
-          "size": 306,
-          "recorded_at": "2026-07-13T09:59:50Z",
-          "provenance": [
-            "soc_syn",
-            "synth_log"
-          ]
-        }
-      },
-      "check_results": [
-        {
-          "tool": "soc_syn",
-          "passed": true,
-          "note": "yosys structural synthesis"
-        },
-        {
-          "tool": "synth_log",
-          "passed": true,
-          "note": "no hierarchy errors, inferred latches, or unsupported constructs"
-        }
-      ],
-      "rtl_fingerprint": "3e6ef3216e73acf850fcb1ff0ad569f1967217c3df1cb1cc822961680cc1fbd5",
-      "rtl_fingerprint_source": "recorded_at_transition",
-      "notes": "",
-      "last_updated": "2026-07-13T09:59:50Z",
-      "run_evidence": {
-        "run_id": "soc_syn-f89c0a2b42eb42dfa7865a7887f44333",
-        "source_fingerprint": "3e6ef3216e73acf850fcb1ff0ad569f1967217c3df1cb1cc822961680cc1fbd5",
-        "tool_family": "soc_syn",
-        "recorded_at": "2026-07-13T09:59:50Z"
-      }
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [],
+      "artifact_evidence": {},
+      "check_results": [],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
+      "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
+      "last_updated": "2026-07-15T02:49:05Z"
     }
   },
-  "next_actions": [],
+  "next_actions": [
+    {
+      "stage": "verif",
+      "action": "spawn soc-verification-engineer",
+      "reason": "dependencies ['rtl'] satisfied"
+    },
+    {
+      "stage": "syn",
+      "action": "spawn soc-synthesis-engineer",
+      "reason": "dependencies ['rtl'] satisfied"
+    }
+  ],
   "migration": {
     "normalized_from_schema": 2,
     "normalization": "current-checkout snapshot; legacy checks not re-executed"
   },
   "repair": {
-    "validated_at": "2026-07-13T09:53:20Z",
+    "validated_at": "2026-07-15T02:49:05Z",
     "policy": "invalid current evidence downgraded without rewriting valid provenance"
   }
 }
