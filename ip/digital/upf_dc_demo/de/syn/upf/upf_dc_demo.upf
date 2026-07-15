@@ -1,0 +1,236 @@
+upf_version 2.1
+
+# ======================================================================
+# SoC 低功耗架构图
+# Design: power_intent
+# ======================================================================
+
+set_scope .
+
+# ----------------------------------------------------------------------
+# 1. Macro Design Attributes
+# ----------------------------------------------------------------------
+set_design_attributes -models {upf_dc_demo_pll_macro upf_dc_demo_sram_16x8 upf_dc_demo_pad_in upf_dc_demo_pad_out} \
+    -is_hard_macro true
+
+# ----------------------------------------------------------------------
+# 2. Supply Ports & Nets
+# ----------------------------------------------------------------------
+create_supply_port VDD_AO \
+    -direction in
+create_supply_port VDD_PLL \
+    -direction in
+create_supply_port VDD_MEM \
+    -direction in
+create_supply_port VDDIO \
+    -direction in
+create_supply_port VDD_SW_IN \
+    -direction in
+create_supply_port VSS \
+    -direction in
+
+create_supply_net VDD_AO
+create_supply_net VDD_PLL
+create_supply_net VDD_MEM
+create_supply_net VDDIO
+create_supply_net VDD_SW_IN
+create_supply_net VDD_SW
+create_supply_net VSS
+
+connect_supply_net VDD_AO \
+    -ports {VDD_AO}
+connect_supply_net VDD_PLL \
+    -ports {VDD_PLL}
+connect_supply_net VDD_MEM \
+    -ports {VDD_MEM}
+connect_supply_net VDDIO \
+    -ports {VDDIO}
+connect_supply_net VDD_SW_IN \
+    -ports {VDD_SW_IN}
+connect_supply_net VSS \
+    -ports {VSS}
+# PLL hard macro
+connect_supply_net VDD_PLL \
+    -ports {u_pll_macro/VDD}
+# PLL hard macro
+connect_supply_net VSS \
+    -ports {u_pll_macro/VSS}
+# SRAM hard macro
+connect_supply_net VDD_MEM \
+    -ports {u_sram_macro/VDD}
+# SRAM hard macro
+connect_supply_net VSS \
+    -ports {u_sram_macro/VSS}
+# Input IO hard macro
+connect_supply_net VDDIO \
+    -ports {u_pad_in/VDDIO}
+# Input IO hard macro
+connect_supply_net VSS \
+    -ports {u_pad_in/VSSIO}
+# Output IO hard macro
+connect_supply_net VDDIO \
+    -ports {u_pad_out/VDDIO}
+# Output IO hard macro
+connect_supply_net VSS \
+    -ports {u_pad_out/VSSIO}
+
+# ----------------------------------------------------------------------
+# 3. Supply Sets
+# ----------------------------------------------------------------------
+create_supply_set SS_VDD_AO_VSS \
+    -function {power VDD_AO} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_PLL_VSS \
+    -function {power VDD_PLL} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_MEM_VSS \
+    -function {power VDD_MEM} \
+    -function {ground VSS}
+
+create_supply_set SS_VDDIO_VSS \
+    -function {power VDDIO} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_SW_IN_VSS \
+    -function {power VDD_SW_IN} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_SW_VSS \
+    -function {power VDD_SW} \
+    -function {ground VSS}
+
+# ----------------------------------------------------------------------
+# 4. Power Domains
+# ----------------------------------------------------------------------
+# Top AO extent containing control, PLL, SRAM, and IO macros
+create_power_domain PD_AO \
+    -include_scope \
+    -supply {primary SS_VDD_AO_VSS} \
+    -supply {extra_supplies_1 SS_VDD_PLL_VSS} \
+    -supply {extra_supplies_2 SS_VDD_MEM_VSS} \
+    -supply {extra_supplies_3 SS_VDDIO_VSS}
+
+# Only the switchable digital core
+create_power_domain PD_SW \
+    -elements {u_sw_core} \
+    -supply {primary SS_VDD_SW_VSS}
+
+# ----------------------------------------------------------------------
+# 5. Power Switch
+# ----------------------------------------------------------------------
+# Auto-derived power switch for PD_SW
+create_power_switch PSW_SW \
+    -domain PD_SW \
+    -input_supply_port {TVDD VDD_SW_IN} \
+    -output_supply_port {VDD VDD_SW} \
+    -control_port {NSLEEPIN u_aon_ctrl/sw_en_o} \
+    -on_state {normal TVDD {NSLEEPIN}} \
+    -off_state {shutdown {!NSLEEPIN}}
+
+# ----------------------------------------------------------------------
+# 6. Port Attributes
+# ----------------------------------------------------------------------
+# External IO driver supply
+set_port_attributes -ports {pad_in_i} \
+    -driver_supply SS_VDDIO_VSS
+
+# AO receiver supply
+set_port_attributes -ports {pad_in_core_o} \
+    -receiver_supply SS_VDD_AO_VSS
+
+# AO driver supply
+set_port_attributes -ports {pad_out_core_i} \
+    -driver_supply SS_VDD_AO_VSS
+
+# External IO receiver supply
+set_port_attributes -ports {pad_out_o} \
+    -receiver_supply SS_VDDIO_VSS
+
+# Hard IO macros own voltage conversion; suppress core LS/repeaters
+set_port_attributes -ports {pad_in_i pad_in_core_o pad_out_core_i pad_out_o} \
+    -is_analog
+
+# Clock enters at the switchable voltage
+set_port_attributes -ports {sw_clk} \
+    -driver_supply SS_VDD_SW_VSS
+
+# ----------------------------------------------------------------------
+# 7. Isolation Strategy
+# ----------------------------------------------------------------------
+# Clamp switchable responses; active-low release
+set_isolation ISO_SW \
+    -domain PD_SW \
+    -applies_to outputs \
+    -location self \
+    -clamp_value 0 \
+    -isolation_signal sw_iso_n \
+    -isolation_sense low \
+    -isolation_supply SS_VDD_AO_VSS
+
+# ----------------------------------------------------------------------
+# 8. Level Shifter Strategy
+# ----------------------------------------------------------------------
+# 1.2 V to 1.8 V responses; co-located with isolation
+set_level_shifter LS_SW \
+    -domain PD_SW \
+    -source SS_VDD_SW_VSS \
+    -sink SS_VDD_AO_VSS \
+    -rule low_to_high \
+    -location self \
+    -applies_to outputs \
+    -input_supply SS_VDD_SW_VSS \
+    -output_supply SS_VDD_AO_VSS
+
+# 1.8 V to 1.2 V requests and control inputs
+set_level_shifter LS_AO_TO_SW \
+    -domain PD_SW \
+    -source SS_VDD_AO_VSS \
+    -sink SS_VDD_SW_VSS \
+    -rule high_to_low \
+    -location self \
+    -applies_to inputs \
+    -input_supply SS_VDD_AO_VSS \
+    -output_supply SS_VDD_SW_VSS
+
+# ----------------------------------------------------------------------
+# 9. Cell Mapping
+# ----------------------------------------------------------------------
+map_isolation_cell ISO_SW \
+    -domain PD_SW \
+    -lib_cells {upf_dc_demo_els_lh_1v2_1v8}
+
+map_level_shifter_cell LS_AO_TO_SW \
+    -domain PD_SW \
+    -lib_cells {upf_dc_demo_ls_hl_1v8_1v2}
+
+# ----------------------------------------------------------------------
+# 10. Power States
+# ----------------------------------------------------------------------
+add_power_state SS_VDD_AO_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.8} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_PLL_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.8} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_MEM_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.8} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDDIO_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 3.3} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_SW_IN_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_SW_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}} \
+    -state OFF {-supply_expr {power == {OFF} && ground == {FULL_ON 0.0}}}
+
+add_power_state PD_SW \
+    -state RUN {-logic_expr {SS_VDD_SW_VSS == ON}} \
+    -state OFF {-logic_expr {SS_VDD_SW_VSS == OFF}}
+
+add_power_state PD_AO \
+    -state ALL_ON {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == RUN && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON}} \
+    -state SW_OFF {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == OFF && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON}}
