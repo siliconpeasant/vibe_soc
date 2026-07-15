@@ -32,4 +32,9 @@ EDA stages must use registered MCP tools. Direct simulator, synthesis, STA, Open
 
 Run the closest relevant checker for non-EDA changes. MCP/runtime changes must run their focused Python tests, and commit-ready work must run `make check-repo` or its non-EDA checker equivalent. Every new task uses a unique branch from latest `origin/main`: use `scripts/prepare_task_worktree.sh <slug>` when the current checkout is dirty, or `scripts/prepare_task_branch.sh <slug>` in a clean checkout. Never reuse a merged task branch.
 
+Task worktrees must not be created under the system `/tmp`. Before running
+`scripts/prepare_task_worktree.sh`, set `CODEX_WORKTREE_ROOT` to a writable,
+persistent directory outside the repository. Do not silently fall back to
+`/tmp` when the configured directory is unavailable.
+
 Commits stay focused and use short imperative summaries. PR notes state intent, affected modules, checks, evidence, and tool/license assumptions.
