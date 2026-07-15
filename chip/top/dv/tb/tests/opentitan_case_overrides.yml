@@ -1,3 +1,5 @@
 # vibe_soc-local OpenTitan case overrides.
 # Keep this file small; generated JSON shards remain the main index.
+# Note: non-empty YAML requires PyYAML in the make Python env.
+# Prefer patching opentitan_*_cases.json when the make launcher lacks PyYAML.
 overrides: {}

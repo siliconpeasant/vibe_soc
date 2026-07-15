@@ -32,6 +32,12 @@
       "tool_timeout_sec": 300
     },
     {
+      "name": "upf-gen",
+      "script": ".agents/skills/upf-gen/mcp_server.py",
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 300
+    },
+    {
       "name": "crg-req-to-design",
       "script": ".agents/skills/crg-req-to-design/mcp_server.py",
       "default_enabled": true,
@@ -51,6 +57,24 @@
       "default_enabled": false,
       "startup_timeout_sec": 120,
       "tool_timeout_sec": 7500
+    },
+    {
+      "name": "openroad-mcp",
+      "command": "/usr/bin/env",
+      "args": [
+        "-u",
+        "PYTHONHOME",
+        "-u",
+        "PYTHONPATH",
+        "FASTMCP_SHOW_SERVER_BANNER=false",
+        "LOG_LEVEL=ERROR",
+        ".openroad-mcp-venv/bin/openroad-mcp",
+        "--log-level",
+        "ERROR"
+      ],
+      "cwd": ".",
+      "startup_timeout_sec": 30,
+      "tool_timeout_sec": 120
     }
   ]
 }

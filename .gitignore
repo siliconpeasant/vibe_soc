@@ -54,3 +54,7 @@ pd/openroad/**/config.local.mk
 
 # Auto-bootstrapped venv for silicon-crew MCP servers (scripts/mcp_python.sh)
 .soc-mcp-venv/
+
+# Project-local OpenROAD-MCP runtime and disposable package cache.
+.openroad-mcp-venv/
+.openroad-mcp-cache/
