@@ -26,6 +26,12 @@ create_supply_port VDDIO \
     -direction in
 create_supply_port VDD_SW_IN \
     -direction in
+create_supply_port VDD_ACC_IN \
+    -direction in
+create_supply_port VDD_PERI_IN \
+    -direction in
+create_supply_port VDD_MEDIA_IN \
+    -direction in
 create_supply_port VSS \
     -direction in
 
@@ -34,7 +40,13 @@ create_supply_net VDD_PLL
 create_supply_net VDD_MEM
 create_supply_net VDDIO
 create_supply_net VDD_SW_IN
+create_supply_net VDD_ACC_IN
+create_supply_net VDD_PERI_IN
+create_supply_net VDD_MEDIA_IN
 create_supply_net VDD_SW
+create_supply_net VDD_ACC
+create_supply_net VDD_PERI
+create_supply_net VDD_MEDIA
 create_supply_net VSS
 
 connect_supply_net VDD_AO \
@@ -47,6 +59,12 @@ connect_supply_net VDDIO \
     -ports {VDDIO}
 connect_supply_net VDD_SW_IN \
     -ports {VDD_SW_IN}
+connect_supply_net VDD_ACC_IN \
+    -ports {VDD_ACC_IN}
+connect_supply_net VDD_PERI_IN \
+    -ports {VDD_PERI_IN}
+connect_supply_net VDD_MEDIA_IN \
+    -ports {VDD_MEDIA_IN}
 connect_supply_net VSS \
     -ports {VSS}
 # PLL hard macro
@@ -101,10 +119,34 @@ create_supply_set SS_VDD_SW_VSS \
     -function {power VDD_SW} \
     -function {ground VSS}
 
+create_supply_set SS_VDD_ACC_IN_VSS \
+    -function {power VDD_ACC_IN} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_ACC_VSS \
+    -function {power VDD_ACC} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_PERI_IN_VSS \
+    -function {power VDD_PERI_IN} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_PERI_VSS \
+    -function {power VDD_PERI} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_MEDIA_IN_VSS \
+    -function {power VDD_MEDIA_IN} \
+    -function {ground VSS}
+
+create_supply_set SS_VDD_MEDIA_VSS \
+    -function {power VDD_MEDIA} \
+    -function {ground VSS}
+
 # ----------------------------------------------------------------------
 # 4. Power Domains
 # ----------------------------------------------------------------------
-# Top AO extent containing control, PLL, SRAM, and IO macros
+# Top AO extent with four controllers and four hard macros
 create_power_domain PD_AO \
     -include_scope \
     -supply {primary SS_VDD_AO_VSS} \
@@ -112,10 +154,25 @@ create_power_domain PD_AO \
     -supply {extra_supplies_2 SS_VDD_MEM_VSS} \
     -supply {extra_supplies_3 SS_VDDIO_VSS}
 
-# Only the switchable digital core
+# Switchable compute core
 create_power_domain PD_SW \
     -elements {u_sw_core} \
     -supply {primary SS_VDD_SW_VSS}
+
+# Switchable accelerator core
+create_power_domain PD_ACC \
+    -elements {u_acc_core} \
+    -supply {primary SS_VDD_ACC_VSS}
+
+# Switchable peripheral core
+create_power_domain PD_PERI \
+    -elements {u_peri_core} \
+    -supply {primary SS_VDD_PERI_VSS}
+
+# Switchable media core
+create_power_domain PD_MEDIA \
+    -elements {u_media_core} \
+    -supply {primary SS_VDD_MEDIA_VSS}
 
 # ----------------------------------------------------------------------
 # 5. Power Switch
@@ -126,6 +183,33 @@ create_power_switch PSW_SW \
     -input_supply_port {TVDD VDD_SW_IN} \
     -output_supply_port {VDD VDD_SW} \
     -control_port {NSLEEPIN u_aon_ctrl/sw_en_o} \
+    -on_state {normal TVDD {NSLEEPIN}} \
+    -off_state {shutdown {!NSLEEPIN}}
+
+# Auto-derived power switch for PD_ACC
+create_power_switch PSW_ACC \
+    -domain PD_ACC \
+    -input_supply_port {TVDD VDD_ACC_IN} \
+    -output_supply_port {VDD VDD_ACC} \
+    -control_port {NSLEEPIN u_acc_aon_ctrl/sw_en_o} \
+    -on_state {normal TVDD {NSLEEPIN}} \
+    -off_state {shutdown {!NSLEEPIN}}
+
+# Auto-derived power switch for PD_PERI
+create_power_switch PSW_PERI \
+    -domain PD_PERI \
+    -input_supply_port {TVDD VDD_PERI_IN} \
+    -output_supply_port {VDD VDD_PERI} \
+    -control_port {NSLEEPIN u_peri_aon_ctrl/sw_en_o} \
+    -on_state {normal TVDD {NSLEEPIN}} \
+    -off_state {shutdown {!NSLEEPIN}}
+
+# Auto-derived power switch for PD_MEDIA
+create_power_switch PSW_MEDIA \
+    -domain PD_MEDIA \
+    -input_supply_port {TVDD VDD_MEDIA_IN} \
+    -output_supply_port {VDD VDD_MEDIA} \
+    -control_port {NSLEEPIN u_media_aon_ctrl/sw_en_o} \
     -on_state {normal TVDD {NSLEEPIN}} \
     -off_state {shutdown {!NSLEEPIN}}
 
@@ -148,18 +232,30 @@ set_port_attributes -ports {pad_out_core_i} \
 set_port_attributes -ports {pad_out_o} \
     -receiver_supply SS_VDDIO_VSS
 
-# Hard IO macros own voltage conversion; suppress core LS/repeaters
+# Hard IO macros own conversion
 set_port_attributes -ports {pad_in_i pad_in_core_o pad_out_core_i pad_out_o} \
     -is_analog
 
-# Clock enters at the switchable voltage
+# Clock enters PD_SW at 1.2 V
 set_port_attributes -ports {sw_clk} \
     -driver_supply SS_VDD_SW_VSS
+
+# Clock enters PD_ACC at 1.2 V
+set_port_attributes -ports {acc_clk} \
+    -driver_supply SS_VDD_ACC_VSS
+
+# Clock enters PD_PERI at 1.2 V
+set_port_attributes -ports {peri_clk} \
+    -driver_supply SS_VDD_PERI_VSS
+
+# Clock enters PD_MEDIA at 1.2 V
+set_port_attributes -ports {media_clk} \
+    -driver_supply SS_VDD_MEDIA_VSS
 
 # ----------------------------------------------------------------------
 # 7. Isolation Strategy
 # ----------------------------------------------------------------------
-# Clamp switchable responses; active-low release
+# Clamp SW responses with AO-powered enable
 set_isolation ISO_SW \
     -domain PD_SW \
     -applies_to outputs \
@@ -169,10 +265,40 @@ set_isolation ISO_SW \
     -isolation_sense low \
     -isolation_supply SS_VDD_AO_VSS
 
+# Clamp ACC responses with AO-powered enable
+set_isolation ISO_ACC \
+    -domain PD_ACC \
+    -applies_to outputs \
+    -location self \
+    -clamp_value 0 \
+    -isolation_signal acc_iso_n \
+    -isolation_sense low \
+    -isolation_supply SS_VDD_AO_VSS
+
+# Clamp PERI responses with AO-powered enable
+set_isolation ISO_PERI \
+    -domain PD_PERI \
+    -applies_to outputs \
+    -location self \
+    -clamp_value 0 \
+    -isolation_signal peri_iso_n \
+    -isolation_sense low \
+    -isolation_supply SS_VDD_AO_VSS
+
+# Clamp MEDIA responses with AO-powered enable
+set_isolation ISO_MEDIA \
+    -domain PD_MEDIA \
+    -applies_to outputs \
+    -location self \
+    -clamp_value 0 \
+    -isolation_signal media_iso_n \
+    -isolation_sense low \
+    -isolation_supply SS_VDD_AO_VSS
+
 # ----------------------------------------------------------------------
 # 8. Level Shifter Strategy
 # ----------------------------------------------------------------------
-# 1.2 V to 1.8 V responses; co-located with isolation
+# SW 1.2 V to AO 1.8 V outputs
 set_level_shifter LS_SW \
     -domain PD_SW \
     -source SS_VDD_SW_VSS \
@@ -183,7 +309,7 @@ set_level_shifter LS_SW \
     -input_supply SS_VDD_SW_VSS \
     -output_supply SS_VDD_AO_VSS
 
-# 1.8 V to 1.2 V requests and control inputs
+# AO 1.8 V to SW 1.2 V inputs
 set_level_shifter LS_AO_TO_SW \
     -domain PD_SW \
     -source SS_VDD_AO_VSS \
@@ -194,6 +320,72 @@ set_level_shifter LS_AO_TO_SW \
     -input_supply SS_VDD_AO_VSS \
     -output_supply SS_VDD_SW_VSS
 
+# ACC 1.2 V to AO 1.8 V outputs
+set_level_shifter LS_ACC \
+    -domain PD_ACC \
+    -source SS_VDD_ACC_VSS \
+    -sink SS_VDD_AO_VSS \
+    -rule low_to_high \
+    -location self \
+    -applies_to outputs \
+    -input_supply SS_VDD_ACC_VSS \
+    -output_supply SS_VDD_AO_VSS
+
+# AO 1.8 V to ACC 1.2 V inputs
+set_level_shifter LS_AO_TO_ACC \
+    -domain PD_ACC \
+    -source SS_VDD_AO_VSS \
+    -sink SS_VDD_ACC_VSS \
+    -rule high_to_low \
+    -location self \
+    -applies_to inputs \
+    -input_supply SS_VDD_AO_VSS \
+    -output_supply SS_VDD_ACC_VSS
+
+# PERI 1.2 V to AO 1.8 V outputs
+set_level_shifter LS_PERI \
+    -domain PD_PERI \
+    -source SS_VDD_PERI_VSS \
+    -sink SS_VDD_AO_VSS \
+    -rule low_to_high \
+    -location self \
+    -applies_to outputs \
+    -input_supply SS_VDD_PERI_VSS \
+    -output_supply SS_VDD_AO_VSS
+
+# AO 1.8 V to PERI 1.2 V inputs
+set_level_shifter LS_AO_TO_PERI \
+    -domain PD_PERI \
+    -source SS_VDD_AO_VSS \
+    -sink SS_VDD_PERI_VSS \
+    -rule high_to_low \
+    -location self \
+    -applies_to inputs \
+    -input_supply SS_VDD_AO_VSS \
+    -output_supply SS_VDD_PERI_VSS
+
+# MEDIA 1.2 V to AO 1.8 V outputs
+set_level_shifter LS_MEDIA \
+    -domain PD_MEDIA \
+    -source SS_VDD_MEDIA_VSS \
+    -sink SS_VDD_AO_VSS \
+    -rule low_to_high \
+    -location self \
+    -applies_to outputs \
+    -input_supply SS_VDD_MEDIA_VSS \
+    -output_supply SS_VDD_AO_VSS
+
+# AO 1.8 V to MEDIA 1.2 V inputs
+set_level_shifter LS_AO_TO_MEDIA \
+    -domain PD_MEDIA \
+    -source SS_VDD_AO_VSS \
+    -sink SS_VDD_MEDIA_VSS \
+    -rule high_to_low \
+    -location self \
+    -applies_to inputs \
+    -input_supply SS_VDD_AO_VSS \
+    -output_supply SS_VDD_MEDIA_VSS
+
 # ----------------------------------------------------------------------
 # 9. Cell Mapping
 # ----------------------------------------------------------------------
@@ -201,8 +393,32 @@ map_isolation_cell ISO_SW \
     -domain PD_SW \
     -lib_cells {upf_dc_demo_els_lh_1v2_1v8}
 
+map_isolation_cell ISO_ACC \
+    -domain PD_ACC \
+    -lib_cells {upf_dc_demo_els_lh_1v2_1v8}
+
+map_isolation_cell ISO_PERI \
+    -domain PD_PERI \
+    -lib_cells {upf_dc_demo_els_lh_1v2_1v8}
+
+map_isolation_cell ISO_MEDIA \
+    -domain PD_MEDIA \
+    -lib_cells {upf_dc_demo_els_lh_1v2_1v8}
+
 map_level_shifter_cell LS_AO_TO_SW \
     -domain PD_SW \
+    -lib_cells {upf_dc_demo_ls_hl_1v8_1v2}
+
+map_level_shifter_cell LS_AO_TO_ACC \
+    -domain PD_ACC \
+    -lib_cells {upf_dc_demo_ls_hl_1v8_1v2}
+
+map_level_shifter_cell LS_AO_TO_PERI \
+    -domain PD_PERI \
+    -lib_cells {upf_dc_demo_ls_hl_1v8_1v2}
+
+map_level_shifter_cell LS_AO_TO_MEDIA \
+    -domain PD_MEDIA \
     -lib_cells {upf_dc_demo_ls_hl_1v8_1v2}
 
 # ----------------------------------------------------------------------
@@ -227,10 +443,50 @@ add_power_state SS_VDD_SW_VSS \
     -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}} \
     -state OFF {-supply_expr {power == {OFF} && ground == {FULL_ON 0.0}}}
 
+add_power_state SS_VDD_ACC_IN_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_ACC_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}} \
+    -state OFF {-supply_expr {power == {OFF} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_PERI_IN_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_PERI_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}} \
+    -state OFF {-supply_expr {power == {OFF} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_MEDIA_IN_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}}
+
+add_power_state SS_VDD_MEDIA_VSS \
+    -state ON {-supply_expr {power == {FULL_ON 1.2} && ground == {FULL_ON 0.0}}} \
+    -state OFF {-supply_expr {power == {OFF} && ground == {FULL_ON 0.0}}}
+
 add_power_state PD_SW \
     -state RUN {-logic_expr {SS_VDD_SW_VSS == ON}} \
     -state OFF {-logic_expr {SS_VDD_SW_VSS == OFF}}
 
+add_power_state PD_ACC \
+    -state RUN {-logic_expr {SS_VDD_ACC_VSS == ON}} \
+    -state OFF {-logic_expr {SS_VDD_ACC_VSS == OFF}}
+
+add_power_state PD_PERI \
+    -state RUN {-logic_expr {SS_VDD_PERI_VSS == ON}} \
+    -state OFF {-logic_expr {SS_VDD_PERI_VSS == OFF}}
+
+add_power_state PD_MEDIA \
+    -state RUN {-logic_expr {SS_VDD_MEDIA_VSS == ON}} \
+    -state OFF {-logic_expr {SS_VDD_MEDIA_VSS == OFF}}
+
 add_power_state PD_AO \
-    -state ALL_ON {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == RUN && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON}} \
-    -state SW_OFF {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == OFF && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON}}
+    -state ALL_ON {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == RUN && PD_ACC == RUN && PD_PERI == RUN && PD_MEDIA == RUN && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == ON && SS_VDD_ACC_VSS == ON && SS_VDD_PERI_VSS == ON && SS_VDD_MEDIA_VSS == ON}} \
+    -state SW_OFF {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == OFF && PD_ACC == RUN && PD_PERI == RUN && PD_MEDIA == RUN && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == OFF && SS_VDD_ACC_VSS == ON && SS_VDD_PERI_VSS == ON && SS_VDD_MEDIA_VSS == ON}} \
+    -state ACC_OFF {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == RUN && PD_ACC == OFF && PD_PERI == RUN && PD_MEDIA == RUN && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == ON && SS_VDD_ACC_VSS == OFF && SS_VDD_PERI_VSS == ON && SS_VDD_MEDIA_VSS == ON}} \
+    -state PERI_OFF {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == RUN && PD_ACC == RUN && PD_PERI == OFF && PD_MEDIA == RUN && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == ON && SS_VDD_ACC_VSS == ON && SS_VDD_PERI_VSS == OFF && SS_VDD_MEDIA_VSS == ON}} \
+    -state MEDIA_OFF {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == RUN && PD_ACC == RUN && PD_PERI == RUN && PD_MEDIA == OFF && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == ON && SS_VDD_ACC_VSS == ON && SS_VDD_PERI_VSS == ON && SS_VDD_MEDIA_VSS == OFF}} \
+    -state COMPUTE_ONLY {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == RUN && PD_ACC == RUN && PD_PERI == OFF && PD_MEDIA == OFF && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == ON && SS_VDD_ACC_VSS == ON && SS_VDD_PERI_VSS == OFF && SS_VDD_MEDIA_VSS == OFF}} \
+    -state IO_STANDBY {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == OFF && PD_ACC == OFF && PD_PERI == RUN && PD_MEDIA == OFF && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == OFF && SS_VDD_ACC_VSS == OFF && SS_VDD_PERI_VSS == ON && SS_VDD_MEDIA_VSS == OFF}} \
+    -state MEDIA_MODE {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == OFF && PD_ACC == OFF && PD_PERI == RUN && PD_MEDIA == RUN && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == OFF && SS_VDD_ACC_VSS == OFF && SS_VDD_PERI_VSS == ON && SS_VDD_MEDIA_VSS == ON}} \
+    -state DEEP_SLEEP {-logic_expr {SS_VDD_AO_VSS == ON && PD_SW == OFF && PD_ACC == OFF && PD_PERI == OFF && PD_MEDIA == OFF && SS_VDD_PLL_VSS == ON && SS_VDD_MEM_VSS == ON && SS_VDDIO_VSS == ON && SS_VDD_SW_IN_VSS == ON && SS_VDD_ACC_IN_VSS == ON && SS_VDD_PERI_IN_VSS == ON && SS_VDD_MEDIA_IN_VSS == ON && SS_VDD_SW_VSS == OFF && SS_VDD_ACC_VSS == OFF && SS_VDD_PERI_VSS == OFF && SS_VDD_MEDIA_VSS == OFF}}

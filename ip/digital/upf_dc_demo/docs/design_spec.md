@@ -1,73 +1,51 @@
-# UPF/DC demo design specification
+# UPF/DC five-domain design specification
 
 ## Scope
 
-`upf_dc_demo` is a teaching subsystem for strict UPF generation and Synopsys DC/Power Compiler low-power synthesis. It contains an always-on controller, one switchable digital core, and behavioral/synthesis-blackbox stubs for a PLL, a 16 x 8 SRAM, an input pad, and an output pad. The stubs are not foundry IP. The local Sky130 HD teaching DB does not establish characterization for every 1.2 V, 1.8 V, and 3.3 V combination, so this demo makes no signoff claim.
+`upf_dc_demo` contains one 1.8 V always-on domain (`PD_AO`) and four independent 1.2 V switchable domains (`PD_SW`, `PD_ACC`, `PD_PERI`, `PD_MEDIA`). Each switchable domain contains one arithmetic core and has a dedicated AO controller instance, input rail, switched rail, virtual power switch, output isolation/low-to-high strategy, and AO-to-domain high-to-low strategy. There are no direct crossings between switchable domains.
 
-There is no bus, address map, software register, interrupt, generated-clock endpoint, or physical switch implementation.
+The local Sky130 teaching libraries are deliberately non-signoff views. Reusing their 1.8↔1.2 LS/ELS models is an engineering assumption for tool-flow demonstration, not characterized timing, power, or reliability evidence. The strategy rationale follows Power Compiler UG U-2022.12-SP3 pp. 228–229 and p. 210.
 
-## Hierarchy and domain ownership
+## Hierarchy and behavior
 
-| Instance | Module | Domain | Function |
-|---|---|---|---|
-| top scope | `upf_dc_demo` | `PD_AO` | Integration glue |
-| `u_aon_ctrl` | `upf_dc_demo_aon_ctrl` | `PD_AO` | Power/isolation sequencing and response capture |
-| `u_pll_macro` | `upf_dc_demo_pll_macro` | `PD_AO` | PLL teaching stub |
-| `u_sram_macro` | `upf_dc_demo_sram_16x8` | `PD_AO` | SRAM teaching stub |
-| `u_pad_in` | `upf_dc_demo_pad_in` | `PD_AO` | Input-pad teaching stub |
-| `u_pad_out` | `upf_dc_demo_pad_out` | `PD_AO` | Output-pad teaching stub |
-| `u_sw_core` | `upf_dc_demo_sw_core` | `PD_SW` | Switchable arithmetic RTL |
+| Instances | Domain | Function |
+|---|---|---|
+| top scope, four `u_*_aon_ctrl`, PLL, SRAM, pads | `PD_AO` | AO sequencing, response capture, hard macros |
+| `u_sw_core` | `PD_SW` | `sw_req_data_i + 8'h01` |
+| `u_acc_core` | `PD_ACC` | `acc_req_data_i + 8'h01` |
+| `u_peri_core` | `PD_PERI` | `peri_req_data_i + 8'h01` |
+| `u_media_core` | `PD_MEDIA` | `media_req_data_i + 8'h01` |
 
-Exactly two power domains exist. `PD_AO` owns the top extent and every instance except `u_sw_core`; `PD_SW` contains only `u_sw_core`. A dedicated macro supply is an additional supply association, not a new power domain.
+Each core uses its dedicated `*_clk`, clears state on active-low reset or behavioral power loss, and pulses response valid for an admitted request. Each AO controller uses `clk`, independently sequences its active-high switch control and active-high isolation release, admits traffic only when both are asserted, and captures the protected response.
 
-## Supplies and PG pins
+Reset disables all four power controls, asserts all four isolation strategies, and clears all responses. Power-up asserts the domain switch control, waits two complete AO edges, then releases isolation. Power-down asserts isolation, waits one AO edge, then removes power.
 
-| Supply set | Nets | Nominal voltage | Association |
-|---|---|---:|---|
-| `SS_VDD_AO_VSS` | `VDD_AO` / `VSS` | 1.8 V | `PD_AO.primary` |
-| `SS_VDD_PLL_VSS` | `VDD_PLL` / `VSS` | 1.8 V | `PD_AO.extra_supplies_1` |
-| `SS_VDD_MEM_VSS` | `VDD_MEM` / `VSS` | 1.8 V | `PD_AO.extra_supplies_2` |
-| `SS_VDDIO_VSS` | `VDDIO` / `VSS` | 3.3 V | `PD_AO.extra_supplies_3` |
-| `SS_VDD_SW_IN_VSS` | `VDD_SW_IN` / `VSS` | 1.2 V | Abstract switch input; no `PD_AO` association |
-| `SS_VDD_SW_VSS` | `VDD_SW` / `VSS` | 1.2 V ON | Abstract switch output and `PD_SW.primary` |
+## Power intent
 
-Active-high `sw_en`, generated in `PD_AO`, controls abstract switch `PSW_SW` from `VDD_SW_IN` to `VDD_SW`. `VSS` is common. UPF shall describe the input supply, output supply, control, and ON condition with `create_power_switch`. Power Compiler preserves this virtual/generic rule but does not instantiate a switch cell; backend implementation owns physical insertion and PG hookup.
+Exactly five domains and four virtual switches exist. Supply pairs are:
 
-Behavioral RTL macro views have no PG ports. Synthesis links PG-aware Liberty blackbox views, and UPF shall bind their `pg_pin` objects explicitly with hierarchical `connect_supply_net`:
+- `PD_AO.primary = SS_VDD_AO_VSS`, with `SS_VDD_PLL_VSS`, `SS_VDD_MEM_VSS`, and `SS_VDDIO_VSS` as its only three additional supplies.
+- `PD_SW.primary = SS_VDD_SW_VSS`, fed virtually from `SS_VDD_SW_IN_VSS` by `PSW_SW`.
+- `PD_ACC.primary = SS_VDD_ACC_VSS`, fed virtually from `SS_VDD_ACC_IN_VSS` by `PSW_ACC`.
+- `PD_PERI.primary = SS_VDD_PERI_VSS`, fed virtually from `SS_VDD_PERI_IN_VSS` by `PSW_PERI`.
+- `PD_MEDIA.primary = SS_VDD_MEDIA_VSS`, fed virtually from `SS_VDD_MEDIA_IN_VSS` by `PSW_MEDIA`.
 
-| Hierarchical pin | Net |
-|---|---|
-| `u_pll_macro/VDD` | `VDD_PLL` |
-| `u_pll_macro/VSS` | `VSS` |
-| `u_sram_macro/VDD` | `VDD_MEM` |
-| `u_sram_macro/VSS` | `VSS` |
-| `u_pad_in/VDDIO` | `VDDIO` |
-| `u_pad_in/VSSIO` | `VSS` |
-| `u_pad_out/VDDIO` | `VDDIO` |
-| `u_pad_out/VSSIO` | `VSS` |
+The four `create_power_switch` rules are abstract backend intent only. No RTL module, Liberty hard macro, UPF hard-macro row, MacroPG connection, `map_power_switch`, or ordinary-netlist instance may implement a physical switch.
 
-The power switch is not a hard macro in this synthesis contract. RTL shall contain no switch instance or switch PG ports; synthesis shall not link, map, insert, or preserve a switch cell; and UPF shall contain no hierarchical switch `MacroPG` connection. `VDD_SW_IN` and `VDD_SW` remain valid UPF supply objects in the internal MV database and saved UPF. They do not appear in the ordinary non-PG Verilog deliverable. The saved UPF `PSW_SW` object is the implementation handoff.
+All four output boundaries clamp to zero and use an always-on isolation supply. Each low-to-high output strategy and isolation strategy share `upf_dc_demo_els_lh_1v2_1v8`; each AO-to-domain input strategy maps to `upf_dc_demo_ls_hl_1v8_1v2`. Each dedicated switchable clock has a driver-supply attribute matching the destination primary supply so it does not receive an LS.
 
-This contract is based on *Power Compiler User Guide*, U-2022.12-SP3, pp. 358–359: `create_power_switch` creates a virtual instance representing a generic switch at the specified scope; Power Compiler does not insert it and passes the information to IC Compiler II.
+The PLL, SRAM, and pads remain `PD_AO` hard macros with eight exact PG connections. Pad boundary supply attributes and analog exemption remain unchanged.
 
-No pad core-rail PG pins are added. The 3.3 V IO versus 1.8 V core boundary is described by driver/receiver attributes while the pads remain members of `PD_AO`. The point-to-point pad boundary ports are marked analog so a core standard-cell LS is not inserted in place of a real characterized IO macro.
+## System power states
 
-## Behavior and sequencing
+The canonical workbook defines `ALL_ON`, four single-domain-off states, `COMPUTE_ONLY`, `IO_STANDBY`, `MEDIA_MODE`, and `DEEP_SLEEP`. Every row explicitly covers `PD_SW/ACC/PERI/MEDIA`, `VDD_SW/ACC/PERI/MEDIA`, always-on/macro rails, and `VDD_SW/ACC/PERI/MEDIA_IN`. The input rails never turn off in this bounded model; switched rails track their domain RUN/OFF state.
 
-`u_aon_ctrl` accepts `sw_power_req_i` and owns active-high `sw_en` plus active-high isolation release `sw_iso_n`. Reset disables power, asserts isolation, and clears responses. For power-up, it asserts `sw_en`, waits two full `clk` edges, then asserts `sw_iso_n`. For power-down, it clears `sw_iso_n`, waits one `clk` edge, then clears `sw_en`. Requests are admitted only when both signals are high.
+## Timing and synthesis handoff
 
-`u_sw_core` runs from the dedicated top input `sw_clk`, which is related to the 1.2 V switchable supply. It registers `req_data_i + 8'h01` and pulses response valid when powered and requested. Reset or behavioral power loss clears its state; no retention is used. RTL shadow behavior aids deterministic elaboration but is not evidence of inserted isolation.
+`clk`, `sw_clk`, `acc_clk`, `peri_clk`, and `media_clk` are independent 10.000 ns clocks with 0.10 ns uncertainty and transition. Digital IO delay is 1.0 ns and output load is 0.05 pF. `pll_clk_mon_o` remains observation-only.
 
-The SRAM is always-on and provides synchronous 16 x 8 single-port read/write behavior. The PLL stub copies its reference clock to an observation output when enabled and asserts lock after four reference edges; that output never clocks sequential RTL. Pad stubs are bounded digital pass-through models with no ESD, slew, drive, or analog behavior.
+DC shall load PG-aware macro and teaching-cell libraries plus the complete UPF, check exactly five domains, four abstract switches, twelve supply sets, all four cores, four controllers, eight MacroPG paths, and all nine system states. It shall save full UPF and emit ordinary non-PG Verilog. That Verilog must contain functional and inserted low-power cells but no supply rail or named PG-pin connection. Provisional cell expectations are 36 ELS and 44 pure H2L LS; only real synthesis may establish final exact assertions.
 
-## UPF and synthesis requirements
+## Exclusions
 
-UPF shall create exactly the memberships and supplies above, use explicit `extra_supplies_1` through `extra_supplies_3` for PLL/SRAM/IO only, connect those four hard macros' PG pins hierarchically, and retain abstract `PSW_SW` without any switch macro declaration or binding. AO-to-SW request/control paths require 1.8-to-1.2 high-to-low level shifting. SW-to-AO response paths require clamp-0 isolation plus 1.2-to-1.8 low-to-high shifting, co-located at the `PD_SW` boundary in one dual-rail enable-level-shifter cell powered by `VDD_SW` and always-on `VDD_AO`. `sw_clk` enters directly at the `PD_SW` voltage. Pad ports retain explicit IO/AO supply attributes but are analog-exempt from core LS insertion.
-
-Later synthesis uses 10.000 ns `clk` and `sw_clk`, 0.10 ns clock uncertainty and transition, 1.0 ns digital IO delays, and 0.05 pF output load. Preserve the PLL/SRAM/IO functional macro instances, link them against PG-aware blackbox DB views, load complete UPF connectivity, audit the internal domain/supply/MacroPG database, and save the full UPF for backend.
-
-The delivered `de/syn/upf_dc_demo_netlist.v` shall be written with ordinary `write_file -format verilog` and without `-pg`. It must preserve functional logic plus nine ELS isolation cells and eleven pure high-to-low LS cells, yielding twenty total level-shifter instances when ELS is included. It must not contain a supply port, supply net, or PG-pin named connection. At minimum, scans shall reject `VDD*`, `VSS*`, `VDDIO`, `VSSIO`, `VGND`, `VPWR`, and `VPWRIN` when used as Verilog nets, ports, or named pins. The eight macro PG bindings remain UPF/report evidence only.
-
-Validation is document completeness, `upf-gen --strict`, registered `soc_lint`, `soc_comp`, `soc_syn`, real DC domain/supply/strategy/PG/cell reports, saved-full-UPF inspection, low-power-cell counting, and a strict non-PG netlist scan. `soc_sim` is not run. *Power Compiler User Guide*, U-2022.12-SP3, p. 416 defines `write_file -pg` as the complete-PG output form; pp. 418–419 show its named PG pins and supply nets. Omitting `-pg` is therefore deliberate for this Verilog handoff and does not remove power intent from the saved UPF.
-
-Tool/license absence, an extra domain, unresolved PLL/SRAM/IO PG pins, wrong supply association, missing isolation coverage, or unsupported LS mapping is reported honestly. Reference evidence: *Power Compiler User Guide*, U-2022.12-SP3, p. 227 for domains with multiple supplies, p. 268 for numbered `extra_supplies_#` syntax/restrictions, p. 258 for hierarchical `connect_supply_net` to macro PG pins, and pp. 358–359 for the virtual/generic switch rule, non-insertion by Power Compiler, and handoff to IC Compiler II.
+No bus, register map, interrupt, retention, generated-clock endpoint, physical switch cell, direct switchable-domain crossing, analog electrical model, or functional simulation is part of this stage.
