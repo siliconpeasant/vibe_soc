@@ -1,87 +1,35 @@
-# Repository Guidelines
+# Repository Agent Guide
 
-## Project Structure & Module Organization
+## Scope and layout
 
-`vibe_soc` uses a silicon-crew SoC layout. Chip-level modules live under `chip/`, reusable IP under `ip/`, OpenROAD handoff collateral under `pd/openroad/`, and shared Make/tool scripts under `scripts/`. The active chip top is `chip/top`, with OpenTitan vendor-island RTL in `chip/top/de/rtl/vendor/opentitan/`, testbench and software collateral in `chip/top/dv/tb/`, test manifests in `chip/top/dv/tests/`, and per-case outputs in `chip/top/dv/sim/<test>/`.
-
-Each module should follow:
+`vibe_soc` uses the silicon-crew layout. Chip modules live under `chip/`, reusable IP under `ip/`, OpenROAD handoff files under `pd/openroad/`, and shared tooling under `scripts/`. Module artifacts belong only under:
 
 ```text
 docs/  de/rtl/  de/run/  de/syn/  dv/tb/  dv/tests/  dv/sim/
 ```
 
-Do not add legacy root-level `rtl/`, `tb/`, `sim/`, `syn/`, or `constraints/` compatibility directories.
+Do not create legacy root-level `rtl/`, `tb/`, `sim/`, `syn/`, or `constraints/` compatibility trees. Keep generated logs, caches, waveforms, and local tool configuration out of commits.
 
-## Build, Test, and Development Commands
+## Autonomy
 
-The Make examples below are for human developers. Agents must use registered MCP tools for EDA stages.
+For review, diagnosis, or planning, inspect and report without changing source. For change, build, or fix requests, make in-scope local edits and run non-destructive validation without asking first. Confirmation is required only for external writes, destructive actions, or a material expansion of scope. Design choices that change an unapproved interface, clock/reset behavior, address map, safety boundary, or waiver remain explicit blockers.
 
-Run from the repository root unless noted:
+## SoC Loop
 
-```bash
-make check-env
-make list-modules
-make validate-flist MODULE=chip/top
-make lint MODULE=ip/digital/uart
-make comp MODULE=chip/top SIMULATOR=vcs
-make sim MODULE=chip/top SIMULATOR=vcs TEST=chip_sw_uart_smoketest SEED=1
-make sim MODULE=chip/top SIMULATOR=vcs TEST=chip_sw_uart_smoketest FSDB=1
-make verdi MODULE=chip/top TEST=chip_sw_uart_smoketest
-```
-
-Use `FSDB=1` only when waveform debug is needed. Run `make check-repo` before committing to catch local paths and license leaks.
-
-## Coding Style & Naming Conventions
-
-Keep RTL SystemVerilog consistent with nearby OpenTitan/vibe_soc code. Use lowercase snake_case for modules, signals, tests, and directories. Put RTL source lists in `de/rtl/filelist.f` and composition logic in `filelist.mk`. Keep generated or transient logs in `de/run/` and `dv/sim/`; these should not be committed.
-
-## Testing Guidelines
-
-Human verification may use the Make flow below. Agent verification must use `soc-build.soc_sim`, never direct Make or simulator commands. Preferred human smoke check is:
+Use `vibe-soc-loop` for feature, RTL, integration, verification, synthesis, or PD work. Run:
 
 ```bash
-make sim MODULE=chip/top SIMULATOR=vcs TEST=chip_sw_uart_smoketest SEED=1
+python3 .agents/scripts/loop_context.py <workspace> --format text
 ```
 
-For MCP changes, run:
+The packet is the routing source of truth. `dev` scopes discovery to the target workspace and keeps one owner; `merge` and `signoff` inspect the full delivery diff. Read only rules returned by the packet. Its state summary replaces a separate routine `query_state.py` call; query again only after failure, an intentional delivery transition, or when detailed evidence is needed.
 
-```bash
-.agents/scripts/run_mcp_python.sh .agents/skills/soc-build/tests/test_mcp_server.py
-```
+Material RTL follows `doc -> rtl -> {verif, syn}`. In `dev`, keep the owned stage open and run the packet's targeted checks. Close stale stages once in `merge`; high-risk interface, register, clock/reset, constraint, top, multi-module, low-power, or PD work uses `signoff`. Never claim completion from stale or fabricated evidence.
 
-## Commit & Pull Request Guidelines
+EDA stages must use registered MCP tools. Direct simulator, synthesis, STA, OpenROAD, or EDA Make invocation is blocked by policy. `soc_sim` already compiles: during `dev`, use targeted `soc_sim` when a meaningful test exists, otherwise `soc_comp`; do not run both by default.
 
-Commit messages are short, imperative summaries, for example `Update simulation toolchain controls` or `Split OpenTitan RTL into native IP filelists`. Keep commits focused and exclude waveforms, simulator caches, local config, and personal files. PRs should describe intent, list affected modules, include commands run, and call out any known tool or license assumptions.
+## Validation and delivery
 
-Every new task must use a fresh branch created from the latest remote default
-branch. Before making task changes, run:
+Run the closest relevant checker for non-EDA changes. MCP/runtime changes must run their focused Python tests, and commit-ready work must run `make check-repo` or its non-EDA checker equivalent. Every new task uses a unique branch from latest `origin/main`: use `scripts/prepare_task_worktree.sh <slug>` when the current checkout is dirty, or `scripts/prepare_task_branch.sh <slug>` in a clean checkout. Never reuse a merged task branch.
 
-```bash
-scripts/prepare_task_branch.sh <task-slug>
-```
-
-Never push new commits to a branch whose pull request has already merged. Do
-not reuse a prior `codex/**`, `feature/**`, or `fix/**` branch for another
-task. The automatic PR workflow rejects reuse of a previously merged head
-branch.
-
-## Agent-Specific Instructions
-
-For RTL creation or material refactoring, enter the repository Loop and update
-`pipeline_state.json` when applicable. Daily single-module work uses the `dev`
-inner loop; the gated `doc -> rtl -> {verif, syn}` closure runs once in `merge`
-or `signoff`. EDA stages must use registered MCP tools such as
-`soc-build.soc_sim`, `soc-build.soc_syn`, and `soc-openroad`; do not bypass them
-with direct shell simulator or synthesis invocations.
-
-## Codex Loop Workflow
-
-For feature, RTL, integration, verification, synthesis, or physical-design tasks, use the repository loop instead of an ad hoc edit-and-run flow:
-
-1. Run `python3 .agents/scripts/loop_context.py <workspace> --format text` before planning. Its compact packet selects `dev`, `merge`, or `signoff`, automatically raises risky changes, and lists only the rules that must be read.
-2. Use `vibe-soc-loop` as the high-level dispatcher and the matching repo skill or registered MCP tool as executor.
-3. In `dev`, use one stage owner, keep material RTL work `rtl in_progress`, and run targeted registered lint/compile/simulation. Do not close delivery stages or run synthesis/reviewer on every edit.
-4. Before PR or delivery, rerun with `--mode merge`, complete only stale stages, and run `soc-reviewer normal`. Verify readiness afterward with `--review-result pass --check-ready`. High-risk changes automatically use `signoff` and `soc-reviewer strict`.
-5. Mark stages `in_progress`, `done`, `fail`, or invalidated `pending` only through the validated state helpers. Use `query_state.py <workspace> --compact` for routine coordination.
-6. If a stage fails, inspect the real log/report first and loop back to the earliest affected stage. Never continue from stale evidence or fabricate simulation, synthesis, timing, or PD success.
-7. When the same mistake recurs, update the smallest applicable rule, skill, checker, or hook so later sessions inherit the correction.
+Commits stay focused and use short imperative summaries. PR notes state intent, affected modules, checks, evidence, and tool/license assumptions.

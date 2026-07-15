@@ -155,6 +155,22 @@ class WorkspaceCase(unittest.TestCase):
                 for issue in issues)
         )
 
+    def test_compact_summary_turns_invalid_evidence_into_next_action(self) -> None:
+        self.init()
+        self.close_doc()
+        state = self.load()
+        write(self.workspace / "docs" / "design_spec.md", "# Changed after review\n")
+        issues = core.validate_state(state, self.workspace)
+        summary = core.compact_state_summary(state, self.workspace, issues=issues)
+        self.assertFalse(summary["valid"])
+        repair = [
+            action
+            for action in summary["next_actions"]
+            if action["stage"] == "doc" and action["action"] == "repair_evidence"
+        ]
+        self.assertEqual(len(repair), 1)
+        self.assertIn("digest", repair[0]["reason"])
+
     def test_stale_mcp_source_fingerprint_cannot_close_verification(self) -> None:
         self.init()
         self.close_doc()
@@ -189,6 +205,55 @@ class WorkspaceCase(unittest.TestCase):
         after = core.compute_rtl_fingerprint(top)
         self.assertIsNotNone(before)
         self.assertNotEqual(before, after)
+
+    def test_generated_resolved_manifest_does_not_change_local_fingerprint(self) -> None:
+        rtl = self.workspace / "de" / "rtl"
+        write(rtl / "demo.sv", "module demo; endmodule\n")
+        write(rtl / "filelist.f", "demo.sv\n")
+        before = core.compute_rtl_fingerprint(self.workspace)
+
+        write(
+            self.workspace / "de" / "run" / "rtl.f",
+            f"{rtl / 'demo.sv'}\n",
+        )
+        after = core.compute_rtl_fingerprint(self.workspace)
+
+        self.assertIsNotNone(before)
+        self.assertEqual(before, after)
+
+    def test_legacy_generated_manifest_fingerprint_is_normalized(self) -> None:
+        self.init()
+        self.close_doc()
+        self.close_rtl()
+        core.update_state(str(self.workspace), "verif", "in_progress")
+        rtl = self.workspace / "de" / "rtl"
+        write(
+            self.workspace / "de" / "run" / "rtl.f",
+            f"{rtl / 'demo.sv'}\n",
+        )
+        reported = core._compute_rtl_fingerprint(
+            self.workspace, include_generated_manifest=True
+        )
+        current = core.compute_rtl_fingerprint(self.workspace)
+        self.assertNotEqual(reported, current)
+        write(self.workspace / "dv" / "sim" / "sim.log", "RESULT: ALL TESTS PASS\n")
+
+        core.update_state(
+            str(self.workspace),
+            "verif",
+            "done",
+            artifacts=["dv/sim/sim.log"],
+            checks=["soc_sim:passed", "sim_log:passed"],
+            source_fingerprint=reported,
+            run_id="soc_sim-legacy-fingerprint",
+        )
+
+        evidence = self.load()["pipeline"]["verif"]["run_evidence"]
+        self.assertEqual(evidence["source_fingerprint"], current)
+        self.assertEqual(evidence["reported_source_fingerprint"], reported)
+        self.assertEqual(
+            evidence["fingerprint_normalization"], "generated_manifest_v1"
+        )
 
     def test_transient_digest_becomes_warning_on_clean_clone(self) -> None:
         self.init()

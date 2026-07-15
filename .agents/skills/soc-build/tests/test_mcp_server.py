@@ -55,6 +55,9 @@ class SocBuildMcpTest(unittest.TestCase):
         self.assertEqual(evidence["tool_family"], "soc_sim")
         self.assertTrue(evidence["run_id"].startswith("soc_sim-"))
         self.assertRegex(evidence["source_fingerprint"], r"^[0-9a-f]{64}$")
+        self.assertEqual(len(evidence["artifacts"]), 1)
+        captured = self.module_dir / evidence["artifacts"][0]
+        self.assertEqual(captured.read_text(encoding="utf-8"), "ok\n")
         self.assertEqual(run.call_count, 2)
         run.assert_any_call(
             ["make", "comp", "sim", "SIMULATOR=vcs", "SEED=7", "TEST=uart_all"],
@@ -197,6 +200,11 @@ class SocBuildMcpTest(unittest.TestCase):
         result = SERVER.soc_syn(str(self.module_dir), "uart", syn_tool="dc")
         evidence = json.loads(result.split("LOOP_EVIDENCE=", 1)[1])
         self.assertEqual(evidence["tool_family"], "soc_syn")
+        self.assertEqual(len(evidence["artifacts"]), 1)
+        self.assertEqual(
+            (self.module_dir / evidence["artifacts"][0]).read_text(encoding="utf-8"),
+            "ok\n",
+        )
         self.assertEqual(run.call_count, 2)
         run.assert_any_call(
             ["make", "syn", "SYN_TOOL=dc", "RTL_TOP=uart"],
@@ -216,6 +224,27 @@ class SocBuildMcpTest(unittest.TestCase):
         run.side_effect = mutate
         with self.assertRaisesRegex(RuntimeError, "changed during soc_sim"):
             SERVER.soc_sim(str(self.module_dir), "vcs", 1, "smoke")
+
+    @patch.object(SERVER, "_run")
+    def test_sim_evidence_keeps_immutable_native_log(self, run) -> None:
+        mutable = self.module_dir / "dv" / "sim" / "smoke" / "sim.log"
+
+        def create_log(*args, **kwargs):
+            if run.call_count == 2:
+                mutable.parent.mkdir(parents=True, exist_ok=True)
+                mutable.write_text("RESULT: ALL TESTS PASS\n", encoding="utf-8")
+                return "RESULT: ALL TESTS PASS"
+            return "filelist ready"
+
+        run.side_effect = create_log
+        result = SERVER.soc_sim(str(self.module_dir), "vcs", 1, "smoke")
+        evidence = json.loads(result.split("LOOP_EVIDENCE=", 1)[1])
+        native = [item for item in evidence["artifacts"] if "/native/" in item]
+        self.assertEqual(len(native), 1)
+        immutable = self.module_dir / native[0]
+        self.assertEqual(immutable.read_text(encoding="utf-8"), "RESULT: ALL TESTS PASS\n")
+        mutable.write_text("RESULT: TESTS FAILED\n", encoding="utf-8")
+        self.assertEqual(immutable.read_text(encoding="utf-8"), "RESULT: ALL TESTS PASS\n")
 
     def test_syn_rejects_unknown_tool(self) -> None:
         with self.assertRaisesRegex(ValueError, "dc, yosys"):

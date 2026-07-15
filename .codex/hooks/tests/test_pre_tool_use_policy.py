@@ -67,6 +67,26 @@ class PreToolUsePolicyTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_wrapper_ignores_hostile_eda_python_environment(self) -> None:
+        env = os.environ.copy()
+        env.update(
+            PYTHONHOME="/nonexistent/python2",
+            PYTHONPATH="/nonexistent/vendor/site-packages",
+            SILICON_CREW_HOOK_PYTHON=sys.executable,
+        )
+        result = subprocess.run(
+            [str(WRAPPER)],
+            input=json.dumps({"tool_input": {"cmd": "make sim MODULE=chip/top"}}),
+            text=True,
+            capture_output=True,
+            cwd="/tmp",
+            env=env,
+            timeout=5,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["decision"], "block")
+
     def test_top_level_error_is_logged_and_exits_zero(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "hook.log"

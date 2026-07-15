@@ -13,13 +13,10 @@
       "close_pipeline": false,
       "required_checks": [
         "soc_lint",
-        "soc_comp",
-        "targeted_soc_sim"
+        "targeted_soc_sim_or_soc_comp",
+        "rtl_quality"
       ],
-      "rules": [
-        ".agents/rules/00_loop_modes.md",
-        ".agents/rules/02_toolchain.md"
-      ]
+      "rules": []
     },
     "merge": {
       "purpose": "Close the final module diff once before PR or automatic merge.",
@@ -36,13 +33,9 @@
         "loop_review_normal"
       ],
       "rules": [
-        ".agents/rules/00_loop_modes.md",
         ".agents/rules/01_swarm_flow.md",
         ".agents/rules/02_toolchain.md",
         ".agents/rules/05_pipeline_state.md",
-        ".agents/rules/10_rtl_change_gate.md",
-        ".agents/rules/11_verif_recovery_gate.md",
-        ".agents/rules/12_syn_pd_gate.md",
         ".agents/rules/13_review_gate.md"
       ]
     },
@@ -62,13 +55,9 @@
         "loop_review_strict"
       ],
       "rules": [
-        ".agents/rules/00_loop_modes.md",
         ".agents/rules/01_swarm_flow.md",
         ".agents/rules/02_toolchain.md",
         ".agents/rules/05_pipeline_state.md",
-        ".agents/rules/10_rtl_change_gate.md",
-        ".agents/rules/11_verif_recovery_gate.md",
-        ".agents/rules/12_syn_pd_gate.md",
         ".agents/rules/13_review_gate.md"
       ]
     }
@@ -82,12 +71,13 @@
       "**/dv/tb/**",
       "**/dv/tests/**"
     ],
+    "lightweight_globs": [
+      "**/dv/tests/**"
+    ],
     "merge_globs": [
       "**/de/rtl/filelist.f",
       "**/de/rtl/filelist.mk",
-      "**/de/run/rtl.f",
-      "**/dv/tb/**",
-      "**/dv/tests/**"
+      "**/de/run/rtl.f"
     ],
     "signoff_globs": [
       "chip/top/de/rtl/**",

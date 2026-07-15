@@ -1,4 +1,6 @@
 interface:
   display_name: "SoC Pipeline"
-  short_description: "Architecture handoff plus gated SoC RTL design and verification flow"
-  default_prompt: "Use $soc-pipeline to plan architecture when needed, then implement and verify through the gated SoC workflow."
+  short_description: "Close router-selected merge or signoff evidence"
+  default_prompt: "Use $soc-pipeline to close only the stale stages in this merge or signoff packet."
+policy:
+  allow_implicit_invocation: false
