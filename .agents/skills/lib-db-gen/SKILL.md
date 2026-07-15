@@ -29,7 +29,9 @@ python3 .agents/skills/lib-db-gen/scripts/lib_db_gen.py stub \
   --db path/to/top_stub.db
 ```
 
-Use `--no-run` to only emit the `.lib` and the Library Compiler Tcl script. Use `--lc-shell /path/to/lc_shell` when `lc_shell` is not on `PATH`. Use `--work-dir <dir>` to control where Library Compiler writes `lc_command.log` and `lc_output.txt`; by default this is `<db-output-dir>/lc_work`, not the repository root.
+Use `--no-run` to only emit the `.lib` and the Library Compiler Tcl script. Use `--lc-shell /path/to/lc_shell` when `lc_shell` is not on `PATH`. Use `--work-dir <dir>` to control Library Compiler's command file, `lc_command.log`, and `lc_output.txt`; by default this is `<db-output-dir>/lc_work`, not the repository root.
+
+The generated `<db-stem>.lc.tcl` is temporary by default: remove it only after `lc_shell` produces a non-empty current-run `.db` that is atomically installed at the requested output path, and retain it when conversion fails or `--no-run` is selected. Use `--keep-tcl` to preserve a reusable final-output command file after a successful conversion. Use `--tcl <path>` only to override its location; cleanup semantics remain unchanged. Reject resolved-path collisions among Tcl, DB, Liberty, and Verilog inputs before writing any file.
 
 ## Workflow
 
