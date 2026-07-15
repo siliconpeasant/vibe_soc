@@ -32,6 +32,14 @@
         ".agents/skills/excel-yml-gen/mcp_server.py"
       ]
     },
+    "silicon-crew:upf-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/upf-gen/mcp_server.py"
+      ]
+    },
     "silicon-crew:crg-req-to-design": {
       "type": "stdio",
       "command": "sh",
@@ -55,6 +63,22 @@
         "scripts/mcp_python.sh",
         ".agents/skills/soc-openroad/mcp_server.py"
       ]
+    },
+    "silicon-crew:openroad-mcp": {
+      "type": "stdio",
+      "command": "/usr/bin/env",
+      "args": [
+        "-u",
+        "PYTHONHOME",
+        "-u",
+        "PYTHONPATH",
+        "FASTMCP_SHOW_SERVER_BANNER=false",
+        "LOG_LEVEL=ERROR",
+        ".openroad-mcp-venv/bin/openroad-mcp",
+        "--log-level",
+        "ERROR"
+      ],
+      "cwd": "."
     }
   }
 }

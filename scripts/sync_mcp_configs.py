@@ -33,10 +33,23 @@ def load_manifest() -> dict[str, Any]:
             raise ValueError("every manifest server must be an object")
         name = server.get("name")
         script = server.get("script")
+        command = server.get("command")
         if not isinstance(name, str) or not name or name in names:
             raise ValueError(f"invalid or duplicate MCP server name: {name!r}")
-        if not isinstance(script, str) or Path(script).is_absolute():
-            raise ValueError(f"server {name}: script must be repository-relative")
+        if (script is None) == (command is None):
+            raise ValueError(f"server {name}: set exactly one of script or command")
+        if script is not None:
+            if not isinstance(script, str) or Path(script).is_absolute():
+                raise ValueError(f"server {name}: script must be repository-relative")
+        else:
+            if not isinstance(command, str) or not command:
+                raise ValueError(f"server {name}: command must be a non-empty string")
+            args = server.get("args", [])
+            if not isinstance(args, list) or not all(isinstance(arg, str) for arg in args):
+                raise ValueError(f"server {name}: args must be a list of strings")
+            cwd = server.get("cwd")
+            if cwd is not None and (not isinstance(cwd, str) or Path(cwd).is_absolute()):
+                raise ValueError(f"server {name}: cwd must be repository-relative")
         for field in ("startup_timeout_sec", "tool_timeout_sec"):
             value = server.get(field)
             if not isinstance(value, int) or value <= 0:
@@ -57,12 +70,21 @@ def render_codex(manifest: dict[str, Any]) -> str:
         "",
     ]
     for server in manifest["servers"]:
+        if "script" in server:
+            command = "/bin/sh"
+            cwd = "."
+            args = [launcher, server["script"]]
+        else:
+            command = server["command"]
+            cwd = server.get("cwd")
+            args = server.get("args", [])
+        cwd_line = [f"cwd = {toml_string(cwd)}"] if cwd is not None else []
         lines.extend(
             [
                 f"[mcp_servers.{server['name']}]",
-                'command = "/bin/sh"',
-                'cwd = "."',
-                f"args = [{toml_string(launcher)}, {toml_string(server['script'])}]",
+                f"command = {toml_string(command)}",
+                *cwd_line,
+                f"args = {json.dumps(args, ensure_ascii=False)}",
                 f"startup_timeout_sec = {server['startup_timeout_sec']}",
                 f"tool_timeout_sec = {server['tool_timeout_sec']}",
                 "",
@@ -97,14 +119,23 @@ def render_codex(manifest: dict[str, Any]) -> str:
 def render_generic(manifest: dict[str, Any]) -> str:
     prefix = manifest.get("client_prefix", "")
     launcher = manifest["launcher"]
-    servers = {
-        f"{prefix}{server['name']}": {
-            "type": "stdio",
-            "command": "sh",
-            "args": [launcher, server["script"]],
-        }
-        for server in manifest["servers"]
-    }
+    servers: dict[str, dict[str, Any]] = {}
+    for server in manifest["servers"]:
+        if "script" in server:
+            rendered = {
+                "type": "stdio",
+                "command": "sh",
+                "args": [launcher, server["script"]],
+            }
+        else:
+            rendered = {
+                "type": "stdio",
+                "command": server["command"],
+                "args": server.get("args", []),
+            }
+            if "cwd" in server:
+                rendered["cwd"] = server["cwd"]
+        servers[f"{prefix}{server['name']}"] = rendered
     return json.dumps({"mcpServers": servers}, indent=2, ensure_ascii=False) + "\n"
 
 
