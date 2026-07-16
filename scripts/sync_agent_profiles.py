@@ -9,6 +9,8 @@ import re
 import sys
 from pathlib import Path
 
+from sync_mcp_configs import load_manifest, render_codex_mcp_server
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_DIR = ROOT / ".agents" / "agents"
@@ -64,7 +66,13 @@ def render_markdown(frontmatter: str, body: str) -> str:
     return f"---\n{frontmatter.rstrip()}\n---\n\n{body}"
 
 
-def render_toml(name: str, description: str, body: str) -> str:
+def render_toml(
+    name: str,
+    description: str,
+    body: str,
+    mcp_servers: dict[str, dict[str, object]],
+    launcher: str,
+) -> str:
     if "'''" in body:
         raise ValueError(f"role body contains unsupported TOML delimiter: {name}")
     rendered = (
@@ -75,12 +83,17 @@ def render_toml(name: str, description: str, body: str) -> str:
         "'''\n"
     )
     for server in ROLE_MCP_SERVERS.get(name, ()):
-        rendered += f"\n[mcp_servers.{server}]\nenabled = true\n"
+        if server not in mcp_servers:
+            raise ValueError(f"role {name}: unknown MCP server {server}")
+        lines = render_codex_mcp_server(mcp_servers[server], launcher, enabled=True)
+        rendered += "\n" + "\n".join(lines)
     return rendered
 
 
 def expected() -> dict[Path, str]:
     outputs: dict[Path, str] = {}
+    manifest = load_manifest()
+    mcp_servers = {server["name"]: server for server in manifest["servers"]}
     paths = sorted(CANONICAL_DIR.glob("soc-*.md"))
     if not paths:
         raise ValueError("no canonical role contracts found")
@@ -88,7 +101,9 @@ def expected() -> dict[Path, str]:
         name, description, frontmatter, body = parse_contract(path)
         body = normalize_body(body)
         outputs[path] = render_markdown(frontmatter, body)
-        outputs[CODEX_DIR / f"{name}.toml"] = render_toml(name, description, body)
+        outputs[CODEX_DIR / f"{name}.toml"] = render_toml(
+            name, description, body, mcp_servers, manifest["launcher"]
+        )
     return outputs
 
 

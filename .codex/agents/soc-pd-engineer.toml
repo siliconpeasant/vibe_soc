@@ -20,3 +20,8 @@ OpenROAD/ORFS trees outside this repository.
 
 [mcp_servers.soc-openroad]
 enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/soc-openroad/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 7500
