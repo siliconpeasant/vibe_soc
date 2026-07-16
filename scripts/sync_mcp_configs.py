@@ -64,6 +64,31 @@ def toml_string(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
+def render_codex_mcp_server(
+    server: dict[str, Any], launcher: str, *, enabled: bool | None = None
+) -> list[str]:
+    if "script" in server:
+        command = "/bin/sh"
+        cwd = "."
+        args = [launcher, server["script"]]
+    else:
+        command = server["command"]
+        cwd = server.get("cwd")
+        args = server.get("args", [])
+    cwd_line = [f"cwd = {toml_string(cwd)}"] if cwd is not None else []
+    is_enabled = server["default_enabled"] if enabled is None else enabled
+    return [
+        f"[mcp_servers.{server['name']}]",
+        f"enabled = {str(is_enabled).lower()}",
+        f"command = {toml_string(command)}",
+        *cwd_line,
+        f"args = {json.dumps(args, ensure_ascii=False)}",
+        f"startup_timeout_sec = {server['startup_timeout_sec']}",
+        f"tool_timeout_sec = {server['tool_timeout_sec']}",
+        "",
+    ]
+
+
 def render_codex(manifest: dict[str, Any]) -> str:
     launcher = manifest["launcher"]
     lines = [
@@ -72,27 +97,7 @@ def render_codex(manifest: dict[str, Any]) -> str:
         "",
     ]
     for server in manifest["servers"]:
-        if "script" in server:
-            command = "/bin/sh"
-            cwd = "."
-            args = [launcher, server["script"]]
-        else:
-            command = server["command"]
-            cwd = server.get("cwd")
-            args = server.get("args", [])
-        cwd_line = [f"cwd = {toml_string(cwd)}"] if cwd is not None else []
-        lines.extend(
-            [
-                f"[mcp_servers.{server['name']}]",
-                f"enabled = {str(server['default_enabled']).lower()}",
-                f"command = {toml_string(command)}",
-                *cwd_line,
-                f"args = {json.dumps(args, ensure_ascii=False)}",
-                f"startup_timeout_sec = {server['startup_timeout_sec']}",
-                f"tool_timeout_sec = {server['tool_timeout_sec']}",
-                "",
-            ]
-        )
+        lines.extend(render_codex_mcp_server(server, launcher))
 
     lines.extend(
         [

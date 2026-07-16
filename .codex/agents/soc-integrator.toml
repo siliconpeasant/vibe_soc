@@ -21,3 +21,8 @@ tool results, and exact state update.
 
 [mcp_servers.soc-integrate]
 enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/soc-integrate/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
