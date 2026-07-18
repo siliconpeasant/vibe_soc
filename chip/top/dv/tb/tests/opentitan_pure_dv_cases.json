@@ -13,7 +13,8 @@
       "run_opts": [
         "+csr_aliasing",
         "+en_scb=0",
-        "+test_timeout_ns=120000000"
+        "+test_timeout_ns=120000000",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -39,7 +40,8 @@
         "+csr_bit_bash",
         "+en_scb=0",
         "+test_timeout_ns=120000000",
-        "+num_test_csrs=200"
+        "+num_test_csrs=200",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -63,7 +65,8 @@
       "rtl_filelist": "de/rtl/filelist.f",
       "run_opts": [
         "+csr_hw_reset",
-        "+en_scb=0"
+        "+en_scb=0",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -88,7 +91,8 @@
       "run_opts": [
         "+run_csr_mem_rw_with_rand_reset",
         "+en_scb=0",
-        "+test_timeout_ns=10000000000"
+        "+test_timeout_ns=10000000000",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -112,7 +116,8 @@
       "rtl_filelist": "de/rtl/filelist.f",
       "run_opts": [
         "+csr_rw",
-        "+en_scb=0"
+        "+en_scb=0",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -137,7 +142,8 @@
       "run_opts": [
         "+en_scb=0",
         "+csr_rw",
-        "+create_jtag_riscv_map=1"
+        "+create_jtag_riscv_map=1",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -160,7 +166,8 @@
       },
       "rtl_filelist": "de/rtl/filelist.f",
       "run_opts": [
-        "+create_jtag_riscv_map=1"
+        "+create_jtag_riscv_map=1",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -183,7 +190,8 @@
       },
       "rtl_filelist": "de/rtl/filelist.f",
       "run_opts": [
-        "+use_otp_image=OtpTypeLcStProd"
+        "+use_otp_image=OtpTypeLcStProd",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -207,7 +215,8 @@
       "rtl_filelist": "de/rtl/filelist.f",
       "run_opts": [
         "+en_scb=0",
-        "+en_scb_tl_err_chk=0"
+        "+en_scb_tl_err_chk=0",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -232,7 +241,8 @@
       "run_opts": [
         "+en_scb=0",
         "+en_scb_tl_err_chk=0",
-        "+use_jtag_dmi=1"
+        "+use_jtag_dmi=1",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -257,7 +267,8 @@
       "run_opts": [
         "+run_same_csr_outstanding",
         "+en_scb=0",
-        "+test_timeout_ns=120000000"
+        "+test_timeout_ns=120000000",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {
@@ -285,7 +296,15 @@
       ],
       "status": "indexed_only",
       "sw_collateral": {
-        "images": []
+        "common_otp": "dv/tb/sw/common/otp",
+        "images": [
+          {
+            "base": "dv/tb/sw/cases/chip_sw_example_test_from_rom/example_test_from_rom",
+            "origin_target": "unmapped_prebuilt:example_test_from_rom",
+            "rule": "test_in_rom:new_rules",
+            "slot": 0
+          }
+        ]
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
@@ -309,7 +328,15 @@
       ],
       "status": "indexed_only",
       "sw_collateral": {
-        "images": []
+        "common_otp": "dv/tb/sw/common/otp",
+        "images": [
+          {
+            "base": "dv/tb/sw/cases/chip_sw_example_test_from_rom/example_test_from_rom",
+            "origin_target": "unmapped_prebuilt:example_test_from_rom",
+            "rule": "test_in_rom:new_rules",
+            "slot": 0
+          }
+        ]
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
@@ -332,7 +359,15 @@
       ],
       "status": "indexed_only",
       "sw_collateral": {
-        "images": []
+        "common_otp": "dv/tb/sw/common/otp",
+        "images": [
+          {
+            "base": "dv/tb/sw/cases/chip_sw_example_test_from_rom/example_test_from_rom",
+            "origin_target": "unmapped_prebuilt:example_test_from_rom",
+            "rule": "test_in_rom:new_rules",
+            "slot": 0
+          }
+        ]
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
@@ -356,7 +391,15 @@
       ],
       "status": "indexed_only",
       "sw_collateral": {
-        "images": []
+        "common_otp": "dv/tb/sw/common/otp",
+        "images": [
+          {
+            "base": "dv/tb/sw/cases/chip_sw_example_test_from_rom/example_test_from_rom",
+            "origin_target": "unmapped_prebuilt:example_test_from_rom",
+            "rule": "test_in_rom:new_rules",
+            "slot": 0
+          }
+        ]
       },
       "timeout_ns": 160000000,
       "top_module": "tb",
@@ -375,7 +418,8 @@
       },
       "rtl_filelist": "de/rtl/filelist.f",
       "run_opts": [
-        "+run_tl_errors"
+        "+run_tl_errors",
+        "+stub_cpu=1"
       ],
       "status": "indexed_only",
       "sw_collateral": {

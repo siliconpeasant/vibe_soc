@@ -36,6 +36,8 @@ endif
   OT_TEST_ROM_DIR := $(OT_SW_ROOT)/common/test_rom
   OT_CASE_SW_ROOT := $(OT_SW_ROOT)/cases
   OT_CASE_SW_DIR := $(OT_CASE_SW_ROOT)/$(TEST)
+  # pure_dv / some CSR cases have no per-test SW directory; only search existing dirs.
+  OT_SW_COPY_DIRS := $(OT_OTP_DIR) $(OT_TEST_ROM_DIR) $(wildcard $(OT_CASE_SW_DIR))
   OT_TEST_CFG := $(OT_TEST_CFG_ROOT)/opentitan_cases.manifest.json
   OT_TEST_CFG_PY := $(OT_TB_ROOT)/scripts/opentitan_test_cfg.py
   OT_TEST_CFG_PYTHON_BIN := $(shell for name in python3.12 python3.11 python3.10 python3.9 python3.8; do path=$$(command -v $$name 2>/dev/null); if [ -n "$$path" ]; then echo $$path; break; fi; done)
@@ -56,7 +58,7 @@ endif
   OT_RUN_OPTS := $(call OT_CFG,run_opts)
   OT_COMPILE_OPTS := $(call OT_CFG,compile_opts)
   OT_SW_IMAGES := $(call OT_CFG,sw_images)
-  OT_COPY_SW_COLLATERAL = find $(OT_OTP_DIR) $(OT_TEST_ROM_DIR) $(OT_CASE_SW_DIR) -maxdepth 1 -type f \( -name 'otp_ctrl_img_*.vmem' -o -name '*_sim_dv.logs.txt' -o -name '*_sim_dv.rodata.txt' \) -exec cp -f {} . \;
+  OT_COPY_SW_COLLATERAL = find $(OT_SW_COPY_DIRS) -maxdepth 1 -type f \( -name 'otp_ctrl_img_*.vmem' -o -name '*_sim_dv.logs.txt' -o -name '*_sim_dv.rodata.txt' \) -exec cp -f {} . \;
   OT_CLEAN_WAVES_IF_DISABLED = $(if $(filter 1,$(FSDB)),:,rm -f waves.fsdb wave.fsdb waves.fsdb.* wave.fsdb.* novas_dump.log)
   USER_COMPILE_FLAGS += +define+TOP_LEVEL_DV +define+UVM +define+UVM_NO_DEPRECATED
   USER_COMPILE_FLAGS += +define+UVM_REGEX_NO_DPI +define+UVM_NO_RELNOTES
