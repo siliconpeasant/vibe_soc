@@ -1,0 +1,8 @@
+branch: codex/stories260k-ip-20260717-174111
+run: soc_sim-80dbf5b5d6704874a74de293481dfa7e
+tokens: [1, 403, 407, 261, 270, 379, 410, 304, 276, 379, 416, 260, 411, 264, 410, 277, 418, 451, 411, 324, 330, 344, 294, 404, 330, 431, 431, 302, 421, 316, 430, 421, 413, 305, 419, 330, 330, 428, 283, 265, 378, 456, 425, 264, 265, 372, 419, 261, 370, 420, 369, 406, 426, 411, 431, 427, 466, 407, 278, 406, 433, 411, 411, 412, 441]
+
+ENGLISH:
+ Once upon a hun orreunnheend oudze plver eat neverffenletbltlesververgay the timeqund theses a bigrimees.efp” upon leskeeaO
+
+中文大意: 开篇 Once upon a time, a ... 后续为 174111 定点路径续写，可能有碎词。

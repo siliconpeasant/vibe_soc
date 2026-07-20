@@ -1,0 +1,223 @@
+{
+  "schema_version": 3,
+  "module": "stories260k",
+  "workspace": "ip/digital/stories260k",
+  "mode": "single",
+  "created_at": "2026-07-18T22:22:52Z",
+  "last_updated": "2026-07-18T22:25:58Z",
+  "pipeline": {
+    "doc": {
+      "step_id": "doc",
+      "name": "设计文档编写",
+      "agent": "soc-doc-engineer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-07-18T22:23:07Z",
+      "completed_at": "2026-07-18T22:23:26Z",
+      "artifacts": [
+        "docs/design_spec.md",
+        "docs/architecture.md",
+        "docs/interface_spec.md",
+        "docs/regmap.md",
+        "docs/verification_plan.md"
+      ],
+      "artifact_evidence": {
+        "docs/design_spec.md": {
+          "sha256": "0fc6f21436ebc46e8a8f39cdbb54aae275c22a1145eef176344b8638f1ffe170",
+          "size": 35600,
+          "recorded_at": "2026-07-18T22:23:26Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/architecture.md": {
+          "sha256": "80865aeb8055f50c5fdeed9dee13eb90716f5c4e63f064cb117f44a034ca7b86",
+          "size": 26092,
+          "recorded_at": "2026-07-18T22:23:26Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/interface_spec.md": {
+          "sha256": "5f2a8dea8832e82fc4cd751e6ca3510180cdd32e9abfc79ae91696622a66c7e3",
+          "size": 12003,
+          "recorded_at": "2026-07-18T22:23:26Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/regmap.md": {
+          "sha256": "00774fff2137683cd4478758caa1d5db517a806b70f48647e0b9fcb968fb37a3",
+          "size": 11074,
+          "recorded_at": "2026-07-18T22:23:26Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
+        "docs/verification_plan.md": {
+          "sha256": "89653501fe90643c1c4c749746bee01fa908f96cf824e54d10f2f6bad8e27dd8",
+          "size": 11174,
+          "recorded_at": "2026-07-18T22:23:26Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "doc_completeness",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "rtl_fingerprint": null,
+      "rtl_fingerprint_source": null,
+      "notes": "v1.2 fused attention, mixed W4/W8, 512-context performance and fixed-model fidelity documented",
+      "last_updated": "2026-07-18T22:23:26Z"
+    },
+    "rtl": {
+      "step_id": "rtl",
+      "name": "RTL设计与编码",
+      "agent": "soc-rtl-designer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-07-18T22:23:48Z",
+      "completed_at": "2026-07-18T22:24:36Z",
+      "artifacts": [
+        "de/rtl/filelist.f"
+      ],
+      "artifact_evidence": {
+        "de/rtl/filelist.f": {
+          "sha256": "01d43bfe7c655eefd3316c2b3ea4256dbcb941ad277d147051ba2cc05d3b77ab",
+          "size": 370,
+          "recorded_at": "2026-07-18T22:24:36Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_lint",
+          "passed": true,
+          "note": ""
+        },
+        {
+          "tool": "soc_comp",
+          "passed": true,
+          "note": ""
+        },
+        {
+          "tool": "rtl_quality",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "rtl_fingerprint": "b91b3124079b5b1eaaf5ca82823354c1f9eac1610d20269d673aaa9431d0dce0",
+      "rtl_fingerprint_source": "recorded_at_transition",
+      "notes": "Verilator lint, VCS compile and RTL/filelist quality checks pass",
+      "last_updated": "2026-07-18T22:24:36Z"
+    },
+    "verif": {
+      "step_id": "verif",
+      "name": "验证环境搭建与仿真",
+      "agent": "soc-verification-engineer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-07-18T22:24:53Z",
+      "completed_at": "2026-07-18T22:25:19Z",
+      "artifacts": [
+        "dv/sim/loop_evidence/soc_sim-f580b5dc47aa4982a5409383c4b2f096/sim.log",
+        "dv/sim/loop_evidence/soc_sim-02b6825334eb41f69ce7ea93e99f5399/sim.log"
+      ],
+      "artifact_evidence": {
+        "dv/sim/loop_evidence/soc_sim-f580b5dc47aa4982a5409383c4b2f096/sim.log": {
+          "sha256": "67c3366333dcc6db39f5ece41bde5923debd3c91024a9f0133f71438350aae32",
+          "size": 15382,
+          "recorded_at": "2026-07-18T22:25:19Z",
+          "provenance": [
+            "sim_log",
+            "soc_sim"
+          ]
+        },
+        "dv/sim/loop_evidence/soc_sim-02b6825334eb41f69ce7ea93e99f5399/sim.log": {
+          "sha256": "55f4205e3784cce8888ee0cad9787c6a0684e899031056d0ceb7ebb85dca0742",
+          "size": 21893,
+          "recorded_at": "2026-07-18T22:25:19Z",
+          "provenance": [
+            "sim_log",
+            "soc_sim"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_sim",
+          "passed": true,
+          "note": ""
+        },
+        {
+          "tool": "sim_log",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "rtl_fingerprint": "b91b3124079b5b1eaaf5ca82823354c1f9eac1610d20269d673aaa9431d0dce0",
+      "rtl_fingerprint_source": "recorded_at_transition",
+      "notes": "64-token fixed-model exact and deterministic; 512 tokens pass at 8,955.8 tok/s",
+      "last_updated": "2026-07-18T22:25:19Z",
+      "run_evidence": {
+        "run_id": "soc_sim-02b6825334eb41f69ce7ea93e99f5399",
+        "source_fingerprint": "b91b3124079b5b1eaaf5ca82823354c1f9eac1610d20269d673aaa9431d0dce0",
+        "tool_family": "soc_sim",
+        "recorded_at": "2026-07-18T22:25:19Z"
+      }
+    },
+    "syn": {
+      "step_id": "syn",
+      "name": "逻辑综合与时序分析",
+      "agent": "soc-synthesis-engineer",
+      "status": "fail",
+      "blocked_by": [],
+      "started_at": "2026-07-18T22:25:39Z",
+      "completed_at": "2026-07-18T22:25:58Z",
+      "artifacts": [
+        "de/syn/loop_evidence/soc_syn-5f45fd76ffe1423b995a22f83e30d189/synth.log"
+      ],
+      "artifact_evidence": {
+        "de/syn/loop_evidence/soc_syn-5f45fd76ffe1423b995a22f83e30d189/synth.log": {
+          "sha256": "bea2b6892342240387278454e0810e61405333c18222be81553a553aa8a7f88b",
+          "size": 50421,
+          "recorded_at": "2026-07-18T22:25:58Z",
+          "provenance": []
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_syn",
+          "passed": false,
+          "note": "DC_TARGET_LIBRARY_is_placeholder_and_compile_ultra_reports_no_target_library"
+        }
+      ],
+      "rtl_fingerprint": "b91b3124079b5b1eaaf5ca82823354c1f9eac1610d20269d673aaa9431d0dce0",
+      "rtl_fingerprint_source": "failed_mcp_run",
+      "notes": "Configure a real target standard-cell library, then rerun soc_syn; expose enabled soc_openroad MCP tools and rerun all stages with the corrected attention/SPM handoff",
+      "last_updated": "2026-07-18T22:25:58Z",
+      "run_evidence": {
+        "run_id": "soc_syn-5f45fd76ffe1423b995a22f83e30d189",
+        "source_fingerprint": "b91b3124079b5b1eaaf5ca82823354c1f9eac1610d20269d673aaa9431d0dce0",
+        "tool_family": "soc_syn",
+        "recorded_at": "2026-07-18T22:25:58Z"
+      }
+    }
+  },
+  "next_actions": [
+    {
+      "stage": "syn",
+      "action": "fix_and_retry",
+      "reason": "syn failed; no new stage may start until it is retried"
+    }
+  ]
+}
