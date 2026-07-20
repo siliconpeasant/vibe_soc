@@ -1,0 +1,56 @@
+{
+  "module": "ip/digital/stories260k",
+  "design": "B_mixed_W4W8",
+  "note": "Baseline reconstructed from bit-exact RTL VCS logs and FP32 golden artifacts. Live re-run blocked in this agent session because the shell executor could not spawn (IO Error ENOENT on every command).",
+  "paths": {
+    "checkpoint_module": "ip/digital/stories260k/assets/weights/stories260K.bin",
+    "tokenizer_module": "ip/digital/stories260k/assets/weights/tok512.bin",
+    "wbuf_image": "ip/digital/stories260k/dv/sim/img/wbuf.hex",
+    "vecbuf_image": "ip/digital/stories260k/dv/sim/img/vecbuf.hex",
+    "vcs_sim_log": "ip/digital/stories260k/dv/sim/long512_v12_final/sim.log",
+    "rtl_tokens": "ip/digital/stories260k/dv/sim/long512_v12_final/rtl_tokens_long.json",
+    "fp32_long": "ip/digital/stories260k/assets/demo/story_long_fp32.json",
+    "corpus_local": "ip/digital/stories260k/dv/sim/quality/TinyStories-valid.txt",
+    "tb_golden": "ip/digital/stories260k/dv/tb/tb_stories260k.sv golden_token[]"
+  },
+  "numerics": {
+    "k_x": 3,
+    "sm_shift": 2,
+    "int8_ops": ["wq1"],
+    "kv_bits": 4,
+    "weight_clip": 1.0
+  },
+  "fp32_generated_prefix_32": [403, 407, 261, 378, 432, 383, 286, 261, 376, 298, 315, 421, 395, 317, 426, 338, 401, 396, 267, 337, 410, 408, 419, 292, 411, 322, 265, 282, 295, 433, 426, 385],
+  "fixed_rtl_generated_prefix_32": [403, 407, 261, 378, 432, 383, 261, 370, 272, 276, 416, 424, 411, 451, 451, 411, 421, 422, 418, 377, 421, 387, 326, 269, 261, 416, 428, 428, 316, 413, 329, 412],
+  "prefix_match_vs_fp32": 6,
+  "first_mismatch_step": 6,
+  "first_mismatch": {"fixed": 261, "fp32": 286},
+  "detokenized": {
+    "fp32_sample": " Once upon a time, there was a little girl named Lily. She loved to play outside in the park. One day, she saw a big, red ball. She wanted to play with it, but it was too high.\nLily's mom said, \"Lily, let's go to the park.\" Lily was sad and didn't know what to do. She said, \"I want to play with your ball, but I can't find",
+    "fixed_design_b_opening": " Once upon a time, there a ...",
+    "note": "Fixed path matches FP32 for the six pieces 'Once upon a time, there' then emits 'a' (261) where FP32 emits 'was' (286). Later tokens become fragmented subwords; RTL == TB fixed-point golden for the asserted 64-token prefix."
+  },
+  "wbuf_spare_words": 42,
+  "int8_expansion_budget": {
+    "remaining_high_half_words": 42,
+    "fits": ["any single KVDIM=32 matrix high-half (32 words), e.g. wk1 or wv1"],
+    "does_not_fit": ["another full DIM=64 matrix high-half (64 words), e.g. wq0/wo1"],
+    "rtl_hardcoded": "stories260k_core.v mvm_cfg_i8 = (layer==1 && qkv_i==0) only"
+  },
+  "preferred_improvement_order": [
+    "QAT via qat_stories260k.py then pack_stories260k.py (no RTL/interface change)",
+    "Expand INT8 only if spare allows and RTL+packer+fixed model stay in sync",
+    "sm_shift / weight_clip calibration via fixed_point_model.py --sweep"
+  ],
+  "code_fixes_this_session": [
+    "fixed_point_model.py main now defaults to design-B int8_ops=wq1, sm_shift=2, k_x=3",
+    "added FP32 pure-Python fallback, tokenizer detok, prefix/first-mismatch report, --sweep/--sweep-clip",
+    "fetch_and_quality.sh orchestrates asset fetch + baseline + optional QAT"
+  ],
+  "not_done": {
+    "live_fixed_point_rerun": "shell executor unavailable (ENOENT on every command including true/echo)",
+    "qat_train": "requires shell + torch + corpus copy",
+    "int8_expansion_rtl": "not chosen; spare only fits one 32-row matrix; prefer QAT first",
+    "vcs_resim": "not required for software fixed-vs-fp32 quality deliverable; RTL already matches TB golden"
+  }
+}
