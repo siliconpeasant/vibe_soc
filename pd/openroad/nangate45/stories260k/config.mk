@@ -35,6 +35,9 @@ export ADDITIONAL_LEFS += $(THIS_DIR)/stories260k_spm.lef
 export ADDITIONAL_LIBS += $(THIS_DIR)/stories260k_spm.lib
 # Manual pin+macro place (avoids RTLMP pin-location failure on this stub)
 export PRE_MACRO_PLACE_TCL ?= $(THIS_DIR)/pre_macro_place.tcl
+# GRT prep + ORFS 2024 compat (absolute paths for OpenROAD Tcl sourcing)
+export STORIES260K_ORFS_COMPAT ?= $(PROJECT_ROOT)/pd/openroad/local/orfs_compat_2024.tcl
+export PRE_GLOBAL_ROUTE_TCL ?= $(THIS_DIR)/pre_global_route.tcl
 export MACRO_PLACE_HALO ?= 15 15
 # Allow DPL to pull long-wire buffers off the SPM footprint after resize.
 export DETAIL_PLACEMENT_ARGS ?= -max_displacement 2000

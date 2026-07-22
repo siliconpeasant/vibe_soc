@@ -6,7 +6,7 @@ with straight-through fake quantization matching the chip's immutable weight
 format:
 
 * signed INT4, symmetric per-output-row/per-64-input group weights;
-* layer-1 WQ in signed INT8, as implemented by the RTL/packer;
+* Design-B INT8 mask (default v1.7: wq1,wk1,wv1,wo1,wq2,wo2,wq3) as RTL/packer;
 * Q4.12 stored weight scales; and
 * the principal W4A8 activation grids used by the fixed-point datapath.
 
@@ -37,6 +37,24 @@ DIM, HID, NL, NH, NKVH, VLEN, SEQ_LEN = 64, 172, 5, 8, 4, 512, 512
 HD = DIM // NH
 KV_MUL = NH // NKVH
 CONSUMED_FLOATS = 260032
+# Must match RTL/packer Design-B v1.7 (stories260k_core.v + pack_stories260k.py).
+DEFAULT_INT8_OPS = ("wq1", "wk1", "wv1", "wo1", "wq2", "wo2", "wq3")
+
+
+def parse_int8_ops(text):
+    """Parse comma list like 'wq1,wk1,wv1' into a frozenset of 'name+layer' keys."""
+    out = set()
+    for part in (text or "").split(","):
+        part = part.strip().lower()
+        if not part:
+            continue
+        # Accept 'wq1' or 'wq:1'
+        if ":" in part:
+            name, layer = part.split(":", 1)
+            out.add("%s%s" % (name, layer))
+        else:
+            out.add(part)
+    return frozenset(out)
 
 
 class BinTokenizer:
@@ -204,9 +222,10 @@ def fake_quant_kv(value):
 
 
 class Stories260K(nn.Module):
-    def __init__(self, initial, qat):
+    def __init__(self, initial, qat, int8_ops=None):
         super().__init__()
         self.qat = qat
+        self.int8_ops = frozenset(int8_ops or DEFAULT_INT8_OPS)
         self.emb = nn.Parameter(initial["emb"].clone())
         self.rms_att = nn.Parameter(initial["rms_att"].clone())
         self.rms_ffn = nn.Parameter(initial["rms_ffn"].clone())
@@ -232,7 +251,8 @@ class Stories260K(nn.Module):
         value = self.emb if name == "emb" else getattr(self, name)[layer]
         if not self.qat:
             return value
-        bits = 8 if name == "wq" and layer == 1 else 4
+        key = name if layer is None else "%s%d" % (name, layer)
+        bits = 8 if (key in self.int8_ops or name in self.int8_ops) else 4
         return fake_quant_weight(value, bits)
 
     def aq(self, value, units):
@@ -341,12 +361,15 @@ def batch_from(tokens, batch_size, seq_len, generator):
 
 
 @torch.no_grad()
-def evaluate(model, teacher, tokens, batch_size, seq_len, batches, generator):
+def evaluate(model, teacher, tokens, batch_size, seq_len, batches, generator,
+             device):
     model.eval()
     losses = []
     teacher_losses = []
     for _ in range(batches):
         x, y = batch_from(tokens, batch_size, seq_len, generator)
+        x = x.to(device)
+        y = y.to(device)
         logits = model(x)
         teacher_logits = teacher(x)
         losses.append(F.cross_entropy(logits.reshape(-1, VLEN), y.reshape(-1)).item())
@@ -357,11 +380,11 @@ def evaluate(model, teacher, tokens, batch_size, seq_len, batches, generator):
 
 
 @torch.no_grad()
-def greedy_tokens(model, steps):
+def greedy_tokens(model, steps, device):
     model.eval()
     tokens = [1]
     for _ in range(steps):
-        inp = torch.tensor(tokens, dtype=torch.long).unsqueeze(0)
+        inp = torch.tensor(tokens, dtype=torch.long, device=device).unsqueeze(0)
         token = int(torch.argmax(model(inp)[0, -1]).item())
         tokens.append(token)
         if token == 1:
@@ -386,6 +409,24 @@ def main():
     parser.add_argument("--temperature", type=float, default=2.0)
     parser.add_argument("--threads", type=int, default=8)
     parser.add_argument("--seed", type=int, default=260512)
+    parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu",
+                        help="torch device, e.g. cuda / cuda:0 / cpu")
+    parser.add_argument(
+        "--int8-ops",
+        default=",".join(DEFAULT_INT8_OPS),
+        help="comma list matching RTL Design-B INT8 matrices "
+             "(default v1.7: wq1,wk1,wv1,wo1,wq2,wo2,wq3)",
+    )
+    parser.add_argument(
+        "--teacher-checkpoint",
+        default="",
+        help="optional FP32 teacher bin (default: same as student input checkpoint)",
+    )
+    parser.add_argument(
+        "--checkpoint-dir",
+        default="",
+        help="if set, write step_XXXX.bin on each eval interval and keep best.bin",
+    )
     parser.add_argument("--metrics", help="optional JSON metrics output")
     args = parser.parse_args()
     if not (1 <= args.seq_len <= SEQ_LEN):
@@ -393,36 +434,62 @@ def main():
     if args.steps < 1:
         parser.error("--steps must be positive")
 
+    int8_ops = parse_int8_ops(args.int8_ops)
+    device = torch.device(args.device)
     torch.set_num_threads(args.threads)
     torch.manual_seed(args.seed)
     random.seed(args.seed)
     tokenizer = BinTokenizer(args.tokenizer)
+    # Student starts from positional checkpoint (often a prior QAT bin).
     initial, header, suffix = load_checkpoint(args.checkpoint)
+    teacher_path = Path(args.teacher_checkpoint) if args.teacher_checkpoint else Path(args.checkpoint)
+    teacher_init, teacher_header, _ = load_checkpoint(teacher_path)
+    if teacher_header != header:
+        print("WARNING: teacher header differs from student header", flush=True)
     corpus, story_count = load_corpus(args.corpus, tokenizer, args.max_chars)
     print("corpus: %d stories, %d tokens" % (story_count, corpus.numel()), flush=True)
+    print("device=%s int8_ops=%s" % (device, ",".join(sorted(int8_ops)) or "(none)"),
+          flush=True)
+    print("student=%s teacher=%s" % (Path(args.checkpoint).resolve(),
+                                     teacher_path.resolve()), flush=True)
 
-    teacher = Stories260K(initial, qat=False).eval()
+    teacher = Stories260K(teacher_init, qat=False, int8_ops=int8_ops).to(device).eval()
     for parameter in teacher.parameters():
         parameter.requires_grad_(False)
-    model = Stories260K(initial, qat=True).train()
+    model = Stories260K(initial, qat=True, int8_ops=int8_ops).to(device).train()
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate,
                                   betas=(0.9, 0.99), weight_decay=0.001)
     train_gen = torch.Generator().manual_seed(args.seed)
     eval_gen = torch.Generator().manual_seed(args.seed + 1)
 
+    ckpt_dir = Path(args.checkpoint_dir) if args.checkpoint_dir else None
+    if ckpt_dir is not None:
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+
+    def export_bin(path):
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(header + flatten_state(model.export_state()) + suffix)
+        if path.stat().st_size != Path(args.checkpoint).stat().st_size:
+            raise AssertionError(
+                "QAT checkpoint size differs from the source checkpoint")
+
     initial_loss, teacher_loss = evaluate(
         model, teacher, corpus, args.batch_size, args.seq_len,
-        args.eval_batches, eval_gen)
+        args.eval_batches, eval_gen, device)
     print("initial: qat_ce=%.5f teacher_ce=%.5f" % (initial_loss, teacher_loss),
           flush=True)
     best_loss = initial_loss
     best_state = {key: value.detach().cpu().clone()
                   for key, value in model.state_dict().items()}
+    best_step = 0
     history = []
     started = time.monotonic()
 
     for step in range(1, args.steps + 1):
         x, y = batch_from(corpus, args.batch_size, args.seq_len, train_gen)
+        x = x.to(device)
+        y = y.to(device)
         with torch.no_grad():
             teacher_logits = teacher(x)
         logits = model(x)
@@ -439,7 +506,8 @@ def main():
 
         if step == 1 or step % args.eval_interval == 0 or step == args.steps:
             val_loss, _ = evaluate(model, teacher, corpus, args.batch_size,
-                                   args.seq_len, args.eval_batches, eval_gen)
+                                   args.seq_len, args.eval_batches, eval_gen,
+                                   device)
             elapsed = time.monotonic() - started
             item = {"step": step, "train_loss": float(loss.item()),
                     "ce": float(ce.item()), "kl": float(kl.item()),
@@ -449,27 +517,35 @@ def main():
             print("step %4d: loss=%.5f ce=%.5f kl=%.5f val=%.5f %.2f step/s" %
                   (step, loss.item(), ce.item(), kl.item(), val_loss,
                    step / max(elapsed, 1.0e-9)), flush=True)
+            if ckpt_dir is not None:
+                export_bin(ckpt_dir / ("step_%04d.bin" % step))
             if val_loss < best_loss:
                 best_loss = val_loss
+                best_step = step
                 best_state = {key: value.detach().cpu().clone()
                               for key, value in model.state_dict().items()}
+                if ckpt_dir is not None:
+                    export_bin(ckpt_dir / "best.bin")
 
     model.load_state_dict(best_state)
     output = Path(args.output)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_bytes(header + flatten_state(model.export_state()) + suffix)
-    if output.stat().st_size != Path(args.checkpoint).stat().st_size:
-        raise AssertionError("QAT checkpoint size differs from the source checkpoint")
+    export_bin(output)
 
-    sample_tokens = greedy_tokens(model, 128)
+    sample_tokens = greedy_tokens(model, 128, device)
     sample_text = tokenizer.decode(sample_tokens)
-    print("best qat_ce=%.5f; output=%s" % (best_loss, output), flush=True)
+    print("best qat_ce=%.5f best_step=%d; output=%s" %
+          (best_loss, best_step, output), flush=True)
     print("QAT-surrogate greedy tokens:", sample_tokens, flush=True)
     print("QAT-surrogate story:", sample_text, flush=True)
     metrics = {
-        "format": "stories260k-hardware-qat-v1",
+        "format": "stories260k-hardware-qat-v1.7",
+        "int8_ops": sorted(int8_ops),
+        "device": str(device),
         "input_checkpoint": str(Path(args.checkpoint).resolve()),
+        "teacher_checkpoint": str(teacher_path.resolve()),
         "output_checkpoint": str(output.resolve()),
+        "checkpoint_dir": str(ckpt_dir.resolve()) if ckpt_dir else "",
+        "best_step": best_step,
         "seed": args.seed,
         "steps": args.steps,
         "batch_size": args.batch_size,

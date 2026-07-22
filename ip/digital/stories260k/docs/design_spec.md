@@ -2,7 +2,7 @@
 
 ## Scope
 
-`stories260k` is a fixed-model mixed-W4/W8 inference engine for the llama2.c TinyStories `stories260K` checkpoint. It executes greedy autoregressive decode: token embedding, 5 GQA transformer layers with KV-cache append, fused tiled attention, final RMSNorm, tied-embedding logits, and fused streaming argmax. All weights, the full 512-position checkpoint context, all activations, and all lookup tables reside in four on-chip scratchpad buffers (WBUF/KVBUF/ACTBUF/VECBUF, 284 KiB total). There is no external-memory path at run time. All matrices are signed INT4 except the activation-sensitive layer-1 WQ matrix, which is signed INT8 and uses 2 KiB of the existing WBUF spare; SRAM capacities and public address windows are unchanged.
+`stories260k` is a fixed-model mixed-W4/W8 inference engine for the llama2.c TinyStories `stories260K` checkpoint. It executes greedy autoregressive decode: token embedding, 5 GQA transformer layers with KV-cache append, fused tiled attention, final RMSNorm, tied-embedding logits, and fused streaming argmax. All weights, the full 512-position checkpoint context, all activations, and all lookup tables reside in four on-chip scratchpad buffers (WBUF/KVBUF/ACTBUF/VECBUF, **293 KiB** total). There is no external-memory path at run time. All matrices are signed INT4 except Design-B INT8 matrices: L1 **WQ/WK/WV/WO**, L2 **WQ/WO**, L3 **WQ** (high-halves through words 4630..5013). WBUF is 5,024 × 32 B (157 KiB host window `0x10000-0x373FF`). Design-B v1.7 ships QAT weights with `GEN_CFG.sm_shift=1` and decode frequency penalty `score-count*32`.
 
 This document is the engineering contract and is written to match the implemented RTL baseline under `de/rtl/` exactly: model geometry, fixed-point operator semantics (including every shift and rounding constant), buffer layouts word-for-word, sequencer states, MVM and SFU semantics, performance counters, and the error model. The implementation is portable Verilog-2005 with one clock `clk` and one active-low asynchronous reset `rst_n`. Simulation evidence for the performance section is VCS `soc_sim` (see Performance Counters).
 
@@ -28,10 +28,14 @@ numerical divergence without changing the public MMIO interface, the
   `(u + (s ? 2^(s-1) : 0)) >>> s`, matching the fixed-point golden model.
   Resolve argmax ties to the lowest token index globally, matching Python's
   first-maximum rule.
-- Layer-1 WQ is stored as INT8 split 4+4 rows across the normal 64 tile words
-  and WBUF words 4630..4693. A third logical WBUF read bank supplies the upper
-  half in the same cycle, preserving the 64-MAC/cycle schedule. All other
-  matrices remain INT4. The calibrated `GEN_CFG.sm_shift` reset default is 2.
+- Design-B v1.7 INT8 split 4+4-row halves: L1 WQ/WK/WV/WO 4630..4821, L2 WQ/WO
+  4822..4949, L3 WQ 4950..5013. A third logical WBUF read bank supplies the
+  selected high-half base in the same cycle. All other matrices remain INT4.
+  `GEN_CFG.sm_shift` reset default is **1** (QAT). Decode policy is CSR
+  `DEC_CFG` (`0x038`): default `rep_pen=32`, `adapt_en=0`, `norep_win=0` →
+  `score' = score - count[token]*32` with 4-bit saturating counters cleared at
+  run start (R4 bit-exact). Optional adaptive ramp adds `tok_cnt[9:4]` to the
+  penalty; optional last-K no-repeat hard-bans the recent window from argmax.
 - Acceptance is met by first-divergence tracing, a 64-token bit-exact fixed-model
   assertion, and 64/256/512 real-image VCS regressions. The complete 512-token
   run measures 5,716,993 cycles = 8,955.8 token/s at 100 MHz, versus the old
@@ -115,7 +119,7 @@ token' = argmax_t( mvm_logits(embedding, xb) )       # streaming, fused at MVM w
 
 | Quantity | Format | Notes |
 |---|---|---|
-| Weights | signed INT4 except layer-1 WQ signed INT8; 8×8-tile interleaved | W4 range -8..7, W8 range -128..127. Packer: `q = round(v/scale)` with per-format saturation and zero K/M padding. |
+| Weights | signed INT4 except L1 QKV+WO, L2 WQ+WO, L3 WQ signed INT8; 8×8-tile interleaved | W4 range -8..7, W8 range -128..127. Packer: `q = round(v/scale)` with per-format saturation and zero K/M padding. |
 | Weight group scales | unsigned INT16, Q4.12 | One per 64 K-elements per row; packer: `scale = round(max|seg|/7 × 4096 × 2^k_x)` clamped to [1, 32767]. Only the embedding uses `k_x = 3`, establishing the **×8 residual grid**; every other matrix consumes an already-gridded input (`k_x = 0`). |
 | Activations | signed INT8 | Residual stream `x` lives on the ×8 grid end to end; FFN intermediate grid is ×16 (see structural requant). |
 | MAC accumulators | signed INT32 main + signed 25-bit group partial | Group partial folds into main at group boundaries, round-half-up. |
@@ -146,7 +150,7 @@ sat4(v) = clamp(v,   -8,   7)
 | MVM engine + MAC array | 8×8 = 64 signed MAC/cycle; tile/KV weight source select; fused group dequantization (round-half-up); three writeback modes (INT8 requant / raw INT32 / streaming argmax); per-block accumulator-clear beat. |
 | Fused attention | Eight positions per tile; parallel K-data/K-scale read, two-pass max/exp, alternating V accumulation, local 32-iteration reciprocal, one final INT8 head write. SCORE/PR never spill to ACTBUF. |
 | SFU | Core-invoked ops: EMBED, RMSNORM, ROPE, SWIGLU, RESADD, KVAPPEND; shared isqrt (4 iterations/cycle, 4 cycles) and restoring divider (2 iterations/cycle, 16 cycles = 32 iterations); sigmoid LUT. The legacy SOFTMAX opcode is not sequenced. |
-| SPM | WBUF 4,736×256b (weight, scale, and W8-upper-half read banks), KVBUF 3,968×256b (data/V-transpose plus independent scale read), ACTBUF 512×64b, VECBUF 1,024×64b behavioral arrays. |
+| SPM | WBUF 5,024×256b (weight, scale, and W8-upper-half read banks), KVBUF 3,968×256b (data/V-transpose plus independent scale read), ACTBUF 512×64b, VECBUF 1,024×64b behavioral arrays. |
 
 ## Operation
 
@@ -154,7 +158,7 @@ Host sequence (contract details in `interface_spec.md`):
 
 1. Write WBUF: weight tile region in checkpoint tensor order, then the scale region and the 512-position RoPE table.
 2. Write VECBUF: RMSNorm gains and structural requant slots 0..34; slots 35 and 36 are reserved.
-3. Write `TOKEN_IN` = BOS (1), `GEN_CFG.gen_len_m1` and `GEN_CFG.sm_shift` (2 for the calibrated mixed-W4/W8 image default).
+3. Write `TOKEN_IN` = BOS (1), `GEN_CFG.gen_len_m1` and `GEN_CFG.sm_shift` (1 for the QAT mixed-W4/W8 image default).
 4. Write `CTRL.start` (keeping `irq_en`/`chain_en` at the intended values — every CTRL write rewrites both). `STATUS.busy` rises after acceptance. A start written while `busy=1` is rejected with `mm_error=1` (`BUSY_START`) and does **not** disturb the active run.
 5. Per generated token: `TOKEN_OUT` updates, `STATUS.token_valid` sets (W1C), `TOKEN_CNT` and `SEQ_POS` increment. With `chain_en=1`, the token feeds back automatically until `gen_len_m1 + 1` tokens complete. `gen_len_m1` can request at most 512 tokens, exactly matching the 512-entry context; `SEQ_POS` therefore reaches 512 after a full-length successful run.
 6. `STATUS.done` sets at successful run end. `irq` reflects `irq_en && (done || error || token_valid)`. Host reads `CYCLE_*`, `MAC_*`, `TOKEN_CNT` and computes tokens/s = `TOKEN_CNT × f_clk / CYCLE`.
@@ -316,7 +320,7 @@ The requant slots are fixed constants derived from the fixed-point grid analysis
 
 Offsets are window-relative bytes. Word-index formulas are authoritative in RTL; byte offsets are given for host software.
 
-### WBUF (148 KiB window = 4,736 × 32 B words; usage 150,208 B = 4,694 words)
+### WBUF (157 KiB window = 5,024 × 32 B words; usage 160,448 B = 5,014 words)
 
 Weight tile region (strict llama2.c checkpoint tensor order):
 
@@ -331,7 +335,7 @@ Weight tile region (strict llama2.c checkpoint tensor order):
 | `+0x2E00` | +368 | `w2` 64×176 padded K (8×22) |
 | `+0x4400` | +544 | `w3` 172×64 → 176 padded rows (22×8) |
 
-Layer tile stride = 720 words = 23,040 B (`0x5A00`); the baseline tile region ends at word 4,112 = `0x20200` (131,584 B). Layer-1 WQ's 64 normal words hold its INT8 rows 0..3 rather than INT4; INT8 rows 4..7 use 64 extension words at 4630..4693. Total weight storage is therefore 133,632 B.
+Layer tile stride = 720 words = 23,040 B (`0x5A00`); the baseline tile region ends at word 4,112 = `0x20200` (131,584 B). Design-B INT8 matrices store rows 0..3 in normal tiles and rows 4..7 in extension words: L1 WQ/WK/WV/WO 4630..4821, L2 WQ/WO 4822..4949, L3 WQ 4950..5013. Total weight storage is therefore 143,872 B.
 
 Scale region (16 B units; one 32 B scale word = 2 units):
 
@@ -348,7 +352,7 @@ Scale region (16 B units; one 32 B scale word = 2 units):
 
 Layer scale stride = 92 units = 1,472 B (`0x5C0`); scale region totals 8,384 B and ends at `0x222C0` (139,968 B = 136.7 KiB).
 
-The RoPE table immediately follows at word 4,374 (`0x222C0`). Each position occupies 16 B `{cos[63:0], sin[63:0]}`; positions `2n` and `2n+1` occupy the low and high 128-bit halves of WBUF word `4374+n`. The 512 positions consume 256 words (8,192 B), ending at word 4629. The layer-1 WQ INT8 upper halves occupy words 4630..4693. WBUF spare is 1,344 B (42 words, 4694..4735). RMSNorm gains and requant entries remain in VECBUF.
+The RoPE table immediately follows at word 4,374 (`0x222C0`). Each position occupies 16 B `{cos[63:0], sin[63:0]}`; positions `2n` and `2n+1` occupy the low and high 128-bit halves of WBUF word `4374+n`. The 512 positions consume 256 words (8,192 B), ending at word 4629. Design-B INT8 upper halves occupy words 4630..5013. WBUF spare is 320 B (10 words, 5014..5023). RMSNorm gains and requant entries remain in VECBUF.
 
 ### KVBUF (124 KiB window = 3,968 × 32 B words; usage 122,880 B = 3,840 words)
 
@@ -494,6 +498,6 @@ Sticky clear rules: `done` W1C at `STATUS[1]`; `error` W1C at `STATUS[2]` (does 
 - The local memory-mapped interface is little-endian.
 - The upstream wrapper holds request signals stable until `mm_ready=1` and samples `mm_rdata`/`mm_error` in the cycle after acceptance.
 - `rst_n` is distributed by the SoC with asynchronous assert and safe deassert relative to `clk`.
-- The packer (`dv/tests/pack_stories260k.py`) owns conversion of `stories260K.bin` into WBUF/VECBUF images: per-64-group INT4 quantization except layer-1 WQ INT8, embedding scale bumped ×8 for the residual grid, zero K/M padding, split W8 tile packing, WBUF-resident Q2.14 RoPE tables, VECBUF gains, and structural requant constants.
+- The packer (`dv/tests/pack_stories260k.py`) owns conversion of `stories260K.bin` into WBUF/VECBUF images: per-64-group INT4 quantization except Design-B INT8 (L1 QKV+WO, L2 WQ+WO, L3 WQ), embedding scale bumped ×8 for the residual grid, zero K/M padding, split W8 tile packing, WBUF-resident Q2.14 RoPE tables, VECBUF gains, and structural requant constants.
 - `dv/tests/fixed_point_model.py` is the bit-exact RTL-semantics golden model used for grid/`sm_shift` calibration and float-vs-fixed token-trace comparison. The real-image TB asserts its first 64 generated tokens.
 - Software never relies on a fixed token cycle count; only the visible ordering (busy → token_valid per token → done) is architectural. (The measured cycle count is image-independent in practice, since no control flow is data-dependent.)

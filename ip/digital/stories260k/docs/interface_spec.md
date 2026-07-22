@@ -2,7 +2,7 @@
 
 ## Module Declaration
 
-The top module is `stories260k` (implemented in `de/rtl/stories260k.v`). It has no compile-time capacity parameters; model geometry and buffer sizes are fixed by the design specification. `stories260k_spm` exposes internal word-count parameters (`WBUF_WORDS=4736`, `KV_WORDS=3968`, `ACT_WORDS=512`, `VEC_WORDS=1024`) that are not part of the public contract.
+The top module is `stories260k` (implemented in `de/rtl/stories260k.v`). It has no compile-time capacity parameters; model geometry and buffer sizes are fixed by the design specification. `stories260k_spm` exposes internal word-count parameters (`WBUF_WORDS=5024`, `KV_WORDS=3968`, `ACT_WORDS=512`, `VEC_WORDS=1024`) that are not part of the public contract.
 
 ```verilog
 module stories260k (
@@ -71,7 +71,7 @@ The host interface is a ready/valid local target protocol in the style of `npu`,
 | Region | Address range | Size | Access behavior |
 |---|---:|---:|---|
 | CSR | `0x00000-0x00FFF` (implemented offsets per `regmap.md`) | 4 KiB window | Word-aligned accesses only (`mm_addr[1:0] != 0` → `ALIGN` error). Read-only register writes → `RO_WRITE`. Write strobes ignored. |
-| WBUF | `0x10000-0x34FFF` | 148 KiB (4,736 × 32 B words) | Byte scratchpad over 32-bit host transfers; `mm_addr[1:0]` ignored (aliases to the aligned word); lane `n` updates byte `{addr[4:0] div 4}×4+n` when `mm_wstrb[n]=1`. |
+| WBUF | `0x10000-0x373FF` | 157 KiB (5,024 × 32 B words) | Byte scratchpad over 32-bit host transfers; `mm_addr[1:0]` ignored (aliases to the aligned word); lane `n` updates byte `{addr[4:0] div 4}×4+n` when `mm_wstrb[n]=1`. |
 | KVBUF | `0x40000-0x5EFFF` | 124 KiB (3,968 × 32 B words) | Same. |
 | ACTBUF | `0x60000-0x60FFF` | 4 KiB (512 × 8 B words) | Same. |
 | VECBUF | `0x64000-0x65FFF` | 8 KiB (1,024 × 8 B words) | Same. |
@@ -81,7 +81,7 @@ Buffer windows are fully implemented up to their stated sizes (usage is smaller 
 
 ## CSR Access Timing
 
-CSR requests are never stalled. A CSR read accepted at edge N returns the registered value in cycle N+1; invalid offsets return `mm_error=1` and zero data in that cycle. CSR writes apply at the accepting edge: W1S pulses (`start`, `soft_reset`), W1C sticky clears (STATUS bits 1/2/8), and plain RW fields (`irq_en`, `chain_en`, `TOKEN_IN`, `GEN_CFG`).
+CSR requests are never stalled. A CSR read accepted at edge N returns the registered value in cycle N+1; invalid offsets return `mm_error=1` and zero data in that cycle. CSR writes apply at the accepting edge: W1S pulses (`start`, `soft_reset`), W1C sticky clears (STATUS bits 1/2/8), and plain RW fields (`irq_en`, `chain_en`, `TOKEN_IN`, `GEN_CFG`, `DEC_CFG`).
 
 Every CTRL write rewrites `irq_en` and `chain_en` from data bits `[2]`/`[3]` — a bare start pulse must be written with the desired enable bits set. Configuration writes while `busy=1` are accepted but affect only the next start; the run in progress uses the values latched at its start.
 
@@ -93,9 +93,9 @@ When idle, buffer reads and writes are accepted in one cycle (registered read da
 
 The host must follow this order before the first start (buffer contents survive soft reset, so reload is needed only after power-up or image change):
 
-1. **WBUF weights and tables** (`0x10000` upward): all tensors in strict checkpoint order, 8×8-tile interleaved per `design_spec.md`. All are W4 except layer-1 WQ: its rows 0..3 occupy the normal 64 tile words and rows 4..7 occupy WBUF words 4630..4693. Scales start at offset `0x20200`; the 512-position RoPE table starts at `0x222C0` and occupies words 4374..4629. Tile/scale padding is zero.
-2. **VECBUF**: RMSNorm gains (words 0..175), then structural requant slots 0..34 (words 176..210; q = 5793/14, k/v/wo = 1/0, w1/w3 = 2/0, w2 = 4/0). Slots 35 and 36 are reserved.
-3. **Run registers**: `TOKEN_IN` = BOS (1) or any prompt token id; `GEN_CFG.gen_len_m1` and `GEN_CFG.sm_shift` (2 for the calibrated mixed-W4/W8 image default).
+1. **WBUF weights and tables** (`0x10000` upward): all tensors in strict checkpoint order, 8×8-tile interleaved per `design_spec.md`. All are W4 except Design-B INT8 matrices: L1 WQ/WK/WV/WO at 4630..4693 / 4694..4725 / 4726..4757 / 4758..4821, L2 WQ/WO at 4822..4885 / 4886..4949, L3 WQ at 4950..5013. Scales start at offset `0x20200`; the 512-position RoPE table starts at `0x222C0` and occupies words 4374..4629. Tile/scale padding is zero.
+2. **VECBUF**: RMSNorm gains (words 0..175), then structural requant slots 0..34 (words 176..210; q = 5793/14, k/v/wo = 1/0, w1/w3 = 2/0, w2 = 4/0). slots 35 and 36 are reserved.
+3. **Run registers**: `TOKEN_IN` = BOS (1) or any prompt token id; `GEN_CFG.gen_len_m1` and `GEN_CFG.sm_shift` (1 for the calibrated QAT mixed-W4/W8 image default). Leave `DEC_CFG` at reset (`rep_pen=32`, adapt/norep off) for R4 bit-exact trails. Software presets: `golden`=32/0/0, `mid`=48/0/0, `long`=64/1/12 (512 anti-loop). TB plusargs `+DEC_PROFILE=` / `+REP_PEN=` / `+ADAPT_EN=` / `+NOREP_WIN=`.
 4. **Start**: write `CTRL` with `start=1` plus the desired `irq_en`/`chain_en`. A start while `busy=1` fails with `BUSY_START` and does not disturb the run.
 
 KVBUF and ACTBUF need no host initialization: the engine writes every byte it reads within a run. In simulation, images may also be loaded directly into the behavioral arrays via `$readmemh` (as the TB does with `+WIMAGE`/`+VIMAGE`); this is a testbench convenience, not a host contract.
@@ -134,7 +134,7 @@ The behavioral baseline (`stories260k_spm`) implements four wide-word arrays wit
 
 | Buffer | Array | Core ports |
 |---|---|---|
-| WBUF | `wbuf_mem[0:4735]`, 256 b | normal tile/RoPE read + scale read + WQ1 W8-upper-half read (three combinational logical reads) |
+| WBUF | `wbuf_mem[0:5023]`, 256 b | normal tile/RoPE read + scale read + INT8 high-half read (three combinational logical reads) |
 | KVBUF | `kv_mem[0:3967]`, 256 b | data read + independent scale read + nibble-transposed V view + 32-byte-strobe write port |
 | ACTBUF | `act_mem[0:511]`, 64 b | combinational read + 8-byte-strobe write port |
 | VECBUF | `vec_mem[0:1023]`, 64 b | combinational read + write port |

@@ -1,8 +1,17 @@
-branch: codex/stories260k-ip-20260717-174111
-run: soc_sim-80dbf5b5d6704874a74de293481dfa7e
-tokens: [1, 403, 407, 261, 270, 379, 410, 304, 276, 379, 416, 260, 411, 264, 410, 277, 418, 451, 411, 324, 330, 344, 294, 404, 330, 431, 431, 302, 421, 316, 430, 421, 413, 305, 419, 330, 330, 428, 283, 265, 378, 456, 425, 264, 265, 372, 419, 261, 370, 420, 369, 406, 426, 411, 431, 427, 466, 407, 278, 406, 433, 411, 411, 412, 441]
+branch: design-B v1.7 + P0 QAT Round-3 (long512 step_0850)
+prefix@64=20; 4gram@512 6.88%->3.93%; VCS 64/256/512 all PASS
 
-ENGLISH:
- Once upon a hun orreunnheend oudze plver eat neverffenletbltlesververgay the timeqund theses a bigrimees.efp” upon leskeeaO
-
-中文大意: 开篇 Once upon a time, a ... 后续为 174111 定点路径续写，可能有碎词。
+=== 64 ===
+ Once upon a time, there was a little girl named Lily. She loved to play with her toys and play with her friends. One day, Lily's mommy said, "Lily, It's so pretty."
+Then, they
+=== 256 ===
+ Once upon a time, there was a little girl named Lily. She loved to play with her toys and play with her friends. One day, Lily's mommy said, "Lily, It's so pretty."
+Then, they were playing with them and sprink. They saw that it was very cool and feeled in their watch. They were happy to get on the sky! After they could not leaves like your name of their help!"
+Timmy said, "I'm so happy!"
+The boat was very happy. He had angry for his mommy and said, "Yes, you have best friends me!" The little girl was sad because it was amazed that it was nothing that he had too much fun. And when you want to eat it? Once upon a time, there was a little
+=== 512 ===
+ Once upon a time, there was a little girl named Lily. She loved to play with her toys and play with her friends. One day, Lily's mommy said, "Lily, It's so pretty."
+Then, they were playing with them and sprink. They saw that it was very cool and feeled in their watch. They were happy to get on the sky! After they could not leaves like your name of their help!"
+Timmy said, "I'm so happy!"
+The boat was very happy. He had angry for his mommy and said, "Yes, you have best friends me!" The little girl was sad because it was amazed that it was nothing that he had too much fun. And when you want to eat it? Once upon a time, there was a little boat named Jimmy. He liked to play with his friends and they went on the wall in the park. They saw a big tree in the park for himself on his room. The little girl had never looked like heading him every day on it would behaving much just like he had fun until it was time to get up without office.
+The trees still wanted to clean his mommy and daddy for Max'tory. They were very happy and said they were very happy that they didn't know what happened Timmy would say thangho made of her friends forgotized that she could have something never know how It's mommy came backyites and said: "What is your momentuuoundice this storm

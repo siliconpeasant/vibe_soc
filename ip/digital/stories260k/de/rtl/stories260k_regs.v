@@ -40,7 +40,10 @@ module stories260k_regs (
     output wire [8:0]  cfg_token_in_o,
     output wire [8:0]  cfg_gen_len_o,
     output wire        cfg_chain_en_o,
-    output wire [3:0]  cfg_sm_shift_o
+    output wire [3:0]  cfg_sm_shift_o,
+    output wire [7:0]  cfg_rep_pen_o,
+    output wire        cfg_adapt_en_o,
+    output wire [3:0]  cfg_norep_win_o
 );
 
     localparam [31:0] ID_VALUE      = 32'h5354_4F52; // "STOR"
@@ -60,6 +63,7 @@ module stories260k_regs (
     localparam [11:0] OFF_MAC_LO   = 12'h02C;
     localparam [11:0] OFF_MAC_HI   = 12'h030;
     localparam [11:0] OFF_PERF_CLR = 12'h034;
+    localparam [11:0] OFF_DEC_CFG  = 12'h038;
     localparam [11:0] OFF_ERR_ADDR = 12'h03C;
 
     localparam [3:0] ERR_NONE        = 4'd0;
@@ -73,6 +77,9 @@ module stories260k_regs (
     reg [8:0]  token_in;
     reg [8:0]  gen_len_m1;
     reg [3:0]  sm_shift;
+    reg [7:0]  rep_pen;
+    reg        adapt_en;
+    reg [3:0]  norep_win;
     reg        st_done;
     reg        st_error;
     reg        st_token_valid;
@@ -83,20 +90,23 @@ module stories260k_regs (
     reg [31:0] token_cnt;
     reg [63:0] mac_cnt;
 
-    // MMIO write data is 32-bit by interface contract; fields above bit 8
-    // are intentionally not mapped to any register.
-    wire [22:0] unused_wdata_hi = mm_wdata_i[31:9];
+    // MMIO write data is 32-bit by interface contract; upper bits of several
+    // CSRs are reserved / ignored (GEN_CFG[31:21], DEC_CFG[31:13], ...).
+    wire [18:0] unused_wdata_hi = mm_wdata_i[31:13];
 
     wire [11:0] offset = mm_addr_i[11:0];
     wire        perf_clear;
 
-    assign cfg_token_in_o = token_in;
-    assign cfg_gen_len_o  = gen_len_m1;
-    assign cfg_chain_en_o = chain_en;
-    assign cfg_sm_shift_o = sm_shift;
-    assign irq_o          = irq_en & (st_done | st_error | st_token_valid);
-    assign perf_clear     = accepted_i && reg_access_i && mm_write_i &&
-                            aligned_i && (offset == OFF_PERF_CLR);
+    assign cfg_token_in_o  = token_in;
+    assign cfg_gen_len_o   = gen_len_m1;
+    assign cfg_chain_en_o  = chain_en;
+    assign cfg_sm_shift_o  = sm_shift;
+    assign cfg_rep_pen_o   = rep_pen;
+    assign cfg_adapt_en_o  = adapt_en;
+    assign cfg_norep_win_o = norep_win;
+    assign irq_o           = irq_en & (st_done | st_error | st_token_valid);
+    assign perf_clear      = accepted_i && reg_access_i && mm_write_i &&
+                             aligned_i && (offset == OFF_PERF_CLR);
 
     // ------------------------------------------------------------------
     // Control/status state
@@ -107,7 +117,10 @@ module stories260k_regs (
             chain_en        <= 1'b0;
             token_in        <= 9'd0;
             gen_len_m1      <= 9'd0;
-            sm_shift        <= 4'd2;
+            sm_shift        <= 4'd1; // calibrated for QAT+W4/W8 (design-B v1.3)
+            rep_pen         <= 8'd32; // R4 golden: score - count*32
+            adapt_en        <= 1'b0;
+            norep_win       <= 4'd0;
             st_done         <= 1'b0;
             st_error        <= 1'b0;
             st_token_valid  <= 1'b0;
@@ -121,7 +134,10 @@ module stories260k_regs (
             chain_en        <= 1'b0;
             token_in        <= 9'd0;
             gen_len_m1      <= 9'd0;
-            sm_shift        <= 4'd2;
+            sm_shift        <= 4'd1; // calibrated for QAT+W4/W8 (design-B v1.3)
+            rep_pen         <= 8'd32;
+            adapt_en        <= 1'b0;
+            norep_win       <= 4'd0;
             st_done         <= 1'b0;
             st_error        <= 1'b0;
             st_token_valid  <= 1'b0;
@@ -168,6 +184,11 @@ module stories260k_regs (
                     OFF_GEN_CFG: begin
                         gen_len_m1 <= mm_wdata_i[8:0];
                         sm_shift   <= mm_wdata_i[20:17];
+                    end
+                    OFF_DEC_CFG: begin
+                        rep_pen   <= mm_wdata_i[7:0];
+                        adapt_en  <= mm_wdata_i[8];
+                        norep_win <= mm_wdata_i[12:9];
                     end
                     default: ;
                 endcase
@@ -223,6 +244,7 @@ module stories260k_regs (
                     OFF_TOKEN_CT: host_rdata_o = token_cnt;
                     OFF_MAC_LO:   host_rdata_o = mac_cnt[31:0];
                     OFF_MAC_HI:   host_rdata_o = mac_cnt[63:32];
+                    OFF_DEC_CFG:  host_rdata_o = {19'd0, norep_win, adapt_en, rep_pen};
                     OFF_ERR_ADDR: host_rdata_o = {8'd0, err_code, err_addr};
                     default: begin
                         host_error_o      = 1'b1;
@@ -233,7 +255,7 @@ module stories260k_regs (
                 if (mm_write_i) begin
                     case (offset)
                         OFF_CTRL, OFF_STATUS, OFF_TOKEN_IN,
-                        OFF_GEN_CFG, OFF_PERF_CLR: ;
+                        OFF_GEN_CFG, OFF_PERF_CLR, OFF_DEC_CFG: ;
                         OFF_ID, OFF_VERSION, OFF_TOKEN_O, OFF_SEQ_POS,
                         OFF_CYCLE_LO, OFF_CYCLE_HI, OFF_TOKEN_CT,
                         OFF_MAC_LO, OFF_MAC_HI, OFF_ERR_ADDR: begin

@@ -85,9 +85,14 @@ def patch_tb_golden(tb: Path, tokens: list[int]) -> None:
     tb.write_text(new, encoding="utf-8")
 
 
-def run_pack(py: str, pack_py: Path, ckpt: Path, out_img: Path, alphas: Path) -> None:
+def run_pack(py: str, pack_py: Path, ckpt: Path, out_img: Path,
+             alphas: Path | None = None) -> None:
+    """Pack WBUF/VECBUF. Prefer no alphas so hex matches fixed_point_model
+    defaults used for TB golden (clip=1.0). Optional alphas for experiments."""
     out_img.mkdir(parents=True, exist_ok=True)
-    cmd = [py, str(pack_py), str(ckpt), str(out_img), "--alphas", str(alphas)]
+    cmd = [py, str(pack_py), str(ckpt), str(out_img)]
+    if alphas is not None and Path(alphas).is_file():
+        cmd.extend(["--alphas", str(alphas)])
     print("RUN", " ".join(cmd))
     subprocess.check_call(cmd)
 
@@ -134,10 +139,10 @@ def main() -> int:
     img_dir.mkdir(parents=True, exist_ok=True)
     wdir.mkdir(parents=True, exist_ok=True)
 
+    # prefix_alphas.json is optional. Silicon TB golden uses clip=1.0 / no alphas.
     alphas = src / "prefix_alphas.json"
-    if not alphas.is_file():
-        raise SystemExit(f"missing {alphas}")
-    shutil.copy2(alphas, qat_dir / "prefix_alphas.json")
+    if alphas.is_file():
+        shutil.copy2(alphas, qat_dir / "prefix_alphas.json")
     if (src / "prefix_alphas_long.json").is_file():
         shutil.copy2(src / "prefix_alphas_long.json",
                      qat_dir / "prefix_alphas_long.json")
@@ -151,6 +156,14 @@ def main() -> int:
     if (src / "long_qat/metrics.json").is_file():
         shutil.copy2(src / "long_qat/metrics.json",
                      qat_dir / "long_qat_metrics.json")
+    # Copy fixed/story reports if present (P0 hard 64/128/256/512 delivery).
+    for name in ("README.md", "fixed_64.txt", "fixed_128.txt", "fixed_256.txt",
+                 "fixed_512.txt", "story_64.txt", "story_128.txt",
+                 "story_256.txt", "story_512.txt", "compare_64.txt",
+                 "compare_128.txt"):
+        p = src / name
+        if p.is_file():
+            shutil.copy2(p, qat_dir / name)
 
     pack_py = mod / "dv/tests/pack_stories260k.py"
     fixed_py = mod / "dv/tests/fixed_point_model.py"
@@ -163,39 +176,33 @@ def main() -> int:
             raise SystemExit(f"missing {ckpt_src}")
         shutil.copy2(ckpt_src, wdir / "stories260K_qat.bin")
         print("WARNING: using long_best (metrics selected=false)")
-        run_pack(py, pack_py, wdir / "stories260K_qat.bin", img_dir, alphas)
-        # Prefer long metrics sample if present; else run fixed model
-        long_m = json.loads((src / "long_qat/metrics.json").read_text(encoding="utf-8"))
-        # long metrics sample_tokens are longer; take first 64 if look like traj
-        tokens = list(long_m.get("sample_tokens") or [])[:64]
-        if len(tokens) < 64:
-            run_fixed(py, fixed_py, wdir / "stories260K_qat.bin", tok, alphas,
-                      qat_dir / "fixed64_new.txt")
-            raise SystemExit(
-                "long sample_tokens shorter than 64; inspect fixed64_new.txt "
-                "and patch TB manually (fixed_point_model has no --alphas)"
-            )
-        detok = long_m.get("sample_text", "")
-        pref = "n/a (long sample)"
     else:
         ckpt_src = src / "stories260K_qat.bin"
         if not ckpt_src.is_file():
             raise SystemExit(f"missing {ckpt_src}")
         shutil.copy2(ckpt_src, wdir / "stories260K_qat.bin")
-        # Prefer pre-packed share images (bit-exact with metrics golden)
-        share_w = src / "img/wbuf.hex"
-        share_v = src / "img/vecbuf.hex"
-        if share_w.is_file() and share_v.is_file():
-            shutil.copy2(share_w, img_dir / "wbuf.hex")
-            shutil.copy2(share_v, img_dir / "vecbuf.hex")
-            print(f"copied pre-packed images from {src / 'img'}")
-        else:
-            run_pack(py, pack_py, wdir / "stories260K_qat.bin", img_dir, alphas)
-        metrics = json.loads((qat_dir / "metrics.json").read_text(encoding="utf-8"))
-        q64 = metrics["evaluation"]["64"]["qat_fixed"]
-        tokens = list(q64["tokens"][:64])
-        detok = q64.get("detokenized", "")
-        pref = q64.get("prefix_match_vs_original_fp32", "?")
+
+    # Always re-pack with the module packer so INT8 layout (v1.7 high-halves)
+    # matches current RTL. Do not apply share alphas here: golden is
+    # generated from fixed_point_model defaults (clip=1.0).
+    run_pack(py, pack_py, wdir / "stories260K_qat.bin", img_dir, alphas=None)
+
+    # Golden tokens from the RTL-exact fixed model (design-B defaults).
+    sys.path.insert(0, str(mod / "dv/tests"))
+    import fixed_point_model as fpm  # noqa: WPS433
+    ckpt_path = wdir / "stories260K_qat.bin"
+    ck, dims = fpm.load(str(ckpt_path))
+    tokens = list(fpm.emulate(
+        ck, dims,
+        k_x=fpm.DEFAULT_K_X,
+        sm_shift=fpm.DEFAULT_SM_SHIFT,
+        steps=64,
+        int8_ops=fpm.DEFAULT_INT8_OPS,
+    ))
+    pieces = fpm.load_tokenizer(str(tok)) if tok.is_file() else None
+    detok = fpm.detokenize(pieces, tokens) if pieces is not None else ""
+    ref = fpm.float_trace(ck, dims, 64)
+    pref = fpm.prefix_match_len(tokens, ref)
 
     patch_tb_golden(tb, tokens)
     (qat_dir / "fixed64_new.txt").write_text(

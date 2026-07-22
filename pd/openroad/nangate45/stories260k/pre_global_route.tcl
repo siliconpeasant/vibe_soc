@@ -1,13 +1,21 @@
 # Design-level GRT prep: keep ORFS 2024 compat, then free more global-routing
 # capacity so hard-congestion hangs are avoidable.
-# Prefer PROJECT_ROOT; else resolve relative to this design directory.
-if { [info exists ::env(PROJECT_ROOT)] && $::env(PROJECT_ROOT) ne "" } {
-  source [file join $::env(PROJECT_ROOT) pd/openroad/local/orfs_compat_2024.tcl]
-} else {
-  set _here [file dirname [file normalize [info script]]]
-  set _proj [file normalize [file join $_here ../../../..]]
-  source [file join $_proj pd/openroad/local/orfs_compat_2024.tcl]
+# Resolve compat script robustly: OpenROAD's [info script] is unreliable when
+# this file is sourced from ORFS (cwd is the ORFS flow dir).
+set _compat ""
+if { [info exists ::env(STORIES260K_ORFS_COMPAT)] &&
+     $::env(STORIES260K_ORFS_COMPAT) ne "" &&
+     [file exists $::env(STORIES260K_ORFS_COMPAT)] } {
+  set _compat $::env(STORIES260K_ORFS_COMPAT)
+} elseif { [info exists ::env(PRE_GLOBAL_ROUTE_TCL)] &&
+           $::env(PRE_GLOBAL_ROUTE_TCL) ne "" } {
+  set _here [file dirname [file normalize $::env(PRE_GLOBAL_ROUTE_TCL)]]
+  set _compat [file normalize [file join $_here ../../local/orfs_compat_2024.tcl]]
 }
+if { $_compat eq "" || ![file exists $_compat] } {
+  error "missing ORFS compat script (set STORIES260K_ORFS_COMPAT): $_compat"
+}
+source $_compat
 
 # Platform default derates M2/M3 by 0.5 (~50% capacity). At high util that
 # leaves residual overflow that breaks post-GRT -start_incremental steps.
