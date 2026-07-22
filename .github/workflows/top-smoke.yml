@@ -121,7 +121,8 @@ jobs:
     name: chip/top UART smoke
     needs: detect_smoke_need
     if: needs.detect_smoke_need.outputs.need_smoke == '1'
-    runs-on: [self-hosted, linux, eda, vcs]
+    # Match self-hosted runner labels (GitHub reports OS as "Linux", not "linux").
+    runs-on: [self-hosted, Linux, eda, vcs]
     timeout-minutes: 90
     env:
       MODULE: chip/top
