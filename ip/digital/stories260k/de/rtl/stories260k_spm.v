@@ -67,7 +67,7 @@ endmodule
 `else
 
 module stories260k_spm #(
-    parameter integer WBUF_WORDS = 4736,   // 148 KiB / 32 B
+    parameter integer WBUF_WORDS = 5024,   // 157 KiB / 32 B (v1.7: +128 for WO2+WQ3 INT8 hi)
     parameter integer KV_WORDS   = 3968,   // 124 KiB / 32 B
     parameter integer ACT_WORDS  = 512,    // 4 KiB / 8 B
     parameter integer VEC_WORDS  = 1024    // 8 KiB / 8 B

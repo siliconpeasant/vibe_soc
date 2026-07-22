@@ -23,7 +23,7 @@ module stories260k (
 );
 
     localparam [19:0] WBUF_BASE = 20'h10000;
-    localparam [19:0] WBUF_END  = 20'h34FFF;   // 148 KiB
+    localparam [19:0] WBUF_END  = 20'h373FF;   // 157 KiB (5024 x 32B; v1.7 +WO2+WQ3 INT8)
     localparam [19:0] KV_BASE   = 20'h40000;
     localparam [19:0] KV_END    = 20'h5EFFF;   // 124 KiB
     localparam [19:0] ACT_BASE  = 20'h60000;
@@ -146,6 +146,9 @@ module stories260k (
     wire [8:0]  cfg_token_in, cfg_gen_len;
     wire        cfg_chain_en;
     wire [3:0]  cfg_sm_shift;
+    wire [7:0]  cfg_rep_pen;
+    wire        cfg_adapt_en;
+    wire [3:0]  cfg_norep_win;
 
     stories260k_regs u_regs (
         .clk                (clk),
@@ -177,7 +180,10 @@ module stories260k (
         .cfg_token_in_o     (cfg_token_in),
         .cfg_gen_len_o      (cfg_gen_len),
         .cfg_chain_en_o     (cfg_chain_en),
-        .cfg_sm_shift_o     (cfg_sm_shift)
+        .cfg_sm_shift_o     (cfg_sm_shift),
+        .cfg_rep_pen_o      (cfg_rep_pen),
+        .cfg_adapt_en_o     (cfg_adapt_en),
+        .cfg_norep_win_o    (cfg_norep_win)
     );
 
     stories260k_spm u_spm (
@@ -229,6 +235,9 @@ module stories260k (
         .cfg_gen_len_i      (cfg_gen_len),
         .cfg_chain_en_i     (cfg_chain_en),
         .cfg_sm_shift_i     (cfg_sm_shift),
+        .cfg_rep_pen_i      (cfg_rep_pen),
+        .cfg_adapt_en_i     (cfg_adapt_en),
+        .cfg_norep_win_i    (cfg_norep_win),
         .busy_o             (busy),
         .done_set_o         (done_set),
         .error_set_o        (error_set),

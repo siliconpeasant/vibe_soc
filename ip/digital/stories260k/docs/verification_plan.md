@@ -60,7 +60,7 @@ The implemented v1.2 acceptance basis is:
    python3 dv/tests/pack_stories260k.py stories260K.bin dv/sim/img
    ```
 
-   The packer parses the llama2.c export, quantizes all matrices to per-64-group INT4 except layer-1 WQ to INT8, and emits fixed-capacity WBUF/VECBUF images. WQ1 rows 0..3 occupy normal tile words and rows 4..7 occupy WBUF words 4630..4693. Structural requant slots are q=(5793,14), k/v/wo=(1,0), w1/w3=(2,0), w2=(4,0); slots 35/36 are reserved.
+   The packer parses the llama2.c export, quantizes all matrices to per-64-group INT4 except Design-B INT8 (L1 QKV+WO, L2 WQ+WO, L3 WQ), and emits fixed-capacity WBUF/VECBUF images (WBUF 5,024 words). INT8 rows 0..3 occupy normal tiles; rows 4..7 occupy WBUF words 4630..4821 (L1), 4822..4949 (L2 WQ/WO), 4950..5013 (L3 WQ). Structural requant slots are q=(5793,14), k/v/wo=(1,0), w1/w3=(2,0), w2=(4,0); slots 35/36 are reserved.
 
 3. Run the TB through the registered MCP flow with plusargs injected via `USER_SIM_FLAGS`:
 
@@ -109,7 +109,7 @@ RTL-semantics numpy emulator used for numerics calibration and float-vs-fixed co
 python3 dv/tests/fixed_point_model.py stories260K.bin [steps]
 ```
 
-Prints float and fixed-point traces for calibration. The shipped configuration uses residual `k_x=3`, layer-1 WQ INT8, and `sm_shift=2`. The model mirrors the hardware operation-for-operation, including signed KV round-half-up, fused attention, LUTs, restoring-divider reciprocal, saturation, and lowest-index argmax.
+Prints float and fixed-point traces for calibration. The shipped Design-B v1.7 configuration uses residual `k_x=3`, INT8 ops `wq1,wk1,wv1,wo1,wq2,wo2,wq3`, `sm_shift=1`, and decode frequency penalty 32. The model mirrors the hardware operation-for-operation, including signed KV round-half-up, fused attention, LUTs, restoring-divider reciprocal, saturation, lowest-index argmax, and token-frequency penalty.
 
 ## Assertions and Checks
 
@@ -130,7 +130,7 @@ Regression-stage coverage targets (not all instrumented in the PoC TB):
 - Sequencer: all executed `C_*` states, QKV three-pass loop, per-head fused `C_SCORE` loop, both `C_TOK` exits; legacy `C_SM/C_AV` are unreachable.
 - MVM: W4 and WQ1 W8 paths, partial M=172 block, M=32 GQA passes, w2 three-group tail, INT8 requant, and lowest-index argmax.
 - Fused attention/SFU: positions 0/7/8/255/511, masked tails, nonzero `sm_shift`, KV rounding rails, RMSNorm clamps, and sigmoid symmetry.
-- CSR: every host error code (1 `ALIGN`, 2 `RO_WRITE`, 3 `BUSY_START`, 5 `INVALID_ADDR`); W1C on each sticky bit; `ERR_ADDR` latest-wins with `err_code`; `GEN_CFG.sm_shift` write/readback; 10-bit `SEQ_POS` reaching 512.
+- CSR: every host error code (1 `ALIGN`, 2 `RO_WRITE`, 3 `BUSY_START`, 5 `INVALID_ADDR`); W1C on each sticky bit; `ERR_ADDR` latest-wins with `err_code`; `GEN_CFG.sm_shift` write/readback; `DEC_CFG` write/readback (`rep_pen`/`adapt_en`/`norep_win`); 10-bit `SEQ_POS` reaching 512.
 - Chain modes: `chain_en` on/off × gen_len 1/many/512; boundary-address checks for position 511 and a full-length chain test in long regression.
 - Argmax: max at first/middle/last block; lowest index wins ties within and across blocks.
 

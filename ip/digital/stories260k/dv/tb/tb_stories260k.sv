@@ -15,6 +15,11 @@
 //   +TESTNAME=long512  generate the full 512-token checkpoint context
 //   +SEED_TOKEN=<id>   TOKEN_IN seed (default 1 = BOS). Non-BOS skips fixed
 //                      golden match so alternate stories can be explored.
+//   +DEC_PROFILE=golden|mid|long  decode policy preset (overridden by fields)
+//   +REP_PEN=<0..255>  DEC_CFG.rep_pen (default 32 = R4 golden)
+//   +ADAPT_EN=<0|1>    DEC_CFG.adapt_en (default 0)
+//   +NOREP_WIN=<0..15> DEC_CFG.norep_win last-K ban (default 0)
+//   Non-default DEC_CFG disables the 64-token fixed-model golden check.
 // Without images, deterministic LFSR pseudo-random weights are loaded.
 //============================================================================
 
@@ -44,6 +49,7 @@ module tb_stories260k #(
     localparam [11:0] REG_MAC_LO   = 12'h02C;
     localparam [11:0] REG_MAC_HI   = 12'h030;
     localparam [11:0] REG_PERF_CLR = 12'h034;
+    localparam [11:0] REG_DEC_CFG  = 12'h038; // rep_pen/adapt/norep; leave at reset
 
     localparam integer MAX_GEN_TOKENS = 512;
     localparam integer WGT_BYTES    = 131584;   // baseline tiled INT4 weights
@@ -54,8 +60,9 @@ module tb_stories260k #(
     localparam integer ROPE_POS     = 512;
     localparam integer RQ_W         = 176;
     localparam integer RQ_SLOTS     = 37;
-    localparam integer SM_SHIFT     = 2;   // calibrated for mixed W4/W8 image
-    localparam integer WBUF_LAST_W  = 4693;     // layer-1 WQ INT8 high halves
+    localparam integer SM_SHIFT     = 1;   // calibrated for QAT mixed-W4/W8 (v1.3)
+    localparam integer WBUF_LAST_W  = 5013;     // layer-3 WQ INT8 high halves (v1.7)
+    localparam integer WBUF_CAP_W   = 5024;     // WBUF_WORDS in stories260k_spm
     localparam integer KV_LAST_W    = 3839;
     localparam integer ACT_LAST_W   = 441;
     localparam integer VEC_LAST_W   = 212;
@@ -77,10 +84,17 @@ module tb_stories260k #(
     integer gen_tokens;
     integer wait_limit;
     integer seed_tmp;
+    integer rep_pen_i;
+    integer adapt_en_i;
+    integer norep_win_i;
     reg     long_mode;
     reg [8:0] seed_token;
     reg       check_golden;
+    reg [7:0] rep_pen;
+    reg       adapt_en;
+    reg [3:0] norep_win;
     string  test_name;
+    string  dec_profile;
     reg     capture_enable;
     reg [8:0]   tok_run1 [0:MAX_GEN_TOKENS-1];
     reg [8:0]   tok_run2 [0:MAX_GEN_TOKENS-1];
@@ -170,26 +184,26 @@ module tb_stories260k #(
                 18: golden_token = 9'd267;  19: golden_token = 9'd337;
                 20: golden_token = 9'd335;  21: golden_token = 9'd311;
                 22: golden_token = 9'd267;  23: golden_token = 9'd422;
-                24: golden_token = 9'd419;  25: golden_token = 9'd426;
-                26: golden_token = 9'd338;  27: golden_token = 9'd394;
-                28: golden_token = 9'd261;  29: golden_token = 9'd416;
-                30: golden_token = 9'd288;  31: golden_token = 9'd412;
-                32: golden_token = 9'd421;  33: golden_token = 9'd419;
-                34: golden_token = 9'd426;  35: golden_token = 9'd338;
-                36: golden_token = 9'd286;  37: golden_token = 9'd399;
-                38: golden_token = 9'd262;  39: golden_token = 9'd423;
-                40: golden_token = 9'd388;  41: golden_token = 9'd269;
-                42: golden_token = 9'd261;  43: golden_token = 9'd421;
-                44: golden_token = 9'd424;  45: golden_token = 9'd283;
-                46: golden_token = 9'd419;  47: golden_token = 9'd308;
-                48: golden_token = 9'd299;  49: golden_token = 9'd419;
-                50: golden_token = 9'd397;  51: golden_token = 9'd354;
-                52: golden_token = 9'd261;  53: golden_token = 9'd416;
-                54: golden_token = 9'd288;  55: golden_token = 9'd412;
-                56: golden_token = 9'd421;  57: golden_token = 9'd419;
-                58: golden_token = 9'd426;  59: golden_token = 9'd338;
-                60: golden_token = 9'd286;  61: golden_token = 9'd393;
-                62: golden_token = 9'd267;  63: golden_token = 9'd262;
+                24: golden_token = 9'd419;  25: golden_token = 9'd269;
+                26: golden_token = 9'd279;  27: golden_token = 9'd303;
+                28: golden_token = 9'd331;  29: golden_token = 9'd426;
+                30: golden_token = 9'd385;  31: golden_token = 9'd328;
+                32: golden_token = 9'd432;  33: golden_token = 9'd358;
+                34: golden_token = 9'd394;  35: golden_token = 9'd261;
+                36: golden_token = 9'd370;  37: golden_token = 9'd268;
+                38: golden_token = 9'd388;  39: golden_token = 9'd426;
+                40: golden_token = 9'd338;  41: golden_token = 9'd381;
+                42: golden_token = 9'd261;  43: golden_token = 9'd416;
+                44: golden_token = 9'd410;  45: golden_token = 9'd449;
+                46: golden_token = 9'd425;  47: golden_token = 9'd417;
+                48: golden_token = 9'd331;  49: golden_token = 9'd286;
+                50: golden_token = 9'd399;  51: golden_token = 9'd393;
+                52: golden_token = 9'd426;  53: golden_token = 9'd13;
+                54: golden_token = 9'd441;  55: golden_token = 9'd416;
+                56: golden_token = 9'd411;  57: golden_token = 9'd328;
+                58: golden_token = 9'd432;  59: golden_token = 9'd358;
+                60: golden_token = 9'd272;  61: golden_token = 9'd277;
+                62: golden_token = 9'd264;  63: golden_token = 9'd261;
                 default: golden_token = 9'd0;
             endcase
         end
@@ -584,6 +598,9 @@ module tb_stories260k #(
             mm_wr(CSR_BASE + REG_PERF_CLR, 32'd1);
             mm_wr(CSR_BASE + REG_TOKEN_IN, {23'd0, seed_token}); // default BOS=1
             mm_wr(CSR_BASE + REG_GEN_CFG, (gen_tokens-1) | (SM_SHIFT << 17));
+            // DEC_CFG: [7:0]rep_pen | [8]adapt_en | [12:9]norep_win
+            mm_wr(CSR_BASE + REG_DEC_CFG,
+                  {19'd0, norep_win, adapt_en, rep_pen});
             mm_wr(CSR_BASE + REG_CTRL, 32'h0000_0009);      // irq_en|start
             wait_cycles = 0;
             rd = 32'd0;
@@ -619,6 +636,11 @@ module tb_stories260k #(
         test_name  = "";
         seed_token = 9'd1;
         check_golden = 1'b1;
+        // DEC_CFG defaults match R4 golden (rep_pen=32, adapt/norep off).
+        rep_pen     = 8'd32;
+        adapt_en    = 1'b0;
+        norep_win   = 4'd0;
+        dec_profile = "golden";
         if ($value$plusargs("TESTNAME=%s", test_name) &&
             test_name == "long512") begin
             gen_tokens = MAX_GEN_TOKENS;
@@ -632,9 +654,41 @@ module tb_stories260k #(
             if (seed_token != 9'd1)
                 check_golden = 1'b0;
         end
+        // Profile first; explicit field plusargs override.
+        if ($value$plusargs("DEC_PROFILE=%s", dec_profile)) begin
+            if (dec_profile == "golden") begin
+                rep_pen = 8'd32; adapt_en = 1'b0; norep_win = 4'd0;
+            end else if (dec_profile == "mid") begin
+                rep_pen = 8'd48; adapt_en = 1'b0; norep_win = 4'd0;
+            end else if (dec_profile == "long") begin
+                rep_pen = 8'd64; adapt_en = 1'b1; norep_win = 4'd12;
+            end else begin
+                $display("[cfg] WARN unknown DEC_PROFILE=%0s; keeping golden",
+                         dec_profile);
+                dec_profile = "golden";
+            end
+        end
+        if ($value$plusargs("REP_PEN=%d", rep_pen_i)) begin
+            if (rep_pen_i < 0) rep_pen_i = 0;
+            if (rep_pen_i > 255) rep_pen_i = 255;
+            rep_pen = rep_pen_i[7:0];
+        end
+        if ($value$plusargs("ADAPT_EN=%d", adapt_en_i)) begin
+            adapt_en = (adapt_en_i != 0);
+        end
+        if ($value$plusargs("NOREP_WIN=%d", norep_win_i)) begin
+            if (norep_win_i < 0) norep_win_i = 0;
+            if (norep_win_i > 15) norep_win_i = 15;
+            norep_win = norep_win_i[3:0];
+        end
+        // Non-default decode policy cannot match the fixed R4 golden trail.
+        if ((rep_pen != 8'd32) || adapt_en || (norep_win != 4'd0))
+            check_golden = 1'b0;
         wait_limit = long_mode ? 50000000 : 4000000;
         $display("[cfg] TESTNAME=%0s gen_tokens=%0d seed_token=%0d check_golden=%0d",
                  test_name, gen_tokens, seed_token, check_golden);
+        $display("[cfg] DEC_PROFILE=%0s DEC_CFG rep_pen=%0d adapt_en=%0d norep_win=%0d",
+                 dec_profile, rep_pen, adapt_en, norep_win);
         capture_enable = 1'b0;
         mm_valid  = 1'b0;
         mm_write  = 1'b0;
@@ -685,7 +739,7 @@ module tb_stories260k #(
         $display("[%0t] buffers loaded", $time);
 
         // Physical capacities stay unchanged; all 512-position tails fit.
-        if (WBUF_LAST_W >= 4736 || KV_LAST_W >= 3968 ||
+        if (WBUF_LAST_W >= WBUF_CAP_W || KV_LAST_W >= 3968 ||
             ACT_LAST_W >= 512 || VEC_LAST_W >= 1024)
             fail("512-position layout exceeds an SRAM bank");
         check_rope_pos(0);
@@ -794,8 +848,14 @@ module tb_stories260k_long512;
     ) u_tb();
 endmodule
 
-// Mid-context performance/output point requested independently of the default
-// 64-token regression and the full 512-position boundary test.
+// Mid-context points for multi-length quality regression (Round-4 gates).
+module tb_stories260k_long128;
+    tb_stories260k #(
+        .DEFAULT_GEN_TOKENS (128),
+        .DEFAULT_LONG_MODE  (1)
+    ) u_tb();
+endmodule
+
 module tb_stories260k_long256;
     tb_stories260k #(
         .DEFAULT_GEN_TOKENS (256),

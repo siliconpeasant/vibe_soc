@@ -147,11 +147,13 @@ def prefix_aware_refine(ckpt, tok, steps=24, max_rounds=4):
     for l in range(5):
         for name in order_names:
             m, k = dims[name]
-            i8 = (name == "wq" and l == 1)
+            # Keep in sync with RTL/packer design-B INT8 set (layer-1 QKV).
+            i8 = (l == 1 and name in ("wq", "wk", "wv"))
             mats.append((name, l, ck[name][l], m, k, False, i8))
 
     chosen = {f"{n}{'' if l is None else l}": 1.0 for n, l, *_ in mats}
     sm_shift = 2
+    int8_ops = tuple(fpm.DEFAULT_INT8_OPS)
 
     def build_prequant():
         pre = {}
@@ -170,7 +172,7 @@ def prefix_aware_refine(ckpt, tok, steps=24, max_rounds=4):
     def eval_prefix(pre, sm):
         toks = fpm.emulate(
             ck, dims, k_x=3, sm_shift=sm, steps=steps,
-            int8_ops=("wq1",), prequant=pre,
+            int8_ops=int8_ops, prequant=pre,
         )
         # Secondary key: position matches among first 16 for stability.
         pos16 = sum(1 for a, b in zip(toks[:16], ref[:16]) if a == b)

@@ -8,7 +8,8 @@ reciprocal, sm_shift scaling, and lowest-index argmax. Used to calibrate the
 residual grid, requant values, and sm_shift and to generate the RTL prefix.
 
 Design B (shipped) defaults match pack_stories260k.py / RTL:
-  residual k_x=3, sm_shift=2, layer-1 WQ as INT8 (int8_ops=wq1).
+  residual k_x=3, sm_shift=1, INT8 ops wq1/wk1/wv1/wo1/wq2/wo2/wq3 (Design-B v1.7),
+  decode DEC_CFG defaults: rep_pen=32, adapt_en=0, norep_win=0 (R4 bit-exact).
 
 Usage:
   fixed_point_model.py <stories260K.bin> [steps] [k_x] [sm_shift]
@@ -28,8 +29,15 @@ SEQ_CAP = 512
 
 # Shipped mixed-W4/W8 image (design B). Keep in sync with packer + RTL.
 DEFAULT_K_X = 3
-DEFAULT_SM_SHIFT = 2
-DEFAULT_INT8_OPS = ("wq1",)
+DEFAULT_SM_SHIFT = 1  # QAT mixed-W4/W8 image (design-B v1.3); base ckpt may prefer 2
+DEFAULT_INT8_OPS = ("wq1", "wk1", "wv1", "wo1", "wq2", "wo2", "wq3")  # Design-B v1.7
+# Decode-time frequency penalty (CSR DEC_CFG @ 0x038):
+#   pen_eff = adapt_en ? (rep_pen + floor(pos/16)) : rep_pen
+#   logit'  = logit - count*pen_eff  (count saturates at 15)
+#   norep_win=N hard-bans the last N emitted tokens from argmax.
+DEFAULT_REP_PEN = 32
+DEFAULT_ADAPT_EN = 0
+DEFAULT_NOREP_WIN = 0
 
 EXP_TAB = [round(127 * math.exp((i - 128) / 16.0)) for i in range(129)]
 SIG_TAB = [round(32767 / (1.0 + math.exp(-i / 16.0))) for i in range(129)]
@@ -233,9 +241,18 @@ def kv_quant(vals, bits=4):
 
 def emulate(ck, dims, k_x=3, sm_shift=6, steps=32, trace=False,
             int8_ops=(), gain_frac=14, kv_bits=4, weight_clip=1.0,
-            prequant=None, mse_scale=False, start_token=1):
+            prequant=None, mse_scale=False, start_token=1,
+            rep_pen=None, adapt_en=None, norep_win=None):
     int8_ops = set(int8_ops)
     prequant = {} if prequant is None else prequant
+    if rep_pen is None:
+        rep_pen = DEFAULT_REP_PEN
+    if adapt_en is None:
+        adapt_en = DEFAULT_ADAPT_EN
+    if norep_win is None:
+        norep_win = DEFAULT_NOREP_WIN
+    adapt_en = int(adapt_en) & 1
+    norep_win = max(0, min(15, int(norep_win)))
     def qmat(name, layer, vals, m, k, emb=False):
         key = name if name == "emb" else f"{name}{layer}"
         if key in prequant:
@@ -266,6 +283,8 @@ def emulate(ck, dims, k_x=3, sm_shift=6, steps=32, trace=False,
     vsc = [[None] * SEQ_CAP for _ in range(NL)]
 
     tokens = []
+    tok_freq = [0] * VLEN
+    recent = []  # newest first; mirrors RTL recent_tok[0..14]
     token, pos = int(start_token) & 0x1FF, 0
     for _ in range(steps):
         x = mvm(emb_nib, emb_sc, [0] * DIM, 0, 0)  # placeholder unused
@@ -336,8 +355,29 @@ def emulate(ck, dims, k_x=3, sm_shift=6, steps=32, trace=False,
         if trace:
             trace_vec(pos, NL, "RMSF", x)
         logits = mvm_raw(emb_nib, emb_sc, x, VLEN, DIM)
-        token = max(range(VLEN), key=lambda i: logits[i])
+        # Match RTL DEC_CFG: pen_eff, 4-bit sat count, optional last-K ban.
+        # pos == tokens completed so far (mirrors tok_cnt at argmax time).
+        pen_eff = (rep_pen + (pos >> 4)) if adapt_en else rep_pen
+        banned = set(recent[:norep_win]) if norep_win else set()
+
+        def score(i):
+            if i in banned:
+                return None  # hard exclude
+            return logits[i] - pen_eff * min(15, tok_freq[i])
+
+        best_i, best_s = 0, None
+        for i in range(VLEN):
+            s = score(i)
+            if s is None:
+                continue
+            # Lowest-index argmax on adjusted scores (strict > keeps first).
+            if best_s is None or s > best_s:
+                best_s, best_i = s, i
+        token = best_i
         tokens.append(token)
+        if tok_freq[token] < 15:
+            tok_freq[token] += 1
+        recent = [token] + recent[:14]
         pos += 1
     return tokens
 
@@ -548,7 +588,7 @@ def main(argv=None):
     ap.add_argument("--k-x", type=int, default=None)
     ap.add_argument("--sm-shift", type=int, default=None)
     ap.add_argument("--int8-ops", default=",".join(DEFAULT_INT8_OPS),
-                    help="comma list e.g. wq1 or wq1,wk1 (default design-B wq1)")
+                    help="comma list e.g. wq1,wk1,wv1 (default design-B QKV)")
     ap.add_argument("--weight-clip", type=float, default=1.0)
     ap.add_argument("--kv-bits", type=int, default=4)
     ap.add_argument("--mse-scale", action="store_true",

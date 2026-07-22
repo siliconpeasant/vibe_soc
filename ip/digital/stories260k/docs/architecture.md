@@ -6,10 +6,13 @@ This document is the architecture handoff for the reusable digital IP `stories26
 
 The implemented v1.2 delta is recorded in `design_spec.md`: fused tiled
 attention, a parallel internal KV scale-bank read, round-half-up KV append,
-global lowest-index argmax ties, layer-1 WQ INT8, and calibrated `sm_shift=2`.
-It keeps the external interface, 512-token limit, 284 KiB aggregate SRAM
-capacity, and host-visible windows unchanged. RTL/golden and 64/256/512 VCS
-evidence is complete; synthesis/OpenROAD timing evidence is tracked separately.
+global lowest-index argmax ties, Design-B INT8 (L1 QKV+WO + L2 WQ/WO + L3 WQ;
+WBUF 157 KiB), calibrated `sm_shift=1` (QAT), and decode frequency penalty via
+CSR `DEC_CFG` (default `rep_pen=32` / adapt off / norep off → `score-count*32`;
+optional adaptive ramp and last-K no-repeat). Aggregate SRAM is **293 KiB**
+(host WBUF `0x10000-0x373FF`).
+RTL/golden and VCS evidence is tracked with each quality rev; synthesis/OpenROAD
+timing evidence is separate.
 
 The RTL baseline implementing this architecture exists under `de/rtl/` (`stories260k`, `stories260k_regs`, `stories260k_spm`, `stories260k_mac`, `stories260k_sfu`, `stories260k_attn`, `stories260k_core`, Verilog-2005) and is the authoritative source for all layout constants and operator semantics in this doc set. The PoC testbench (`dv/tb/tb_stories260k.sv`), checkpoint packer (`dv/tests/pack_stories260k.py`), and RTL-semantics fixed-point golden model (`dv/tests/fixed_point_model.py`) also exist. **Measured VCS `soc_sim` evidence exists for simulation-level claims**: T1–T4 pass, the first 64 real-image tokens are bit-exact to the fixed model, and maximum-context throughput is 8,955.8 tokens/s at 100 MHz (see Metrics).
 
@@ -31,7 +34,7 @@ The design targets carried by that run, and their current evidence status:
 | Real-model output | Opening six generated pieces match FP32: `Once upon a time, there`; deterministic fixed-model-exact 64-token stream | **Measured**; later malformed subwords remain quantization loss |
 | Die area | 4 mm² | Target — OpenROAD evidence pending |
 | Standard-cell count | 1.46 M | Target — synthesis evidence pending |
-| On-chip SRAM | 0.277 MB (284 KiB, exact by construction) | Fixed by construction |
+| On-chip SRAM | 0.286 MB (293 KiB, exact by construction; v1.7 WBUF 157 KiB) | Fixed by construction |
 | Datapath | 8×8 INT4/INT8 MAC array with fused dequantization plus tiled fused attention | Implemented in RTL, T2/T3-verified |
 | Frequency | 100 MHz timing closure (10 ns clock) | Target — SDC shipped, STA evidence pending |
 
@@ -57,7 +60,7 @@ The result is a chip designed by a model, for a model: the weight layout in WBUF
 | `stories260k` top | New in-house RTL IP (implemented) | `ip/digital/stories260k` | Single-purpose inference engine; one model, one fixed dataflow | Any model/config change requires reopening docs |
 | Register/control target | Same ready/valid memory-mapped style as `npu` | In-house, protocol reused | Avoids binding the IP to APB/AHB/AXI; wrapper added later at SoC level | 20-bit address, registered response; wrappers must follow |
 | SPM storage | Four software-loaded scratchpads (WBUF/KVBUF/ACTBUF/VECBUF), wide-word behavioral arrays with combinational reads | In-house, implemented | Whole model + full 512-position context on die; no external memory traffic at run time | Replace with synchronous SRAM macros per the interface-spec contract; macros must be host-initialized |
-| Compute datapath | 8×8 signed MAC array, 64 MAC/cycle, fused group dequantization; W4 tiles plus split-row layer-1 WQ W8 tiles | In-house, implemented; T2-verified | One 256-bit read feeds W4; two logical WBUF reads feed W8 without extra cycles | A physical SRAM macro must provide the documented read banks |
+| Compute datapath | 8×8 signed MAC array, 64 MAC/cycle, fused group dequantization; W4 tiles plus split-row layer-1 QKV W8 tiles | In-house, implemented; T2-verified | One 256-bit read feeds W4; two logical WBUF reads feed W8 without extra cycles | A physical SRAM macro must provide the documented read banks |
 | Fused attention | Eight-position K/V tiles, parallel scale/data reads, two-pass max/exp, local reciprocal, no SCORE/PR spill | In-house, implemented; T3-verified | Reduces full-context attention to 4,740 cycles/token | Exp LUT and fixed-point path are bit-exact to the golden model |
 | Special-function unit | Core invokes EMBED, RMSNORM, ROPE, SWIGLU, RESADD, KVAPPEND; shared isqrt/divider and sigmoid LUT | In-house, implemented; T3-verified end-to-end | LUT-based fixed point keeps nonlinear ops on die | Legacy SOFTMAX opcode is no longer sequenced |
 | Controller | Token sequencer FSM with fused per-head attention and GQA KV-head mux (`kvh = head>>1`) | In-house, implemented | Fixed model graph means no descriptor engine is needed | Microcode only if future model flexibility is approved |
@@ -77,7 +80,7 @@ One host start command runs greedy autoregressive decode:
 4. The winning token id is written to `TOKEN_OUT` with `token_valid`; with chaining enabled it feeds back as the next input until `gen_len` tokens complete, up to the checkpoint maximum of 512.
 5. Performance counters expose cycle/MAC/token counts; measured sustained throughput at 512 tokens is 8,955.8 tokens/s at 100 MHz.
 
-This is not a programmable NPU, a training engine, an external-memory accelerator, or a multi-model runtime. It is a single-checkpoint engine whose entire state fits in 284 KiB of SRAM.
+This is not a programmable NPU, a training engine, an external-memory accelerator, or a multi-model runtime. It is a single-checkpoint engine whose entire state fits in 293 KiB of SRAM.
 
 ## Quantization Rationale
 
@@ -89,7 +92,7 @@ Weights (every weight is touched exactly once per token):
 |---|---:|---|
 | FP32 | 260,032 × 4 = 1,040,128 B (0.99 MiB) | Impossible on die. |
 | INT8 | 260,032 B (254 KiB) | Alone consumes 89% of total SRAM budget; no room for KV. |
-| Mixed W4/W8 + per-64-group INT16 scales | 133,632 B weight data + 8,384 B scales = 142,016 B | All but layer-1 WQ use W4; WQ1 W8 adds 2,048 B. With the 8,192 B RoPE table, WBUF has 1,344 B spare. |
+| Mixed W4/W8 + per-64-group INT16 scales | 143,872 B weight data + 8,384 B scales = 152,256 B | L1 QKV+WO + L2 WQ/WO + L3 WQ INT8; with RoPE, WBUF uses 160,448 B of 160,768 B (320 B spare). |
 
 KV cache (full 512-position context, 5 layers, K and V, **GQA 4 KV heads**):
 
@@ -99,7 +102,7 @@ KV cache (full 512-position context, 5 layers, K and V, **GQA 4 KV heads**):
 | INT8 | 163,840 B (160 KiB) | Does not fit KVBUF before adding scales. |
 | INT4 + per-(layer,kv-head,pos) power-of-two INT16 scales | 122,880 B (120 KiB) | Fits KVBUF (124 KiB) with 4,096 B spare; K scale folds into the softmax input and V scale into the softmax output, so scales never enter the MAC array. Power-of-two scales make the append quantizer shift-only. |
 
-Total: 146.7 KiB WBUF contents + 120 KiB KV + 3.5 KiB activations + 1.7 KiB vectors = 271.8 KiB used of 284 KiB provisioned. The residual stream and all activations stay INT8 and accumulators stay INT32, so no FP unit exists anywhere in the datapath. The known precision costs are enumerated in `design_spec.md`.
+Total: 156.7 KiB WBUF contents + 120 KiB KV + 3.5 KiB activations + 1.7 KiB vectors = 281.9 KiB used of 293 KiB provisioned. The residual stream and all activations stay INT8 and accumulators stay INT32, so no FP unit exists anywhere in the datapath. The known precision costs are enumerated in `design_spec.md`.
 
 ## Top-Level Partition
 
@@ -111,7 +114,7 @@ Total: 146.7 KiB WBUF contents + 120 KiB KV + 3.5 KiB activations + 1.7 KiB vect
 | MVM engine (in `stories260k_core`) | Drives the MAC over 8-row blocks × K/8 cycles; W4/W8 select; INT8 requant and streaming lowest-index argmax writeback modes. |
 | Fused attention (`stories260k_attn`) | K-score/max pass, K-exp/V-accumulate pass, local restoring-divider reciprocal, final INT8 head write; K/V scales fold locally. |
 | SFU (`stories260k_sfu`) | EMBED, RMSNORM, ROPE, SWIGLU, RESADD, round-half-up KVAPPEND; shared isqrt/divider micro-engines. |
-| SPM (`stories260k_spm`) | WBUF 4,736×256b with three logical reads, KVBUF 3,968×256b with data/scale/V-transpose views, ACTBUF 512×64b, VECBUF 1,024×64b; host byte-strobe port stalled while busy. |
+| SPM (`stories260k_spm`) | WBUF 5,024×256b with three logical reads, KVBUF 3,968×256b with data/scale/V-transpose views, ACTBUF 512×64b, VECBUF 1,024×64b; host byte-strobe port stalled while busy. |
 
 ```text
                      host (SoC bus wrapper)
@@ -133,7 +136,7 @@ Total: 146.7 KiB WBUF contents + 120 KiB KV + 3.5 KiB activations + 1.7 KiB vect
    |     v                 v                    v               |
    | +-----------+  +--------------+  +-----------------------+  |
    | | mac 8x8   |  | sfu + attn   |  | spm                   |  |
-   | | INT4/INT8 |  | rmsnorm/rope |  | WBUF  148KiB 256b words| |
+   | | INT4/INT8 |  | rmsnorm/rope |  | WBUF  157KiB 256b words| |
    | | fused deq |  | tiled GQA    |  | KVBUF 124KiB 256b words| |
    | | rnd fold  |  | swiglu/embed |  | ACTBUF  4KiB  64b words| |
    | | int32 acc |  | isqrt/div    |  | VECBUF  8KiB  64b words| |
@@ -149,11 +152,11 @@ Controller/datapath separation is preserved: the sequencer issues phase descript
 
 | Buffer | Capacity | Used | Word geometry | Contents |
 |---|---:|---:|---|---|
-| WBUF | 148 KiB (151,552 B) | 150,208 B (146.7 KiB; 4,694 of 4,736 words) | 32 B words, 8×8-tile interleaved | Mixed-W4/W8 weight data 133,632 B + group scales 8,384 B + RoPE 8,192 B |
+| WBUF | 157 KiB (160,768 B) | 160,448 B (156.7 KiB; 5,014 of 5,024 words) | 32 B words, 8×8-tile interleaved | Mixed-W4/W8 weight data 143,872 B + group scales 8,384 B + RoPE 8,192 B |
 | KVBUF | 124 KiB (126,976 B) | 122,880 B (120 KiB; 3,840 of 3,968 words) | 32 B words | Per layer {K data, K scales, V data, V scales} × 4 GQA KV heads, 768-word layer stride |
 | ACTBUF | 4 KiB (4,096 B) | 3,536 B address envelope (442 of 512 words) | 8 B words | x/xb/q/kt/v, reserved legacy SCORE/PR regions, att/hb/hb2/hb3/y |
 | VECBUF | 8 KiB (8,192 B) | 1,704 B (213 of 1,024 words) | 8 B words | RMSNorm gains (176 words), requant table (37 slots) |
-| **Total** | **284 KiB (290,816 B = 0.277 MB)** | 278,328 B (271.8 KiB) | | |
+| **Total** | **293 KiB (300,032 B = 0.286 MB)** | 288,568 B (281.8 KiB) | | |
 
 The baseline implements all four as behavioral wide-word arrays with combinational reads and power-on zero initialization (buffer contents are *not* cleared by `rst_n` or soft reset). The synchronous-macro replacement boundary, including host-side initialization duties, is defined in `interface_spec.md`.
 
@@ -173,7 +176,7 @@ The baseline implements all four as behavioral wide-word arrays with combination
 | `mm_error` | out | 1 | Registered one-transfer error response, valid with the read data cycle. |
 | `irq` | out | 1 | Level interrupt: `irq_en && (done || error || token_valid)`. |
 
-Address windows: CSR `0x00000-0x00FFF`, WBUF `0x10000-0x34FFF`, KVBUF `0x40000-0x5EFFF`, ACTBUF `0x60000-0x60FFF`, VECBUF `0x64000-0x65FFF`; everything else is `INVALID_ADDR`. Full semantics in `interface_spec.md` and `regmap.md`.
+Address windows: CSR `0x00000-0x00FFF`, WBUF `0x10000-0x373FF`, KVBUF `0x40000-0x5EFFF`, ACTBUF `0x60000-0x60FFF`, VECBUF `0x64000-0x65FFF`; everything else is `INVALID_ADDR`. Full semantics in `interface_spec.md` and `regmap.md`.
 
 ## Clock, Reset, CDC, and RDC
 
@@ -200,8 +203,8 @@ Address windows: CSR `0x00000-0x00FFF`, WBUF `0x10000-0x34FFF`, KVBUF `0x40000-0
 | Metric | Value | Status |
 |---|---:|---|
 | Parameter count | 260,032 | Fixed by construction (emb 32,768 + rms_att 320 + wq 20,480 + wk/wv 20,480 + wo 20,480 + rms_ffn 320 + w1/w3 110,080 + w2 55,040 + rms_final 64; classifier tied to embedding). Verified against the measured checkpoint header and the packer. |
-| SRAM total | 290,816 B = 284 KiB = 0.277 MB | Fixed by construction (buffer capacities in RTL). |
-| WBUF / KVBUF usage | 150,208 B / 122,880 B | Fixed by construction (layout constants in RTL, TB, and packer agree). |
+| SRAM total | 300,032 B = 293 KiB = 0.286 MB | Fixed by construction (buffer capacities in RTL; v1.7 WBUF 157 KiB). |
+| WBUF / KVBUF usage | 160,448 B / 122,880 B | Fixed by construction (layout constants in RTL, TB, and packer agree). |
 | MAC throughput | 64 MAC/cycle, 6.4 GMAC/s @ 100 MHz | Implemented; T2 bit-exact vs SV golden. |
 | Ideal compute | ≈ 9,200 cycles/token at full 512-token context | Analytic bound (259,328 useful matmul MACs + ≤ 5×8×512×8×2 = 327,680 attention MACs over 64 lanes). Not a measurement. |
 | Decode throughput | **12,810.6 / 10,815.5 / 8,955.8 tokens/s** for 64 / 256 / 512 tokens | **Measured** — real-checkpoint VCS runs; 512 uses 5,716,993 cycles and meets ≥8,700. |
@@ -211,7 +214,7 @@ Address windows: CSR `0x00000-0x00FFF`, WBUF `0x10000-0x34FFF`, KVBUF `0x40000-0
 | Frequency | 100 MHz | Target — SDC shipped (`de/syn/stories260k.sdc`), STA evidence pending. |
 | Die area / cell count | 4 mm² / 1.46 M cells | Target — OpenROAD reports pending. |
 
-**Fidelity statement:** current VCS evidence proves the 512-entry layout, deterministic decode, legal counters/error behavior, maximum-context throughput, and exact agreement with the fixed-point model for the asserted 64-token prefix. Layer-1 WQ INT8 improves the FP32 prefix match to six generated pieces. It does not make the W4A8 model FP32-equivalent; later malformed subwords require a QAT or higher-precision checkpoint/design trade-off.
+**Fidelity statement:** current VCS evidence proves the 512-entry layout, deterministic decode, legal counters/error behavior, maximum-context throughput, and exact agreement with the fixed-point model for the asserted 64-token prefix. Design-B v1.7 (L1 QKV+WO + L2 WQ/WO + L3 WQ INT8 + `sm_shift=1` + freq pen 32) further trades WBUF for long-story readability under QAT; residual fixed/FP32 gaps remain quantization fidelity, not RTL/golden mismatch.
 
 No synthesis, STA, or PD report is claimed by this doc set. Any downstream claim must cite its own fresh evidence.
 
@@ -259,6 +262,6 @@ Blockers for downstream stages:
 Unresolved non-blocking risks:
 
 - Text fidelity beyond the FP32-matching opening remains fragment-level; the RTL/fixed mismatch is closed, while fixed/FP32 quality is a checkpoint/QAT precision issue.
-- RoPE plus WQ1 INT8 leaves 1,344 B in WBUF; KVBUF leaves 4,096 B. Any future context or precision growth must reopen the memory layout.
+- RoPE plus Design-B INT8 leaves 320 B spare in WBUF; KVBUF leaves 4,096 B. Any future context or precision growth must reopen the memory layout.
 - LUT-based SFU approximations (exp, sigmoid) carry small quantization error, bounded by the fixed-point golden model comparison.
-- Behavioral SPM arrays at 284 KiB are simulation-heavy; long tests load images via `$readmemh` (as T3 does).
+- Behavioral SPM arrays at 293 KiB are simulation-heavy; long tests load images via `$readmemh` (as T3 does).
