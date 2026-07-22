@@ -151,7 +151,10 @@ module stories260k_attn (
     reg signed [7:0]  q_lane;
     reg signed [7:0]  k_lane;
     reg signed [7:0]  v_lane;
-    reg        [15:0] scale_lane;
+    // Separate temps: shared scale_lane was multi-driven by the K-score and
+    // V-product comb blocks (Yosys rtlil assert / X risk in some flows).
+    reg        [15:0] k_scale_lane;
+    reg        [15:0] v_scale_lane;
     reg        [23:0] pp_prod;
     reg        [23:0] pp_round;
     reg        [9:0]  lane_pos;
@@ -164,7 +167,7 @@ module stories260k_attn (
         exp_sum_comb = 32'd0;
         q_lane      = 8'sd0;
         k_lane      = 8'sd0;
-        scale_lane  = 16'd0;
+        k_scale_lane = 16'd0;
         scale_prod  = 48'sd0;
         z_full      = 32'sd0;
         z_clamp     = 8'sd0;
@@ -180,8 +183,8 @@ module stories260k_attn (
                 dot_tmp = dot_tmp + q_lane * k_lane;
             end
             score_lane[i] = dot_tmp;
-            scale_lane = kv_scale_rdata_i[(tile[0]*8+i)*16 +: 16];
-            scale_prod = score_lane[i] * $signed({1'b0, scale_lane}) + 48'sd1024;
+            k_scale_lane = kv_scale_rdata_i[(tile[0]*8+i)*16 +: 16];
+            scale_prod = score_lane[i] * $signed({1'b0, k_scale_lane}) + 48'sd1024;
             scaled_lane[i] = $signed(scale_prod[42:11]);
             unused_scale_bits = {scale_prod[47:43], scale_prod[10:0]};
             if ((lane_pos <= {1'b0, pos}) && (scaled_lane[i] > tile_max))
@@ -205,13 +208,13 @@ module stories260k_attn (
     // before the local reciprocal, exactly like the former PR + AV path.
     always @* begin
         v_lane    = 8'sd0;
-        scale_lane = 16'd0;
+        v_scale_lane = 16'd0;
         pp_prod   = 24'd0;
         pp_round  = 24'd0;
         unused_pp_bits = 16'd0;
         for (i = 0; i < 8; i = i + 1) begin
-            scale_lane = kv_scale_rdata_i[(tile[0]*8+i)*16 +: 16];
-            pp_prod = exp_lane[i] * scale_lane;
+            v_scale_lane = kv_scale_rdata_i[(tile[0]*8+i)*16 +: 16];
+            pp_prod = exp_lane[i] * v_scale_lane;
             pp_round = pp_prod + 24'd16384;
             pp_comb[i] = pp_round[22:15];
             unused_pp_bits = {pp_round[23], pp_round[14:0]};

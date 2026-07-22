@@ -21,6 +21,9 @@ module stories260k_core (
     input  wire [8:0]   cfg_gen_len_i,
     input  wire         cfg_chain_en_i,
     input  wire [3:0]   cfg_sm_shift_i,
+    input  wire [7:0]   cfg_rep_pen_i,
+    input  wire         cfg_adapt_en_i,
+    input  wire [3:0]   cfg_norep_win_i,
 
     output wire         busy_o,
     output reg          done_set_o,
@@ -250,6 +253,7 @@ module stories260k_core (
     reg [9:0]  cf_k;
     reg [5:0]  cf_rq;
     reg        cf_i8;
+    reg [12:0] cf_i8_base;   // WBUF word base of INT8 high-half tiles
 
     // sequencer-to-MVM combinational configuration (driven in always @*)
     reg [12:0] mvm_cfg_wbase;
@@ -263,6 +267,7 @@ module stories260k_core (
     reg [9:0]  mvm_cfg_k;
     reg [5:0]  mvm_cfg_rq;
     reg        mvm_cfg_i8;
+    reg [12:0] mvm_cfg_i8_base;
 
     reg [9:0]  mv_mblk;      // current 8-row block
     reg [9:0]  mv_kcnt;      // current 8-element step
@@ -354,22 +359,59 @@ module stories260k_core (
         end
     end
 
-    // Argmax block reduction: strict comparison keeps the globally lowest
-    // token index on ties, matching Python's first-maximum rule.
+    // Decode-time frequency penalty + optional last-K no-repeat (v1.8).
+    // Default DEC_CFG: rep_pen=32, adapt_en=0, norep_win=0 → bit-exact R4 golden.
+    //   score' = logit - count[token]*pen_eff, count saturates at 15.
+    //   pen_eff = adapt_en ? (rep_pen + tok_cnt[9:4]) : rep_pen
+    //   norep_win=N bans the last N emitted tokens (hard exclude from argmax).
+    reg [3:0] tok_freq [0:511];
+    reg [8:0] recent_tok [0:14]; // shift register of last 15 emitted tokens
+    reg [3:0] recent_n;          // filled depth (0..15)
+
+    // Effective penalty: base + optional slow ramp with tokens completed.
+    wire [8:0] pen_eff = cfg_adapt_en_i
+        ? ({1'b0, cfg_rep_pen_i} + {3'd0, tok_cnt[9:4]})
+        : {1'b0, cfg_rep_pen_i};
+
+    // Argmax block reduction on *penalized* logits. Ties keep the lowest
+    // token index (Python first-maximum rule on the adjusted scores).
     integer ar;
+    integer nr;
     reg signed [31:0] blk_best_val;
     reg        [8:0]  blk_best_idx;
     reg               blk_best_en;
+    reg signed [31:0] cand_raw;
+    reg signed [31:0] cand_adj;
+    reg        [8:0]  cand_idx;
+    reg               cand_ban;
 
     always @* begin
         blk_best_val = 32'h8000_0000;
         blk_best_idx = 9'd0;
         blk_best_en  = 1'b0;
+        cand_raw     = 32'sd0;
+        cand_adj     = 32'sd0;
+        cand_idx     = 9'd0;
+        cand_ban     = 1'b0;
         for (ar = 0; ar < 8; ar = ar + 1) begin
-            if ((ar[11:0] < rem_rows) &&
-                ($signed(acc_flat[ar*32 +: 32]) > blk_best_val)) begin
-                blk_best_val = $signed(acc_flat[ar*32 +: 32]);
-                blk_best_idx = {mv_mblk[5:0], ar[2:0]};
+            cand_idx = {mv_mblk[5:0], ar[2:0]};
+            cand_raw = $signed(acc_flat[ar*32 +: 32]);
+            cand_adj = cand_raw -
+                       ($signed({23'd0, pen_eff}) *
+                        $signed({28'd0, tok_freq[cand_idx]}));
+            // Hard-ban last-K recent tokens when norep_win != 0.
+            cand_ban = 1'b0;
+            if (cfg_norep_win_i != 4'd0) begin
+                for (nr = 0; nr < 15; nr = nr + 1) begin
+                    if ((nr[3:0] < cfg_norep_win_i) && (nr[3:0] < recent_n) &&
+                        (cand_idx == recent_tok[nr]))
+                        cand_ban = 1'b1;
+                end
+            end
+            if ((ar[11:0] < rem_rows) && !cand_ban &&
+                (cand_adj > blk_best_val)) begin
+                blk_best_val = cand_adj;
+                blk_best_idx = cand_idx;
                 blk_best_en  = 1'b1;
             end
         end
@@ -395,6 +437,7 @@ module stories260k_core (
             cf_k      <= 10'd0;
             cf_rq     <= 6'd0;
             cf_i8     <= 1'b0;
+            cf_i8_base <= 13'd0;
             amax_val  <= 32'h8000_0000;
             amax_idx  <= 9'd0;
         end else if (soft_reset_i) begin
@@ -417,6 +460,7 @@ module stories260k_core (
                         cf_k     <= mvm_cfg_k;
                         cf_rq    <= mvm_cfg_rq;
                         cf_i8    <= mvm_cfg_i8;
+                        cf_i8_base <= mvm_cfg_i8_base;
                         mv_mblk  <= 10'd0;
                         mv_kcnt  <= 10'd0;
                         mv_gcnt  <= 2'd0;
@@ -512,8 +556,9 @@ module stories260k_core (
 
     assign wbuf_raddr_o = sfu_busy ? sfu_wbuf_raddr : mv_waddr;
     assign wbuf_saddr_o = mv_sunit[13:1];
+    // INT8 high-half tile bank: base selected per matrix (see C_QKV).
     assign wbuf_i8_raddr_o = cf_i8 ?
-        (13'd4630 + mv_mblk[9:0] * kwords + {3'd0, mv_kcnt}) : 13'd0;
+        (cf_i8_base + mv_mblk[9:0] * kwords + {3'd0, mv_kcnt}) : 13'd0;
 
     // SFU always writes full 64-bit VEC words
     assign vec_wstrb_o = 8'hFF;
@@ -549,6 +594,7 @@ module stories260k_core (
         mvm_cfg_k     = 10'd0;
         mvm_cfg_rq    = 6'd0;
         mvm_cfg_i8    = 1'b0;
+        mvm_cfg_i8_base = 13'd0;
         case (state)
             C_EMB: begin
                 sfu_op = OP_EMBED;
@@ -608,10 +654,16 @@ module stories260k_core (
                 mvm_cfg_m     = (qkv_i == 2'd0) ? 10'd64 : 10'd32;
                 mvm_cfg_k     = 10'd64;
                 mvm_cfg_rq    = rq_layer + {4'd0, qkv_i};
-                // Layer-1 WQ is the sole activation-sensitive INT8 matrix.
-                // Its low/high four-row halves use the normal tile address
-                // and WBUF spare words 4630..4693 respectively.
-                mvm_cfg_i8    = (layer == 3'd1) && (qkv_i == 2'd0);
+                // Design-B v1.7 INT8 high-halves (low 4 rows in normal tiles):
+                //   L1 WQ 4630..4693 (64), WK 4694..4725 (32), WV 4726..4757 (32)
+                //   L2 WQ 4822..4885 (64), L3 WQ 4950..5013 (64)
+                mvm_cfg_i8 = (layer == 3'd1) ||
+                             ((layer == 3'd2) && (qkv_i == 2'd0)) ||
+                             ((layer == 3'd3) && (qkv_i == 2'd0));
+                mvm_cfg_i8_base = (layer == 3'd1) ?
+                                  ((qkv_i == 2'd0) ? 13'd4630 :
+                                   (qkv_i == 2'd1) ? 13'd4694 : 13'd4726) :
+                                  (layer == 3'd2) ? 13'd4822 : 13'd4950;
             end
             C_WO: begin
                 mvm_cfg_wsel  = 2'd0;
@@ -624,6 +676,9 @@ module stories260k_core (
                 mvm_cfg_m     = 10'd64;
                 mvm_cfg_k     = 10'd64;
                 mvm_cfg_rq    = rq_layer + 6'd3;
+                // L1 WO 4758..4821, L2 WO 4886..4949 (64 words each)
+                mvm_cfg_i8 = (layer == 3'd1) || (layer == 3'd2);
+                mvm_cfg_i8_base = (layer == 3'd1) ? 13'd4758 : 13'd4886;
             end
             C_W1: begin
                 mvm_cfg_wsel  = 2'd0;
@@ -687,6 +742,8 @@ module stories260k_core (
     assign busy_o     = (state != C_IDLE);
     assign cycle_en_o = busy_o;
 
+    integer fi;
+    integer ri;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state             <= C_IDLE;
@@ -703,6 +760,11 @@ module stories260k_core (
             error_code_o      <= 4'd0;
             token_valid_set_o <= 1'b0;
             token_inc_o       <= 1'b0;
+            recent_n          <= 4'd0;
+            for (fi = 0; fi < 512; fi = fi + 1)
+                tok_freq[fi] <= 4'd0;
+            for (ri = 0; ri < 15; ri = ri + 1)
+                recent_tok[ri] <= 9'd0;
         end else if (soft_reset_i) begin
             state             <= C_IDLE;
             phase             <= 1'b0;
@@ -718,6 +780,11 @@ module stories260k_core (
             error_code_o      <= 4'd0;
             token_valid_set_o <= 1'b0;
             token_inc_o       <= 1'b0;
+            recent_n          <= 4'd0;
+            for (fi = 0; fi < 512; fi = fi + 1)
+                tok_freq[fi] <= 4'd0;
+            for (ri = 0; ri < 15; ri = ri + 1)
+                recent_tok[ri] <= 9'd0;
         end else begin
             done_set_o        <= 1'b0;
             error_set_o       <= 1'b0;
@@ -735,6 +802,12 @@ module stories260k_core (
                         qkv_i     <= 2'd0;
                         phase     <= 1'b0;
                         state     <= C_EMB;
+                        // Fresh decode context: clear frequency / norep state.
+                        recent_n  <= 4'd0;
+                        for (fi = 0; fi < 512; fi = fi + 1)
+                            tok_freq[fi] <= 4'd0;
+                        for (ri = 0; ri < 15; ri = ri + 1)
+                            recent_tok[ri] <= 9'd0;
                     end
                 end
 
@@ -745,6 +818,15 @@ module stories260k_core (
                     token_inc_o       <= 1'b1;
                     seq_pos_o         <= seq_pos_o + 10'd1;
                     tok_cnt           <= tok_cnt + 10'd1;
+                    // Saturating frequency counter for the chosen token.
+                    if (tok_freq[amax_idx] != 4'd15)
+                        tok_freq[amax_idx] <= tok_freq[amax_idx] + 4'd1;
+                    // Shift recent history: newest at index 0.
+                    for (ri = 14; ri > 0; ri = ri - 1)
+                        recent_tok[ri] <= recent_tok[ri - 1];
+                    recent_tok[0] <= amax_idx;
+                    if (recent_n != 4'd15)
+                        recent_n <= recent_n + 4'd1;
                     if (cfg_chain_en_i && (tok_cnt[8:0] != cfg_gen_len_i)) begin
                         if (seq_pos_o == SEQ_MAX - 10'd1) begin
                             error_code_o <= ERR_CTX;

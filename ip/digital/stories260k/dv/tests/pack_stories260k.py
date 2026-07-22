@@ -2,9 +2,9 @@
 """Pack a llama2.c stories260K checkpoint into stories260k chip images.
 
 Reads stories260K.bin (karpathy/llama2.c export format), quantizes weights
-to INT4 except activation-sensitive layer-1 WQ to INT8, using per-64-element
+to INT4 except Design-B INT8 matrices (L1 QKV+WO, L2 WQ+WO, L3 WQ) using per-64-element
 Q4.12 group scales, and emits the 8x8 tile-interleaved WBUF image (weights,
-split WQ1 INT8 upper halves, scales, 512-position RoPE table)
+split INT8 upper halves, scales, 512-position RoPE table)
 and the VECBUF image (RMSNorm gains, requant slots) as $readmemh hex files:
 
     +WIMAGE=<out>/wbuf.hex +VIMAGE=<out>/vecbuf.hex
@@ -29,7 +29,7 @@ NKVH = 4
 KVDIM = DIM * NKVH // NH          # 32
 
 # WBUF layout (32-byte words)
-WBUF_WORDS = 4736
+WBUF_WORDS = 5024  # v1.7: +128 words for layer-2 WO + layer-3 WQ INT8 high-halves
 EMB_TILE_W = 0
 LAYER_TILE_W = 512
 LAYER_TILE_STRIDE = 720
@@ -41,6 +41,12 @@ SC_LAYER_STRIDE = 46
 SC_OFF = {"wq": 0, "wk": 4, "wv": 6, "wo": 8, "w1": 12, "w2": 23, "w3": 35}
 WBUF_ROPE_W = 4374  # 256 words; two {cos64,sin64} positions per 256b word
 WBUF_WQ1_I8_HI_W = 4630  # 64 words: rows 4..7 of layer-1 WQ INT8 tiles
+WBUF_WK1_I8_HI_W = 4694  # 32 words: rows 4..7 of layer-1 WK INT8 tiles (M=32)
+WBUF_WV1_I8_HI_W = 4726  # 32 words: rows 4..7 of layer-1 WV INT8 tiles (M=32)
+WBUF_WO1_I8_HI_W = 4758  # 64 words: rows 4..7 of layer-1 WO INT8 tiles
+WBUF_WQ2_I8_HI_W = 4822  # 64 words: rows 4..7 of layer-2 WQ INT8 tiles
+WBUF_WO2_I8_HI_W = 4886  # 64 words: rows 4..7 of layer-2 WO INT8 tiles
+WBUF_WQ3_I8_HI_W = 4950  # 64 words: rows 4..7 of layer-3 WQ INT8 tiles
 
 # VECBUF layout (8-byte words)
 VEC_WORDS = 1024
@@ -226,14 +232,31 @@ def build_images(ck, rq, mse_scale=False, alphas=None):
     for l in range(NL):
         for name in MATS:
             m, k = MAT_DIMS[name]
-            is_i8 = (l == 1 and name == "wq")
+            # v1.7 Design-B: L1 QKV+WO, L2 WQ+WO, L3 WQ are INT8; remaining W4.
+            is_i8 = ((l == 1 and name in ("wq", "wk", "wv", "wo")) or
+                     (l == 2 and name in ("wq", "wo")) or
+                     (l == 3 and name == "wq"))
             clip = float(alphas.get(f"{name}{l}", 1.0))
             nib, sc = quant_matrix(ck[name][l], m, k,
                                    bits=(8 if is_i8 else 4),
                                    mse_scale=mse_scale, clip=clip)
             tile_base = LAYER_TILE_W + l * LAYER_TILE_STRIDE + TILE_OFF[name]
             if is_i8:
-                pack_i8_split_tiles(wbuf, tile_base, WBUF_WQ1_I8_HI_W,
+                if l == 1 and name == "wq":
+                    hi = WBUF_WQ1_I8_HI_W
+                elif l == 1 and name == "wk":
+                    hi = WBUF_WK1_I8_HI_W
+                elif l == 1 and name == "wv":
+                    hi = WBUF_WV1_I8_HI_W
+                elif l == 1 and name == "wo":
+                    hi = WBUF_WO1_I8_HI_W
+                elif l == 2 and name == "wq":
+                    hi = WBUF_WQ2_I8_HI_W
+                elif l == 2 and name == "wo":
+                    hi = WBUF_WO2_I8_HI_W
+                else:  # l == 3, wq
+                    hi = WBUF_WQ3_I8_HI_W
+                pack_i8_split_tiles(wbuf, tile_base, hi,
                                     nib, m, (k + 7) // 8 * 8)
             else:
                 pack_tiles(wbuf, tile_base, nib, m, (k + 7) // 8 * 8)
@@ -272,6 +295,12 @@ def build_images(ck, rq, mse_scale=False, alphas=None):
         mult, shift = rq[i]
         vec[RQ_W + i] = ((shift & 0xFF) << 32) | (mult & 0xFFFFFFFF)
     assert WBUF_WQ1_I8_HI_W + 64 <= WBUF_WORDS
+    assert WBUF_WK1_I8_HI_W + 32 <= WBUF_WORDS
+    assert WBUF_WV1_I8_HI_W + 32 <= WBUF_WORDS
+    assert WBUF_WO1_I8_HI_W + 64 <= WBUF_WORDS
+    assert WBUF_WQ2_I8_HI_W + 64 <= WBUF_WORDS
+    assert WBUF_WO2_I8_HI_W + 64 <= WBUF_WORDS
+    assert WBUF_WQ3_I8_HI_W + 64 <= WBUF_WORDS
     assert RQ_W + RQ_SLOTS <= VEC_WORDS
     return wbuf, vec
 
