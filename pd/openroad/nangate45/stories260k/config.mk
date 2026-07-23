@@ -17,6 +17,10 @@ export VERILOG_FILES = \
 export SDC_FILE = $(THIS_DIR)/constraint.sdc
 export ABC_AREA ?= 1
 export TNS_END_PERCENT ?= 100
+# Timing repair: place/CTS/GRT (was skipped for bring-up). Keep on for clean closure.
+export ENABLE_PLACE_REPAIR_TIMING ?= 1
+export SKIP_CTS_REPAIR_TIMING ?= 0
+export SKIP_INCREMENTAL_REPAIR ?= 0
 export SYNTH_REPEATABLE_BUILD ?= 1
 # Target ~45% core utilization (auto die size from design area + macros).
 # With full attn RTL, util50 + density0.55 left thin corridors near SPM and

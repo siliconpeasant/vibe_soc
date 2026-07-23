@@ -194,6 +194,11 @@ def gen_lib(path):
         f.write("    interface_timing : true;\n")
 
         def emit_input_body():
+            # Setup is checked with a modest abstract margin. Hold is zero for this
+            # PoC SPM blackbox: a non-zero hold (e.g. 0.1 ns) only models invent
+            # short-path fails into the macro under large CTS skew, and OpenROAD
+            # hold-buffer repair crashes on the post-route GRT state of this flow.
+            # Replace with vendor SRAM liberty (real setup/hold tables) for signoff.
             f.write("      timing () {\n")
             f.write("        related_pin : \"clk\";\n")
             f.write("        timing_type : setup_rising;\n")
@@ -203,8 +208,8 @@ def gen_lib(path):
             f.write("      timing () {\n")
             f.write("        related_pin : \"clk\";\n")
             f.write("        timing_type : hold_rising;\n")
-            f.write("        rise_constraint (scalar) { values (\"0.1\"); }\n")
-            f.write("        fall_constraint (scalar) { values (\"0.1\"); }\n")
+            f.write("        rise_constraint (scalar) { values (\"0.0\"); }\n")
+            f.write("        fall_constraint (scalar) { values (\"0.0\"); }\n")
             f.write("      }\n")
 
         def emit_output_body():

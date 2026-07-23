@@ -133,8 +133,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     pin (host_we_i) {
@@ -149,8 +149,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (host_addr_i) {
@@ -166,8 +166,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (host_wdata_i) {
@@ -183,8 +183,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (host_wstrb_i) {
@@ -200,8 +200,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (host_wbuf_rdata_o) {
@@ -273,8 +273,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (wbuf_rdata_o) {
@@ -304,8 +304,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (wbuf_sdata_o) {
@@ -335,8 +335,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (wbuf_i8_rdata_o) {
@@ -366,8 +366,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (kv_rdata_o) {
@@ -411,8 +411,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (kv_scale_rdata_o) {
@@ -441,8 +441,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (kv_waddr_i) {
@@ -458,8 +458,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (kv_wdata_i) {
@@ -475,8 +475,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (kv_wstrb_i) {
@@ -492,8 +492,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (act_raddr_i) {
@@ -509,8 +509,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (act_rdata_o) {
@@ -539,8 +539,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (act_waddr_i) {
@@ -556,8 +556,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (act_wdata_i) {
@@ -573,8 +573,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (act_wstrb_i) {
@@ -590,8 +590,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (vec_raddr_i) {
@@ -607,8 +607,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (vec_rdata_o) {
@@ -637,8 +637,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (vec_waddr_i) {
@@ -654,8 +654,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (vec_wdata_i) {
@@ -671,8 +671,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
     bus (vec_wstrb_i) {
@@ -688,8 +688,8 @@ library (spm_min_lib) {
       timing () {
         related_pin : "clk";
         timing_type : hold_rising;
-        rise_constraint (scalar) { values ("0.1"); }
-        fall_constraint (scalar) { values ("0.1"); }
+        rise_constraint (scalar) { values ("0.0"); }
+        fall_constraint (scalar) { values ("0.0"); }
       }
     }
   }
