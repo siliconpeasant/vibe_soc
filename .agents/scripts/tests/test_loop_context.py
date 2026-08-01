@@ -75,6 +75,7 @@ class LoopContextCase(unittest.TestCase):
 
     def test_low_risk_single_module_rtl_uses_dev(self) -> None:
         result = self.context(["ip/digital/demo/de/rtl/demo.sv"])
+        self.assertEqual(result["schema_version"], 2)
         self.assertEqual(result["mode"], "dev")
         self.assertTrue(result["pipeline_governed"])
         self.assertFalse(result["close_pipeline"])
@@ -85,6 +86,18 @@ class LoopContextCase(unittest.TestCase):
         actions = " ".join(result["next_actions"])
         self.assertIn("otherwise soc_comp", actions)
         self.assertNotIn("compile, and simulation", actions)
+        self.assertEqual(result["execution"]["profile"], "light")
+        self.assertEqual(result["execution"]["max_parallel_owners"], 1)
+        self.assertEqual(result["execution"]["same_failure_retry_limit"], 1)
+        self.assertTrue(result["execution"]["preflight"]["required"])
+        self.assertEqual(
+            result["execution"]["preflight"]["before_checks"],
+            ["targeted_soc_sim_or_soc_comp"],
+        )
+        self.assertEqual(
+            result["execution"]["preflight"]["on_unavailable"],
+            "record_once_and_continue_independent_checks_only",
+        )
         self.assertLess(len(json.dumps(result)), 4096)
 
     def test_filelist_escalates_to_merge(self) -> None:
@@ -184,6 +197,10 @@ class LoopContextCase(unittest.TestCase):
         )
         self.assertEqual(result["mode"], "merge")
         self.assertEqual(result["scope"], "repo")
+        self.assertIn("soc_comp", result["checks_to_run"])
+        self.assertIn(
+            "soc_comp", result["execution"]["preflight"]["before_checks"]
+        )
 
     def test_loop_mode_environment_sets_the_floor_for_auto(self) -> None:
         with patch.dict("os.environ", {"LOOP_MODE": "merge"}):
@@ -201,7 +218,46 @@ class LoopContextCase(unittest.TestCase):
         self.assertEqual(result["required_checks"], ["closest_non_eda_validation"])
         self.assertEqual(result["rules"], [])
         self.assertEqual(result["cache"]["stages"], {})
+        self.assertFalse(result["execution"]["preflight"]["required"])
         self.assertTrue(result["delivery_ready"])
+
+    def test_text_packet_exposes_execution_preflight_and_reuse(self) -> None:
+        result = self.context(["ip/digital/demo/dv/tb/tb_demo.sv"])
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            loop_context._print_text(result)
+        packet = output.getvalue()
+        self.assertIn("Execution     : light", packet)
+        self.assertIn("same-failure-retry<=1", packet)
+        self.assertIn("Preflight     : registered_capability", packet)
+        self.assertIn("Reuse         :", packet)
+
+    def test_policy_rejects_missing_execution_contract(self) -> None:
+        source = SCRIPTS.parent / "loop_policy.json"
+        policy = json.loads(source.read_text(encoding="utf-8"))
+        del policy["modes"]["dev"]["execution"]
+        broken = self.repo / "broken_loop_policy.json"
+        broken.write_text(json.dumps(policy), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "execution contract"):
+            loop_context.load_policy(broken)
+
+    def test_policy_rejects_unsafe_execution_limits(self) -> None:
+        source = SCRIPTS.parent / "loop_policy.json"
+        base = json.loads(source.read_text(encoding="utf-8"))
+        cases = (
+            ("dev", "max_parallel_owners", True, "invalid"),
+            ("dev", "max_parallel_owners", 2, "safe maximum"),
+            ("merge", "instruction_budget_words", 3001, "safe maximum"),
+            ("signoff", "same_failure_retry_limit", 2, "safe maximum"),
+        )
+        for mode, field, value, message in cases:
+            with self.subTest(mode=mode, field=field, value=value):
+                policy = json.loads(json.dumps(base))
+                policy["modes"][mode]["execution"][field] = value
+                broken = self.repo / f"broken_{mode}_{field}.json"
+                broken.write_text(json.dumps(policy), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, message):
+                    loop_context.load_policy(broken)
 
     def test_documentation_inner_loop_does_not_open_rtl(self) -> None:
         result = self.context(["ip/digital/demo/docs/design_spec.md"])
@@ -310,6 +366,7 @@ class LoopContextCase(unittest.TestCase):
         self.assertEqual(before_review["checks_to_run"], ["loop_review_normal"])
         self.assertTrue(result["delivery_ready"], result)
         self.assertEqual(result["checks_to_run"], [])
+        self.assertFalse(result["execution"]["preflight"]["required"])
         self.assertLess(len(json.dumps(result)), 4096)
         self.assertTrue(
             all(item["fresh"] for item in result["cache"]["stages"].values())
@@ -344,6 +401,12 @@ class LoopContextCase(unittest.TestCase):
         self.assertTrue(pending["stage_evidence_ready"])
         self.assertFalse(pending["delivery_ready"])
         self.assertIn("risk_specific_checks", pending["checks_to_run"])
+        self.assertEqual(pending["execution"]["profile"], "heavy")
+        self.assertEqual(pending["execution"]["max_parallel_owners"], 2)
+        self.assertIn(
+            "risk_specific_checks",
+            pending["execution"]["preflight"]["before_checks"],
+        )
         self.assertTrue(ready["delivery_ready"])
         self.assertEqual(ready["checks_to_run"], [])
 

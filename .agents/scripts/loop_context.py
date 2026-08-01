@@ -25,6 +25,34 @@ from loop_state_core import (
 
 
 MODE_RANK = {"dev": 0, "merge": 1, "signoff": 2}
+EXECUTION_PROFILES = {"dev": "light", "merge": "balanced", "signoff": "heavy"}
+EXECUTION_MAXIMA = {
+    "dev": {
+        "instruction_budget_words": 1800,
+        "max_parallel_owners": 1,
+        "same_failure_retry_limit": 1,
+        "review_runs_per_snapshot": 0,
+    },
+    "merge": {
+        "instruction_budget_words": 3000,
+        "max_parallel_owners": 2,
+        "same_failure_retry_limit": 1,
+        "review_runs_per_snapshot": 1,
+    },
+    "signoff": {
+        "instruction_budget_words": 3200,
+        "max_parallel_owners": 2,
+        "same_failure_retry_limit": 1,
+        "review_runs_per_snapshot": 1,
+    },
+}
+RESOURCE_HEAVY_CHECKS = {
+    "targeted_soc_sim_or_soc_comp",
+    "soc_comp",
+    "soc_sim",
+    "soc_syn",
+    "risk_specific_checks",
+}
 CHECK_STAGE = {
     "doc_delta": "doc",
     "architecture_doc_delta": "doc",
@@ -246,14 +274,48 @@ def _rule_set_fingerprint(repo: Path, rules: list[str]) -> str:
 
 def load_policy(path: Path) -> dict:
     policy = json.loads(path.read_text(encoding="utf-8"))
-    if policy.get("schema_version") != 1:
-        raise ValueError("loop policy requires schema_version 1")
+    if policy.get("schema_version") != 2:
+        raise ValueError("loop policy requires schema_version 2")
     if policy.get("mode_order") != ["dev", "merge", "signoff"]:
         raise ValueError("loop policy mode_order must be dev, merge, signoff")
     modes = policy.get("modes")
     routing = policy.get("routing")
     if not isinstance(modes, dict) or any(mode not in modes for mode in MODE_RANK):
         raise ValueError("loop policy is missing a mode contract")
+    required_execution = {
+        "profile",
+        "instruction_budget_words",
+        "max_parallel_owners",
+        "same_failure_retry_limit",
+        "review_runs_per_snapshot",
+        "evidence_mode",
+    }
+    for mode in MODE_RANK:
+        execution = modes[mode].get("execution")
+        if not isinstance(execution, dict) or not required_execution.issubset(execution):
+            raise ValueError(f"loop policy {mode} mode is missing its execution contract")
+        if execution["profile"] != EXECUTION_PROFILES[mode]:
+            raise ValueError(f"loop policy {mode} mode has an invalid execution profile")
+        for field in (
+            "instruction_budget_words",
+            "max_parallel_owners",
+            "same_failure_retry_limit",
+            "review_runs_per_snapshot",
+        ):
+            value = execution[field]
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ValueError(f"loop policy {mode} mode has an invalid {field}")
+            if value > EXECUTION_MAXIMA[mode][field]:
+                raise ValueError(
+                    f"loop policy {mode} mode {field} exceeds its safe maximum"
+                )
+        if (
+            execution["instruction_budget_words"] == 0
+            or execution["max_parallel_owners"] == 0
+        ):
+            raise ValueError(f"loop policy {mode} mode execution limits must be positive")
+        if execution["evidence_mode"] != "compact":
+            raise ValueError(f"loop policy {mode} mode evidence_mode must be compact")
     required_routing = {
         "material_globs",
         "lightweight_globs",
@@ -535,6 +597,9 @@ def build_context(
         if check == "risk_specific_checks" and risk_checks_passed:
             continue
         checks_to_run.append(check)
+    preflight_checks = [
+        check for check in checks_to_run if check in RESOURCE_HEAVY_CHECKS
+    ]
     actions = []
     if governed and mode == "dev" and "rtl" in affected_stage_list:
         behavior_action = (
@@ -596,7 +661,7 @@ def build_context(
     else:
         owner = "coordinator"
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "workspace": workspace.relative_to(repo).as_posix() if workspace != repo else ".",
         "base_ref": base_ref,
         "requested_mode": requested,
@@ -617,6 +682,19 @@ def build_context(
         "rule_set_fingerprint": _rule_set_fingerprint(repo, rules),
         "required_checks": required_checks,
         "checks_to_run": checks_to_run,
+        "execution": {
+            **mode_policy["execution"],
+            "preflight": {
+                "required": bool(preflight_checks),
+                "before_checks": preflight_checks,
+                "requirements": [
+                    "registered_capability",
+                    "tool_and_license_when_required",
+                    "input_artifacts",
+                ] if preflight_checks else [],
+                "on_unavailable": "record_once_and_continue_independent_checks_only",
+            },
+        },
         "review_mode": review_mode,
         "review_required": review_required,
         "review_result": review_result,
@@ -644,17 +722,37 @@ def _print_text(context: dict) -> None:
         f"({context['changed_path_count']} selected, {context['ignored_path_count']} ignored)"
     )
     print(f"Owner         : {context['owner']}")
+    execution = context["execution"]
+    print(
+        "Execution     : "
+        f"{execution['profile']}, instructions<={execution['instruction_budget_words']}w, "
+        f"parallel<={execution['max_parallel_owners']}, "
+        f"same-failure-retry<={execution['same_failure_retry_limit']}, "
+        f"evidence={execution['evidence_mode']}"
+    )
     print(f"Pipeline      : {'governed' if context['pipeline_governed'] else 'not governed'}")
     print(f"Delivery ready: {'yes' if context['delivery_ready'] else 'no'}")
     print("Reasons       : " + "; ".join(context["reasons"]))
     print("Rules         : " + (", ".join(context["rules"]) or "none"))
     print("Checks        : " + ", ".join(context["required_checks"]))
     print("Run now       : " + ", ".join(context["checks_to_run"]))
+    preflight = execution["preflight"]
+    print(
+        "Preflight     : "
+        + (
+            ", ".join(preflight["requirements"])
+            + " before "
+            + ", ".join(preflight["before_checks"])
+            if preflight["required"]
+            else "not needed"
+        )
+    )
     cache_text = ", ".join(
         f"{stage}={'fresh' if info['fresh'] else 'stale'}"
         for stage, info in context["cache"]["stages"].items()
     )
     print("Stage cache   : " + (cache_text or "n/a"))
+    print("Reuse         : " + (", ".join(context["reused_stages"]) or "none"))
     for action in context["next_actions"]:
         print(f"Next          : {action}")
 

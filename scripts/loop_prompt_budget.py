@@ -10,15 +10,36 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+LOOP_POLICY = json.loads(
+    (ROOT / ".agents/loop_policy.json").read_text(encoding="utf-8")
+)
+MODE_BUDGETS = {
+    mode: LOOP_POLICY["modes"][mode]["execution"]["instruction_budget_words"]
+    for mode in ("dev", "merge", "signoff")
+}
 FILE_BUDGETS = {
     "AGENTS.md": 450,
     ".agents/skills/vibe-soc-loop/SKILL.md": 300,
     ".agents/skills/soc-pipeline/SKILL.md": 260,
     ".agents/agents/soc-reviewer.md": 220,
 }
+DELIVERY_ROUTER_FILES = (
+    "AGENTS.md",
+    ".agents/skills/vibe-soc-loop/SKILL.md",
+    ".agents/skills/soc-pipeline/SKILL.md",
+    ".agents/rules/01_swarm_flow.md",
+    ".agents/rules/02_toolchain.md",
+    ".agents/rules/05_pipeline_state.md",
+    ".agents/rules/04_coding_style.md",
+    ".agents/rules/06_design_knowledge.md",
+    ".agents/rules/10_rtl_change_gate.md",
+    ".agents/rules/11_verif_recovery_gate.md",
+    ".agents/rules/12_syn_pd_gate.md",
+    ".agents/rules/13_review_gate.md",
+)
 BUNDLES = {
     "dev_rtl": {
-        "budget": 1800,
+        "budget": MODE_BUDGETS["dev"],
         "files": (
             "AGENTS.md",
             ".agents/skills/vibe-soc-loop/SKILL.md",
@@ -28,22 +49,13 @@ BUNDLES = {
             ".agents/rules/06_design_knowledge.md",
         ),
     },
+    "delivery_merge_router": {
+        "budget": MODE_BUDGETS["merge"],
+        "files": DELIVERY_ROUTER_FILES,
+    },
     "delivery_signoff_router": {
-        "budget": 3200,
-        "files": (
-            "AGENTS.md",
-            ".agents/skills/vibe-soc-loop/SKILL.md",
-            ".agents/skills/soc-pipeline/SKILL.md",
-            ".agents/rules/01_swarm_flow.md",
-            ".agents/rules/02_toolchain.md",
-            ".agents/rules/05_pipeline_state.md",
-            ".agents/rules/04_coding_style.md",
-            ".agents/rules/06_design_knowledge.md",
-            ".agents/rules/10_rtl_change_gate.md",
-            ".agents/rules/11_verif_recovery_gate.md",
-            ".agents/rules/12_syn_pd_gate.md",
-            ".agents/rules/13_review_gate.md",
-        ),
+        "budget": MODE_BUDGETS["signoff"],
+        "files": DELIVERY_ROUTER_FILES,
     },
 }
 

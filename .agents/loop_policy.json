@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "mode_order": [
     "dev",
     "merge",
@@ -9,6 +9,14 @@
   "modes": {
     "dev": {
       "purpose": "Fast inner-loop work on one module without closing delivery stages.",
+      "execution": {
+        "profile": "light",
+        "instruction_budget_words": 1800,
+        "max_parallel_owners": 1,
+        "same_failure_retry_limit": 1,
+        "review_runs_per_snapshot": 0,
+        "evidence_mode": "compact"
+      },
       "review_mode": "not_run",
       "close_pipeline": false,
       "required_checks": [
@@ -20,6 +28,14 @@
     },
     "merge": {
       "purpose": "Close the final module diff once before PR or automatic merge.",
+      "execution": {
+        "profile": "balanced",
+        "instruction_budget_words": 3000,
+        "max_parallel_owners": 2,
+        "same_failure_retry_limit": 1,
+        "review_runs_per_snapshot": 1,
+        "evidence_mode": "compact"
+      },
       "review_mode": "normal",
       "close_pipeline": true,
       "required_checks": [
@@ -41,6 +57,14 @@
     },
     "signoff": {
       "purpose": "Run the full high-risk delivery flow for integration and implementation changes.",
+      "execution": {
+        "profile": "heavy",
+        "instruction_budget_words": 3200,
+        "max_parallel_owners": 2,
+        "same_failure_retry_limit": 1,
+        "review_runs_per_snapshot": 1,
+        "evidence_mode": "compact"
+      },
       "review_mode": "strict",
       "close_pipeline": true,
       "required_checks": [

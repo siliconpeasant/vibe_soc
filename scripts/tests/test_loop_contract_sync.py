@@ -30,6 +30,8 @@ class LoopContractSyncTest(unittest.TestCase):
         self.assertIn("do not run both by default", agents)
         self.assertIn("fewest useful tool loops", loop)
         self.assertIn("compact state", loop)
+        self.assertIn("preflight", loop)
+        self.assertIn("same-failure retry limit", loop)
         for mode in ("dev", "merge", "signoff"):
             self.assertIn(mode, mode_rule)
         self.assertIn("--compact", state_rule)
