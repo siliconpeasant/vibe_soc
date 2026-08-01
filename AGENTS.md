@@ -1,5 +1,41 @@
 # Repository Agent Guide
 
+## Agent environment bootstrap
+
+Canonical sources: `.agents/` (roles, rules, skills, `mcp-servers.json`, loop scripts).  
+Client adapters are generated — do not hand-edit generated files.
+
+| Client | Config / adapters |
+|--------|-------------------|
+| Claude | `.claude/agents` → `.agents/agents`, `.claude/skills` → `.agents/skills`, `.mcp.json` |
+| Codex | `.codex/agents/*.toml`, `.codex/config.toml`, hooks under `.codex/hooks/` |
+| Grok | `.grok/config.toml` (hyphen names `silicon-crew-*`, no colon) |
+
+On a fresh machine or after pulling agent changes:
+
+```bash
+# Preferred: one-shot
+make agent-setup
+
+# Or step-by-step
+make agent-sync          # regenerate profiles + MCP configs
+make mcp-setup           # silicon-crew Python venv for MCP servers
+make agent-check         # fail if any adapter drifted
+
+# Loop routing packet (source of truth for vibe-soc-loop)
+python3 .agents/scripts/loop_context.py . --format text
+```
+
+Task worktrees **must not** use system `/tmp`. Set:
+
+```bash
+export CODEX_WORKTREE_ROOT=/project/xuanwu9000/user/silicon/vibe_soc/tmp/worktrees
+# or any persistent path outside this repo
+scripts/prepare_task_worktree.sh <task-slug>
+```
+
+`make agent-sync` ensures `tmp/worktrees/` exists. Large scratch stays under `tmp/` (gitignored).
+
 ## Scope and layout
 
 `vibe_soc` uses the silicon-crew layout. Chip modules live under `chip/`, reusable IP under `ip/`, OpenROAD handoff files under `pd/openroad/`, and shared tooling under `scripts/`. Module artifacts belong only under:

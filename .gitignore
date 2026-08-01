@@ -58,3 +58,9 @@ pd/openroad/**/config.local.mk
 # Project-local OpenROAD-MCP runtime and disposable package cache.
 .openroad-mcp-venv/
 .openroad-mcp-cache/
+
+# Local agent scratch: worktrees, benchmarks (never system /tmp)
+tmp/
+
+# Machine-local Claude settings (MCP enable list / permissions)
+.claude/settings.local.json
