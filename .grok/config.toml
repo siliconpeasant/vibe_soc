@@ -41,7 +41,7 @@ command = "/bin/sh"
 args = ["scripts/mcp_python.sh", ".agents/skills/upf-gen/mcp_server.py"]
 cwd = "."
 startup_timeout_sec = 120
-tool_timeout_sec = 300
+tool_timeout_sec = 43200
 
 [mcp_servers.silicon-crew-crg-req-to-design]
 enabled = true

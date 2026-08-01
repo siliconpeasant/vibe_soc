@@ -2,7 +2,10 @@
 
 ## Stage evidence
 
-This owner runs document completeness, registered strict UPF generation, registered Verilator lint, registered VCS compile/elaboration, RTL quality, and static UPF/Tcl scans. `soc_sim` and synthesis are not run. A compile result is not behavioral simulation evidence.
+This flow runs document completeness, registered strict UPF generation,
+registered RTL checks, registered DC/Power Compiler synthesis, UPF-aware
+Formality equivalence, and Conformal Low Power native IEEE 1801 RTL/UPF
+consistency checking. A compile result is not behavioral simulation evidence.
 
 | ID | Evidence | Pass condition |
 |---|---|---|
@@ -12,6 +15,9 @@ This owner runs document completeness, registered strict UPF generation, registe
 | R-02 | Registered `soc_comp` | VCS top compile/elaboration succeeds |
 | R-03 | RTL quality | Canonical files/modules resolve |
 | S-01 | Static source scan | No RTL/UPF physical switch implementation; expected objects present |
+| S-02 | Registered `soc_syn`, DC | Fresh netlist, DDC, canonical/saved UPF, timing reports, and SVF are captured under one immutable run ID/fingerprint; DC low-power audits pass |
+| F-01 | Registered `upf_formal_verify` | RTL+canonical UPF is equivalent to DC netlist+saved UPF; `verification_status=SUCCEEDED` |
+| C-01 | Registered `upf_clp_check` | Native 1801 pre-synthesis RTL/UPF checks complete with zero failed error-level rules |
 
 ## UPF structural checks
 
@@ -34,11 +40,43 @@ The system-state names must be exactly `ALL_ON`, `SW_OFF`, `ACC_OFF`, `PERI_OFF`
 
 The domain/supply truth table is the one in `architecture.md`; any omitted condition, implicit don't-care, `RET`, or input-rail OFF condition is failure.
 
-## Later synthesis checks
+## Synthesis checks
 
 The synthesis owner must inspect real reports before finalizing counts. The source-level structural estimate is 36 ELS and 44 pure H2L LS. DC Tcl may document these as provisional, but must not treat them as validated until a real registered `soc_syn` run supplies the exact hierarchy/netlist counts.
 
-Later synthesis must also prove exactly five domains, four abstract switches, all supplies/states, all eight MacroPG paths, all four cores/controllers, complete saved UPF, no physical switch cell, and ordinary non-PG Verilog with no `VDD*`, `VSS*`, `VGND`, `VPWR`, `VPWRIN`, or other named PG connection.
+Synthesis must also prove exactly five domains, four abstract switches, all supplies/states, all eight MacroPG paths, all four cores/controllers, complete saved UPF, no physical switch cell, and ordinary non-PG Verilog with no `VDD*`, `VSS*`, `VGND`, `VPWR`, `VPWRIN`, or other named PG connection. The same invocation must emit a non-empty SVF before Formality starts.
+
+The Formality/CLP wrapper must receive the exact `soc_syn` `run_id` and
+`source_fingerprint`, reject current-source drift, resolve the netlist,
+canonical/saved UPF, and SVF only from that immutable evidence directory, and
+record SHA-256 digests for every consumed input and produced report.
+
+## Formality with UPF
+
+- Load all standard-cell, teaching low-power, and PG-aware hard-macro DBs.
+- Apply the fresh DC SVF before reading either design container.
+- Reference: synthesizable source RTL plus canonical generated UPF.
+- Implementation: ordinary DC netlist plus the full UPF saved by that DC run.
+- Preserve full `report_upf` output for both containers, setup status, matching,
+  and final verification status.
+- Accept only a real `verify` return with `verification_status=SUCCEEDED`.
+  Missing/stale evidence, inconclusive, failed, or aborted results are failure.
+
+## CLP RTL/UPF consistency
+
+- Use Conformal Low Power native IEEE 1801 with UPF 2.1 and the
+  `pre_synthesis` golden analysis style.
+- Read the same synthesizable RTL, canonical UPF, low-power Liberty views, and
+  PG-aware hard-macro Liberty used by the DC teaching flow.
+- Preserve full 1801 rule summary, failed error-rule report, power-intent
+  object report, low-power strategy report, design data, and black-box report.
+- Any critical read/elaboration issue or any failed error-level 1801 rule is
+  failure. The registered wrapper cannot create a waiver or accept a marker
+  without fresh non-empty reports.
+- Parse both the filtered error-rule XML and text summary fail-closed before
+  accepting `UPF_CLP_PASS`; only the registered MCP wrapper emits that marker.
+- Reject non-empty or unknown XML schemas until they are validated against a
+  real pass/fail fixture from the installed CLP release.
 
 ## Future functional goals
 

@@ -26,3 +26,5 @@ de/syn/upf/*
 !de/syn/dc_upf_synth.tcl
 !de/syn/macro_pg_stub.lib
 !de/syn/build_teaching_mv_lib.py
+!de/syn/formal/
+!de/syn/formal/*.tcl

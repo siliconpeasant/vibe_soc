@@ -4,7 +4,7 @@
   "workspace": "ip/digital/upf_dc_demo",
   "mode": "single",
   "created_at": "2026-07-14T03:11:43Z",
-  "last_updated": "2026-07-15T07:48:17Z",
+  "last_updated": "2026-08-01T09:54:02Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -12,8 +12,8 @@
       "agent": "soc-doc-engineer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-15T04:16:19Z",
-      "completed_at": "2026-07-15T04:19:25Z",
+      "started_at": "2026-08-01T09:51:31Z",
+      "completed_at": "2026-08-01T09:52:14Z",
       "artifacts": [
         "docs/architecture.md",
         "docs/design_spec.md",
@@ -25,46 +25,41 @@
         "docs/architecture.md": {
           "sha256": "d61dc8b8d06611b613ddc6238f5190d31a2c9b61398430897660834a327550e7",
           "size": 6580,
-          "recorded_at": "2026-07-15T04:19:25Z",
+          "recorded_at": "2026-08-01T09:52:14Z",
           "provenance": [
-            "doc_completeness",
-            "doc_stale_scan"
+            "doc_completeness"
           ]
         },
         "docs/design_spec.md": {
           "sha256": "e84ae33b7bcaa308212d3d8de1a7000547bb5e4b8f045603fa6f2cd4fb2bb28e",
           "size": 4583,
-          "recorded_at": "2026-07-15T04:19:25Z",
+          "recorded_at": "2026-08-01T09:52:14Z",
           "provenance": [
-            "doc_completeness",
-            "doc_stale_scan"
+            "doc_completeness"
           ]
         },
         "docs/interface_spec.md": {
           "sha256": "61e4bc769037349c752ae041e399e238167b2b7b701d2a8a351130622f2afc16",
           "size": 4663,
-          "recorded_at": "2026-07-15T04:19:25Z",
+          "recorded_at": "2026-08-01T09:52:14Z",
           "provenance": [
-            "doc_completeness",
-            "doc_stale_scan"
+            "doc_completeness"
           ]
         },
         "docs/regmap.md": {
           "sha256": "260552a629f54afc48e115df6570887b3be8a05338489ea9aee667b0ed36c6ee",
           "size": 742,
-          "recorded_at": "2026-07-15T04:19:25Z",
+          "recorded_at": "2026-08-01T09:52:14Z",
           "provenance": [
-            "doc_completeness",
-            "doc_stale_scan"
+            "doc_completeness"
           ]
         },
         "docs/verification_plan.md": {
-          "sha256": "ee38b0974adeaca14af05b6dd97d910fa52741cd2dd1039168bbb36613d67ee5",
-          "size": 3654,
-          "recorded_at": "2026-07-15T04:19:25Z",
+          "sha256": "6927e9a357ad590259608fc5d5708260c4dd7885df4bb93b079b8691bdcd4205",
+          "size": 5954,
+          "recorded_at": "2026-08-01T09:52:14Z",
           "provenance": [
-            "doc_completeness",
-            "doc_stale_scan"
+            "doc_completeness"
           ]
         }
       },
@@ -72,23 +67,140 @@
         {
           "tool": "doc_completeness",
           "passed": true,
-          "note": "four canonical documents nonempty with headings"
-        },
-        {
-          "tool": "doc_stale_scan",
-          "passed": true,
-          "note": "no stale two-domain or old low-power-cell count claims"
+          "note": ""
         }
       ],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "Expand approved architecture and interfaces from two to five power domains with nine explicit system power states",
-      "last_updated": "2026-07-15T04:19:25Z"
+      "notes": "Documented immutable soc_syn binding, fail-closed Formality/CLP evidence, and current licensed-flow limits.",
+      "last_updated": "2026-08-01T09:52:14Z"
     },
     "rtl": {
       "step_id": "rtl",
       "name": "RTL设计与编码",
       "agent": "soc-rtl-designer",
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-08-01T09:53:07Z",
+      "completed_at": "2026-08-01T09:53:26Z",
+      "artifacts": [
+        "de/rtl/filelist.f",
+        "de/rtl/upf_dc_demo.v",
+        "de/rtl/upf_dc_demo_aon_ctrl.v",
+        "de/rtl/upf_dc_demo_sw_core.v",
+        "de/rtl/upf_dc_demo_pll_macro.v",
+        "de/rtl/upf_dc_demo_sram_16x8.v",
+        "de/rtl/upf_dc_demo_pad_in.v",
+        "de/rtl/upf_dc_demo_pad_out.v"
+      ],
+      "artifact_evidence": {
+        "de/rtl/filelist.f": {
+          "sha256": "ac34b8c61e5cfe782406d610136bffed77e1bc3c0b277e7ba4e5e3896cfc3616",
+          "size": 395,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/upf_dc_demo.v": {
+          "sha256": "650e26d5679e9e2f4ef424e16c6f74befa98fddeb3b612d270266db9574a16aa",
+          "size": 5736,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/upf_dc_demo_aon_ctrl.v": {
+          "sha256": "fe3c34af5cca099711a9a6070731f6e02ea047711005beaad003028d32649c21",
+          "size": 2176,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/upf_dc_demo_sw_core.v": {
+          "sha256": "d056967499eaa4b5e9f7660eae1eb1515284bc4d43ea47ad1dd09b3b4a381207",
+          "size": 612,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/upf_dc_demo_pll_macro.v": {
+          "sha256": "e20ce5023f0f6ea042c91bfbbca1ea2b446d5ca46b58dfe9498061f0fab95237",
+          "size": 636,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/upf_dc_demo_sram_16x8.v": {
+          "sha256": "dc296308d2730338d2e7687b3f786411b2045d2f61eef154cdb72749f8746e7d",
+          "size": 742,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/upf_dc_demo_pad_in.v": {
+          "sha256": "1e167b119018768c679a2d1ca3804852365d5551f8e87e8200d17d7fe5e18cf7",
+          "size": 136,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        },
+        "de/rtl/upf_dc_demo_pad_out.v": {
+          "sha256": "098539e5d57860093b518f53185e7d3725a8a6cbf9e5bd9af292e70c4db62e74",
+          "size": 137,
+          "recorded_at": "2026-08-01T09:53:26Z",
+          "provenance": [
+            "rtl_quality",
+            "soc_comp",
+            "soc_lint"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_lint",
+          "passed": true,
+          "note": ""
+        },
+        {
+          "tool": "soc_comp",
+          "passed": true,
+          "note": ""
+        },
+        {
+          "tool": "rtl_quality",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "rtl_fingerprint": "311c77c2e6ccc632392f63c180cd8972c94f4808a023856dee94409ced67c9d0",
+      "rtl_fingerprint_source": "recorded_at_transition",
+      "notes": "Registered Verilator lint and VCS compile/elaboration passed; RTL/filelist quality check passed.",
+      "last_updated": "2026-08-01T09:53:26Z"
+    },
+    "verif": {
+      "step_id": "verif",
+      "name": "验证环境搭建与仿真",
+      "agent": "soc-verification-engineer",
       "status": "pending",
       "blocked_by": [],
       "started_at": null,
@@ -98,51 +210,99 @@
       "check_results": [],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "Migration invalidated legacy evidence: recorded RTL/filelist fingerprint is stale",
-      "last_updated": "2026-07-15T07:48:17Z"
-    },
-    "verif": {
-      "step_id": "verif",
-      "name": "验证环境搭建与仿真",
-      "agent": "soc-verification-engineer",
-      "status": "blocked",
-      "blocked_by": [
-        "rtl"
-      ],
-      "started_at": null,
-      "completed_at": null,
-      "artifacts": [],
-      "artifact_evidence": {},
-      "check_results": [],
-      "rtl_fingerprint": null,
-      "rtl_fingerprint_source": null,
-      "notes": "No simulation requested; verification is intentionally pending.",
-      "last_updated": "2026-07-14T15:57:16Z"
+      "notes": "Refreshing delivery checks after UPF evidence-contract changes.",
+      "last_updated": "2026-08-01T09:50:59Z"
     },
     "syn": {
       "step_id": "syn",
       "name": "逻辑综合与时序分析",
       "agent": "soc-synthesis-engineer",
-      "status": "blocked",
-      "blocked_by": [
-        "rtl"
+      "status": "done",
+      "blocked_by": [],
+      "started_at": "2026-08-01T09:53:44Z",
+      "completed_at": "2026-08-01T09:54:02Z",
+      "artifacts": [
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/synth.log",
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf_dc_demo_netlist.v",
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf/upf_dc_demo.upf",
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf/upf_dc_demo_synth.upf",
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf_dc_demo.svf",
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/dc/reports/inserted_low_power_cells.rpt"
       ],
-      "started_at": null,
-      "completed_at": null,
-      "artifacts": [],
-      "artifact_evidence": {},
-      "check_results": [],
-      "rtl_fingerprint": null,
-      "rtl_fingerprint_source": null,
-      "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
-      "last_updated": "2026-07-15T07:48:17Z"
+      "artifact_evidence": {
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/synth.log": {
+          "sha256": "91fc285351c8048d8ecad39e6bd2d65d226cacda31e30cf8307709aea97d452a",
+          "size": 181069,
+          "recorded_at": "2026-08-01T09:54:02Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        },
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf_dc_demo_netlist.v": {
+          "sha256": "ba3fc3b33c90bf23382f0679b8062c6aec26a2f8d875b57b16ce73e88aa72b8a",
+          "size": 45229,
+          "recorded_at": "2026-08-01T09:54:02Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        },
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf/upf_dc_demo.upf": {
+          "sha256": "6e8dab5f19af934ce67d9f34fc810552be0c45c8fb350a48d3f5b0905cd3a9b0",
+          "size": 18043,
+          "recorded_at": "2026-08-01T09:54:02Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        },
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf/upf_dc_demo_synth.upf": {
+          "sha256": "3959c1f1b6c0a97af77531757c14193d53341e70ae642c413881a78c34ddea74",
+          "size": 26388,
+          "recorded_at": "2026-08-01T09:54:02Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        },
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/upf_dc_demo.svf": {
+          "sha256": "0d08480c6f2bf8cdec12356c6c4fc56d02dd316d239e5512ed57b9b6ec93f4e9",
+          "size": 11008,
+          "recorded_at": "2026-08-01T09:54:02Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        },
+        "de/syn/loop_evidence/soc_syn-32772ab52c1e424b993acec96dd8bcc4/native/de/syn/dc/reports/inserted_low_power_cells.rpt": {
+          "sha256": "d38ae427985e8193c4b6c3f58fe8523459386d6a0943faa8e0ddc1bb65b43a26",
+          "size": 10456,
+          "recorded_at": "2026-08-01T09:54:02Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_syn",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "rtl_fingerprint": "311c77c2e6ccc632392f63c180cd8972c94f4808a023856dee94409ced67c9d0",
+      "rtl_fingerprint_source": "recorded_at_transition",
+      "notes": "Registered DC/Power Compiler passed with immutable netlist, canonical/saved UPF, and SVF; Formality consumed that exact snapshot and passed 244/244. CLP remains blocked by the unavailable 22.2 low-power license; no timing-closure claim.",
+      "last_updated": "2026-08-01T09:54:02Z",
+      "run_evidence": {
+        "run_id": "soc_syn-32772ab52c1e424b993acec96dd8bcc4",
+        "source_fingerprint": "311c77c2e6ccc632392f63c180cd8972c94f4808a023856dee94409ced67c9d0",
+        "tool_family": "soc_syn",
+        "recorded_at": "2026-08-01T09:54:02Z"
+      }
     }
   },
   "next_actions": [
     {
-      "stage": "rtl",
-      "action": "spawn soc-rtl-designer",
-      "reason": "dependencies ['doc'] satisfied"
+      "stage": "verif",
+      "action": "spawn soc-verification-engineer",
+      "reason": "dependencies ['rtl'] satisfied"
     }
   ],
   "repair": {

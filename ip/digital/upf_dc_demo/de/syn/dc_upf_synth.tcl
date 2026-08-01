@@ -41,6 +41,7 @@ foreach path [list $filelist $sdc $setup_tcl] {
 set syn_dir [file dirname $sdc]
 set upf_file [file join $syn_dir upf upf_dc_demo.upf]
 set upf_out [file join $syn_dir upf upf_dc_demo_synth.upf]
+set svf [file join $syn_dir upf_dc_demo.svf]
 set loaded_upf [file join $report_dir loaded_upf.pre_compile.upf]
 set timing_out [file join $syn_dir timing.rpt]
 set timing_summary_out [file join $syn_dir timing_summary.rpt]
@@ -54,8 +55,12 @@ file mkdir $output_dir
 foreach stale [glob -nocomplain -directory $report_dir *] {
   file delete -force $stale
 }
-foreach stale [list $ddc $netlist $sdf $sdc_out $upf_out $timing_out $timing_summary_out] {
+foreach stale [list $ddc $netlist $sdf $sdc_out $upf_out $svf $timing_out $timing_summary_out] {
   if {[file exists $stale]} { file delete -force $stale }
+}
+require_command set_svf
+if {[catch {set_svf $svf} svf_message]} {
+  fatal "unable to enable Formality guidance output '$svf': $svf_message"
 }
 set alib_dir [file join $work_dir alib]
 file mkdir $alib_dir
@@ -326,7 +331,10 @@ write_file -format verilog -hierarchy -output $netlist
 write_sdc $sdc_out
 write_sdf $sdf
 save_upf -full_upf $upf_out
-foreach path [list $ddc $netlist $sdc_out $upf_out $timing_out $timing_summary_out] {
+if {[catch {set_svf -off} svf_message]} {
+  fatal "unable to close Formality guidance output '$svf': $svf_message"
+}
+foreach path [list $ddc $netlist $sdc_out $upf_out $svf $timing_out $timing_summary_out] {
   if {![file exists $path] || [file size $path] == 0} { fatal "missing output: $path" }
 }
 set netlist_fd [open $netlist r]
@@ -412,5 +420,6 @@ foreach state_name {
 }
 puts "DC netlist: $netlist"
 puts "DC written UPF: $upf_out"
+puts "DC Formality guidance: $svf"
 puts "DC timing: $timing_out"
 exit 0

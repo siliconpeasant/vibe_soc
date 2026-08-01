@@ -36,7 +36,7 @@ class McpRuntimeSyncTest(unittest.TestCase):
         self.assertEqual(len(names), 9)
         upf_gen = next(server for server in manifest["servers"] if server["name"] == "upf-gen")
         self.assertEqual(upf_gen["script"], ".agents/skills/upf-gen/mcp_server.py")
-        self.assertGreaterEqual(upf_gen["tool_timeout_sec"], 300)
+        self.assertGreaterEqual(upf_gen["tool_timeout_sec"], 43200)
         soc_build = next(server for server in manifest["servers"] if server["name"] == "soc-build")
         self.assertGreaterEqual(soc_build["tool_timeout_sec"], 43200)
         openroad = next(server for server in manifest["servers"] if server["name"] == "soc-openroad")
