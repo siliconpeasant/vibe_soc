@@ -4,7 +4,7 @@
 
 `npu` is a tiny software-managed INT8 inference-layer accelerator. It keeps the existing `npu` top module, local memory-mapped target interface, register offsets, and default software-visible capacities, and evolves the prior single-output dot-product demo into a minimal quantized linear/GEMV tile engine.
 
-NPU v2 phase 1 is limited to a backward-compatible scratchpad baseline. It makes the four local capacities compile-time parameters inside the existing fixed address apertures and defines an internal replacement contract for a future synchronous SRAM implementation. This phase does not add DMA, banking, larger apertures, external SRAM ports, or MAC-lane changes. The first implementation remains a behavioral register-array model; this document does not claim SRAM inference.
+NPU v2 phase 1 is limited to a backward-compatible scratchpad baseline. It makes the four local capacities compile-time parameters inside the existing fixed address apertures and defines an internal replacement contract for a future synchronous SRAM implementation. This phase does not add DMA, software-visible banking, larger apertures, external SRAM ports, or MAC-lane changes. The first implementation remains a behavioral register-array model; implementation-only byte-lane banking may reduce read-multiplexer fan-in, but this document does not claim SRAM inference.
 
 The IP computes one command at a time. A command may produce one or more signed INT8 output elements from a shared activation vector, row-strided signed INT8 weights, signed INT32 bias values, fixed-point requantization, output zero-point addition, optional clamp activation, and signed INT8 saturation.
 
@@ -18,6 +18,7 @@ The implementation target remains portable Verilog-2005. The IP does not include
 - Earlier NPU knowledge-base evidence selected scratchpad-dominant storage for predictable tensor data with software/DMA scheduling, and required a preserved datapath/controller partition.
 - `tutorials/npu/zsc_npu_tutorial/markdown/chapter5.md` states that scratchpads provide deterministic access and should be parameterized. This supports compile-time capacity parameters while retaining software-managed local storage.
 - `CaliptraIntegrationSpecification.md:137` describes parameterized 1R1W SRAMs with flopped read data and byte write enables. This is reference evidence for the future internal replacement boundary; no Caliptra macro or external memory port is instantiated in phase 1.
+- `eda/tool_docs/dc/man/cat3/hdlin_mux_for_array_read_sparseness_limit.3` explains that variable array reads become mux/select operators and that their input population affects area. It supports reducing the fan-in of the behavioral scratchpad read structures. The knowledge base does not prescribe a project-specific bank organization; the four byte-lane implementation is an engineering choice driven by the registered Yosys baseline, where scratchpad logic owns most generic mux cells.
 
 ## Functional Blocks
 
@@ -134,6 +135,8 @@ Activation, weight, and output scratchpad host transfers are 32-bit word transfe
 
 Bias scratchpad host transfers are 32-bit word transfers at word-aligned addresses. Bias writes require `mm_wstrb=4'b1111` and store one signed INT32 word. Bias reads return one signed INT32 word. Bias values are treated as INT32 with zero point 0 and accumulator scale. The last implemented bias word index is `BIAS_SPM_WORDS-1`.
 
+The phase-1 register-array implementation stripes each byte-addressed activation, weight, and output scratchpad across four 8-bit lane banks selected by byte address bits `[1:0]`; each bank has `SPM_BYTES/4` entries. An aligned host read concatenates one entry from each bank. A compute read may start at any legal byte address, so activation and weight reads select the current or next bank word as required and rotate the four bank bytes back into consecutive little-endian order. Host and compute ownership are mutually exclusive and share the activation, weight, and bias read structures. This banking is not visible in the address map, capacity parameters, reset contents, host latency, descriptor arithmetic, or future 32-bit 1R1W replacement boundary.
+
 While a command is busy, host accesses to any scratchpad window stall by holding `mm_ready=0`. Register accesses still complete. Software must hold `mm_valid`, `mm_write`, `mm_addr`, `mm_wdata`, and `mm_wstrb` stable while `mm_ready=0`.
 
 ## Controller State and Sequence
@@ -168,6 +171,8 @@ Descriptor checks occur on accepted `start` before any scratchpad read or output
 | `QUANT_CFG.activation_mode > 2`, or ReLU6 mode with signed `relu6_max < out_zero_point` | `DESC_ACTIVATION` |
 
 The fixed `k * 4` weight offset means each output row stores packed four-lane weight groups. The programmable `wgt_stride` selects the byte distance between output rows.
+
+The implementation may realize accepted compute addresses with running registers rather than recomputing the products above every cycle. The registers are seeded from the accepted bases, advance activation by `act_stride` and weight within a row by four bytes for each K step, advance the weight-row base by `wgt_stride`, and advance output by `out_stride`. Descriptor range checks still evaluate the full documented expressions before any array access; running address widths must not weaken overflow or error detection.
 
 ## Reset and Clear Behavior
 
@@ -250,7 +255,8 @@ irq = CTRL.irq_en && (STATUS.done || STATUS.error)
 - Do not instantiate vendor primitives, clock gates, SRAM macros, PLLs, synchronizers for other domains, or latches.
 - Use clock-enable style control for datapath and scratchpad updates.
 - Keep arithmetic explicitly signed in RTL to preserve INT8, signed INT32 bias, signed INT32 accumulation, signed multiplier, and signed saturation semantics.
-- Phase 1 implements scratchpads as behavioral resettable register arrays with compile-time capacities. No memory inference result is assumed or claimed.
+- A four-lane MAC may use a balanced signed-product reduction tree, but its modulo-`2^32` accumulator result must remain bit-exact.
+- Phase 1 implements scratchpads as behavioral resettable register arrays with compile-time capacities and implementation-only byte-lane banking. No memory inference result is assumed or claimed.
 - The internal future replacement boundary is 1R1W with one-cycle flopped read data and byte write enables as specified above. Selecting a concrete macro, adding MBIST/repair hooks, or exposing memory ports requires reopening the doc stage.
 - No numeric frequency target is approved in this doc stage. Timing constraints are limited to the later SDC stage and must use the SoC-selected process/library assumptions.
 

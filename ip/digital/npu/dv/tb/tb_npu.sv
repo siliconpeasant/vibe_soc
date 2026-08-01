@@ -84,6 +84,7 @@ module tb_npu;
     int unsigned check_cnt;
     int unsigned test_cnt;
     int unsigned rand_state;
+    integer      init_cov_idx;
 
     localparam int COV_CFG_DEFAULT       = 0;
     localparam int COV_CFG_REDUCED       = 1;
@@ -133,7 +134,7 @@ module tb_npu;
     localparam int COV_RED_ADDR_GUARD    = 45;
     localparam int COV_MIN_ADDR_GUARD    = 46;
     localparam int PHASE1_COV_COUNT      = 47;
-    bit phase1_cov [0:PHASE1_COV_COUNT-1];
+    logic phase1_cov [0:PHASE1_COV_COUNT-1];
 
     logic [7:0]  act_model [0:63];
     logic [7:0]  wgt_model [0:63];
@@ -244,7 +245,7 @@ module tb_npu;
     task automatic check_no_x(input string name);
         begin
             check_cnt++;
-            if ($isunknown({mm_rdata, mm_ready, mm_error, irq})) begin
+            if ((^{mm_rdata, mm_ready, mm_error, irq}) === 1'bx) begin
                 error_cnt++;
                 $display("[FAIL] %s visible output contains X/Z", name);
             end
@@ -338,8 +339,8 @@ module tb_npu;
 
     task automatic apply_reset;
         begin
-            drive_idle();
-            reset_models();
+            drive_idle;
+            reset_models;
             rst_n = 1'b0;
             repeat (4) @(posedge clk);
             #1;
@@ -395,7 +396,7 @@ module tb_npu;
             end
 
             @(negedge clk);
-            drive_idle();
+            drive_idle;
         end
     endtask
 
@@ -650,7 +651,7 @@ module tb_npu;
         begin
             mm_write_ok(ADDR_CTRL, 32'h0000_0002, 4'hf);
             repeat (2) @(posedge clk);
-            reset_models();
+            reset_models;
         end
     endtask
 
@@ -741,9 +742,9 @@ module tb_npu;
         int unsigned out_word_addr;
         int unsigned lane_shift;
         begin
-            clear_done_error_sat();
+            clear_done_error_sat;
             mm_write_ok(ADDR_CTRL, 32'h0000_0001, 4'hf);
-            wait_done_or_error();
+            wait_done_or_error;
             mm_read(ADDR_STATUS, 1'b0, status);
             check_eq1({name, " status done"}, status[1], 1'b1);
             check_eq1({name, " status error"}, status[2], 1'b0);
@@ -784,9 +785,9 @@ module tb_npu;
     task automatic start_and_expect_descriptor_error(input string name, input [4:0] exp_code);
         logic [31:0] status;
         begin
-            clear_done_error_sat();
+            clear_done_error_sat;
             mm_write_ok(ADDR_CTRL, 32'h0000_0001, 4'hf);
-            wait_done_or_error();
+            wait_done_or_error;
             mm_read(ADDR_STATUS, 1'b0, status);
             check_eq1({name, " done clear"}, status[1], 1'b0);
             check_eq1({name, " error set"}, status[2], 1'b1);
@@ -800,7 +801,7 @@ module tb_npu;
         int i;
         begin
             note_test("reset defaults");
-            apply_reset();
+            apply_reset;
             expect_read("CTRL reset", ADDR_CTRL, 32'h0000_0000);
             expect_read("STATUS reset", ADDR_STATUS, 32'h0000_0000);
             expect_read("CFG reset", ADDR_CFG, 32'h8000_0300);
@@ -839,7 +840,7 @@ module tb_npu;
         logic [31:0] data;
         begin
             note_test("register write read");
-            soft_reset();
+            soft_reset;
             mm_write_ok(ADDR_CFG, 32'hffff_0a02, 4'hf);
             expect_read("CFG writable and RO bits", ADDR_CFG, 32'h8000_0a02);
             mm_write_ok(ADDR_ACT_BASE, 32'haaaa_0011, 4'hf);
@@ -873,7 +874,7 @@ module tb_npu;
     task automatic test_scratchpad_byte_lanes;
         begin
             note_test("scratchpad byte lanes");
-            soft_reset();
+            soft_reset;
             write_act(4, 32'h1122_3344, 4'hf);
             write_act(4, 32'haabb_ccdd, 4'h5);
             expect_read("ACT byte lanes 0 and 2", ADDR_ACT_SPM + 16'h0004, 32'h11bb_33dd);
@@ -891,7 +892,7 @@ module tb_npu;
         int i;
         begin
             note_test("bias scratchpad access");
-            soft_reset();
+            soft_reset;
             for (i = 0; i < 16; i++) begin
                 write_bias(i, 32'h8000_0000 + i[31:0]);
                 mm_read(ADDR_BIAS_SPM + {i[13:0], 2'b00}, 1'b0, data);
@@ -907,7 +908,7 @@ module tb_npu;
     task automatic test_backward_dot_product;
         begin
             note_test("backward-compatible dot product");
-            soft_reset();
+            soft_reset;
             write_act(0, 32'h04fd_0201, 4'hf);
             write_wgt(0, 32'h0203_fe05, 4'hf);
             write_bias(0, 32'h0000_0000);
@@ -922,7 +923,7 @@ module tb_npu;
     task automatic test_multi_output_quant_bias_activation;
         begin
             note_test("multi-output bias quant activation");
-            soft_reset();
+            soft_reset;
             write_act(0, 32'h02ff_0304, 4'hf);
             write_act(4, 32'h80fe_0000, 4'hc);
             write_act(8, 32'h0000_017f, 4'h3);
@@ -946,12 +947,14 @@ module tb_npu;
         end
     endtask
 
-    task automatic test_toy_mlp_end_to_end;
-        int signed input_vec [0:15];
-        int signed l1_wgt [0:7][0:15];
-        int signed l1_bias [0:7];
-        int signed l2_wgt [0:3][0:7];
-        int signed l2_bias [0:3];
+    // Kept static because legacy Icarus vvp cannot allocate unpacked arrays in
+    // an automatic task. This test is invoked once and has no re-entrant use.
+    task test_toy_mlp_end_to_end;
+        integer input_vec [0:15];
+        integer l1_wgt [0:7][0:15];
+        integer l1_bias [0:7];
+        integer l2_wgt [0:3][0:7];
+        integer l2_bias [0:3];
         logic [7:0] hidden_exp [0:7];
         logic [7:0] logits_exp [0:3];
         logic [7:0] logits_got [0:3];
@@ -971,7 +974,7 @@ module tb_npu;
         int group_i;
         begin
             note_test("toy MLP end-to-end inference");
-            soft_reset();
+            soft_reset;
 
             for (out_i = 0; out_i < 8; out_i++) begin
                 l1_bias[out_i] = 0;
@@ -1060,9 +1063,9 @@ module tb_npu;
             end
             program_command(3, 3, 0, 0, 0, 32'h0000_0000, 3, 0, 15, 0,
                             32'h0000_0001, 0, 8'h00, ACT_RELU, 8'h7f);
-            clear_done_error_sat();
+            clear_done_error_sat;
             mm_write_ok(ADDR_CTRL, 32'h0000_0001, 4'hf);
-            wait_done_or_error();
+            wait_done_or_error;
             mm_read(ADDR_STATUS, 1'b0, status);
             check_eq1("toy_mlp layer1a done", status[1], 1'b1);
             check_eq1("toy_mlp layer1a error", status[2], 1'b0);
@@ -1078,9 +1081,9 @@ module tb_npu;
             end
             program_command(3, 3, 0, 0, 4, 32'h0000_0000, 3, 0, 15, 0,
                             32'h0000_0001, 0, 8'h00, ACT_RELU, 8'h7f);
-            clear_done_error_sat();
+            clear_done_error_sat;
             mm_write_ok(ADDR_CTRL, 32'h0000_0001, 4'hf);
-            wait_done_or_error();
+            wait_done_or_error;
             mm_read(ADDR_STATUS, 1'b0, status);
             check_eq1("toy_mlp layer1b done", status[1], 1'b1);
             check_eq1("toy_mlp layer1b error", status[2], 1'b0);
@@ -1108,9 +1111,9 @@ module tb_npu;
             end
             program_command(1, 3, 0, 0, 0, 32'h0000_0000, 3, 0, 7, 0,
                             32'h0000_0001, 0, 8'h00, ACT_NONE, 8'h7f);
-            clear_done_error_sat();
+            clear_done_error_sat;
             mm_write_ok(ADDR_CTRL, 32'h0000_0001, 4'hf);
-            wait_done_or_error();
+            wait_done_or_error;
             mm_read(ADDR_STATUS, 1'b0, status);
             check_eq1("toy_mlp layer2 done", status[1], 1'b1);
             check_eq1("toy_mlp layer2 error", status[2], 1'b0);
@@ -1144,7 +1147,7 @@ module tb_npu;
     task automatic test_activation_modes_and_zero_point;
         begin
             note_test("activation modes and zero point");
-            soft_reset();
+            soft_reset;
             write_act(0, 32'h0101_0101, 4'hf);
             write_wgt(0, 32'h0101_0101, 4'hf);
             write_bias(0, 32'h0000_0000);
@@ -1171,7 +1174,7 @@ module tb_npu;
     task automatic test_saturation_high_low;
         begin
             note_test("saturation high low");
-            soft_reset();
+            soft_reset;
             write_act(0, 32'h0101_0101, 4'hf);
             write_wgt(0, 32'h0101_0101, 4'hf);
             write_bias(0, 32'h0000_0000);
@@ -1192,7 +1195,7 @@ module tb_npu;
     task automatic test_negative_multiplier_shift;
         begin
             note_test("negative multiplier and rounding shift");
-            soft_reset();
+            soft_reset;
             write_act(0, 32'h0302_0101, 4'hf);
             write_wgt(0, 32'h0101_0101, 4'hf);
             write_bias(0, 32'h0000_0003);
@@ -1208,7 +1211,7 @@ module tb_npu;
         logic [31:0] status;
         begin
             note_test("start while busy");
-            soft_reset();
+            soft_reset;
             write_out(0, 32'h5555_5555, 4'hf);
             write_act(0,  32'h0101_0101, 4'hf);
             write_act(4,  32'h0101_0101, 4'hf);
@@ -1236,31 +1239,31 @@ module tb_npu;
     task automatic test_descriptor_errors;
         begin
             note_test("descriptor errors");
-            soft_reset();
+            soft_reset;
             program_command(0, 3, 61, 0, 0, 32'h0, 0, 0, 3, 0, 32'h1, 0, 8'h00, ACT_NONE, 8'h7f);
             start_and_expect_descriptor_error("act range", ERR_DESC_ACT_RANGE);
 
-            soft_reset();
+            soft_reset;
             program_command(0, 3, 0, 61, 0, 32'h0, 0, 0, 3, 0, 32'h1, 0, 8'h00, ACT_NONE, 8'h7f);
             start_and_expect_descriptor_error("wgt range", ERR_DESC_WGT_RANGE);
 
-            soft_reset();
+            soft_reset;
             program_command(0, 3, 0, 0, 64, 32'h0, 0, 0, 3, 0, 32'h1, 0, 8'h00, ACT_NONE, 8'h7f);
             start_and_expect_descriptor_error("out range", ERR_DESC_OUT_RANGE);
 
-            soft_reset();
+            soft_reset;
             program_command(0, 3, 0, 0, 0, 32'h0, 3, 0, 3, 13, 32'h1, 0, 8'h00, ACT_NONE, 8'h7f);
             start_and_expect_descriptor_error("bias range", ERR_DESC_BIAS_RANGE);
 
-            soft_reset();
+            soft_reset;
             program_command(0, 3, 0, 0, 0, 32'h0, 0, 0, 3, 0, 32'h1, 32, 8'h00, ACT_NONE, 8'h7f);
             start_and_expect_descriptor_error("quant shift", ERR_DESC_Q_SHIFT);
 
-            soft_reset();
+            soft_reset;
             program_command(0, 3, 0, 0, 0, 32'h0, 0, 0, 3, 0, 32'h1, 0, 8'h00, 2'd3, 8'h7f);
             start_and_expect_descriptor_error("activation mode", ERR_DESC_ACTIVATION);
 
-            soft_reset();
+            soft_reset;
             program_command(0, 3, 0, 0, 0, 32'h0, 0, 0, 3, 0, 32'h1, 0, 8'h10, ACT_RELU6, 8'h0f);
             start_and_expect_descriptor_error("relu6 config", ERR_DESC_ACTIVATION);
         end
@@ -1270,7 +1273,7 @@ module tb_npu;
         logic [31:0] data;
         begin
             note_test("illegal access and RO writes");
-            soft_reset();
+            soft_reset;
             mm_write_ok(ADDR_CFG, make_cfg(5, 3), 4'hf);
             mm_read(16'h0040, 1'b1, data);
             expect_err_code("invalid address code", ERR_INVALID_ADDR);
@@ -1293,7 +1296,7 @@ module tb_npu;
         int unsigned stalls;
         begin
             note_test("scratchpad busy stall");
-            soft_reset();
+            soft_reset;
             write_act(0, 32'h0101_0101, 4'hf);
             write_act(4, 32'h0202_0202, 4'hf);
             write_wgt(0, 32'h0101_0101, 4'hf);
@@ -1316,7 +1319,7 @@ module tb_npu;
         logic [31:0] status;
         begin
             note_test("irq done and error behavior");
-            soft_reset();
+            soft_reset;
             mm_write_ok(ADDR_CTRL, 32'h0000_0004, 4'hf);
             write_act(0, 32'h0101_0101, 4'hf);
             write_wgt(0, 32'h0101_0101, 4'hf);
@@ -1324,7 +1327,7 @@ module tb_npu;
             program_command(0, 3, 0, 0, 0, 32'h0000_0000, 0, 0, 3, 0,
                             32'h0000_0001, 0, 8'h00, ACT_NONE, 8'h7f);
             mm_write_ok(ADDR_CTRL, 32'h0000_0005, 4'hf);
-            wait_done_or_error();
+            wait_done_or_error;
             check_eq1("irq done asserted", irq, 1'b1);
             mm_write_ok(ADDR_STATUS, 32'h0000_0002, 4'hf);
             @(posedge clk);
@@ -1335,7 +1338,7 @@ module tb_npu;
             program_command(0, 3, 61, 0, 0, 32'h0000_0000, 0, 0, 3, 0,
                             32'h0000_0001, 0, 8'h00, ACT_NONE, 8'h7f);
             mm_write_ok(ADDR_CTRL, 32'h0000_0005, 4'hf);
-            wait_done_or_error();
+            wait_done_or_error;
             mm_read(ADDR_STATUS, 1'b0, status);
             check_eq1("irq error status", status[2], 1'b1);
             check_eq1("irq error asserted", irq, 1'b1);
@@ -1349,7 +1352,7 @@ module tb_npu;
     task automatic test_soft_reset;
         begin
             note_test("soft reset");
-            soft_reset();
+            soft_reset;
             mm_write_ok(ADDR_CFG, make_cfg(3, 7), 4'hf);
             mm_write_ok(ADDR_ACT_BASE, 32'h0000_0010, 4'hf);
             mm_write_ok(ADDR_WGT_BASE, 32'h0000_0020, 4'hf);
@@ -1365,7 +1368,7 @@ module tb_npu;
             write_bias(0, 32'h8765_4321);
             mm_write_ok(ADDR_CTRL, 32'h0000_0006, 4'hf);
             repeat (2) @(posedge clk);
-            reset_models();
+            reset_models;
             expect_read("soft reset CFG", ADDR_CFG, 32'h8000_0300);
             expect_read("soft reset OUT_CFG", ADDR_OUT_CFG, 32'h0003_0000);
             expect_read("soft reset QUANT_MULT", ADDR_QUANT_MULT, 32'h0000_0001);
@@ -1395,24 +1398,24 @@ module tb_npu;
             note_test("seeded random inference cases");
             rand_state = 32'h0000_0001;
             for (t = 0; t < 6; t++) begin
-                soft_reset();
+                soft_reset;
                 for (i = 0; i < 8; i += 4) begin
-                    val0 = int'(next_rand(5)) - 2;
-                    val1 = int'(next_rand(5)) - 2;
-                    val2 = int'(next_rand(5)) - 2;
-                    val3 = int'(next_rand(5)) - 2;
+                    val0 = next_rand(5) - 2;
+                    val1 = next_rand(5) - 2;
+                    val2 = next_rand(5) - 2;
+                    val3 = next_rand(5) - 2;
                     act_word = {val3[7:0], val2[7:0], val1[7:0], val0[7:0]};
-                    val0 = int'(next_rand(5)) - 2;
-                    val1 = int'(next_rand(5)) - 2;
-                    val2 = int'(next_rand(5)) - 2;
-                    val3 = int'(next_rand(5)) - 2;
+                    val0 = next_rand(5) - 2;
+                    val1 = next_rand(5) - 2;
+                    val2 = next_rand(5) - 2;
+                    val3 = next_rand(5) - 2;
                     wgt_word = {val3[7:0], val2[7:0], val1[7:0], val0[7:0]};
                     write_act(i, act_word, 4'hf);
                     write_wgt(i, wgt_word, 4'hf);
                 end
-                bias_word = int'(next_rand(17)) - 8;
+                bias_word = next_rand(17) - 8;
                 write_bias(0, bias_word);
-                acc_seed = int'(next_rand(9)) - 4;
+                acc_seed = next_rand(9) - 4;
                 program_command(1, 3, 0, 0, t[7:0], acc_seed, 0, 0, 3, 0,
                                 32'h0000_0001, 1, 8'h00, ACT_NONE, 8'h7f);
                 start_and_check_success("seeded random", 1, 3, 0, 0, t[7:0], acc_seed,
@@ -1459,7 +1462,8 @@ module tb_npu;
                 ready_at_edge = red_mm_ready;
                 #1;
                 check_cnt++;
-                if ($isunknown({red_mm_rdata, red_mm_ready, red_mm_error, red_irq})) begin
+                if ((^{red_mm_rdata, red_mm_ready,
+                       red_mm_error, red_irq}) === 1'bx) begin
                     error_cnt++;
                     $display("[FAIL] %s reduced visible output contains X/Z", name);
                 end
@@ -1483,7 +1487,7 @@ module tb_npu;
                 rdata = 32'hxxxx_xxxx;
             end
             @(negedge clk);
-            red_drive_idle();
+            red_drive_idle;
         end
     endtask
 
@@ -1632,10 +1636,10 @@ module tb_npu;
         logic [31:0] data;
         begin
             note_test("reduced capacities reset and inactive tails");
-            drive_idle();
-            red_drive_idle();
+            drive_idle;
+            red_drive_idle;
 
-            red_fill_all();
+            red_fill_all;
             rst_n = 1'b0;
             repeat (4) @(posedge clk);
             rst_n = 1'b1;
@@ -1644,8 +1648,8 @@ module tb_npu;
             cov_hit(COV_CFG_REDUCED, "reduced capacity configuration");
             cov_hit(COV_RESET_RED_HW, "reduced hardware reset");
 
-            red_fill_all();
-            red_soft_reset();
+            red_fill_all;
+            red_soft_reset;
             red_check_all_zero("reduced soft reset");
             check_eq1("reduced soft reset irq", red_irq, 1'b0);
             cov_hit(COV_RESET_RED_SOFT, "reduced soft reset");
@@ -1716,7 +1720,7 @@ module tb_npu;
     task automatic test_reduced_descriptor_boundaries;
         begin
             note_test("reduced exact descriptor boundaries");
-            red_soft_reset();
+            red_soft_reset;
             red_write(ADDR_ACT_SPM + 16'h000c, 32'h0101_0101, 4'hf, 1'b0,
                       "reduced boundary ACT");
             red_write(ADDR_WGT_SPM + 16'h0004, 32'h0101_0101, 4'hf, 1'b0,
@@ -1739,22 +1743,22 @@ module tb_npu;
             cov_hit(COV_RED_DESC_BIAS_OK, "reduced BIAS exact descriptor");
 
             note_test("reduced one-past descriptor errors");
-            red_soft_reset();
+            red_soft_reset;
             red_program_command(0, 13, 0, 0, 0, 0, 3, 0);
             red_start_expect("reduced ACT one past", 1'b0, ERR_DESC_ACT_RANGE);
             cov_hit(COV_RED_DESC_ACT_BAD, "reduced ACT one-past descriptor");
 
-            red_soft_reset();
+            red_soft_reset;
             red_program_command(0, 0, 5, 0, 1, 0, 7, 0);
             red_start_expect("reduced WGT one past", 1'b0, ERR_DESC_WGT_RANGE);
             cov_hit(COV_RED_DESC_WGT_BAD, "reduced WGT one-past descriptor");
 
-            red_soft_reset();
+            red_soft_reset;
             red_program_command(0, 0, 0, 7, 1, 0, 3, 0);
             red_start_expect("reduced OUT one past", 1'b0, ERR_DESC_OUT_RANGE);
             cov_hit(COV_RED_DESC_OUT_BAD, "reduced OUT one-past descriptor");
 
-            red_soft_reset();
+            red_soft_reset;
             red_program_command(0, 0, 0, 0, 1, 0, 3, 1);
             red_start_expect("reduced BIAS one past", 1'b0, ERR_DESC_BIAS_RANGE);
             cov_hit(COV_RED_DESC_BIAS_BAD, "reduced BIAS one-past descriptor");
@@ -1797,7 +1801,8 @@ module tb_npu;
                 ready_at_edge = min_mm_ready;
                 #1;
                 check_cnt++;
-                if ($isunknown({min_mm_rdata, min_mm_ready, min_mm_error, min_irq})) begin
+                if ((^{min_mm_rdata, min_mm_ready,
+                       min_mm_error, min_irq}) === 1'bx) begin
                     error_cnt++;
                     $display("[FAIL] %s minimum visible output contains X/Z", name);
                 end
@@ -1821,7 +1826,7 @@ module tb_npu;
                 rdata = 32'hxxxx_xxxx;
             end
             @(negedge clk);
-            min_drive_idle();
+            min_drive_idle;
         end
     endtask
 
@@ -1949,11 +1954,11 @@ module tb_npu;
         logic [31:0] data;
         begin
             note_test("minimum legal capacities reset and inactive tails");
-            drive_idle();
-            red_drive_idle();
-            min_drive_idle();
+            drive_idle;
+            red_drive_idle;
+            min_drive_idle;
 
-            min_fill_all();
+            min_fill_all;
             rst_n = 1'b0;
             repeat (4) @(posedge clk);
             rst_n = 1'b1;
@@ -1962,8 +1967,8 @@ module tb_npu;
             cov_hit(COV_CFG_MIN, "minimum legal capacity configuration");
             cov_hit(COV_RESET_MIN_HW, "minimum hardware reset");
 
-            min_fill_all();
-            min_soft_reset();
+            min_fill_all;
+            min_soft_reset;
             min_check_all_zero("minimum soft reset");
             check_eq1("minimum soft reset irq", min_irq, 1'b0);
             cov_hit(COV_RESET_MIN_SOFT, "minimum soft reset");
@@ -2018,7 +2023,7 @@ module tb_npu;
     task automatic test_min_descriptor_boundaries;
         begin
             note_test("minimum exact endpoint compute");
-            min_soft_reset();
+            min_soft_reset;
             min_write(ADDR_ACT_SPM, 32'h0101_0101, 4'hf, 1'b0,
                       "minimum compute ACT");
             min_write(ADDR_WGT_SPM, 32'h0202_0202, 4'hf, 1'b0,
@@ -2036,22 +2041,22 @@ module tb_npu;
             cov_hit(COV_MIN_DESC_BIAS_OK, "minimum BIAS exact descriptor");
 
             note_test("minimum one-past descriptor errors");
-            min_soft_reset();
+            min_soft_reset;
             min_program_command(1, 0, 0, 0);
             min_start_expect("minimum ACT one past", 1'b0, ERR_DESC_ACT_RANGE);
             cov_hit(COV_MIN_DESC_ACT_BAD, "minimum ACT one-past descriptor");
 
-            min_soft_reset();
+            min_soft_reset;
             min_program_command(0, 1, 0, 0);
             min_start_expect("minimum WGT one past", 1'b0, ERR_DESC_WGT_RANGE);
             cov_hit(COV_MIN_DESC_WGT_BAD, "minimum WGT one-past descriptor");
 
-            min_soft_reset();
+            min_soft_reset;
             min_program_command(0, 0, 4, 0);
             min_start_expect("minimum OUT one past", 1'b0, ERR_DESC_OUT_RANGE);
             cov_hit(COV_MIN_DESC_OUT_BAD, "minimum OUT one-past descriptor");
 
-            min_soft_reset();
+            min_soft_reset;
             min_program_command(0, 0, 0, 1);
             min_start_expect("minimum BIAS one past", 1'b0, ERR_DESC_BIAS_RANGE);
             cov_hit(COV_MIN_DESC_BIAS_BAD, "minimum BIAS one-past descriptor");
@@ -2063,37 +2068,40 @@ module tb_npu;
         check_cnt = 0;
         test_cnt = 0;
         rand_state = 32'h0000_0001;
-        phase1_cov = '{default:1'b0};
+        for (init_cov_idx = 0; init_cov_idx < PHASE1_COV_COUNT;
+             init_cov_idx = init_cov_idx + 1) begin
+            phase1_cov[init_cov_idx] = 1'b0;
+        end
         rst_n = 1'b0;
-        drive_idle();
-        red_drive_idle();
-        min_drive_idle();
-        reset_models();
+        drive_idle;
+        red_drive_idle;
+        min_drive_idle;
+        reset_models;
 
-        test_reset_defaults();
-        test_register_rw();
-        test_scratchpad_byte_lanes();
-        test_bias_scratchpad();
-        test_backward_dot_product();
-        test_multi_output_quant_bias_activation();
-        test_toy_mlp_end_to_end();
-        test_activation_modes_and_zero_point();
-        test_saturation_high_low();
-        test_negative_multiplier_shift();
-        test_start_while_busy();
-        test_descriptor_errors();
-        test_illegal_accesses();
-        test_scratchpad_busy_stall();
-        test_irq_done_error();
-        test_soft_reset();
-        test_seeded_random_cases();
-        test_reduced_capacity_reset_and_tails();
-        test_reduced_descriptor_boundaries();
-        test_min_capacity_reset_and_tails();
-        test_min_descriptor_boundaries();
+        test_reset_defaults;
+        test_register_rw;
+        test_scratchpad_byte_lanes;
+        test_bias_scratchpad;
+        test_backward_dot_product;
+        test_multi_output_quant_bias_activation;
+        test_toy_mlp_end_to_end;
+        test_activation_modes_and_zero_point;
+        test_saturation_high_low;
+        test_negative_multiplier_shift;
+        test_start_while_busy;
+        test_descriptor_errors;
+        test_illegal_accesses;
+        test_scratchpad_busy_stall;
+        test_irq_done_error;
+        test_soft_reset;
+        test_seeded_random_cases;
+        test_reduced_capacity_reset_and_tails;
+        test_reduced_descriptor_boundaries;
+        test_min_capacity_reset_and_tails;
+        test_min_descriptor_boundaries;
 
         repeat (5) @(posedge clk);
-        require_phase1_coverage();
+        require_phase1_coverage;
         $display("[SUMMARY] tests=%0d checks=%0d errors=%0d", test_cnt, check_cnt, error_cnt);
         if (error_cnt == 0) begin
             $display("RESULT: ALL TESTS PASS");

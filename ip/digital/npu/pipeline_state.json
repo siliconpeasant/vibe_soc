@@ -4,7 +4,7 @@
   "workspace": "ip/digital/npu",
   "mode": "single",
   "created_at": "2026-07-07T02:12:44Z",
-  "last_updated": "2026-07-15T02:54:48Z",
+  "last_updated": "2026-07-28T02:41:22Z",
   "pipeline": {
     "doc": {
       "step_id": "doc",
@@ -12,19 +12,28 @@
       "agent": "soc-doc-engineer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-13T09:25:57Z",
-      "completed_at": "2026-07-13T09:29:22Z",
+      "started_at": "2026-07-28T02:32:50Z",
+      "completed_at": "2026-07-28T02:33:17Z",
       "artifacts": [
+        "docs/architecture.md",
         "docs/design_spec.md",
         "docs/interface_spec.md",
         "docs/regmap.md",
         "docs/verification_plan.md"
       ],
       "artifact_evidence": {
+        "docs/architecture.md": {
+          "sha256": "71a3b253c17329a3250991a87b5295d95301709196e637d60eba3d30e623472c",
+          "size": 15594,
+          "recorded_at": "2026-07-28T02:33:17Z",
+          "provenance": [
+            "doc_completeness"
+          ]
+        },
         "docs/design_spec.md": {
-          "sha256": "f414df5e8dafc9851b741114976b11199754d99645a87e00f9f02c1763206445",
-          "size": 22187,
-          "recorded_at": "2026-07-13T09:29:22Z",
+          "sha256": "6db29b8e9bd419fb03762e545dc2db2f1060ba680efb1598ebaeddb4445e5549",
+          "size": 24228,
+          "recorded_at": "2026-07-28T02:33:17Z",
           "provenance": [
             "doc_completeness"
           ]
@@ -32,7 +41,7 @@
         "docs/interface_spec.md": {
           "sha256": "71b104f6ba1217a48bbe4f70970ce50e726b485bfd1655f49b4fb5d0bd6b95de",
           "size": 11162,
-          "recorded_at": "2026-07-13T09:29:22Z",
+          "recorded_at": "2026-07-28T02:33:17Z",
           "provenance": [
             "doc_completeness"
           ]
@@ -40,7 +49,7 @@
         "docs/regmap.md": {
           "sha256": "e079351289860101c6294a8ae9720c4c7d6bc79a0d5144f476c009a4cb191fe4",
           "size": 12390,
-          "recorded_at": "2026-07-13T09:29:22Z",
+          "recorded_at": "2026-07-28T02:33:17Z",
           "provenance": [
             "doc_completeness"
           ]
@@ -48,7 +57,7 @@
         "docs/verification_plan.md": {
           "sha256": "625812d79c255ac2f434016459472c192f4adff3a2734bcbd7a077f888c90457",
           "size": 14980,
-          "recorded_at": "2026-07-13T09:29:22Z",
+          "recorded_at": "2026-07-28T02:33:17Z",
           "provenance": [
             "doc_completeness"
           ]
@@ -63,8 +72,8 @@
       ],
       "rtl_fingerprint": null,
       "rtl_fingerprint_source": null,
-      "notes": "NPU v2 phase 1 docs define backward-compatible parameterized scratchpads and future internal SRAM replacement contract",
-      "last_updated": "2026-07-13T09:29:22Z"
+      "notes": "Architecture/design spec document internal byte-lane banking, running addresses, balanced MAC, exact arithmetic, and unchanged external contract; document audit passed",
+      "last_updated": "2026-07-28T02:33:17Z"
     },
     "rtl": {
       "step_id": "rtl",
@@ -72,8 +81,8 @@
       "agent": "soc-rtl-designer",
       "status": "done",
       "blocked_by": [],
-      "started_at": "2026-07-15T02:49:06Z",
-      "completed_at": "2026-07-15T02:54:48Z",
+      "started_at": "2026-07-28T02:34:48Z",
+      "completed_at": "2026-07-28T02:39:19Z",
       "artifacts": [
         "de/rtl/npu_mac.v",
         "de/rtl/npu_requant.v",
@@ -86,9 +95,9 @@
       ],
       "artifact_evidence": {
         "de/rtl/npu_mac.v": {
-          "sha256": "97912fe8bbd6ba82e7f937e13c48565751aabae6f8c2a8edfc81c0a72c13c657",
-          "size": 1076,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "sha256": "c5abea991fdb3582da01cdbcc7056def2c1c951a85f12864f0cd65b47ff91295",
+          "size": 1701,
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -96,9 +105,9 @@
           ]
         },
         "de/rtl/npu_requant.v": {
-          "sha256": "1664492bb78578807197f1d48ad98ec3ec1c5aadfb88f228adbfbbd94a235f45",
-          "size": 2269,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "sha256": "286cf1effa4e98d6883830d70fff0371cbb8e7079bd66bdd220b8fed1586144b",
+          "size": 2299,
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -108,7 +117,7 @@
         "de/rtl/npu_regs.v": {
           "sha256": "212d487cdac0fd8a799fd03650f5909bd9b796d359cb8cab5b16ac0d6b8edd65",
           "size": 17427,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -116,9 +125,9 @@
           ]
         },
         "de/rtl/npu_spm.v": {
-          "sha256": "4be6101f9102653a9f32bb3ca551a72f08fd93ccf9ad00ba331376bded6bd312",
-          "size": 8956,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "sha256": "7b46b1099a35e79ec5c8a1f7ba3c4885ebe754045129f88a36306875e9a83f29",
+          "size": 14271,
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -126,9 +135,9 @@
           ]
         },
         "de/rtl/npu_core.v": {
-          "sha256": "1a0f7d97c46c53e73216c603aeaf3d04af618c93b9c2ffb0a8e08b04ddd0dc06",
-          "size": 15831,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "sha256": "d2bca1aaf003681d4aca65a5b7d57e124ff4ca4077c3a0cb12193b8b837e6b11",
+          "size": 16835,
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -136,9 +145,9 @@
           ]
         },
         "de/rtl/npu.v": {
-          "sha256": "7fc9fea08f765db529ba1ae25fcab9870ca6955682472c70bb416cabc42fb5b3",
-          "size": 11359,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "sha256": "395759630a033e8daceb149a79a8e98e5a08f98d171107cb9548a617f8fdd3fe",
+          "size": 11195,
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -148,7 +157,7 @@
         "de/rtl/filelist.f": {
           "sha256": "664cace6f4efb1bb6b31f914b96efbc8ca216701e46e6d3da74ac1ea7e8ebfb6",
           "size": 224,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -158,7 +167,7 @@
         "de/syn/npu.sdc": {
           "sha256": "a08932e4c905886223ae3c92658dcc131669b9cd0ee9927c3d99b933b45f2656",
           "size": 306,
-          "recorded_at": "2026-07-15T02:54:48Z",
+          "recorded_at": "2026-07-28T02:39:19Z",
           "provenance": [
             "rtl_quality",
             "soc_comp",
@@ -170,12 +179,12 @@
         {
           "tool": "soc_lint",
           "passed": true,
-          "note": "verilator"
+          "note": ""
         },
         {
           "tool": "soc_comp",
           "passed": true,
-          "note": "verilator_npu_top"
+          "note": ""
         },
         {
           "tool": "rtl_quality",
@@ -183,56 +192,116 @@
           "note": ""
         }
       ],
-      "rtl_fingerprint": "3e6ef3216e73acf850fcb1ff0ad569f1967217c3df1cb1cc822961680cc1fbd5",
+      "rtl_fingerprint": "b158d929cd0193230ee07a7cb0976e8cc5fda06748c477f01c9004cde0e13a82",
       "rtl_fingerprint_source": "recorded_at_transition",
-      "notes": "Representative Loop smoke: lint, RTL-top compile, and structural quality passed; VCS unavailable due license",
-      "last_updated": "2026-07-15T02:54:48Z"
+      "notes": "Final nano_kpu PPA RTL: Verilator lint, registered RTL-top compile, and structural/filelist audit passed",
+      "last_updated": "2026-07-28T02:39:19Z"
     },
     "verif": {
       "step_id": "verif",
       "name": "验证环境搭建与仿真",
       "agent": "soc-verification-engineer",
-      "status": "pending",
+      "status": "done",
       "blocked_by": [],
-      "started_at": null,
-      "completed_at": null,
-      "artifacts": [],
-      "artifact_evidence": {},
-      "check_results": [],
-      "rtl_fingerprint": null,
-      "rtl_fingerprint_source": null,
-      "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
-      "last_updated": "2026-07-15T02:49:05Z"
+      "started_at": "2026-07-28T02:39:33Z",
+      "completed_at": "2026-07-28T02:40:11Z",
+      "artifacts": [
+        "dv/tb/tb_npu.sv",
+        "dv/sim/loop_evidence/soc_sim-e21838b707384b6a92d37a64a6f1b32a/sim.log"
+      ],
+      "artifact_evidence": {
+        "dv/tb/tb_npu.sv": {
+          "sha256": "bfb71eaa42d7b6934931b7f466035c5f67fc1c361d2663c0e562032f144266d4",
+          "size": 90000,
+          "recorded_at": "2026-07-28T02:40:11Z",
+          "provenance": [
+            "sim_log",
+            "soc_sim"
+          ]
+        },
+        "dv/sim/loop_evidence/soc_sim-e21838b707384b6a92d37a64a6f1b32a/sim.log": {
+          "sha256": "fc5eb8864f2cc61804a364af15295e555fa26e03c8df24e16e7f3dc39d8aa91a",
+          "size": 3897,
+          "recorded_at": "2026-07-28T02:40:11Z",
+          "provenance": [
+            "sim_log",
+            "soc_sim"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_sim",
+          "passed": true,
+          "note": ""
+        },
+        {
+          "tool": "sim_log",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "rtl_fingerprint": "b158d929cd0193230ee07a7cb0976e8cc5fda06748c477f01c9004cde0e13a82",
+      "rtl_fingerprint_source": "recorded_at_transition",
+      "notes": "Full tb_npu passed: 23 tests, 2841 checks, 47/47 coverage bins, zero errors; immutable simulation log audit passed",
+      "last_updated": "2026-07-28T02:40:11Z",
+      "run_evidence": {
+        "run_id": "soc_sim-e21838b707384b6a92d37a64a6f1b32a",
+        "source_fingerprint": "b158d929cd0193230ee07a7cb0976e8cc5fda06748c477f01c9004cde0e13a82",
+        "tool_family": "soc_sim",
+        "recorded_at": "2026-07-28T02:40:11Z"
+      }
     },
     "syn": {
       "step_id": "syn",
       "name": "逻辑综合与时序分析",
       "agent": "soc-synthesis-engineer",
-      "status": "pending",
+      "status": "done",
       "blocked_by": [],
-      "started_at": null,
-      "completed_at": null,
-      "artifacts": [],
-      "artifact_evidence": {},
-      "check_results": [],
-      "rtl_fingerprint": null,
-      "rtl_fingerprint_source": null,
-      "notes": "Migration invalidated legacy evidence: dependencies are not complete: ['rtl']",
-      "last_updated": "2026-07-15T02:49:05Z"
+      "started_at": "2026-07-28T02:40:21Z",
+      "completed_at": "2026-07-28T02:41:22Z",
+      "artifacts": [
+        "de/syn/loop_evidence/soc_syn-b7474d7bebe040c69fd0408aab3eace5/synth.log",
+        "de/syn/loop_evidence/soc_syn-b7474d7bebe040c69fd0408aab3eace5/native/de/syn/npu_netlist.v"
+      ],
+      "artifact_evidence": {
+        "de/syn/loop_evidence/soc_syn-b7474d7bebe040c69fd0408aab3eace5/synth.log": {
+          "sha256": "4d9a1b5d7c8d0734a80bf89cdc3cab7fef159fca2cf5978642638f572d719833",
+          "size": 358841,
+          "recorded_at": "2026-07-28T02:41:22Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        },
+        "de/syn/loop_evidence/soc_syn-b7474d7bebe040c69fd0408aab3eace5/native/de/syn/npu_netlist.v": {
+          "sha256": "101f79784f5be9704b9b5aea72c13d77b86dc72a8857af397462e896d46c4d17",
+          "size": 13752188,
+          "recorded_at": "2026-07-28T02:41:22Z",
+          "provenance": [
+            "soc_syn"
+          ]
+        }
+      },
+      "check_results": [
+        {
+          "tool": "soc_syn",
+          "passed": true,
+          "note": ""
+        }
+      ],
+      "rtl_fingerprint": "b158d929cd0193230ee07a7cb0976e8cc5fda06748c477f01c9004cde0e13a82",
+      "rtl_fingerprint_source": "recorded_at_transition",
+      "notes": "Registered Yosys structural synthesis passed: 41,766 generic cells versus 71,397 baseline; no STA/timing claim because no technology library report is available",
+      "last_updated": "2026-07-28T02:41:22Z",
+      "run_evidence": {
+        "run_id": "soc_syn-b7474d7bebe040c69fd0408aab3eace5",
+        "source_fingerprint": "b158d929cd0193230ee07a7cb0976e8cc5fda06748c477f01c9004cde0e13a82",
+        "tool_family": "soc_syn",
+        "recorded_at": "2026-07-28T02:41:22Z"
+      }
     }
   },
-  "next_actions": [
-    {
-      "stage": "verif",
-      "action": "spawn soc-verification-engineer",
-      "reason": "dependencies ['rtl'] satisfied"
-    },
-    {
-      "stage": "syn",
-      "action": "spawn soc-synthesis-engineer",
-      "reason": "dependencies ['rtl'] satisfied"
-    }
-  ],
+  "next_actions": [],
   "migration": {
     "normalized_from_schema": 2,
     "normalization": "current-checkout snapshot; legacy checks not re-executed"

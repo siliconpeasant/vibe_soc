@@ -88,6 +88,11 @@ module npu_core #(
     reg [7:0]  desc_relu6_max;
     reg [7:0]  out_idx;
     reg [7:0]  k_idx;
+    // Descriptor checks guarantee that every active running address fits 6 bits.
+    reg [5:0]  act_rd_addr_reg;
+    reg [5:0]  wgt_row_base_reg;
+    reg [5:0]  wgt_rd_addr_reg;
+    reg [5:0]  out_wr_addr_reg;
     reg [31:0] acc_work;
     reg [31:0] post_bias_reg;
     reg [7:0]  requant_byte_reg;
@@ -113,10 +118,7 @@ module npu_core #(
     wire desc_activation_bad;
     wire desc_error;
     wire compute_addr_valid;
-    wire [5:0] act_rd_addr_calc;
-    wire [5:0] wgt_rd_addr_calc;
     wire [3:0] bias_rd_addr_calc;
-    wire [5:0] out_wr_addr_calc;
     wire signed [31:0] mac_acc_next;
     wire [7:0] requant_byte;
     wire       requant_clip;
@@ -161,13 +163,6 @@ module npu_core #(
 
     assign desc_error = (status_error_code_o != ERR_NONE);
 
-    assign act_rd_addr_calc = desc_act_base[5:0] +
-                              (k_idx[5:0] * desc_act_stride[5:0]);
-    assign wgt_rd_addr_calc = desc_wgt_base[5:0] +
-                              (out_idx[5:0] * desc_wgt_stride[5:0]) +
-                              (k_idx[5:0] * 6'd4);
-    assign out_wr_addr_calc = desc_out_base[5:0] +
-                              (out_idx[5:0] * desc_out_stride[5:0]);
     assign bias_rd_addr_calc = desc_bias_base + out_idx[3:0];
 
     // Keep behavioral scratchpad indices in range until ST_CHECK has accepted
@@ -176,10 +171,10 @@ module npu_core #(
     assign compute_addr_valid = (state != ST_IDLE) &&
                                 (state != ST_CHECK) &&
                                 !desc_error;
-    assign act_rd_addr_o  = compute_addr_valid ? act_rd_addr_calc : 6'd0;
-    assign wgt_rd_addr_o  = compute_addr_valid ? wgt_rd_addr_calc : 6'd0;
+    assign act_rd_addr_o  = compute_addr_valid ? act_rd_addr_reg : 6'd0;
+    assign wgt_rd_addr_o  = compute_addr_valid ? wgt_rd_addr_reg : 6'd0;
     assign bias_rd_addr_o = compute_addr_valid ? bias_rd_addr_calc : 4'd0;
-    assign out_wr_addr_o  = compute_addr_valid ? out_wr_addr_calc : 6'd0;
+    assign out_wr_addr_o  = compute_addr_valid ? out_wr_addr_reg : 6'd0;
     assign out_wr_en_o    = (state == ST_STORE);
     assign out_wr_data_o  = requant_byte_reg;
 
@@ -254,6 +249,10 @@ module npu_core #(
             desc_relu6_max       <= 8'h7f;
             out_idx              <= 8'h00;
             k_idx                <= 8'h00;
+            act_rd_addr_reg      <= 6'h00;
+            wgt_row_base_reg     <= 6'h00;
+            wgt_rd_addr_reg      <= 6'h00;
+            out_wr_addr_reg      <= 6'h00;
             acc_work             <= 32'h0000_0000;
             post_bias_reg        <= 32'h0000_0000;
             requant_byte_reg     <= 8'h00;
@@ -287,6 +286,10 @@ module npu_core #(
             desc_relu6_max       <= 8'h7f;
             out_idx              <= 8'h00;
             k_idx                <= 8'h00;
+            act_rd_addr_reg      <= 6'h00;
+            wgt_row_base_reg     <= 6'h00;
+            wgt_rd_addr_reg      <= 6'h00;
+            out_wr_addr_reg      <= 6'h00;
             acc_work             <= 32'h0000_0000;
             post_bias_reg        <= 32'h0000_0000;
             requant_byte_reg     <= 8'h00;
@@ -323,6 +326,10 @@ module npu_core #(
                 desc_relu6_max       <= relu6_max_i;
                 out_idx              <= 8'h00;
                 k_idx                <= 8'h00;
+                act_rd_addr_reg      <= act_base_i[5:0];
+                wgt_row_base_reg     <= wgt_base_i[5:0];
+                wgt_rd_addr_reg      <= wgt_base_i[5:0];
+                out_wr_addr_reg      <= out_base_i[5:0];
                 acc_work             <= acc_init_i;
                 post_bias_reg        <= 32'h0000_0000;
                 requant_byte_reg     <= 8'h00;
@@ -356,8 +363,11 @@ module npu_core #(
                         if (k_idx == desc_k_count_m1) begin
                             state <= ST_BIAS;
                         end else begin
-                            k_idx <= k_idx + 8'd1;
-                            state <= ST_LOAD;
+                            k_idx           <= k_idx + 8'd1;
+                            act_rd_addr_reg <= act_rd_addr_reg +
+                                               desc_act_stride[5:0];
+                            wgt_rd_addr_reg <= wgt_rd_addr_reg + 6'd4;
+                            state           <= ST_LOAD;
                         end
                     end
                     ST_BIAS: begin
@@ -377,10 +387,17 @@ module npu_core #(
                         if (out_idx == desc_out_count_m1) begin
                             state <= ST_IDLE;
                         end else begin
-                            out_idx  <= out_idx + 8'd1;
-                            k_idx    <= 8'h00;
-                            acc_work <= desc_acc_init;
-                            state    <= ST_LOAD;
+                            out_idx          <= out_idx + 8'd1;
+                            k_idx            <= 8'h00;
+                            act_rd_addr_reg  <= desc_act_base[5:0];
+                            wgt_row_base_reg <= wgt_row_base_reg +
+                                                desc_wgt_stride[5:0];
+                            wgt_rd_addr_reg  <= wgt_row_base_reg +
+                                                desc_wgt_stride[5:0];
+                            out_wr_addr_reg  <= out_wr_addr_reg +
+                                                desc_out_stride[5:0];
+                            acc_work        <= desc_acc_init;
+                            state           <= ST_LOAD;
                         end
                     end
                     default: begin
