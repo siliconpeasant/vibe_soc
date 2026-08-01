@@ -25,7 +25,7 @@ ifndef TOP_MODULE
   $(error TOP_MODULE must be defined before including common.mk)
 endif
 
-SIMULATOR    ?= iverilog
+SIMULATOR    ?= verilator
 RUN_DIR      ?= $(PWD)/run
 SIM_DIR      ?= $(RUN_DIR)
 
@@ -72,20 +72,6 @@ COMP_CMD = verilator --cc --exe --build --trace \
 endif
 SIM_CMD  = $(SIM_DIR)/obj_dir/V$(TOP_MODULE) \
            +trace +wavefile=$(SIM_DIR)/wave.vcd
-endif
-
-# --------------- Icarus -------------
-ifeq ($(SIMULATOR),iverilog)
-ifdef FILELIST
-COMP_CMD = iverilog -g2012 -o $(SIM_DIR)/sim.out \
-           $(FLIST_SRCS) $(TB_FILES) \
-           2>&1 | tee $(SIM_DIR)/compile.log
-else
-COMP_CMD = iverilog -g2012 -o $(SIM_DIR)/sim.out \
-           $(RTL_FILES) $(TB_FILES) \
-           2>&1 | tee $(SIM_DIR)/compile.log
-endif
-SIM_CMD  = vvp $(SIM_DIR)/sim.out +dumpfile=$(SIM_DIR)/wave.vcd
 endif
 
 # --------------- Xcelium ------------

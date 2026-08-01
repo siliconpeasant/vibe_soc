@@ -114,7 +114,7 @@ export CHIP_PATH="$PROJECT_ROOT/chip"
 export IP_PATH="$PROJECT_ROOT/ip"
 
 # 工具链检测
-export SIMULATOR=${{SIMULATOR:-"iverilog"}}   # 可选: vcs, verilator, iverilog, xcelium
+export SIMULATOR=${{SIMULATOR:-"verilator"}}   # 可选: verilator, vcs, xcelium
 
 echo "======================================"
 echo " {project_name} SoC 开发环境已初始化"
@@ -181,7 +181,8 @@ cd chip/top  && make comp && make sim
 
 ## 工具链支持
 
-- **仿真**: VCS, Verilator, Iverilog, Xcelium
+- **仿真**: Verilator（默认）, VCS, Xcelium
+- **Verilator 时序 TB**: 注册编译会探测并启用 `--timing`；旧版本不支持时升级工具，或提供 `*_verilator.cpp` 自检 harness
 
 ## 开发规范
 
@@ -358,7 +359,7 @@ ifndef TOP_MODULE
   $(error TOP_MODULE must be defined before including common.mk)
 endif
 
-SIMULATOR    ?= iverilog
+SIMULATOR    ?= verilator
 RUN_DIR      ?= $(PWD)/run
 
 # --------------- VCS ---------------
@@ -380,14 +381,6 @@ COMP_CMD = verilator --cc --exe --build --trace \
            2>&1 | tee $(RUN_DIR)/compile.log
 SIM_CMD  = $(RUN_DIR)/obj_dir/V$(TOP_MODULE) \
            +trace +wavefile=$(RUN_DIR)/wave.vcd
-endif
-
-# --------------- Icarus -------------
-ifeq ($(SIMULATOR),iverilog)
-COMP_CMD = iverilog -g2012 -o $(RUN_DIR)/sim.out \
-           $(RTL_FILES) $(TB_FILES) \
-           2>&1 | tee $(RUN_DIR)/compile.log
-SIM_CMD  = vvp $(RUN_DIR)/sim.out +dumpfile=$(RUN_DIR)/wave.vcd
 endif
 
 # --------------- Xcelium ------------
@@ -512,8 +505,6 @@ else
 endif
 ifeq ($(LINT_TOOL),verilator)
 	@verilator -Wall --lint-only -I$(CHIP_PATH)/rtl -I$(IP_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
-else ifeq ($(LINT_TOOL),iverilog)
-	@iverilog -g2012 -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 endif
@@ -655,8 +646,6 @@ else
 endif
 ifeq ($(LINT_TOOL),verilator)
 		@verilator -Wall --lint-only -I$(CHIP_PATH)/rtl --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
-else ifeq ($(LINT_TOOL),iverilog)
-		@iverilog -g2012 -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 endif
@@ -693,7 +682,7 @@ endmodule
 """
 
 IP_TB_SV = """// {ip_name} - IP Level Testbench
-// Self-checking testbench, compatible with iverilog / vcs / verilator 5.0+
+// Self-checking testbench, compatible with Verilator 5.0+ / VCS / Xcelium
 
 `timescale 1ns / 1ps
 
@@ -813,7 +802,7 @@ IP_MAKEFILE = """# {ip_name} IP Level Makefile
 #   make comp TOP_MODULE=x  # 指定任意顶层
 #   make sim                # 运行仿真
 #   make lint               # Lint 检查（只检查 RTL）
-#   make lint LINT_TOOL=iverilog  # 使用 iverilog 做语法检查
+#   make lint LINT_TOOL=verilator # 使用 Verilator 做语法检查
 
 PROJECT_ROOT ?= $(shell cd ../../.. && pwd -P)
 IP_NAME       = {ip_name}
@@ -923,8 +912,6 @@ else
 endif
 ifeq ($(LINT_TOOL),verilator)
 	@verilator -Wall --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
-else ifeq ($(LINT_TOOL),iverilog)
-	@iverilog -g2012 -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 endif
@@ -1146,8 +1133,6 @@ else
 endif
 ifeq ($(LINT_TOOL),verilator)
 	@verilator -Wall --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
-else ifeq ($(LINT_TOOL),iverilog)
-	@iverilog -g2012 -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
 else
 	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
 endif

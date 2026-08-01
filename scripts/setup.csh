@@ -69,7 +69,7 @@ endif
 # ---------------------------------------------------------------------------
 # 5. 工具链检测
 # ---------------------------------------------------------------------------
-if (! $?SIMULATOR) setenv SIMULATOR "vcs"
+if (! $?SIMULATOR) setenv SIMULATOR "verilator"
 if (! $?LINT_TOOL) setenv LINT_TOOL "verilator"
 if (! $?SPYGLASS_HOME) setenv SPYGLASS_HOME "/usr/Synopsys/spyglass/latest"
 if (! $?SG_HOME) setenv SG_HOME "$SPYGLASS_HOME"
@@ -79,7 +79,7 @@ echo ""
 echo "[CHECK] 检测工具链 ..."
 set _missing = 0
 
-foreach _tool (make verilator iverilog vvp yosys vcs verdi xrun)
+foreach _tool (make verilator yosys vcs verdi xrun)
     (which $_tool) >& /dev/null
     if ($status == 0) then
         echo "  ✓ $_tool"
@@ -87,8 +87,6 @@ foreach _tool (make verilator iverilog vvp yosys vcs verdi xrun)
         echo "  - $_tool (当前环境不可用)"
         if ("$_tool" == "make") @_missing++
         if ("$_tool" == "verilator" && "$LINT_TOOL" == "verilator") @_missing++
-        if ("$_tool" == "iverilog" && "$SIMULATOR" == "iverilog") @_missing++
-        if ("$_tool" == "vvp" && "$SIMULATOR" == "iverilog") @_missing++
         if ("$_tool" == "vcs" && "$SIMULATOR" == "vcs") @_missing++
         if ("$_tool" == "xrun" && "$SIMULATOR" == "xcelium") @_missing++
     endif

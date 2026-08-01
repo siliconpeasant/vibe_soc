@@ -15,16 +15,34 @@ Power Compiler UG U-2022.12-SP3 pp. 228–229 requires isolation when signals le
 
 ## Tool and handoff contract
 
-Agents use registered `soc_lint`, `soc_comp`, `soc_syn`, and `upf-gen` tools only. The post-synthesis order is registered DC/Power Compiler synthesis, Formality with UPF, then Conformal Low Power native IEEE 1801 RTL/UPF checking; the combined `upf_post_synth_verify` tool deliberately does not synthesize. Pass its Formality/CLP stages the exact `run_id` and `source_fingerprint` returned by `soc_syn`: the wrapper rejects RTL drift and uses the immutable netlist, canonical/saved UPF, and SVF from that synthesis snapshot. This flow does not claim behavioral simulation. DC loads the PG-aware macro views and full UPF internally, preserves eight MacroPG connections in reports/saved UPF, writes ordinary non-PG Verilog, saves the implementation UPF, and emits the SVF consumed by Formality.
+Agents use registered `soc_lint`, `soc_comp`, `soc_syn`, `soc_formal`, and
+`upf-gen` tools only. Formality is a general post-DC stage rather than an
+UPF-only stage: a plain synthesis snapshot runs ordinary RTL-to-netlist
+equivalence, while a snapshot containing both canonical and saved UPF
+automatically runs the UPF-aware mode. Pass `soc_formal` the exact `run_id`
+and `source_fingerprint` returned by `soc_syn`; it rejects RTL drift and uses
+the immutable netlist, SVF, and optional UPF pair from that synthesis snapshot.
+Conformal Low Power remains an independent native IEEE 1801 RTL/UPF
+consistency check. This flow does not claim behavioral simulation. DC loads
+the PG-aware macro views and full UPF internally, preserves eight MacroPG
+connections in reports/saved UPF, writes ordinary non-PG Verilog, saves the
+implementation UPF, and emits the SVF consumed by Formality.
 
-Formality compares synthesizable RTL plus canonical UPF against the ordinary
-DC netlist plus DC-saved UPF and accepts only `verification_status=SUCCEEDED`.
+Synthesis, Formality, and CLP consume the same immutable `de/syn/rtl.f`;
+there is no derived `logic_rtl.f`. The shared synthesis view defines
+`SYNTHESIS`, so simulation-only hard-macro behavior is hidden while the
+PG-aware Liberty views supply the macro interfaces. Public drivers live under
+`scripts/syn/`, `scripts/formal/`, and `scripts/clp/`; this module keeps
+only its design-specific UPF assertions in `de/syn/upf_checks.tcl`.
+
+UPF-aware Formality compares synthesizable RTL plus canonical UPF against the
+ordinary DC netlist plus DC-saved UPF and accepts only
+`verification_status=SUCCEEDED`.
 CLP independently elaborates the synthesizable RTL with the canonical UPF in
 native 1801 pre-synthesis mode and rejects failed error-level rules. Its XML
 and text error summaries are parsed fail-closed by the registered wrapper;
 only that wrapper emits `UPF_CLP_PASS`, and an unknown XML schema is rejected.
-Fresh reports live under ignored `de/run/formality/` and `de/run/clp/`;
-reviewed Tcl drivers live under `de/syn/formal/`.
+Fresh reports live under ignored `de/run/formality/` and `de/run/clp/`.
 
 The RTL structure predicts 36 ELS cells (four 9-bit protected outputs) and 44 pure H2L LS cells (four 11-bit AO input boundaries). The registered DC run for the current source fingerprint confirmed exactly those counts: 36 ELS, 44 pure H2L, and 80 total level shifters. These remain teaching-flow evidence rather than characterized signoff data.
 

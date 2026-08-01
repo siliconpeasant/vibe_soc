@@ -23,8 +23,6 @@ de/syn/upf/*
 !de/syn/upf/upf_dc_demo.drawio
 !de/syn/upf/upf_dc_demo.excalidraw
 !de/syn/upf/upf_dc_demo.summary.md
-!de/syn/dc_upf_synth.tcl
+!de/syn/upf_checks.tcl
 !de/syn/macro_pg_stub.lib
 !de/syn/build_teaching_mv_lib.py
-!de/syn/formal/
-!de/syn/formal/*.tcl

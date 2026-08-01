@@ -61,7 +61,7 @@ export PROJECT_ROOT
 export SOC="$PROJECT_ROOT"
 export CHIP_PATH="$PROJECT_ROOT/chip"
 export IP_PATH="$PROJECT_ROOT/ip"
-export SIMULATOR=${SIMULATOR:-vcs}
+export SIMULATOR=${SIMULATOR:-verilator}
 export LINT_TOOL=${LINT_TOOL:-verilator}
 export SPYGLASS_HOME=${SPYGLASS_HOME:-/usr/Synopsys/spyglass/latest}
 export SG_HOME=${SG_HOME:-$SPYGLASS_HOME}
@@ -82,16 +82,6 @@ _check_tool() {
     fi
 }
 
-_check_iverilog() {
-    if command -v iverilog >/dev/null 2>&1 && \
-       printf 'module toolcheck; endmodule\n' | iverilog -tnull - >/dev/null 2>&1; then
-        echo "  ✓ iverilog"
-        return 0
-    fi
-    echo "  ✗ iverilog (前端存在，但编译后端缺失或运行异常)"
-    return 1
-}
-
 _check_presence() {
     if command -v "$1" >/dev/null 2>&1; then
         echo "  ✓ $1"
@@ -110,12 +100,6 @@ _check_tool verilator --version || {
 }
 _check_tool "$SG_SHELL" -help || {
     [ "$LINT_TOOL" != "spyglass" ] || MISSING=$((MISSING + 1))
-}
-_check_iverilog || {
-    [ "$SIMULATOR" != "iverilog" ] || MISSING=$((MISSING + 1))
-}
-_check_tool vvp -V || {
-    [ "$SIMULATOR" != "iverilog" ] || MISSING=$((MISSING + 1))
 }
 _check_tool yosys -V || true
 _check_tool vcs -ID || {

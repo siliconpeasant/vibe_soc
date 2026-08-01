@@ -82,7 +82,7 @@ ifeq ($(wildcard $(TOOLCHAIN_MK)),)
 endif
 include $(TOOLCHAIN_MK)
 
-BUILD_METADATA = simulator=$(SIMULATOR)|top=$(TOP_MODULE)|timescale=$(TIMESCALE)|fsdb=$(FSDB)|coverage=$(COVERAGE)|partcomp=$(PARTCOMP)|vlog=$(VLOG_FLAGS)|vcs_kdb=$(VCS_KDB)|vcs_kdb_compile=$(VCS_KDB_COMPILE_FLAGS)|elab=$(VCS_ELAB_FLAGS)|includes=$(VCS_INCLUDE_FLAGS)|iverilog=$(IVERILOG_FLAGS)|verilator_bin=$(VERILATOR)|verilator_root=$(VERILATOR_ROOT)|verilator=$(VERILATOR_SIM_FLAGS)|verilator_cflags=$(VERILATOR_CFLAGS)|verilator_ldflags=$(VERILATOR_LDFLAGS)|verilator_harness=$(VERILATOR_HARNESS)|verilator_sv=$(VERILATOR_SV_FILES)|user_compile=$(USER_COMPILE_FLAGS)
+BUILD_METADATA = simulator=$(SIMULATOR)|top=$(TOP_MODULE)|timescale=$(TIMESCALE)|fsdb=$(FSDB)|coverage=$(COVERAGE)|partcomp=$(PARTCOMP)|vlog=$(VLOG_FLAGS)|vcs_kdb=$(VCS_KDB)|vcs_kdb_compile=$(VCS_KDB_COMPILE_FLAGS)|elab=$(VCS_ELAB_FLAGS)|includes=$(VCS_INCLUDE_FLAGS)|verilator_bin=$(VERILATOR)|verilator_root=$(VERILATOR_ROOT)|verilator=$(VERILATOR_SIM_FLAGS)|verilator_timing=$(VERILATOR_TIMING_MODE)|verilator_require_timing=$(VERILATOR_REQUIRE_TIMING)|verilator_cflags=$(VERILATOR_CFLAGS)|verilator_ldflags=$(VERILATOR_LDFLAGS)|verilator_harness=$(VERILATOR_HARNESS)|verilator_sv=$(VERILATOR_SV_FILES)|user_compile=$(USER_COMPILE_FLAGS)
 BUILD_CONFIG_DEPS := $(PROJECT_ROOT)/scripts/common.mk $(PROJECT_ROOT)/scripts/config.mk $(TOOLCHAIN_MK) $(MODULE_PATH)/Makefile
 BUILD_EXTRA_DEPS := $(BUILD_CONFIG_DEPS) $(RTL_PATH) $(if $(filter de rtl,$(CURRENT_DIR)),,$(TB_PATH) $(ACTIVE_DV_FILELISTS))
 
@@ -93,14 +93,15 @@ VERDI_CMD ?= cd $(SIM_DIR) && verdi $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILEL
 # Lint & Synthesis configuration
 # =============================================================================
 
-SYN_NETLIST   = $(SYN_DIR)/$(RTL_TOP)_netlist.v
-SYN_REPORT    = $(SYN_DIR)/synth.log
-YOSYS_SYN_SCRIPT = $(SYN_DIR)/syn.ys
-DC_NETLIST    = $(DC_OUTPUT_DIR)/$(RTL_TOP)_netlist.v
-DC_DDC        = $(DC_OUTPUT_DIR)/$(RTL_TOP).ddc
-DC_SDF        = $(DC_OUTPUT_DIR)/$(RTL_TOP).sdf
-DC_SDC_OUT    = $(DC_OUTPUT_DIR)/$(RTL_TOP).sdc
-DC_LOG        = $(DC_RUN_DIR)/dc_shell.log
+SYN_NETLIST      ?= $(SYN_DIR)/$(RTL_TOP)_netlist.v
+SYN_REPORT       ?= $(SYN_DIR)/synth.log
+YOSYS_SYN_SCRIPT ?= $(SYN_DIR)/syn.ys
+DC_NETLIST       ?= $(DC_OUTPUT_DIR)/$(RTL_TOP)_netlist.v
+DC_DDC           ?= $(DC_OUTPUT_DIR)/$(RTL_TOP).ddc
+DC_SDF           ?= $(DC_OUTPUT_DIR)/$(RTL_TOP).sdf
+DC_SDC_OUT       ?= $(DC_OUTPUT_DIR)/$(RTL_TOP).sdc
+DC_LOG           ?= $(DC_RUN_DIR)/dc_shell.log
+SYN_ARTIFACT_MANIFEST ?= $(RUN_DIR)/syn_artifacts.env
 
 # =============================================================================
 # Public targets
@@ -108,7 +109,7 @@ DC_LOG        = $(DC_RUN_DIR)/dc_shell.log
 
 .PHONY: setup comp sim run test regress report coverage coverage-regress \
         coverage-report verdi clean debugclean deepclean \
-        flist validate-flist lint cdc syn
+        flist validate-flist lint cdc syn syn-artifacts formal formal-upf clp-upf
 
 setup:
 	@echo "[SETUP] vibe_soc environment setup"
@@ -277,8 +278,6 @@ lint: $(RTL_FLIST)
 	@mkdir -p $(RUN_DIR)
 ifeq ($(LINT_TOOL),verilator)
 	@verilator $(VERILATOR_LINT_FLAGS) --lint-only -I$(RTL_PATH) --top-module $(RTL_TOP) -f $(RUN_DIR)/rtl.f 2>&1 | tee $(RUN_DIR)/lint.log
-else ifeq ($(LINT_TOOL),iverilog)
-	@iverilog $(IVERILOG_FLAGS) -s $(RTL_TOP) -o /dev/null $$(grep -v '^//' $(RUN_DIR)/rtl.f 2>/dev/null | sed '/^$$/d') 2>&1 | tee $(RUN_DIR)/lint.log
 else ifeq ($(LINT_TOOL),spyglass)
 	@test -x "$(SG_SHELL)" || { echo "[LINT] SpyGlass sg_shell not found: $(SG_SHELL)"; exit 127; }
 	@test -f "$(SG_LINT_TCL)" || { echo "[LINT] SpyGlass lint Tcl not found: $(SG_LINT_TCL)"; exit 2; }
@@ -342,8 +341,25 @@ else
 	@exit 2
 endif
 
+# --- syn-artifacts: exact structural contract for registered synthesis evidence ---
+syn-artifacts:
+	@mkdir -p "$(dir $(SYN_ARTIFACT_MANIFEST))"
+	@{ \
+	  printf 'RTL_FILELIST=%s\n' "$(SYN_DIR)/rtl.f"; \
+	  if [ "$(SYN_TOOL)" = "dc" ]; then \
+	    printf 'NETLIST=%s\n' "$(DC_NETLIST)"; \
+	    printf 'SVF=%s\n' "$(DC_SVF)"; \
+	    printf 'REFERENCE_UPF=%s\n' "$(DC_UPF)"; \
+	    printf 'IMPLEMENTATION_UPF=%s\n' "$(DC_SAVED_UPF)"; \
+	  else \
+	    printf 'NETLIST=%s\n' "$(SYN_NETLIST)"; \
+	    printf 'SVF=\nREFERENCE_UPF=\nIMPLEMENTATION_UPF=\n'; \
+	  fi; \
+	} > "$(SYN_ARTIFACT_MANIFEST).tmp"
+	@mv "$(SYN_ARTIFACT_MANIFEST).tmp" "$(SYN_ARTIFACT_MANIFEST)"
+
 # --- syn: synthesis ---
-syn: $(RTL_FLIST)
+syn: $(RTL_FLIST) syn-artifacts
 	@echo "[SYN] Tool: $(SYN_TOOL) | Top: $(RTL_TOP)"
 	@mkdir -p $(SYN_DIR)
 	@cp $(RTL_FLIST) $(SYN_DIR)/rtl.f
@@ -381,6 +397,13 @@ else ifeq ($(SYN_TOOL),dc)
 	  DC_DDC="$(DC_DDC)" \
 	  DC_SDF="$(DC_SDF)" \
 	  DC_SDC_OUT="$(DC_SDC_OUT)" \
+	  DC_SVF="$(DC_SVF)" \
+	  DC_UPF="$(DC_UPF)" \
+	  DC_SAVED_UPF="$(DC_SAVED_UPF)" \
+	  DC_LOADED_UPF="$(DC_LOADED_UPF)" \
+	  DC_UPF_CHECKS_TCL="$(DC_UPF_CHECKS_TCL)" \
+	  DC_TIMING_REPORT="$(DC_TIMING_REPORT)" \
+	  DC_TIMING_SUMMARY="$(DC_TIMING_SUMMARY)" \
 	  DC_TARGET_LIBRARY="$(DC_TARGET_LIBRARY)" \
 	  DC_LINK_LIBRARY="$(DC_LINK_LIBRARY)" \
 	  DC_SYMBOL_LIBRARY="$(DC_SYMBOL_LIBRARY)" \
@@ -388,12 +411,18 @@ else ifeq ($(SYN_TOOL),dc)
 	  SKY130HD_DC_LIB="$(SKY130HD_DC_LIB)" \
 	  DC_SEARCH_PATH="$(DC_SEARCH_PATH)" \
 	  DC_COMPILE_ULTRA="$(DC_COMPILE_ULTRA)" \
+	  DC_COMPILE_OPTIONS="$(DC_COMPILE_OPTIONS)" \
 	  DC_CLOCK_GATING="$(DC_CLOCK_GATING)" \
 	  DC_MAX_CORES="$(DC_MAX_CORES)" \
+	  DC_RTL_DEFINE="$(DC_RTL_DEFINE)" \
 	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
 	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
 	  "$(DC_SHELL)" -f "$(DC_SCRIPT)" 2>&1 | tee "$(DC_LOG)"; \
 	  status=$${PIPESTATUS[0]}; \
+	  if [ $$status -eq 0 ] && grep -Eq '^[[:space:]]*Error:' "$(DC_LOG)"; then \
+	    echo "[SYN] ERROR: Design Compiler log contains an Error diagnostic"; \
+	    status=2; \
+	  fi; \
 	  exit $$status
 	@echo "[SYN] Netlist: $(DC_NETLIST)"
 	@echo "[SYN] DDC:     $(DC_DDC)"
@@ -403,3 +432,81 @@ else
 	@echo "[SYN] Unknown SYN_TOOL: $(SYN_TOOL)"
 	@exit 2
 endif
+
+# --- formal: post-DC equivalence; UPF inputs are optional but must be paired ---
+formal:
+	@test "$(SILICON_CREW_SOC_BUILD_MCP_ACTIVE)" = "1" -o "$(SILICON_CREW_UPF_GEN_MCP_ACTIVE)" = "1" || { echo "[FORMAL] run through a registered MCP flow"; exit 2; }
+	@command -v "$(FM_SHELL)" >/dev/null 2>&1 || test -x "$(FM_SHELL)" || { echo "[FORMAL] fm_shell not found: $(FM_SHELL)"; exit 127; }
+	@test -s "$(FORMALITY_SCRIPT)" || { echo "[FORMAL] script not found: $(FORMALITY_SCRIPT)"; exit 2; }
+	@for input in "$(FORMAL_RTL_FILELIST)" "$(FORMAL_NETLIST)" "$(FORMAL_SVF)" $(FORMAL_LIB_DB); do \
+	  test -s "$$input" || { echo "[FORMAL] missing input: $$input"; exit 2; }; \
+	done
+	@if { test -n "$(FORMAL_REFERENCE_UPF)" && test -z "$(FORMAL_IMPLEMENTATION_UPF)"; } || \
+	    { test -z "$(FORMAL_REFERENCE_UPF)" && test -n "$(FORMAL_IMPLEMENTATION_UPF)"; }; then \
+	  echo "[FORMAL] reference and implementation UPF must be set together"; exit 2; \
+	fi
+	@if test "$(FORMAL_REQUIRE_UPF)" = "1"; then \
+	  test -s "$(FORMAL_REFERENCE_UPF)" -a -s "$(FORMAL_IMPLEMENTATION_UPF)" || { echo "[FORMAL] formal-upf requires both UPF inputs"; exit 2; }; \
+	fi
+	@mkdir -p "$(FORMALITY_RUN_DIR)"
+	@rm -f "$(FORMALITY_RUN_DIR)/formality.log" \
+	  "$(FORMALITY_RUN_DIR)/setup_status.rpt" \
+	  "$(FORMALITY_RUN_DIR)/upf_reference.rpt" \
+	  "$(FORMALITY_RUN_DIR)/upf_implementation.rpt" \
+	  "$(FORMALITY_RUN_DIR)/library_defects.rpt" \
+	  "$(FORMALITY_RUN_DIR)/match_status.rpt" \
+	  "$(FORMALITY_RUN_DIR)/verification_status.rpt"
+	@cd "$(FORMALITY_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  FM_TOP="$(RTL_TOP)" \
+	  FM_RTL_FILELIST="$(FORMAL_RTL_FILELIST)" \
+	  FM_NETLIST="$(FORMAL_NETLIST)" \
+	  FM_REFERENCE_UPF="$(FORMAL_REFERENCE_UPF)" \
+	  FM_IMPLEMENTATION_UPF="$(FORMAL_IMPLEMENTATION_UPF)" \
+	  FM_SVF="$(FORMAL_SVF)" \
+	  FM_LIB_DB="$(FORMAL_LIB_DB)" \
+	  FM_RUN_DIR="$(FORMALITY_RUN_DIR)" \
+	  FM_SETUP_HOOK="$(FORMAL_SETUP_HOOK)" \
+	  FM_RTL_DEFINE="$(FORMAL_RTL_DEFINE)" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(FM_SHELL)" -f "$(FORMALITY_SCRIPT)" 2>&1 | tee "$(FORMALITY_RUN_DIR)/formality.log"; \
+	  status=$${PIPESTATUS[0]}; \
+	  exit $$status
+
+formal-upf: FORMAL_REQUIRE_UPF := 1
+formal-upf: formal
+
+# --- clp-upf: native IEEE 1801 RTL/UPF consistency ---
+clp-upf:
+	@test "$(SILICON_CREW_UPF_GEN_MCP_ACTIVE)" = "1" || { echo "[CLP] run through registered upf-gen MCP"; exit 2; }
+	@command -v "$(CLP_SHELL)" >/dev/null 2>&1 || test -x "$(CLP_SHELL)" || { echo "[CLP] lec not found: $(CLP_SHELL)"; exit 127; }
+	@test -s "$(CLP_SCRIPT)" || { echo "[CLP] script not found: $(CLP_SCRIPT)"; exit 2; }
+	@for input in "$(CLP_RTL_FILELIST)" "$(CLP_REFERENCE_UPF)" $(CLP_LIB_FILES); do \
+	  test -s "$$input" || { echo "[CLP] missing input: $$input"; exit 2; }; \
+	done
+	@mkdir -p "$(CLP_RUN_DIR)"
+	@rm -f "$(CLP_RUN_DIR)/clp.log" \
+	  "$(CLP_RUN_DIR)/rules_1801_summary.rpt" \
+	  "$(CLP_RUN_DIR)/rules_1801_errors.rpt" \
+	  "$(CLP_RUN_DIR)/rules_1801_errors.xml" \
+	  "$(CLP_RUN_DIR)/power_intent.rpt" \
+	  "$(CLP_RUN_DIR)/lowpower.rpt" \
+	  "$(CLP_RUN_DIR)/design_data.rpt" \
+	  "$(CLP_RUN_DIR)/black_boxes.rpt"
+	@cd "$(CLP_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  CLP_TOP="$(RTL_TOP)" \
+	  CLP_RTL_FILELIST="$(CLP_RTL_FILELIST)" \
+	  CLP_UPF="$(CLP_REFERENCE_UPF)" \
+	  CLP_LIB_FILES="$(CLP_LIB_FILES)" \
+	  CLP_RUN_DIR="$(CLP_RUN_DIR)" \
+	  CLP_UPF_VERSION="$(CLP_UPF_VERSION)" \
+	  CLP_ANALYSIS_STYLE="$(CLP_ANALYSIS_STYLE)" \
+	  CLP_SETUP_HOOK="$(CLP_SETUP_HOOK)" \
+	  CLP_RTL_DEFINE="$(CLP_RTL_DEFINE)" \
+	  CDS_LIC_FILE="$(CDS_LIC_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(CLP_SHELL)" -lp -nogui -dofile "$(CLP_SCRIPT)" 2>&1 | tee "$(CLP_RUN_DIR)/clp.log"; \
+	  status=$${PIPESTATUS[0]}; \
+	  exit $$status

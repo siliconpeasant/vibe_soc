@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
 #include <string>
 
 #include "verilated.h"
@@ -46,7 +47,12 @@ int main(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
 
     const char *max_cycles_arg = plusarg_value(argc, argv, "+max_cycles=");
-    const vluint64_t max_cycles = max_cycles_arg ? std::strtoull(max_cycles_arg, NULL, 0) : 1;
+    const vluint64_t max_cycles =
+        max_cycles_arg ? std::strtoull(max_cycles_arg, NULL, 0) : 100000;
+    if (max_cycles == 0) {
+        std::cerr << "VERILATOR_FATAL: +max_cycles must be greater than zero\n";
+        return 2;
+    }
 
     TOPLEVEL_NAME *top = new TOPLEVEL_NAME;
 
@@ -82,5 +88,10 @@ int main(int argc, char **argv) {
     }
 #endif
     delete top;
+    if (!Verilated::gotFinish()) {
+        std::cerr << "VERILATOR_TIMEOUT: design did not call $finish within "
+                  << max_cycles << " timesteps\n";
+        return 2;
+    }
     return 0;
 }

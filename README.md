@@ -81,7 +81,7 @@ make check-repo
 
 ```bash
 make lint MODULE=ip/digital/uart
-make comp MODULE=chip/top SIMULATOR=iverilog
+make comp MODULE=chip/top SIMULATOR=verilator
 make sim  MODULE=ip/digital/uart SIMULATOR=vcs TEST=uart_all SEED=7
 ```
 
@@ -189,6 +189,9 @@ python3 scripts/package_design_release.py \
 | `coverage-report` | 覆盖率报告生成 |
 | `verdi` | Verdi 入口 |
 | `syn` | 综合入口，默认 Yosys，可用 `SYN_TOOL=dc` 切换 Design Compiler |
+| `formal` | Formality 等价检查；普通 DC 与带 UPF 的 DC 快照均可使用 |
+| `formal-upf` | 强制要求 canonical/saved UPF 成对存在的 Formality 兼容入口 |
+| `clp-upf` | Conformal Low Power 原生 IEEE 1801 RTL/UPF 一致性检查 |
 | `clean` | 清理运行日志/波形，保留编译缓存 |
 | `debugclean` | 进一步清理调试和报告文件 |
 | `deepclean` | 清理瞬态编译/仿真产物，保留综合交付物 |
@@ -202,6 +205,18 @@ make comp MODULE=ip/digital/uart SIMULATOR=vcs FORCE=1
 make regress MODULE=ip/digital/uart REGRESS_SEEDS=1-10 REGRESS_JOBS=4
 make coverage MODULE=ip/digital/uart TEST=uart_all SEED=7
 ```
+
+### 公共综合、Formal 与 CLP Tcl
+
+公共入口分别位于 `scripts/syn/`、`scripts/formal/` 和
+`scripts/clp/`，模块 Makefile 只配置 top、库、约束、UPF 和可选 hook。
+DC、Formality、CLP 共享注册综合快照中的同一份 `de/syn/rtl.f`，不会再
+派生 `logic_rtl.f`。默认综合视图定义 `SYNTHESIS`，可通过
+`RTL_SYNTHESIS_DEFINE` 覆盖。
+
+`soc_formal` 接受普通 DC 快照，也接受同时包含 canonical/saved UPF 的
+快照；只有后一种情况才加载 UPF。所有 EDA 目标仍必须由注册 MCP 工具
+执行，Make 目标不是 agent 绕过证据门禁的直接入口。
 
 ### Filelist 约定
 
@@ -229,12 +244,17 @@ SpyGlass lint 通过 `scripts/lint/sg_lint.tcl` 运行，默认 goal 为 `lint/l
 
 - VCS（本地已授权环境）
 - Verilator
-- Iverilog
 - Xcelium
 - Verdi、DVE、SimVision、GTKWave（按本地授权和安装情况启用）
 - SpyGlass lint/CDC（本地已授权环境）
 - Yosys 结构综合
 - Design Compiler 逻辑综合（本地已授权环境）
+
+Verilator 是默认仿真后端。普通 SystemVerilog testbench 会在注册编译阶段
+探测并启用 `--timing`；安装版本不支持 timing 时会明确失败，此时应升级
+Verilator，或为该模块提供 `*_verilator.cpp` 自检 harness。公共 generic
+harness 默认最多运行 `VERILATOR_MAX_CYCLES=100000` 个 timestep，未执行
+`$finish` 会返回非零，不能把超时当 PASS。
 
 项目脚本不会直接 source 用户 home 下的 shell 启动文件。EDA 工具能否找到取决于当前进程继承的环境变量，以及项目本地配置文件：
 

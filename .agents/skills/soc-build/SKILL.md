@@ -59,6 +59,7 @@ Create structure with `soc_init`, `soc_add_chip`, or `soc_add_ip`. Do not create
 | `soc_regress` | test/seed matrix regression |
 | `soc_coverage` | single or regression coverage |
 | `soc_syn` | project-filelist synthesis; accepts `rtl_top` and `syn_tool` (`yosys` or `dc`) |
+| `soc_formal` | Formality equivalence from an immutable registered DC snapshot; UPF is optional |
 | `soc_verdi` | open Verdi; `scope=de` loads RTL/source, `scope=dv` loads sim DB/waves |
 
 All names, simulators, tests, seeds, and job counts are validated. A nonzero process exit or timeout is an MCP tool error.
@@ -72,9 +73,10 @@ emitted run ID and fingerprint to `update_state.py` when closing `verif` or
 
 ## Stage use
 
-- RTL agents call `soc_lint`; MCP allows Verilator or SpyGlass lint only; no direct Verilator/Icarus fallback.
+- RTL agents call `soc_lint`; MCP allows Verilator or SpyGlass lint only; no direct EDA fallback.
 - Verification agents call `soc_sim` or `soc_regress`; no direct Make/simulator fallback.
 - Synthesis agents call `soc_syn`; use `syn_tool=dc` for Design Compiler or `syn_tool=yosys` for structural checks. Yosys output is not STA evidence.
+- Formal agents call `soc_formal` with the exact `run_id` and `source_fingerprint` emitted by `soc_syn`. Plain DC snapshots run ordinary RTL-to-netlist equivalence; snapshots containing both canonical and saved UPF run the UPF-aware mode.
 - Commercial simulator/license work must remain in the registered MCP process.
 - SpyGlass lint is run in no-GUI mode by default because local GUI/plugin availability may vary. If GUI is explicitly requested and plugin checkout fails, do not block lint triage on the GUI; use the generated text reports under `de/run/`.
 - When lint reports any real rule violation at error or warning severity, first query the local SoC AI knowledge base (`soc-ai-kb`) using the rule/tag name and diagnostic text. If the knowledge base has no relevant guidance, reason from the tool report, RTL, and local coding rules.
