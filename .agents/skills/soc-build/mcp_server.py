@@ -208,6 +208,8 @@ def _native_evidence_files(path: Path, tool_family: str) -> list[Path]:
             "de/syn/**/*.rpt",
             "de/syn/**/*netlist*.v",
             "de/syn/**/*netlist*.sv",
+            "de/syn/**/*.svf",
+            "de/syn/**/*.upf",
         )
     )
     files: set[Path] = set()
@@ -247,7 +249,13 @@ def _capture_loop_artifacts(
     for candidate in _native_evidence_files(path, tool_family):
         stat = candidate.stat()
         signature = (stat.st_mtime_ns, stat.st_size)
-        if stat.st_size <= 0 or before.get(candidate) == signature:
+        # Synthesis-owned products must be fresh. Canonical UPF is a reviewed
+        # source input, so capture it even when synthesis correctly leaves it
+        # byte-identical; its digest binds downstream Formality/CLP to intent.
+        source_input = tool_family == "soc_syn" and candidate.suffix == ".upf"
+        if stat.st_size <= 0 or (
+            before.get(candidate) == signature and not source_input
+        ):
             continue
         relative = candidate.relative_to(path)
         destination = evidence_dir / "native" / relative

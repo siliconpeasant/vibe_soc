@@ -36,7 +36,7 @@
       "script": ".agents/skills/upf-gen/mcp_server.py",
       "default_enabled": true,
       "startup_timeout_sec": 120,
-      "tool_timeout_sec": 300
+      "tool_timeout_sec": 43200
     },
     {
       "name": "crg-req-to-design",

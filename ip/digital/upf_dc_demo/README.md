@@ -15,7 +15,16 @@ Power Compiler UG U-2022.12-SP3 pp. 228–229 requires isolation when signals le
 
 ## Tool and handoff contract
 
-Agents use registered `soc_lint`, `soc_comp`, and `soc_syn` tools only. The completed flow ran lint, VCS compile/elaboration, and DC/Power Compiler synthesis; it did not run simulation. DC loads the PG-aware macro views and full UPF internally, preserves eight MacroPG connections in reports/saved UPF, and writes ordinary non-PG Verilog.
+Agents use registered `soc_lint`, `soc_comp`, `soc_syn`, and `upf-gen` tools only. The post-synthesis order is registered DC/Power Compiler synthesis, Formality with UPF, then Conformal Low Power native IEEE 1801 RTL/UPF checking; the combined `upf_post_synth_verify` tool deliberately does not synthesize. Pass its Formality/CLP stages the exact `run_id` and `source_fingerprint` returned by `soc_syn`: the wrapper rejects RTL drift and uses the immutable netlist, canonical/saved UPF, and SVF from that synthesis snapshot. This flow does not claim behavioral simulation. DC loads the PG-aware macro views and full UPF internally, preserves eight MacroPG connections in reports/saved UPF, writes ordinary non-PG Verilog, saves the implementation UPF, and emits the SVF consumed by Formality.
+
+Formality compares synthesizable RTL plus canonical UPF against the ordinary
+DC netlist plus DC-saved UPF and accepts only `verification_status=SUCCEEDED`.
+CLP independently elaborates the synthesizable RTL with the canonical UPF in
+native 1801 pre-synthesis mode and rejects failed error-level rules. Its XML
+and text error summaries are parsed fail-closed by the registered wrapper;
+only that wrapper emits `UPF_CLP_PASS`, and an unknown XML schema is rejected.
+Fresh reports live under ignored `de/run/formality/` and `de/run/clp/`;
+reviewed Tcl drivers live under `de/syn/formal/`.
 
 The RTL structure predicts 36 ELS cells (four 9-bit protected outputs) and 44 pure H2L LS cells (four 11-bit AO input boundaries). The registered DC run for the current source fingerprint confirmed exactly those counts: 36 ELS, 44 pure H2L, and 80 total level shifters. These remain teaching-flow evidence rather than characterized signoff data.
 

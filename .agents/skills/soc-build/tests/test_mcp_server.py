@@ -213,6 +213,31 @@ class SocBuildMcpTest(unittest.TestCase):
         )
 
     @patch.object(SERVER, "_run")
+    def test_syn_evidence_captures_upf_and_svf(self, run) -> None:
+        canonical = self.module_dir / "de" / "syn" / "upf" / "uart.upf"
+        canonical.parent.mkdir(parents=True)
+        canonical.write_text("set_design_top uart\n", encoding="utf-8")
+
+        def create_outputs(*args, **kwargs):
+            if run.call_count == 2:
+                syn = self.module_dir / "de" / "syn"
+                (syn / "uart.svf").write_text("svf\n", encoding="utf-8")
+                (syn / "upf" / "uart_synth.upf").write_text(
+                    "set_design_top uart\n", encoding="utf-8"
+                )
+            return "ok"
+
+        run.side_effect = create_outputs
+        result = SERVER.soc_syn(str(self.module_dir), "uart", syn_tool="dc")
+        evidence = json.loads(result.split("LOOP_EVIDENCE=", 1)[1])
+        native = [item for item in evidence["artifacts"] if "/native/" in item]
+        self.assertEqual(
+            {Path(item).suffix for item in native},
+            {".svf", ".upf"},
+        )
+        self.assertEqual(len(native), 3)
+
+    @patch.object(SERVER, "_run")
     def test_success_evidence_rejects_source_drift(self, run) -> None:
         def mutate(*args, **kwargs):
             if run.call_count == 2:

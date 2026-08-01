@@ -39,7 +39,7 @@ command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/upf-gen/mcp_server.py"]
 startup_timeout_sec = 120
-tool_timeout_sec = 300
+tool_timeout_sec = 43200
 
 [mcp_servers.crg-req-to-design]
 enabled = true
