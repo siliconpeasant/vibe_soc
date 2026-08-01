@@ -7,6 +7,8 @@ Usage: scripts/prepare_task_worktree.sh <task-slug> [base-branch]
 
 Create an isolated worktree and unique codex task branch from the latest
 remote base. The current checkout may be dirty and is never modified.
+Whitelisted machine-local configuration is copied into the new worktree, or
+linked from a configured persistent local-config root.
 EOF
 }
 
@@ -57,6 +59,7 @@ trap cleanup_partial EXIT
 
 git -C "$repo_root" worktree add --detach "$worktree_path" "$base_ref"
 created=1
+"$script_dir/sync_local_configs.sh" "$worktree_path" "$repo_root"
 (
     cd "$worktree_path"
     GIT_PREPARE_SKIP_FETCH=1 \

@@ -36,7 +36,15 @@ class PrepareTaskWorktreeTest(unittest.TestCase):
         run("git", "config", "user.name", "Worktree Test", cwd=self.seed)
         run("git", "config", "user.email", "worktree-test@example.com", cwd=self.seed)
         (self.seed / "README.md").write_text("seed\n", encoding="utf-8")
-        run("git", "add", "README.md", cwd=self.seed)
+        (self.seed / ".gitignore").write_text(
+            "scripts/local.mk\n"
+            "scripts/local.sh\n"
+            "scripts/local.csh\n"
+            "pd/openroad/local/\n"
+            "pd/openroad/**/config.local.mk\n",
+            encoding="utf-8",
+        )
+        run("git", "add", "README.md", ".gitignore", cwd=self.seed)
         run("git", "commit", "-m", "Seed main", cwd=self.seed)
         run("git", "remote", "add", "origin", str(self.remote), cwd=self.seed)
         run("git", "push", "-u", "origin", "main", cwd=self.seed)
@@ -79,7 +87,99 @@ class PrepareTaskWorktreeTest(unittest.TestCase):
             run("git", "branch", "--show-current", cwd=self.work).stdout.strip(), "main"
         )
         self.assertTrue((self.work / "local.txt").is_file())
+        self.assertFalse((task / "local.txt").exists())
         self.assertIn("Start with:", result.stdout)
+
+    def test_copies_whitelisted_local_config(self) -> None:
+        scripts = self.work / "scripts"
+        scripts.mkdir()
+        (scripts / "local.mk").write_text("LOCAL_TOOL := test\n", encoding="utf-8")
+        local_sh = scripts / "local.sh"
+        local_sh.write_text("export LOCAL_TOOL=test\n", encoding="utf-8")
+        local_sh.chmod(0o700)
+        design = self.work / "pd" / "openroad" / "nangate45" / "uart"
+        design.mkdir(parents=True)
+        (design / "config.local.mk").write_text(
+            "include config.mk\n", encoding="utf-8"
+        )
+        wrappers = self.work / "pd" / "openroad" / "local"
+        wrappers.mkdir()
+        wrapper = wrappers / "openroad-local"
+        wrapper.write_text("#!/bin/sh\n", encoding="utf-8")
+        wrapper.chmod(0o755)
+
+        result, task = self.prepare()
+
+        self.assertEqual(
+            (task / "scripts" / "local.mk").read_text(encoding="utf-8"),
+            "LOCAL_TOOL := test\n",
+        )
+        self.assertTrue((task / "scripts" / "local.sh").stat().st_mode & 0o100)
+        self.assertEqual(
+            (
+                task
+                / "pd"
+                / "openroad"
+                / "nangate45"
+                / "uart"
+                / "config.local.mk"
+            ).read_text(encoding="utf-8"),
+            "include config.mk\n",
+        )
+        self.assertTrue(
+            (task / "pd" / "openroad" / "local" / "openroad-local").is_file()
+        )
+        self.assertIn("Local config: copied=4", result.stdout)
+
+    def test_links_configured_persistent_local_config(self) -> None:
+        persistent = Path(self.tempdir.name) / "persistent-config"
+        (persistent / "scripts").mkdir(parents=True)
+        shared = persistent / "scripts" / "local.mk"
+        shared.write_text("SHARED := yes\n", encoding="utf-8")
+        run(
+            "git",
+            "config",
+            "--local",
+            "vibeSoc.localConfigRoot",
+            str(persistent),
+            cwd=self.work,
+        )
+
+        result, task = self.prepare()
+        linked = task / "scripts" / "local.mk"
+
+        self.assertTrue(linked.is_symlink())
+        self.assertEqual(linked.resolve(), shared.resolve())
+        shared.write_text("SHARED := updated\n", encoding="utf-8")
+        self.assertEqual(linked.read_text(encoding="utf-8"), "SHARED := updated\n")
+        self.assertIn("Local config: copied=0 linked=1", result.stdout)
+
+    def test_missing_configured_root_cleans_partial_worktree(self) -> None:
+        missing = Path(self.tempdir.name) / "missing-config"
+        run(
+            "git",
+            "config",
+            "--local",
+            "vibeSoc.localConfigRoot",
+            str(missing),
+            cwd=self.work,
+        )
+
+        result = run(
+            str(PREPARE),
+            "loop-lite",
+            cwd=self.work,
+            env=self.env,
+            check=False,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Configured local config root does not exist", result.stderr)
+        branches = run(
+            "git", "branch", "--format=%(refname:short)", cwd=self.work
+        ).stdout.splitlines()
+        self.assertNotIn("codex/loop-lite-20260715-010203", branches)
+        self.assertEqual(list(self.tasks.iterdir()), [])
 
     def test_cleanup_accepts_merged_clean_branch(self) -> None:
         _, task = self.prepare()

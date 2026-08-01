@@ -117,6 +117,20 @@ git push -u origin "$(git branch --show-current)"
 
 两个准备脚本都生成 `codex/<task>-<UTC timestamp>` 分支；worktree 版本不会改动或要求清理当前 checkout。分支合入默认分支后，可用 `scripts/cleanup_task_worktree.sh <path>` 安全回收；它只删除干净、已有 ancestor 或 GitHub merged-PR 证据的本地任务分支（兼容 squash merge），不删除远端分支。
 
+`prepare_task_worktree.sh` 会把来源 checkout 中以下 Git 忽略的本机配置复制到新 worktree，不复制日志、缓存、波形或其他未跟踪文件：
+
+- `scripts/local.mk`、`scripts/local.sh`、`scripts/local.csh`
+- `pd/openroad/local/`
+- `pd/openroad/**/config.local.mk`
+
+如需让多个 worktree 实时共享同一份配置，可建立一个仓库外的持久化目录，保持上述相对路径，并配置一次：
+
+```bash
+git config --local vibeSoc.localConfigRoot /persistent/path/vibe_soc-local-config
+```
+
+之后新 worktree 会软链接该目录中的白名单配置。也可仅对单次命令设置 `VIBE_SOC_LOCAL_CONFIG_ROOT`。目标 worktree 已存在的配置不会被覆盖；需要重新同步时，先明确处理对应的本地文件，再运行 `scripts/sync_local_configs.sh <target-worktree> [source-worktree]`。
+
 push 后 workflow 会自动创建 PR，并以 squash 方式启用 GitHub auto-merge。`auto-pr-automerge` 只接受同仓库的 `codex/**`、`feature/**`、`fix/**` 分支；手动触发也不能把 Fork 或其他前缀送入自动合并路径。
 
 要让内部 PR 无需逐次批准即可触发 `pull_request` CI，需要创建一个仓库专用 GitHub App：
