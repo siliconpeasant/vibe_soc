@@ -25,7 +25,6 @@ module npu_requant (
     reg signed [63:0] round_add;
     reg signed [63:0] zp_ext;
     reg signed [63:0] relu6_ext;
-
     always @* begin
         product = $signed(post_bias_i) * $signed(quant_mult_i);
         rounded = 64'sd0;
@@ -57,10 +56,10 @@ module npu_requant (
             end
         end
 
-        if (activated > 64'sd127) begin
+        if (!activated[63] && (|activated[62:7])) begin
             out_byte_o = 8'h7f;
             sat_clip_o = 1'b1;
-        end else if (activated < -64'sd128) begin
+        end else if (activated[63] && !(&activated[62:7])) begin
             out_byte_o = 8'h80;
             sat_clip_o = 1'b1;
         end else begin

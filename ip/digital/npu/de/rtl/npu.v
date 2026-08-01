@@ -104,15 +104,11 @@ module npu #(
         end
     endgenerate
 
-    assign reg_region      = (mm_addr < 16'h0100);
-    assign act_window      = (mm_addr >= ACT_BASE_ADDR) &&
-                             (mm_addr <= 16'h013f);
-    assign wgt_window      = (mm_addr >= WGT_BASE_ADDR) &&
-                             (mm_addr <= 16'h023f);
-    assign out_window      = (mm_addr >= OUT_BASE_ADDR) &&
-                             (mm_addr <= 16'h033f);
-    assign bias_window     = (mm_addr >= BIAS_BASE_ADDR) &&
-                             (mm_addr <= 16'h043f);
+    assign reg_region      = (mm_addr[15:8] == 8'h00);
+    assign act_window      = (mm_addr[15:6] == ACT_BASE_ADDR[15:6]);
+    assign wgt_window      = (mm_addr[15:6] == WGT_BASE_ADDR[15:6]);
+    assign out_window      = (mm_addr[15:6] == OUT_BASE_ADDR[15:6]);
+    assign bias_window     = (mm_addr[15:6] == BIAS_BASE_ADDR[15:6]);
     assign byte_spm_window = act_window || wgt_window || out_window;
     assign spm_window      = byte_spm_window || bias_window;
     assign spm_stall       = mm_valid && spm_window && busy;

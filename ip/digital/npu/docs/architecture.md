@@ -22,7 +22,7 @@ The top module remains `npu`, and the local memory-mapped target interface remai
 |---|---|---|---|---|
 | `npu` top | Evolved in-house RTL IP | `ip/digital/npu` | Required reusable digital IP with a stable wrapper-friendly target interface | Existing dot-product RTL must be updated after doc approval |
 | Register/control target | Existing simple memory-mapped command/data interface | In-house | Avoids binding the IP to APB/AHB/AXI; wrapper can be added later | APB/AHB wrapper protocol remains a SoC integration task |
-| Scratchpad storage | Small software-managed activation, weight, output, and bias windows | In-house RTL inferred memory first | Matches KB guidance for predictable tensor access and avoids cache/tag complexity | Replace inferred memory with compiler SRAM during synthesis/PD if a foundry macro is selected |
+| Scratchpad storage | Small software-managed activation, weight, output, and bias windows | In-house resettable register arrays with implementation-only byte-lane banking | Matches KB guidance for predictable tensor access, reduces behavioral read-mux fan-in, and avoids cache/tag complexity | Replace the internal boundary with compiler SRAM during synthesis/PD if a foundry macro is selected |
 | Load/store sequencer | Internal descriptor-driven scratchpad address generator | In-house | Provides DMA-style local scheduling without making this IP an external bus master | If true external DMA is required, bus protocol, burst, ordering, and error semantics must be architected before RTL |
 | Compute datapath | 4-lane signed INT8 MAC with signed 32-bit accumulation | In-house | Tiny scope, complete NPU role coverage, deterministic verification | Can scale to more lanes only after doc/RTL reopen |
 | Quantization/output | INT32 bias, signed INT32 multiplier, rounding/right shift, output zero point, optional clamp, signed INT8 saturation | In-house | Aligns minimal fused-layer behavior with KB evidence | True per-output multiplier arrays are future scope |
@@ -50,7 +50,7 @@ This is not a convolution engine, systolic array, autonomous external-memory acc
 |---|---|
 | Process/node | No foundry or node is selected at architecture stage. RTL must be portable Verilog-2005. |
 | Standard cells | Generic synchronous logic using single `clk`; no hard macros, gated clocks, latches, or process-specific cells in initial RTL. |
-| Memories | Scratchpads initially inferred from flip-flop/register-array or small SRAM-friendly RTL. Replacement with SRAM compiler macro is deferred until process selection. |
+| Memories | Scratchpads initially use resettable register arrays striped over four byte-lane banks without changing the software-visible windows. Replacement with SRAM compiler macro is deferred until process selection. |
 | Voltage domains | One digital voltage domain. No level shifters or isolation cells inside `npu`. |
 | Clocks | One input clock `clk`; no internally generated clocks. |
 | Reset | One active-low asynchronous reset `rst_n`, synchronized/deassertion assumptions documented for SoC integration. |
@@ -66,7 +66,7 @@ The doc and RTL stages should partition `npu` into these internal roles, even if
 |---|---|
 | Memory-mapped frontend | Decodes register and scratchpad aperture accesses, returns read data, ready, and error response. |
 | Register file | Holds control, descriptor, quantization, status, interrupt, and error state. |
-| Scratchpad | Software-managed activation, weight, output, and bias storage. Target sizes: 64 bytes activation, 64 bytes weight, 64 bytes output, and 16 signed INT32 bias words. |
+| Scratchpad | Software-managed activation, weight, output, and bias storage. Target sizes: 64 bytes activation, 64 bytes weight, 64 bytes output, and 16 signed INT32 bias words. Byte-addressed arrays may use four internal lane banks to reduce read-mux fan-in. |
 | Load/store sequencer | Generates internal scratchpad reads/writes, supports activation stride, weight row stride, output stride, and bias indexing, and detects out-of-range descriptors. |
 | MAC datapath | Four signed INT8 lanes, signed 16-bit products, signed INT32 accumulator, optional accumulator seed. |
 | Bias/requantize/activate | Adds INT32 bias, applies fixed-point multiplier and shift, adds zero point, clamps activation, and saturates to signed INT8. |
