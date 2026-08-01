@@ -58,7 +58,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 
 [mcp_servers.soc-openroad]
-enabled = true
+enabled = false
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-openroad/mcp_server.py"]
@@ -66,7 +66,7 @@ startup_timeout_sec = 120
 tool_timeout_sec = 7500
 
 [mcp_servers.openroad-mcp]
-enabled = true
+enabled = false
 command = "/usr/bin/env"
 cwd = "."
 args = ["-u", "PYTHONHOME", "-u", "PYTHONPATH", "FASTMCP_SHOW_SERVER_BANNER=false", "LOG_LEVEL=ERROR", ".openroad-mcp-venv/bin/openroad-mcp", "--log-level", "ERROR"]
