@@ -65,7 +65,7 @@ This cwd is a silicon-crew SoC project. For RTL creation or material refactoring
 - Use only `docs/`, `de/rtl/`, `de/syn/`, `de/run/`, `dv/tb/`, and `dv/sim/` artifact roots.
 - A stage is done only when artifacts exist and every recorded check passes. Never fabricate simulation PASS or timing WNS/TNS.
 - Use `soc-reviewer` for post-stage, pre-commit, or validation-evidence audit; it reports findings only and does not update `pipeline_state.json`.
-- `crg-gen` is currently not registered; do not schedule CRG RTL generation until it is available.
+- CRG RTL generation uses the registered `crg-gen.crg_gen` MCP tool from an approved Excel config; do not hand-write clock/reset trees when the generator applies.
 
 Before acting on an RTL workflow, read the relevant full rules from `{rules}`. Pipeline dispatch requires `01_swarm_flow.md`, `02_toolchain.md`, and `05_pipeline_state.md`; review or commit-readiness work also requires `13_review_gate.md`; read coding style or exceptions only when applicable.
 """

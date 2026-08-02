@@ -172,9 +172,8 @@ For RTL/verification/synthesis work, stage agents must call the registered MCP s
 | YAML regfile RTL | `yml2reg` | `yml2reg` |
 | Excel regfile RTL | `excel-yml-gen` | `excel_yml_gen` |
 | CRG requirement → design tables | `crg-req-to-design` | `crg_req_to_design` |
+| CRG Excel → RTL / SDC | `crg-gen` | `crg_gen` |
 | clock/reset diagrams | `cr-tree-diag-gen` | `cr_tree_diag_gen*` |
-
-`crg-gen` is not yet registered; do not schedule CRG RTL generation workflows until it is available.
 
 ## Coding and style defaults
 
