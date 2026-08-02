@@ -2,7 +2,7 @@
 XRUN_EXE    ?= xrun
 SIMVISION_EXE ?= simvision
 VERDI_EXE   ?= verdi
-XCELIUM_WORK := $(SIM_DIR)/xcelium.d
+XCELIUM_WORK := $(BUILD_DIR)/xcelium.d
 
 XCELIUM_GUI_FLAGS :=
 ifeq ($(GUI),1)
@@ -12,12 +12,12 @@ endif
 COMP_CMD = $(XRUN_EXE) $(XCELIUM_FLAGS) -compile \
            -timescale $(TIMESCALE) -f $(FILELIST) \
            -xmlibdirname $(XCELIUM_WORK) $(USER_COMPILE_FLAGS) \
-           -l $(SIM_DIR)/compile.log
+           -l $(BUILD_DIR)/compile.log
 ELAB_CMD = $(XRUN_EXE) $(XCELIUM_FLAGS) -elaborate \
            -top $(TOP_MODULE) -xmlibdirname $(XCELIUM_WORK) \
-           -l $(SIM_DIR)/elab.log
+           -l $(BUILD_DIR)/elab.log
 SIM_CMD  = $(XRUN_EXE) -R -xmlibdirname $(XCELIUM_WORK) \
            $(XCELIUM_SIM_FLAGS) $(XCELIUM_GUI_FLAGS) $(USER_SIM_FLAGS)
 
-VERDI_CMD     = $(VERDI_EXE) $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
+VERDI_CMD     = cd $(BUILD_DIR) && $(VERDI_EXE) $(VERDI_FLAGS) -top $(TOP_MODULE) -f $(FILELIST) &
 BUILD_OUTPUT = $(XCELIUM_WORK)
