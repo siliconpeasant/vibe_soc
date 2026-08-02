@@ -64,3 +64,7 @@ tmp/
 
 # Machine-local Claude settings (MCP enable list / permissions)
 .claude/settings.local.json
+
+# Local-only chip subsystems (do not commit)
+/chip/crg_ss/
+/chip/io_ss/
