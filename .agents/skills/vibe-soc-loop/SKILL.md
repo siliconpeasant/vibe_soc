@@ -5,27 +5,29 @@ description: Route one-sentence vibe_soc feature, RTL, integration, verification
 
 # vibe_soc loop
 
-Turn the request into one outcome-first execution packet, then complete it with
-the fewest useful tool loops.
+Turn the request into one outcome-first packet with the fewest useful tool loops.
 
-1. Resolve the project root and target workspace. Run
+1. Resolve root and workspace, then run
    `python3 <root>/.agents/scripts/loop_context.py <workspace> --format text`.
-   Use `--mode merge` only when preparing delivery; never lower the returned
-   mode or scope.
-2. Treat the packet's owner, selected paths, rules, checks, cache, and next
-   action as authoritative. Read only listed rules. The packet already contains
-   compact state; query full state only after failure or when detailed evidence
-   is required.
-3. Dispatch one matching owner in `dev`. Use `soc-pipeline` only for
-   multi-stage `merge/signoff` closure. Deterministic generators and registered
-   MCP tools remain executors, not extra coordinator layers.
-4. Complete allowed local edits and validation without pausing. Stop only for a
-   failed required check, missing registered capability/evidence, destructive or
-   external action, scope expansion, or an unresolved design choice that changes
-   an approved contract.
-5. In `dev`, leave the owned stage open and report mode, files, checks, and next
-   delivery action. In delivery modes, close only stale stages, run the mapped
-   reviewer once, then verify readiness with the router.
+   Request `--mode merge` only for delivery. Never lower returned mode or scope.
+2. Treat selected paths, owner, rules, checks, execution budget, cache, and next
+   action as authoritative. Read only listed rules. Use the packet's compact state;
+   load full state or logs only to diagnose a failure.
+3. Dispatch one matching owner in `dev`. Use `soc-pipeline` only for multi-stage
+   delivery. Parallelize only independent work, normally `verif` and `syn` after
+   current RTL evidence exists, and stay within `max_parallel_owners`.
+4. Before listed resource-heavy checks, perform one preflight for registered
+   capability, required inputs, and tool/license availability. Record an
+   unavailable lane once, skip only that blocked check, and continue independent
+   available work. Never blind-retry a missing license.
+5. Reuse every fresh stage. Keep full logs in artifact paths; return compact
+   evidence: check status, run ID, source fingerprint, artifact paths, and only a
+   short failure tail. A changed fingerprint invalidates reuse.
+6. Classify a failure before retrying. Respect the same-failure retry limit and
+   one review run per unchanged snapshot. After the limit, stop with the blocker,
+   evidence path, and concrete remediation instead of looping.
+7. In `dev`, leave the owned stage open. In `merge/signoff`, close only stale
+   stages, run the mapped reviewer once, then re-run the router readiness check.
 
 Do not hand-write generated tops/CRG logic, bypass registered EDA tools, add a
 review/signoff pipeline stage, or narrate routine tool calls.

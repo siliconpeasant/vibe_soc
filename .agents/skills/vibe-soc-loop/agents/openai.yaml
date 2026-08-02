@@ -1,4 +1,4 @@
 interface:
   display_name: "Vibe Soc Loop"
-  short_description: "Coordinate vibe_soc staged SoC loop and review work"
-  default_prompt: "Use the vibe_soc loop workflow for this task."
+  short_description: "Run the smallest risk-routed vibe_soc delivery loop"
+  default_prompt: "Use the lightweight-first vibe_soc Loop, reuse fresh evidence, and preflight heavy checks."

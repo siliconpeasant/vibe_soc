@@ -30,6 +30,10 @@ class LoopPromptBudgetTest(unittest.TestCase):
             result["bundles"]["dev_rtl"]["budget"],
         )
         self.assertLessEqual(
+            result["bundles"]["delivery_merge_router"]["words"],
+            result["bundles"]["delivery_merge_router"]["budget"],
+        )
+        self.assertLessEqual(
             result["bundles"]["delivery_signoff_router"]["words"],
             result["bundles"]["delivery_signoff_router"]["budget"],
         )

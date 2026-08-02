@@ -29,6 +29,8 @@ REQUIRED = {
         "fewest useful tool loops",
         "compact state",
         "one matching owner",
+        "preflight",
+        "same-failure retry limit",
     ),
     ".agents/skills/soc-pipeline/SKILL.md": ("`merge`", "`signoff`", "registered checks"),
     ".agents/skills/soc-openroad/SKILL.md": ("PD handoff summary", "work_local"),
