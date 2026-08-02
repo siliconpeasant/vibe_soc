@@ -1,0 +1,42 @@
+name: IO_TOP
+bytes: 4
+offset: 0x000
+registers:
+  - name: pad_ctrl_pad_gpio0
+    description: "pad control register pad_gpio0"
+    offset: 0x0
+    fields:
+      - { name: pad_gpio0_ie, lsb: 2, bits: 1, access: rw, reset: 0x1, description: "pad control input enable"}
+      - { name: pad_gpio0_ds, lsb: 4, bits: 4, access: rw, reset: 0x4, description: "pad control driver strength"}
+      - { name: pad_gpio0_st, lsb: 12, bits: 2, access: rw, reset: 0x0, description: "pad control Schmitt trigger enable. ST=1 enables Schmitt trigger input function"}
+      - { name: pad_gpio0_pu, lsb: 0, bits: 1, access: rw, reset: 0x1, description: "pad control pull up"}
+      - { name: pad_gpio0_pd, lsb: 1, bits: 1, access: rw, reset: 0x1, description: "pad control pull down"}
+  - name: pad_ctrl_pad_gpio1
+    description: "pad control register pad_gpio1"
+    offset: 0x4
+    fields:
+      - { name: pad_gpio1_ie, lsb: 2, bits: 1, access: rw, reset: 0x1, description: "pad control input enable"}
+      - { name: pad_gpio1_ds, lsb: 4, bits: 4, access: rw, reset: 0x4, description: "pad control driver strength"}
+      - { name: pad_gpio1_st, lsb: 12, bits: 2, access: rw, reset: 0x0, description: "pad control Schmitt trigger enable. ST=1 enables Schmitt trigger input function"}
+      - { name: pad_gpio1_pu, lsb: 0, bits: 1, access: rw, reset: 0x1, description: "pad control pull up"}
+      - { name: pad_gpio1_pd, lsb: 1, bits: 1, access: rw, reset: 0x1, description: "pad control pull down"}
+  - name: pad_ctrl_pad_clk
+    description: "pad control register pad_clk"
+    offset: 0x8
+    fields:
+      - { name: pad_clk_ie, lsb: 2, bits: 1, access: rw, reset: 0x1, description: "pad control input enable"}
+      - { name: pad_clk_ds, lsb: 4, bits: 4, access: rw, reset: 0x4, description: "pad control driver strength"}
+      - { name: pad_clk_func_sel, lsb: 8, bits: 2, access: rw, reset: 0x0, description: "pad control function select"}
+      - { name: pad_clk_st, lsb: 12, bits: 2, access: rw, reset: 0x0, description: "pad control Schmitt trigger enable. ST=1 enables Schmitt trigger input function"}
+      - { name: pad_clk_pu, lsb: 0, bits: 1, access: rw, reset: 0x0, description: "pad control pull up"}
+      - { name: pad_clk_pd, lsb: 1, bits: 1, access: rw, reset: 0x0, description: "pad control pull down"}
+  - name: pad_ctrl_pad_rst_n
+    description: "pad control register pad_rst_n"
+    offset: 0xc
+    fields:
+      - { name: pad_rst_n_ie, lsb: 2, bits: 1, access: rw, reset: 0x1, description: "pad control input enable"}
+      - { name: pad_rst_n_ds, lsb: 4, bits: 4, access: rw, reset: 0x4, description: "pad control driver strength"}
+      - { name: pad_rst_n_func_sel, lsb: 8, bits: 2, access: rw, reset: 0x0, description: "pad control function select"}
+      - { name: pad_rst_n_st, lsb: 12, bits: 2, access: rw, reset: 0x0, description: "pad control Schmitt trigger enable. ST=1 enables Schmitt trigger input function"}
+      - { name: pad_rst_n_pu, lsb: 0, bits: 1, access: rw, reset: 0x1, description: "pad control pull up"}
+      - { name: pad_rst_n_pd, lsb: 1, bits: 1, access: rw, reset: 0x1, description: "pad control pull down"}

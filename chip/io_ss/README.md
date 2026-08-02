@@ -34,3 +34,12 @@ make lint     # 语法检查
 make comp     # 编译仿真
 make sim      # 运行仿真
 ```
+
+## Generate + compile (current demo)
+
+See `docs/compile_notes.md` for generator issues and stub strategy.
+
+```bash
+# RTL top: io_top_top
+# make from repo root via MCP: soc_comp MODULE=chip/io_ss top=io_top_top
+```

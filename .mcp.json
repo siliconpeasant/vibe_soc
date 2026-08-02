@@ -56,6 +56,14 @@
         ".agents/skills/crg-gen/mcp_server.py"
       ]
     },
+    "silicon-crew:io-top-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/io-top-gen/mcp_server.py"
+      ]
+    },
     "silicon-crew:cr-tree-diag-gen": {
       "type": "stdio",
       "command": "sh",

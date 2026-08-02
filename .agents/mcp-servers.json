@@ -53,6 +53,13 @@
       "tool_timeout_sec": 600
     },
     {
+      "name": "io-top-gen",
+      "script": ".agents/skills/io-top-gen/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 600
+    },
+    {
       "name": "cr-tree-diag-gen",
       "script": ".agents/skills/cr-tree-diag-gen/mcp_server.py",
       "default_enabled": true,

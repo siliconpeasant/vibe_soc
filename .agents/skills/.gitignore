@@ -1,4 +1,3 @@
 # Local-only skill installations. Keep these out of repository commits.
 .gitignore
 /upf-gen/
-/io-top-gen/

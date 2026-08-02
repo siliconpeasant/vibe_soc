@@ -59,6 +59,14 @@ cwd = "."
 startup_timeout_sec = 120
 tool_timeout_sec = 600
 
+[mcp_servers.silicon-crew-io-top-gen]
+enabled = true
+command = "/bin/sh"
+args = ["scripts/mcp_python.sh", ".agents/skills/io-top-gen/mcp_server.py"]
+cwd = "."
+startup_timeout_sec = 120
+tool_timeout_sec = 600
+
 [mcp_servers.silicon-crew-cr-tree-diag-gen]
 enabled = true
 command = "/bin/sh"
