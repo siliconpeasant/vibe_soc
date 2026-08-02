@@ -48,8 +48,8 @@ Assumptions:
   are not process-closed. Their native packages must document macro/analog replacement points.
 - DFT, scan, MBIST, LBIST, and low-power behavior are carried as OpenTitan interface assumptions
   only. They are not signed off by this split.
-- `crg-gen` is not registered in the current tool contract. Do not schedule generated CRG RTL.
-  Clock/reset work must stop at architecture/doc handoff or use existing RTL only.
+- `crg-gen` is registered as `crg-gen.crg_gen`. Prefer generator-driven CRG RTL from an approved
+  Excel config; do not hand-write clock/reset trees when the generator applies.
 
 Design-critical blockers before physical implementation:
 
@@ -95,8 +95,8 @@ Each peripheral package must document its outgoing IRQs and alert lines before m
 
 Clock/reset ownership is initially preserved through existing OpenTitan `clkmgr`, `rstmgr`, AST, and
 top-level reset connections. CDC/RDC boundaries are frozen at the current OpenTitan interfaces until
-the relevant package doc stage owns them. Because `crg-gen` is not registered, do not schedule
-generated CRG RTL or generated clock/reset tree replacement.
+the relevant package doc stage owns them. Generated CRG replacement must go through registered
+`crg-gen.crg_gen` from an approved Excel config rather than ad-hoc hand edits.
 
 ## Seven-Step Split Plan
 
@@ -359,7 +359,7 @@ already proves integration viability. Replacement options must be documented bef
 - Replace Ibex only with a CPU subsystem architecture update covering interrupt, debug, boot ROM,
   privilege, and software ABI impact.
 - Replace flash/OTP/ROM/AST only after process macro and analog dependencies are approved.
-- Replace CRG only when a registered CRG flow exists. `crg-gen` is not registered now.
+- Replace CRG only through the registered `crg-gen.crg_gen` flow from an approved Excel config.
 
 ## Blockers and Required Decisions
 
@@ -369,7 +369,7 @@ Design-critical blockers:
   reduced UART/bootstrap-focused subset.
 - Physical technology/process and macro/analog strategy are unresolved.
 - Native address map and interrupt inventory are not approved.
-- Clock/reset generation strategy is unresolved, and `crg-gen` is not registered.
+- Clock/reset generation strategy is unresolved; when generating CRG RTL use registered `crg-gen.crg_gen`.
 - Bootstrap software image for `chip_sw_uart_tx_rx_bootstrap` is not available in the current
   documented baseline.
 - Security boundary for debug, ROM, LC, key manager, OTP, alert escalation, entropy, and RACL is not

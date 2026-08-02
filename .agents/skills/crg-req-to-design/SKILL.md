@@ -15,4 +15,4 @@ Recognized concepts include subsystem/IP, clock/reset signal name, frequency/not
 
 Review PLL/divider recommendations and missing-frequency signals before treating the design table as approved. Feed reviewed tables to `cr-tree-diag-gen` for visualization.
 
-This Skill creates design tables only. It does not generate CRG RTL; that requires the separate, currently unregistered `crg-gen` server.
+This Skill creates design tables only. It does not generate CRG RTL; after design tables are reviewed, use the registered `crg-gen.crg_gen` tool for RTL/SDC generation.

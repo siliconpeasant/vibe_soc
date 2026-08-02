@@ -48,6 +48,14 @@
         ".agents/skills/crg-req-to-design/mcp_server.py"
       ]
     },
+    "silicon-crew:crg-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/crg-gen/mcp_server.py"
+      ]
+    },
     "silicon-crew:cr-tree-diag-gen": {
       "type": "stdio",
       "command": "sh",
