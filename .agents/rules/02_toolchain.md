@@ -9,9 +9,11 @@ Use logical MCP names; host namespaces may differ.
 | physical design | `soc-openroad.soc_openroad_*` |
 | YAML or Excel registers | `yml2reg.yml2reg`, `excel-yml-gen.excel_yml_gen` |
 | CRG requirements/diagrams | `crg-req-to-design.*`, `cr-tree-diag-gen.*` |
+| CRG Excel → RTL / SDC | `crg-gen.crg_gen` |
 
 Only schedule tools currently registered in the context. In particular, do not
-substitute hand-written output for an unavailable `crg-gen` or IO generator.
+substitute hand-written clock/reset trees when `crg-gen.crg_gen` applies, and do
+not invent an unregistered IO generator.
 
 Execution invariants:
 

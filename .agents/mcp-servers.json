@@ -46,6 +46,13 @@
       "tool_timeout_sec": 300
     },
     {
+      "name": "crg-gen",
+      "script": ".agents/skills/crg-gen/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 600
+    },
+    {
       "name": "cr-tree-diag-gen",
       "script": ".agents/skills/cr-tree-diag-gen/mcp_server.py",
       "default_enabled": true,

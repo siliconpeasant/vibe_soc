@@ -501,7 +501,7 @@ CRG：
 
 - 需求表到设计表：使用 `crg-req-to-design` 生成 `clock_design.xlsx`、`reset_design.xlsx`、`crg_report.txt`。
 - 设计表到图：使用 `cr-tree-diag-gen` 生成 Draw.io/Excalidraw 拓扑图。
-- 当前 `crg-gen` 未注册，不安排 CRG RTL 自动生成。
+- Excel 配置到 CRG RTL/SDC：使用已注册的 `crg-gen.crg_gen`（输出建议落到模块 `de/run/crg_gen/` 再整理进 `de/rtl` / `de/syn`）。
 
 ## 仓库卫生
 
