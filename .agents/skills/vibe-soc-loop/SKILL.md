@@ -12,8 +12,8 @@ Turn the request into one outcome-first packet with the fewest useful tool loops
    Request `--mode merge` only for delivery. Never lower returned mode or scope.
 2. Treat paths, owner, rules, `required_reads`, checks, budget, cache, and next
    action as authoritative. Read listed `rules`; also Read each `required_reads`
-   path before owned edits (RTL full coding style injects this way). Use compact
-   state; load full state/logs only on failure.
+   path before owned edits (RTL full coding style injects this way). Use the
+   packet's compact state; load full state/logs only on failure.
 3. Dispatch one matching owner in `dev`. Use `soc-pipeline` only for multi-stage
    delivery. Parallelize only independent work, normally `verif` and `syn` after
    current RTL evidence exists, and stay within `max_parallel_owners`.
