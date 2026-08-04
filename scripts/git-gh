@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Wrapper: run git with GitHub-friendly env (proxy + clean ssh libs).
+# Usage: scripts/git-gh push / scripts/git-gh fetch / scripts/git-gh status
+set -euo pipefail
+_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)
+# shellcheck disable=SC1091
+. "$_root/scripts/github_git_env.sh" >/dev/null
+exec git "$@"
