@@ -82,4 +82,4 @@ emitted run ID and fingerprint to `update_state.py` when closing `verif` or
 - When lint reports any real rule violation at error or warning severity, first query the local SoC AI knowledge base (`soc-ai-kb`) using the rule/tag name and diagnostic text. If the knowledge base has no relevant guidance, reason from the tool report, RTL, and local coding rules.
 - Lint fixes are review-gated: propose the root cause, supporting report lines, and a concrete patch plan to the user. Do not apply a final RTL fix, waiver, or severity downgrade until the user confirms. Temporary repro edits must be clearly marked and restored before any commit.
 
-For Verilog code review, read `references/verilog_coding_style.md` and report mandatory, recommended, and advisory findings with file/line evidence.
+For Verilog code review, read `.agents/rules/04_verilog_coding_style.md` (project coding rule; companion short contract is `.agents/rules/04_coding_style.md`) and report mandatory (M), should (S), and recommend (R) findings with file/line evidence.

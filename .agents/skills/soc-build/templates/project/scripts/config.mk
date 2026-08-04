@@ -4,6 +4,12 @@ SHELL := /bin/bash
 .SHELLFLAGS := -o pipefail -c
 TMPDIR := /tmp
 export TMPDIR
+
+# Prefer the project Verdi wrapper so accidental root-CWD launches cannot
+# drop novas.conf / verdiLog into the repository root.
+ifneq ($(wildcard $(PROJECT_ROOT)/scripts/bin),)
+  export PATH := $(PROJECT_ROOT)/scripts/bin:$(PATH)
+endif
 PYTHON3 ?= $(shell for name in python3.12 python3.11 python3.10 python3.9 python3.8 python3; do \
   path=$$(command -v $$name 2>/dev/null); \
   if [ -n "$$path" ] && env -u PYTHONHOME -u PYTHONPATH TMPDIR=/tmp $$path \
