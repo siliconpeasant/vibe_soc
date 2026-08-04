@@ -42,6 +42,18 @@ asking. Confirm external writes, destructive actions, scope expansion, and
 choices that alter an unapproved interface, clock/reset behavior, address map,
 safety boundary, or waiver.
 
+### Git publish policy (default)
+
+Do **not** auto-publish. Default after a task is local only: edit, check, and
+report results. Do **not** `git commit`, `git push`, open a PR, or enable
+auto-merge unless the user **explicitly** asks (for example: 上传, push, 提交,
+commit, 开 PR, open PR, 上库).
+
+- Local commit without push still requires an explicit commit/提交 request.
+- Push implies remote visibility; `codex/**`, `feature/**`, and `fix/**`
+  branches trigger `auto-pr-automerge` after push — only push when asked.
+- One approval is not a blanket license for later publishes.
+
 ## SoC Loop
 
 Use `vibe-soc-loop` for feature, RTL, integration, verification, synthesis, and
@@ -61,9 +73,11 @@ Never claim completion from stale or fabricated evidence.
 
 Run the closest checker for non-EDA changes. MCP/runtime changes require focused
 Python tests; commit-ready work requires `make check-repo` or its non-EDA
-equivalent. Start every task on a unique branch from latest `origin/main`, using
-`prepare_task_worktree.sh` for a dirty checkout or `prepare_task_branch.sh` for a
-clean one. Never reuse a merged branch.
+equivalent.
 
-Keep commits focused with short imperative summaries. PR notes state intent,
-affected modules, checks, evidence, and tool/license assumptions.
+When the user **does** request publish, start from a unique branch off latest
+`origin/main`, using `prepare_task_worktree.sh` for a dirty checkout or
+`prepare_task_branch.sh` for a clean one. Never reuse a merged branch. Keep
+commits focused with short imperative summaries. PR notes state intent, affected
+modules, checks, evidence, and tool/license assumptions. Until that request,
+leave work uncommitted or unpushed as appropriate and summarize what is local.

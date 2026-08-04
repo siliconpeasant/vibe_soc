@@ -83,7 +83,13 @@ class LoopContextCase(unittest.TestCase):
         self.assertNotIn("soc_syn", result["required_checks"])
         self.assertNotIn("soc_comp", result["required_checks"])
         self.assertIn("targeted_soc_sim_or_soc_comp", result["required_checks"])
+        self.assertEqual(result["owner"], "soc-rtl-designer")
+        self.assertIn(".agents/rules/04_coding_style.md", result["rules"])
+        self.assertIn(
+            ".agents/rules/04_verilog_coding_style.md", result["required_reads"]
+        )
         actions = " ".join(result["next_actions"])
+        self.assertIn("required coding-style", actions)
         self.assertIn("otherwise soc_comp", actions)
         self.assertNotIn("compile, and simulation", actions)
         self.assertEqual(result["execution"]["profile"], "light")
@@ -99,6 +105,16 @@ class LoopContextCase(unittest.TestCase):
             "record_once_and_continue_independent_checks_only",
         )
         self.assertLess(len(json.dumps(result)), 4096)
+
+    def test_doc_only_dev_skips_rtl_coding_style_injection(self) -> None:
+        result = self.context(["ip/digital/demo/docs/design.md"])
+        self.assertEqual(result["owner"], "soc-doc-engineer")
+        self.assertEqual(result["required_reads"], [])
+        self.assertNotIn(".agents/rules/04_coding_style.md", result["rules"])
+        self.assertNotIn(
+            ".agents/rules/04_verilog_coding_style.md",
+            result.get("required_reads", []),
+        )
 
     def test_filelist_escalates_to_merge(self) -> None:
         result = self.context(["ip/digital/demo/de/rtl/filelist.f"])

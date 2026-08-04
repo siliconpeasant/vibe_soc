@@ -553,6 +553,7 @@ def build_context(
     stale = [stage for stage, info in freshness.items() if not info["fresh"]]
     reused = [stage for stage, info in freshness.items() if info["fresh"]]
     rules = list(mode_policy["rules"]) if governed else []
+    required_reads: list[str] = []
     needed_stages = set(affected_stage_list)
     if mode in {"merge", "signoff"}:
         needed_stages.update(stale)
@@ -563,7 +564,12 @@ def build_context(
     ):
         if stage in needed_stages and rule not in rules:
             rules.append(rule)
-    if any(Path(path).suffix.lower() in RTL_SUFFIXES for path in paths):
+    # RTL write/review work: inject short style into the packet instruction set,
+    # and require a Read of the full coding standard (too large for budget dump).
+    rtl_work = "rtl" in needed_stages or any(
+        Path(path).suffix.lower() in RTL_SUFFIXES for path in paths
+    )
+    if rtl_work:
         rules.extend(
             rule
             for rule in (
@@ -572,6 +578,9 @@ def build_context(
             )
             if rule not in rules
         )
+        full_style = ".agents/rules/04_verilog_coding_style.md"
+        if full_style not in required_reads:
+            required_reads.append(full_style)
 
     if not governed:
         required_checks = ["closest_non_eda_validation"]
@@ -608,6 +617,7 @@ def build_context(
             else "run targeted soc_sim when a meaningful test exists; otherwise soc_comp"
         )
         actions = [
+            "read required coding-style files before editing RTL",
             "start or keep rtl in_progress",
             "run registered lint and RTL quality checks",
             behavior_action,
@@ -679,7 +689,10 @@ def build_context(
         "ignored_paths": ignored_paths[:20],
         "detected_impacts": sorted(impacts),
         "rules": rules,
-        "rule_set_fingerprint": _rule_set_fingerprint(repo, rules),
+        "required_reads": required_reads,
+        "rule_set_fingerprint": _rule_set_fingerprint(
+            repo, rules + required_reads
+        ),
         "required_checks": required_checks,
         "checks_to_run": checks_to_run,
         "execution": {
@@ -734,6 +747,10 @@ def _print_text(context: dict) -> None:
     print(f"Delivery ready: {'yes' if context['delivery_ready'] else 'no'}")
     print("Reasons       : " + "; ".join(context["reasons"]))
     print("Rules         : " + (", ".join(context["rules"]) or "none"))
+    print(
+        "Required reads: "
+        + (", ".join(context.get("required_reads") or []) or "none")
+    )
     print("Checks        : " + ", ".join(context["required_checks"]))
     print("Run now       : " + ", ".join(context["checks_to_run"]))
     preflight = execution["preflight"]
