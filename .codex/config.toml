@@ -25,6 +25,22 @@ args = ["scripts/mcp_python.sh", ".agents/skills/yml2reg/mcp_server.py"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
+[mcp_servers.gen-asic-memmap]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/gen-asic-memmap/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.gen-memwrap]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/gen-memwrap/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
 [mcp_servers.excel-yml-gen]
 enabled = true
 command = "/bin/sh"
@@ -57,6 +73,14 @@ args = ["scripts/mcp_python.sh", ".agents/skills/crg-gen/mcp_server.py"]
 startup_timeout_sec = 120
 tool_timeout_sec = 600
 
+[mcp_servers.io-top-gen]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/io-top-gen/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 600
+
 [mcp_servers.cr-tree-diag-gen]
 enabled = true
 command = "/bin/sh"
@@ -64,6 +88,14 @@ cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/cr-tree-diag-gen/mcp_server.py"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
+
+[mcp_servers.noc-gen]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/noc-gen/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 600
 
 [mcp_servers.soc-openroad]
 enabled = false
@@ -78,6 +110,12 @@ enabled = false
 command = "/usr/bin/env"
 cwd = "."
 args = ["-u", "PYTHONHOME", "-u", "PYTHONPATH", "FASTMCP_SHOW_SERVER_BANNER=false", "LOG_LEVEL=ERROR", ".openroad-mcp-venv/bin/openroad-mcp", "--log-level", "ERROR"]
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+
+[mcp_servers.drawio]
+enabled = true
+url = "https://mcp.draw.io/mcp"
 startup_timeout_sec = 30
 tool_timeout_sec = 120
 

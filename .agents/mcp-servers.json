@@ -25,6 +25,20 @@
       "tool_timeout_sec": 300
     },
     {
+      "name": "gen-asic-memmap",
+      "script": ".agents/skills/gen-asic-memmap/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 300
+    },
+    {
+      "name": "gen-memwrap",
+      "script": ".agents/skills/gen-memwrap/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 300
+    },
+    {
       "name": "excel-yml-gen",
       "script": ".agents/skills/excel-yml-gen/mcp_server.py",
       "default_enabled": true,
@@ -53,11 +67,25 @@
       "tool_timeout_sec": 600
     },
     {
+      "name": "io-top-gen",
+      "script": ".agents/skills/io-top-gen/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 600
+    },
+    {
       "name": "cr-tree-diag-gen",
       "script": ".agents/skills/cr-tree-diag-gen/mcp_server.py",
       "default_enabled": true,
       "startup_timeout_sec": 120,
       "tool_timeout_sec": 300
+    },
+    {
+      "name": "noc-gen",
+      "script": ".agents/skills/noc-gen/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 600
     },
     {
       "name": "soc-openroad",
@@ -82,6 +110,13 @@
       ],
       "cwd": ".",
       "default_enabled": false,
+      "startup_timeout_sec": 30,
+      "tool_timeout_sec": 120
+    },
+    {
+      "name": "drawio",
+      "url": "https://mcp.draw.io/mcp",
+      "default_enabled": true,
       "startup_timeout_sec": 30,
       "tool_timeout_sec": 120
     }

@@ -1,244 +1,646 @@
-#!/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys
-import os
-import re
-from datetime import datetime
+"""YAML → APB / AHB / DAB regfile RTL.
+
+Register fields use the existing yml2reg port style.
+Interrupt banks follow rals_parser / Spirit XML semantics:
+
+  RAW   RO  raw irq input
+  STAT  RO  sticky status (edge/level per MODE/POLAR)
+  MASK  RW  1=masked
+  SET   WO  software set pulse
+  CLR   WO  software clear pulse
+  MODE  RW  0=edge, 1=level
+  POLAR RW  0=fall/low, 1=rise/high  (default all-1)
+
+Bus timing (rals_parser aligned):
+  APB  : wr/rd = sel & !enable & (write/!write); rdata registered
+  AHB  : address phase sample; data-phase wr/rd; rdata combinational
+  DAB  : wr=dab_write, rd=dab_read; rdata registered on read
+"""
+
+from __future__ import annotations
+
 import getpass
-import yaml
+import sys
+from datetime import datetime
+from pathlib import Path
 
-def main():
-    try:
-        para_list = sys.argv[1:]
-    except Exception as e:
-        print("Error parameters!!! unknown parameter")
-        print(e)
-        sys.exit(1)
-
-    protocol = para_list[1]
-
-    with open(para_list[0], 'r') as file:
-        data = yaml.safe_load(file)
-
-    yml2regfile(data, protocol)
+from yml_model import INTERRUPT_SUFFIXES, load_yml_model
 
 
-def yml2regfile(data, protocol):
-    fp = open(data["name"].upper()+"_"+protocol+"_regfile.v", "w")
-    print_line = []
+def _hex_int(value) -> int:
+    if value is None:
+        return 0
+    if isinstance(value, int):
+        return value
+    return int(str(value).strip(), 0)
 
-    add_header(print_line, data["name"].upper()+"_"+protocol+"_regfile.v")
 
-    print_line.append("module "+data["name"].upper()+"_"+protocol+"_regfile(")
-    if protocol == "apb":
-        print_line.append('    input           apb_clk,')
-        print_line.append('    input           apb_rst_n,')
-        print_line.append('    input           apb_sel,')
-        print_line.append('    input           apb_enable,')
-        print_line.append('    input           apb_write,')
-        print_line.append('    input   [31:0]  apb_addr, ')
-        print_line.append('    input   [31:0]  apb_wdata,')
-        print_line.append('    output          apb_ready,')
-        print_line.append('    output          apb_slverr,')
-        print_line.append('    output reg [31:0]  apb_rdata,')
-    elif protocol == "dab":
-        print_line.append('    input           dab_clk,')
-        print_line.append('    input           dab_rst_n,')
-        print_line.append('    input           dab_write,')
-        print_line.append('    input           dab_read,')
-        print_line.append('    input  [31:0]   dab_addr,')
-        print_line.append('    input  [31:0]   dab_wdata,')
-        print_line.append('    output reg [31:0]   dab_rdata,')
-        print_line.append('    output          dab_ready,')
-    elif protocol == "ahb":
-        print_line.append("    input           ahb_clk,")
-        print_line.append("    input           ahb_rst_n,")
-        print_line.append("    input           ahb_readyin,")
-        print_line.append("    input           ahb_sel,")
-        print_line.append("    input  [1:0]    ahb_trans,")
-        print_line.append("    input           ahb_write,")
-        print_line.append("    input  [2:0]    ahb_burst,")
-        print_line.append("    input  [2:0]    ahb_size,")
-        print_line.append("    input  [31:0]   ahb_addr,")
-        print_line.append("    input  [31:0]   ahb_wdata,")
-        print_line.append("    output          ahb_readyout,")
-        print_line.append("    output [1:0]    ahb_resp,")
-        print_line.append("    output reg [31:0]   ahb_rdata,")
+def _acc(field_or_reg: dict) -> str:
+    return str(field_or_reg.get("access", "RW")).upper()
 
-    for reg_info in data["registers"]:
-        for fields_info in reg_info["fields"]:
-            if fields_info["access"] in ("rw", "wo", "w1t", "wc"):
-                if fields_info["bits"] == 1:
-                    print_line.append("\toutput reg\t\t\t"+fields_info["name"]+",")
-                else:
-                    print_line.append("\toutput reg\t["+str(fields_info["bits"]-1)+":0]\t\t"+fields_info["name"]+",")
-            elif fields_info["access"] == "ro":
-                if fields_info["bits"] == 1:
-                    print_line.append("\tinput \t\t\t\t"+fields_info["name"]+",")
-                else:
-                    print_line.append("\tinput \t["+str(fields_info["bits"]-1)+":0]\t\t"+fields_info["name"]+",")
-    print_line[-1] = print_line[-1].strip(',')
-    print_line.append(");")
-    print_line.append("")
 
-    if protocol == "apb":
-        for reg_info in data["registers"]:
-            for fields_info in reg_info["fields"]:
-                if fields_info["access"] in ("rw", "wo", "w1t", "wc"):
-                    print_line.append("wire\t"+fields_info["name"]+"_wr;")
-            has_rd = any(f["access"] in ("rw", "ro") for f in reg_info["fields"])
-            if has_rd:
-                print_line.append("wire\t"+reg_info["name"]+"_rd;")
-                print_line.append("wire\t[31:0]\t"+reg_info["name"]+"_rdata;")
+def _bits(f: dict) -> int:
+    return int(f["bit_width"])
 
-        print_line.append("wire\twr_en;")
-        print_line.append("wire\trd_en;")
-        print_line.append("reg \t[31:0]\tapb_rdata_pre;")
-        print_line.append("")
-        print_line.append("assign\tapb_ready = 1'b1;")
-        print_line.append("assign\tapb_slverr = 1'b0;")
-        print_line.append("")
-        print_line.append("assign\twr_en = apb_write & !apb_enable & apb_sel;")
-        print_line.append("assign\trd_en = !apb_write & !apb_enable & apb_sel;")
-        print_line.append("")
 
-        for reg_info in data["registers"]:
-            offset_hex = hex(reg_info["offset"]).replace("0x", "")
-            for fields_info in reg_info["fields"]:
-                if fields_info["access"] in ("rw", "wo", "w1t", "wc"):
-                    print_line.append("assign\t"+fields_info["name"]+"_wr = (apb_addr[31:0] == 32'h"+offset_hex+") & wr_en;")
-            has_rd = any(f["access"] in ("rw", "ro") for f in reg_info["fields"])
-            if has_rd:
-                print_line.append("assign\t"+reg_info["name"]+"_rd = (apb_addr[31:0] == 32'h"+offset_hex+") & rd_en;")
-        print_line.append("")
+def _lsb(f: dict) -> int:
+    return int(f["bit_offset"])
 
-        for reg_info in data["registers"]:
-            for fields_info in reg_info["fields"]:
-                if fields_info["access"] in ("rw", "wo", "w1t", "wc"):
-                    print_line.append("always @(posedge apb_clk or negedge apb_rst_n)begin")
-                    print_line.append("\tif(!apb_rst_n)")
-                    print_line.append("\t\t"+fields_info["name"]+" <= "+str(fields_info["bits"])+"\'h"+str(fields_info["reset"])+";")
-                    print_line.append("\telse if ("+fields_info["name"]+"_wr == 1'b1)")
-                    print_line.append("\t\t"+fields_info["name"]+" <= apb_wdata["+str(fields_info["lsb"]+fields_info["bits"]-1)+":"+str(fields_info["lsb"])+"];")
-                    if fields_info["access"] in ("w1t", "wc"):
-                        print_line.append("\telse")
-                        print_line.append("\t\t"+fields_info["name"]+" <= "+str(fields_info["bits"])+"\'h0;")
-                    print_line.append("end")
-                    print_line.append("")
 
-        for reg_info in data["registers"]:
-            has_rd = any(f["access"] in ("rw", "ro") for f in reg_info["fields"])
-            if not has_rd:
-                continue
-            fields_bits_list = []
-            for fields_info in reg_info["fields"]:
-                fields_bits_list.append(str(fields_info["lsb"]+fields_info["bits"]-1)+":"+str(fields_info["lsb"]))
-            parsed_ranges = parse_bit_ranges(fields_bits_list)
-            full_range = generate_full_range(31)
-            missing_bits = find_missing_bits(parsed_ranges, full_range)
+def _msb(f: dict) -> int:
+    return _lsb(f) + _bits(f) - 1
 
-            for fields_info in reg_info["fields"]:
-                if fields_info["access"] in ("ro", "rw"):
-                    print_line.append("assign\t"+reg_info["name"]+"_rdata["+str(fields_info["lsb"]+fields_info["bits"]-1)+":"+str(fields_info["lsb"])+"] = "+fields_info["name"]+";")
-            for start, end in merge_consecutive_bits(missing_bits):
-                if start == end:
-                    print_line.append("assign\t"+reg_info["name"]+"_rdata["+str(start)+"] = 1'b0;")
-                else:
-                    print_line.append("assign\t"+reg_info["name"]+"_rdata["+str(end)+":"+str(start)+"] = "+str(end-start+1)+"'b0;")
-        print_line.append("")
 
-        print_line.append("assign apb_rdata_pre[31:0] = ")
-        for reg_info in data["registers"]:
-            has_rd = any(f["access"] in ("rw", "ro") for f in reg_info["fields"])
-            if has_rd:
-                print_line.append("\t"+reg_info["name"]+"_rd ? "+reg_info["name"]+"_rdata[31:0] :")
-        print_line.append("\t32'hdeadbeef;")
-        print_line.append("")
+def _reset_lit(bits: int, reset_val) -> str:
+    return f"{bits}'h{_hex_int(reset_val):x}"
 
-        print_line.append("always @(posedge apb_clk or negedge apb_rst_n)begin")
-        print_line.append("\tif(!apb_rst_n)")
-        print_line.append("\t\tapb_rdata[31:0] <= 32'h0;")
-        print_line.append("\telse")
-        print_line.append("\t\tapb_rdata[31:0] <= apb_rdata_pre[31:0];")
-        print_line.append("end")
 
-    elif protocol == "dab":
-        print_line.append("// TODO: protocol logic not yet implemented")
-        print_line.append("assign dab_rdata = 32'h0;")
-        print_line.append("assign dab_ready = 1'b1;")
-    elif protocol == "ahb":
-        print_line.append("// TODO: AHB protocol logic not yet implemented")
-        print_line.append("assign ahb_rdata = 32'h0;")
-        print_line.append("assign ahb_readyout = 1'b1;")
-        print_line.append("assign ahb_resp = 2'b00;")
+def _decl(kind: str, bits: int, name: str) -> str:
+    if bits == 1:
+        return f"    {kind} {name}"
+    return f"    {kind} [{bits - 1}:0] {name}"
 
-    print_line.append("")
-    print_line.append("endmodule")
 
-    for line in print_line:
-        fp.write(line)
-        fp.write('\n')
-
-    fp.close()
+def _port_vec(direction: str, bits: int, name: str, is_reg: bool = False) -> str:
+    kind = f"{direction} reg" if is_reg else direction
+    return _decl(kind, bits, name) + ","
 
 
 def parse_bit_ranges(ranges):
-    parsed_ranges = set()
+    parsed = set()
     for range_str in ranges:
-        a, b = map(int, range_str.split(':'))
-        parsed_ranges.update(range(min(a, b), max(a, b) + 1))
-    return parsed_ranges
+        a, b = map(int, range_str.split(":"))
+        parsed.update(range(min(a, b), max(a, b) + 1))
+    return parsed
+
 
 def generate_full_range(max_width):
     return set(range(max_width + 1))
 
+
 def find_missing_bits(parsed_ranges, full_range):
-    missing_bits = full_range - parsed_ranges
-    return missing_bits
+    return full_range - parsed_ranges
+
 
 def merge_consecutive_bits(bits_set):
     if not bits_set:
         return []
     sorted_bits = sorted(bits_set)
     ranges = []
-    start = sorted_bits[0]
-    end = sorted_bits[0]
+    start = end = sorted_bits[0]
     for b in sorted_bits[1:]:
         if b == end + 1:
             end = b
         else:
             ranges.append((start, end))
-            start = b
-            end = b
+            start = end = b
     ranges.append((start, end))
     return ranges
 
-def add_header(print_line, filename):
+
+def add_header(lines, filename):
     today = datetime.today()
     now = datetime.now()
     user = getpass.getuser()
-
     date1 = today.strftime("%Y/%m/%d")
     year = today.strftime("%Y")
     time = now.strftime("%H:%M")
+    lines.extend(
+        [
+            "// +FHDR----------------------------------------------------------------------------",
+            f"// Copyright (c) {year} Silicon Peasant.",
+            "// ALL RIGHTS RESERVED Worldwide",
+            "//         ",
+            f"// Author        : {user}",
+            f"// Email         : {user}@foxmail.com",
+            f"// Created On    : {date1} {time}",
+            f"// Last Modified : {date1} {time}",
+            f"// File Name     : {filename}",
+            "// Description   : Generated by yml2reg (APB/AHB/DAB + rals-style interrupt banks)",
+            "// ",
+            "// ---------------------------------------------------------------------------------",
+            "// Modification History:",
+            "// Date         By              Version                 Change Description",
+            "// ---------------------------------------------------------------------------------",
+            f"// {date1}   {user}     1.0                     Original",
+            "// -FHDR----------------------------------------------------------------------------",
+        ]
+    )
 
-    print_line.append("// +FHDR----------------------------------------------------------------------------")
-    print_line.append("// Copyright (c) "+year+" Silicon Peasant.")
-    print_line.append("// ALL RIGHTS RESERVED Worldwide")
-    print_line.append("//         ")
-    print_line.append("// Author        : "+user)
-    print_line.append("// Email         : "+user+"@foxmail.com")
-    print_line.append("// Created On    : "+date1+" "+time)
-    print_line.append("// Last Modified : "+date1+" "+time)
-    print_line.append("// File Name     : "+filename)
-    print_line.append("// Description   :")
-    print_line.append("// ")
-    print_line.append("// ---------------------------------------------------------------------------------")
-    print_line.append("// Modification History:")
-    print_line.append("// Date         By              Version                 Change Description")
-    print_line.append("// ---------------------------------------------------------------------------------")
-    print_line.append("// "+date1+"   "+user+"     1.0                     Original")
-    print_line.append("// -FHDR----------------------------------------------------------------------------")
+
+def _fill_unused_rdata(lines, rdata_name: str, fields: list) -> None:
+    ranges = [f"{_msb(f)}:{_lsb(f)}" for f in fields]
+    missing = find_missing_bits(parse_bit_ranges(ranges), generate_full_range(31))
+    for start, end in merge_consecutive_bits(missing):
+        if start == end:
+            lines.append(f"assign {rdata_name}[{start}] = 1'b0;")
+        else:
+            lines.append(f"assign {rdata_name}[{end}:{start}] = {end - start + 1}'b0;")
+
+
+def _emit_bus_ports(lines: list, protocol: str) -> dict:
+    """Append bus ports; return signal name map for the shared body."""
+    if protocol == "apb":
+        lines.extend(
+            [
+                "    input           apb_clk,",
+                "    input           apb_rst_n,",
+                "    input           apb_sel,",
+                "    input           apb_enable,",
+                "    input           apb_write,",
+                "    input   [31:0]  apb_addr,",
+                "    input   [31:0]  apb_wdata,",
+                "    output          apb_ready,",
+                "    output          apb_slverr,",
+                "    output reg [31:0]  apb_rdata,",
+            ]
+        )
+        return {
+            "clk": "apb_clk",
+            "rst_n": "apb_rst_n",
+            "wdata": "apb_wdata",
+            "bus_addr": "apb_addr",
+            "rdata_port": "apb_rdata",
+            "rdata_mode": "reg_always",  # registered every cycle from mux
+        }
+    if protocol == "ahb":
+        lines.extend(
+            [
+                "    input           ahb_clk,",
+                "    input           ahb_rst_n,",
+                "    input           ahb_readyin,",
+                "    input           ahb_sel,",
+                "    input  [1:0]    ahb_trans,",
+                "    input           ahb_write,",
+                "    input  [2:0]    ahb_burst,",
+                "    input  [2:0]    ahb_size,",
+                "    input  [31:0]   ahb_addr,",
+                "    input  [31:0]   ahb_wdata,",
+                "    output          ahb_readyout,",
+                "    output [1:0]    ahb_resp,",
+                "    output [31:0]   ahb_rdata,",
+            ]
+        )
+        return {
+            "clk": "ahb_clk",
+            "rst_n": "ahb_rst_n",
+            "wdata": "ahb_wdata",
+            "bus_addr": "sel_addr",  # latched address used after AHB phase pipe
+            "rdata_port": "ahb_rdata",
+            "rdata_mode": "comb",  # combinational mux (rals style)
+        }
+    # dab
+    lines.extend(
+        [
+            "    input           dab_clk,",
+            "    input           dab_rst_n,",
+            "    input           dab_write,",
+            "    input           dab_read,",
+            "    input  [31:0]   dab_addr,",
+            "    input  [31:0]   dab_wdata,",
+            "    output reg [31:0]   dab_rdata,",
+            "    output          dab_ready,",
+        ]
+    )
+    return {
+        "clk": "dab_clk",
+        "rst_n": "dab_rst_n",
+        "wdata": "dab_wdata",
+        "bus_addr": "dab_addr",
+        "rdata_port": "dab_rdata",
+        "rdata_mode": "reg_on_rd",  # capture when dab_read
+    }
+
+
+def _emit_bus_control(lines: list, protocol: str, bus: dict) -> None:
+    """Generate wr_en / rd_en / sel_addr and bus handshakes."""
+    clk, rst_n = bus["clk"], bus["rst_n"]
+    lines.append("wire wr_en;")
+    lines.append("wire rd_en;")
+    lines.append("wire [31:0] sel_addr;")
+    lines.append("wire [31:0] rdata_mux;")
+    lines.append("")
+
+    if protocol == "apb":
+        lines.append("assign apb_ready = 1'b1;")
+        lines.append("assign apb_slverr = 1'b0;")
+        lines.append("assign wr_en = apb_write & !apb_enable & apb_sel;")
+        lines.append("assign rd_en = !apb_write & !apb_enable & apb_sel;")
+        lines.append("assign sel_addr = (wr_en | rd_en) ? apb_addr : 32'h0;")
+        lines.append("")
+        return
+
+    if protocol == "ahb":
+        # rals_parser AHB pipeline: sample on address phase, access on next ready cycle
+        lines.append("reg  [31:0] r_addr;")
+        lines.append("reg  [1:0]  r_htrans;")
+        lines.append("reg         r_hwrite;")
+        lines.append("")
+        lines.append("assign ahb_readyout = 1'b1;")
+        lines.append("assign ahb_resp = 2'b00;")
+        lines.append("assign wr_en = r_htrans[1] & r_hwrite & ahb_readyin;")
+        lines.append("assign rd_en = r_htrans[1] & (~r_hwrite);")
+        lines.append("")
+        lines.append(f"always @(posedge {clk} or negedge {rst_n}) begin")
+        lines.append(f"    if (!{rst_n}) begin")
+        lines.append("        r_addr   <= 32'h0;")
+        lines.append("        r_htrans <= 2'b00;")
+        lines.append("        r_hwrite <= 1'b0;")
+        lines.append("    end else if (ahb_sel & ahb_readyin & ahb_trans[1]) begin")
+        lines.append("        r_addr   <= ahb_addr;")
+        lines.append("        r_htrans <= ahb_trans;")
+        lines.append("        r_hwrite <= ahb_write;")
+        lines.append("    end else if (wr_en | rd_en) begin")
+        lines.append("        r_htrans <= 2'b00;")
+        lines.append("    end")
+        lines.append("end")
+        lines.append("")
+        lines.append("assign sel_addr = (wr_en | rd_en) ? r_addr : 32'h0;")
+        lines.append("")
+        return
+
+    # dab
+    lines.append("assign dab_ready = 1'b1;")
+    lines.append("assign wr_en = dab_write;")
+    lines.append("assign rd_en = dab_read;")
+    lines.append("assign sel_addr = (wr_en | rd_en) ? dab_addr : 32'h0;")
+    lines.append("")
+
+
+def _emit_rdata_output(lines: list, protocol: str, bus: dict) -> None:
+    clk, rst_n = bus["clk"], bus["rst_n"]
+    if protocol == "apb":
+        lines.append(f"always @(posedge {clk} or negedge {rst_n}) begin")
+        lines.append(f"    if (!{rst_n})")
+        lines.append("        apb_rdata <= 32'h0;")
+        lines.append("    else")
+        lines.append("        apb_rdata <= rdata_mux;")
+        lines.append("end")
+    elif protocol == "ahb":
+        lines.append("assign ahb_rdata = rdata_mux;")
+    else:
+        lines.append(f"always @(posedge {clk} or negedge {rst_n}) begin")
+        lines.append(f"    if (!{rst_n})")
+        lines.append("        dab_rdata <= 32'h0;")
+        lines.append("    else if (dab_read)")
+        lines.append("        dab_rdata <= rdata_mux;")
+        lines.append("end")
+    lines.append("")
+
+
+def _emit_shared_body(lines: list, protocol: str, bus: dict, registers: list, interrupts: list) -> None:
+    """Registers + interrupt banks + address decode + rdata mux (protocol-agnostic)."""
+    clk = bus["clk"]
+    rst_n = bus["rst_n"]
+    wdata = bus["wdata"]
+
+    # field / interrupt enables
+    for reg in registers:
+        for f in reg["fields"]:
+            if _acc(f) in ("RW", "WO", "W1T", "WC"):
+                lines.append(f"wire {f['name']}_wr;")
+        if any(_acc(f) in ("RW", "RO") for f in reg["fields"]):
+            lines.append(f"wire {reg['name']}_rd;")
+            lines.append(f"wire [31:0] {reg['name']}_rdata;")
+
+    for intp in interrupts:
+        iname = intp["name"]
+        for suf, _ in INTERRUPT_SUFFIXES:
+            lines.append(f"wire {iname}_{suf}_wr;")
+            lines.append(f"wire {iname}_{suf}_rd;")
+            lines.append(f"wire [31:0] {iname}_{suf}_rdata;")
+    lines.append("")
+
+    _emit_bus_control(lines, protocol, bus)
+
+    # address decode: normal regs (use sel_addr)
+    for reg in registers:
+        off = _hex_int(reg["offset"])
+        for f in reg["fields"]:
+            if _acc(f) in ("RW", "WO", "W1T", "WC"):
+                lines.append(
+                    f"assign {f['name']}_wr = (sel_addr[31:0] == 32'h{off:x}) & wr_en;"
+                )
+        if any(_acc(f) in ("RW", "RO") for f in reg["fields"]):
+            lines.append(
+                f"assign {reg['name']}_rd = (sel_addr[31:0] == 32'h{off:x}) & rd_en;"
+            )
+    lines.append("")
+
+    # address decode: interrupt banks
+    for intp in interrupts:
+        base = _hex_int(intp["base_offset"])
+        iname = intp["name"]
+        for suf, delta in INTERRUPT_SUFFIXES:
+            off = base + delta
+            if suf == "RAW":
+                lines.append(f"// {iname}_RAW is RO")
+                lines.append(f"assign {iname}_{suf}_wr = 1'b0;")
+                lines.append(
+                    f"assign {iname}_{suf}_rd = (sel_addr[31:0] == 32'h{off:x}) & rd_en;"
+                )
+            elif suf == "STAT":
+                lines.append(f"// {iname}_STAT is RO")
+                lines.append(f"assign {iname}_{suf}_wr = 1'b0;")
+                lines.append(
+                    f"assign {iname}_{suf}_rd = (sel_addr[31:0] == 32'h{off:x}) & rd_en;"
+                )
+            elif suf in ("SET", "CLR"):
+                lines.append(f"// {iname}_{suf} is WO pulse")
+                lines.append(
+                    f"assign {iname}_{suf}_wr = (sel_addr[31:0] == 32'h{off:x}) & wr_en;"
+                )
+                lines.append(f"assign {iname}_{suf}_rd = 1'b0;")
+            else:
+                lines.append(
+                    f"assign {iname}_{suf}_wr = (sel_addr[31:0] == 32'h{off:x}) & wr_en;"
+                )
+                lines.append(
+                    f"assign {iname}_{suf}_rd = (sel_addr[31:0] == 32'h{off:x}) & rd_en;"
+                )
+        lines.append("")
+
+    # normal field storage
+    for reg in registers:
+        for f in reg["fields"]:
+            acc = _acc(f)
+            if acc not in ("RW", "WO", "W1T", "WC"):
+                continue
+            bits = _bits(f)
+            lsb, msb = _lsb(f), _msb(f)
+            lines.append(f"always @(posedge {clk} or negedge {rst_n}) begin")
+            lines.append(f"    if (!{rst_n})")
+            lines.append(f"        {f['name']} <= {_reset_lit(bits, f.get('reset', 0))};")
+            if "lockOffset" in f:
+                lock_lsb = int(f["lockOffset"])
+                lock_w = int(f.get("lockWidth", 1))
+                lock_msb = lock_lsb + lock_w - 1
+                lock_val = _hex_int(f.get("lockValue", 1))
+                lines.append(f"    else if ({f['name']}_wr == 1'b1) begin")
+                lines.append(
+                    f"        if ({wdata}[{lock_msb}:{lock_lsb}] == {lock_w}'h{lock_val:x})"
+                )
+                lines.append(f"            {f['name']} <= {wdata}[{msb}:{lsb}];")
+                lines.append("    end")
+            else:
+                lines.append(f"    else if ({f['name']}_wr == 1'b1)")
+                lines.append(f"        {f['name']} <= {wdata}[{msb}:{lsb}];")
+            if acc in ("W1T", "WC"):
+                lines.append("    else")
+                lines.append(f"        {f['name']} <= {_reset_lit(bits, 0)};")
+            lines.append("end")
+            lines.append("")
+
+    # normal read data
+    for reg in registers:
+        if not any(_acc(f) in ("RW", "RO") for f in reg["fields"]):
+            continue
+        for f in reg["fields"]:
+            if _acc(f) in ("RO", "RW"):
+                lines.append(
+                    f"assign {reg['name']}_rdata[{_msb(f)}:{_lsb(f)}] = {f['name']};"
+                )
+        _fill_unused_rdata(lines, f"{reg['name']}_rdata", reg["fields"])
+    lines.append("")
+
+    # interrupt banks
+    for intp in interrupts:
+        iname = intp["name"]
+        fields = intp["fields"]
+        lines.append(f"// ================= {iname} interrupt bank =================")
+
+        for f in fields:
+            b = _bits(f)
+            src = f"{iname}_{f['name']}"
+            lines.append(_decl("reg", b, f"{src}_DLY") + ";")
+            lines.append(_decl("wire", b, f"{src}_RISE") + ";")
+            lines.append(_decl("wire", b, f"{src}_FALL") + ";")
+            lines.append(_decl("wire", b, f"{src}_LOW") + ";")
+            lines.append(_decl("wire", b, f"{src}_HIGH") + ";")
+            lines.append(_decl("reg", b, f"{src}_STAT") + ";")
+            lines.append(_decl("reg", b, f"{src}_STAT_NXT") + ";")
+            lines.append(_decl("reg", b, f"{src}_MASK") + ";")
+            lines.append(_decl("wire", b, f"{src}_SET") + ";")
+            lines.append(_decl("wire", b, f"{src}_CLR") + ";")
+            lines.append(_decl("reg", b, f"{src}_MODE") + ";")
+            lines.append(_decl("reg", b, f"{src}_POLAR") + ";")
+        lines.append("")
+
+        for bank, default_all_ones in (("MASK", False), ("MODE", False), ("POLAR", True)):
+            lines.append(f"// {iname}_{bank}")
+            lines.append(f"always @(posedge {clk} or negedge {rst_n}) begin")
+            lines.append(f"    if (!{rst_n}) begin")
+            for f in fields:
+                b = _bits(f)
+                src = f"{iname}_{f['name']}"
+                if default_all_ones:
+                    rst = f"{b}'h{(1 << b) - 1:x}"
+                else:
+                    rst = f"{b}'h0"
+                lines.append(f"        {src}_{bank} <= {rst};")
+            lines.append(f"    end else if ({iname}_{bank}_wr) begin")
+            for f in fields:
+                src = f"{iname}_{f['name']}"
+                lines.append(f"        {src}_{bank} <= {wdata}[{_msb(f)}:{_lsb(f)}];")
+            lines.append("    end")
+            lines.append("end")
+            lines.append("")
+
+        lines.append(f"// {iname}_SET / {iname}_CLR (WO pulse)")
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(
+                f"assign {src}_SET = {{{_bits(f)}{{{iname}_SET_wr}}}} & {wdata}[{_msb(f)}:{_lsb(f)}];"
+            )
+            lines.append(
+                f"assign {src}_CLR = {{{_bits(f)}{{{iname}_CLR_wr}}}} & {wdata}[{_msb(f)}:{_lsb(f)}];"
+            )
+        lines.append("")
+
+        for f in fields:
+            b = _bits(f)
+            src = f"{iname}_{f['name']}"
+            lines.append(f"// {src} edge/level detect + STAT")
+            lines.append(f"always @(posedge {clk} or negedge {rst_n}) begin")
+            lines.append(f"    if (!{rst_n})")
+            lines.append(f"        {src}_DLY <= {b}'h0;")
+            lines.append("    else")
+            lines.append(f"        {src}_DLY <= {src};")
+            lines.append("end")
+            lines.append(f"assign {src}_RISE = {src} & ~{src}_DLY;")
+            lines.append(f"assign {src}_FALL = ~{src} & {src}_DLY;")
+            lines.append(f"assign {src}_LOW  = ~{src}_DLY;")
+            lines.append(f"assign {src}_HIGH = {src}_DLY;")
+            lines.append(f"always @(posedge {clk} or negedge {rst_n}) begin")
+            lines.append(f"    if (!{rst_n})")
+            lines.append(f"        {src}_STAT <= {b}'h0;")
+            lines.append("    else")
+            lines.append(f"        {src}_STAT <= {src}_STAT_NXT;")
+            lines.append("end")
+            lines.append("always @* begin")
+            lines.append(
+                "    // sticky: clear by CLR, set by SET or selected event; else hold"
+            )
+            lines.append(
+                f"    {src}_STAT_NXT = ({src}_STAT & ~{src}_CLR)"
+                f" | {src}_SET"
+                f" | (~{src}_MODE & ~{src}_POLAR & {src}_FALL)"
+                f" | (~{src}_MODE &  {src}_POLAR & {src}_RISE)"
+                f" | ( {src}_MODE & ~{src}_POLAR & {src}_LOW)"
+                f" | ( {src}_MODE &  {src}_POLAR & {src}_HIGH);"
+            )
+            lines.append("end")
+            lines.append("")
+
+        terms = []
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            terms.append(f"|((~{src}_MASK) & {src}_STAT)")
+        if terms:
+            lines.append(f"assign {iname}_out = {' | '.join(terms)};")
+        else:
+            lines.append(f"assign {iname}_out = 1'b0;")
+        lines.append("")
+
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(f"assign {iname}_RAW_rdata[{_msb(f)}:{_lsb(f)}] = {src};")
+        _fill_unused_rdata(lines, f"{iname}_RAW_rdata", fields)
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(
+                f"assign {iname}_STAT_rdata[{_msb(f)}:{_lsb(f)}] = {src}_STAT;"
+            )
+        _fill_unused_rdata(lines, f"{iname}_STAT_rdata", fields)
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(
+                f"assign {iname}_MASK_rdata[{_msb(f)}:{_lsb(f)}] = {src}_MASK;"
+            )
+        _fill_unused_rdata(lines, f"{iname}_MASK_rdata", fields)
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(f"assign {iname}_SET_rdata[{_msb(f)}:{_lsb(f)}] = {src}_SET;")
+        _fill_unused_rdata(lines, f"{iname}_SET_rdata", fields)
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(f"assign {iname}_CLR_rdata[{_msb(f)}:{_lsb(f)}] = {src}_CLR;")
+        _fill_unused_rdata(lines, f"{iname}_CLR_rdata", fields)
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(
+                f"assign {iname}_MODE_rdata[{_msb(f)}:{_lsb(f)}] = {src}_MODE;"
+            )
+        _fill_unused_rdata(lines, f"{iname}_MODE_rdata", fields)
+        for f in fields:
+            src = f"{iname}_{f['name']}"
+            lines.append(
+                f"assign {iname}_POLAR_rdata[{_msb(f)}:{_lsb(f)}] = {src}_POLAR;"
+            )
+        _fill_unused_rdata(lines, f"{iname}_POLAR_rdata", fields)
+        lines.append("")
+
+    # rdata mux
+    lines.append("assign rdata_mux = ")
+    for reg in registers:
+        if any(_acc(f) in ("RW", "RO") for f in reg["fields"]):
+            lines.append(f"    {reg['name']}_rd ? {reg['name']}_rdata[31:0] :")
+    for intp in interrupts:
+        iname = intp["name"]
+        for suf in ("RAW", "STAT", "MASK", "MODE", "POLAR"):
+            lines.append(f"    {iname}_{suf}_rd ? {iname}_{suf}_rdata[31:0] :")
+    lines.append("    32'hdeadbeef;")
+    lines.append("")
+
+    _emit_rdata_output(lines, protocol, bus)
+
+
+def yml2regfile_from_model(model: dict, protocol: str, out_path: Path) -> Path:
+    protocol = protocol.lower()
+    if protocol not in {"apb", "ahb", "dab"}:
+        raise ValueError(f"unsupported protocol: {protocol}")
+
+    name = model["component_name"].upper()
+    registers = model["registers"]
+    interrupts = model["interrupts"]
+    filename = f"{name}_{protocol}_regfile.v"
+
+    lines: list[str] = []
+    add_header(lines, filename)
+    lines.append(f"module {name}_{protocol}_regfile(")
+
+    bus = _emit_bus_ports(lines, protocol)
+
+    # register field ports
+    for reg in registers:
+        for f in reg["fields"]:
+            acc = _acc(f)
+            if acc in ("RW", "WO", "W1T", "WC"):
+                lines.append(_port_vec("output", _bits(f), f["name"], is_reg=True))
+            elif acc == "RO":
+                lines.append(_port_vec("input", _bits(f), f["name"], is_reg=False))
+
+    # interrupt ports
+    for intp in interrupts:
+        for f in intp["fields"]:
+            pname = f"{intp['name']}_{f['name']}"
+            lines.append(_port_vec("input", _bits(f), pname, is_reg=False))
+        lines.append(f"    output {intp['name']}_out,")
+
+    if lines[-1].endswith(","):
+        lines[-1] = lines[-1][:-1]
+    lines.append(");")
+    lines.append("")
+
+    _emit_shared_body(lines, protocol, bus, registers, interrupts)
+
+    lines.append("endmodule")
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return out_path
+
+
+def yml2regfile(data: dict, protocol: str, out_dir: Path | None = None) -> Path:
+    from yml_model import _interrupt_from_yaml, _register_from_yaml, fmt_hex
+
+    name = str(data["name"])
+    model = {
+        "component_name": name,
+        "version": str(data.get("version", "1.0")),
+        "block_name": str(data.get("block_name", name)),
+        "base_address": fmt_hex(data.get("base_address", data.get("offset", 0))),
+        "range": fmt_hex(data.get("range", 0x1000)),
+        "width": int(data.get("width", int(data.get("bytes", 4)) * 8)),
+        "protocol": protocol,
+        "description": str(data.get("description", "")),
+        "registers": [_register_from_yaml(r) for r in (data.get("registers") or [])],
+        "interrupts": [_interrupt_from_yaml(i) for i in (data.get("interrupts") or [])],
+    }
+    out = (out_dir or Path(".")) / f"{name.upper()}_{protocol}_regfile.v"
+    return yml2regfile_from_model(model, protocol, out)
+
+
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if len(argv) < 2:
+        print(
+            "Usage: yml2reg.py <yaml_file> <protocol:apb|ahb|dab> [output_dir]",
+            file=sys.stderr,
+        )
+        return 2
+    yaml_file = Path(argv[0])
+    protocol = argv[1]
+    out_dir = Path(argv[2]) if len(argv) > 2 else yaml_file.parent
+
+    model = load_yml_model(yaml_file)
+    out_path = out_dir / f"{model['component_name'].upper()}_{protocol}_regfile.v"
+    yml2regfile_from_model(model, protocol, out_path)
+    print(f"Generated: {out_path}")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

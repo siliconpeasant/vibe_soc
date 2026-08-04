@@ -34,14 +34,16 @@ def load_manifest() -> dict[str, Any]:
         name = server.get("name")
         script = server.get("script")
         command = server.get("command")
+        url = server.get("url")
+        transport_keys = [key for key in ("script", "command", "url") if server.get(key) is not None]
         if not isinstance(name, str) or not name or name in names:
             raise ValueError(f"invalid or duplicate MCP server name: {name!r}")
-        if (script is None) == (command is None):
-            raise ValueError(f"server {name}: set exactly one of script or command")
+        if len(transport_keys) != 1:
+            raise ValueError(f"server {name}: set exactly one of script, command, or url")
         if script is not None:
             if not isinstance(script, str) or Path(script).is_absolute():
                 raise ValueError(f"server {name}: script must be repository-relative")
-        else:
+        elif command is not None:
             if not isinstance(command, str) or not command:
                 raise ValueError(f"server {name}: command must be a non-empty string")
             args = server.get("args", [])
@@ -50,6 +52,15 @@ def load_manifest() -> dict[str, Any]:
             cwd = server.get("cwd")
             if cwd is not None and (not isinstance(cwd, str) or Path(cwd).is_absolute()):
                 raise ValueError(f"server {name}: cwd must be repository-relative")
+        else:
+            if not isinstance(url, str) or not url.startswith(("http://", "https://")):
+                raise ValueError(f"server {name}: url must be an http(s) endpoint")
+            headers = server.get("headers")
+            if headers is not None:
+                if not isinstance(headers, dict) or not all(
+                    isinstance(k, str) and isinstance(v, str) for k, v in headers.items()
+                ):
+                    raise ValueError(f"server {name}: headers must be a string-to-string object")
         for field in ("startup_timeout_sec", "tool_timeout_sec"):
             value = server.get(field)
             if not isinstance(value, int) or value <= 0:
@@ -64,9 +75,39 @@ def toml_string(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
+def is_remote_server(server: dict[str, Any]) -> bool:
+    return "url" in server
+
+
+def client_server_name(server: dict[str, Any], prefix: str) -> str:
+    """Remote/official HTTP servers keep their bare name; local silicon-crew ones are prefixed."""
+    if is_remote_server(server):
+        return server["name"]
+    return f"{prefix}{server['name']}"
+
+
 def render_codex_mcp_server(
     server: dict[str, Any], launcher: str, *, enabled: bool | None = None
 ) -> list[str]:
+    is_enabled = server["default_enabled"] if enabled is None else enabled
+    if is_remote_server(server):
+        lines = [
+            f"[mcp_servers.{server['name']}]",
+            f"enabled = {str(is_enabled).lower()}",
+            f"url = {toml_string(server['url'])}",
+        ]
+        headers = server.get("headers")
+        if headers:
+            lines.append(f"http_headers = {json.dumps(headers, ensure_ascii=False)}")
+        lines.extend(
+            [
+                f"startup_timeout_sec = {server['startup_timeout_sec']}",
+                f"tool_timeout_sec = {server['tool_timeout_sec']}",
+                "",
+            ]
+        )
+        return lines
+
     if "script" in server:
         command = "/bin/sh"
         cwd = "."
@@ -76,7 +117,6 @@ def render_codex_mcp_server(
         cwd = server.get("cwd")
         args = server.get("args", [])
     cwd_line = [f"cwd = {toml_string(cwd)}"] if cwd is not None else []
-    is_enabled = server["default_enabled"] if enabled is None else enabled
     return [
         f"[mcp_servers.{server['name']}]",
         f"enabled = {str(is_enabled).lower()}",
@@ -129,7 +169,15 @@ def render_generic(manifest: dict[str, Any]) -> str:
     launcher = manifest["launcher"]
     servers: dict[str, dict[str, Any]] = {}
     for server in manifest["servers"]:
-        if "script" in server:
+        key = client_server_name(server, prefix)
+        if is_remote_server(server):
+            rendered: dict[str, Any] = {
+                "type": "http",
+                "url": server["url"],
+            }
+            if server.get("headers"):
+                rendered["headers"] = server["headers"]
+        elif "script" in server:
             rendered = {
                 "type": "stdio",
                 "command": "sh",
@@ -143,7 +191,7 @@ def render_generic(manifest: dict[str, Any]) -> str:
             }
             if "cwd" in server:
                 rendered["cwd"] = server["cwd"]
-        servers[f"{prefix}{server['name']}"] = rendered
+        servers[key] = rendered
     return json.dumps({"mcpServers": servers}, indent=2, ensure_ascii=False) + "\n"
 
 

@@ -1,0 +1,43 @@
+# Small sample for yml2docs / xml-aligned deliverables
+name: DEMO_SYS_CTRL
+version: "1.0"
+bytes: 4
+base_address: 0x0
+range: 0x1000
+protocol: apb
+description: "demo system control for yml2reg docs"
+parent_base: AP_BASE
+parent_offset: 0x1a000000
+# DV options
+coverage: false
+hdl_path: u_sys_ctrl
+hdl_path_prefix: tb.dut
+registers:
+  - name: version
+    offset: 0x0
+    description: "IP version"
+    fields:
+      - {name: version_id, lsb: 0, bits: 16, access: ro, reset: 0x1, description: "version id"}
+  - name: ctrl
+    offset: 0x4
+    description: "control"
+    fields:
+      - {name: enable, lsb: 0, bits: 1, access: rw, reset: 0x0, description: "module enable"}
+      - {name: soft_rst, lsb: 1, bits: 1, access: rw, reset: 0x0, lock_lsb: 16, lock_bits: 1, lock_value: 0x1, description: "soft reset"}
+  - name: scratch
+    offset: 0x8
+    description: "scratch pad"
+    fields:
+      - {name: scratch_data, lsb: 0, bits: 32, access: rw, reset: 0x0, description: "scratch"}
+  - name: status
+    offset: 0xc
+    description: "status"
+    fields:
+      - {name: busy, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "busy"}
+      - {name: enable_status, lsb: 1, bits: 1, access: ro, reset: 0x0, description: "enable mirror"}
+interrupts:
+  - name: err_irq
+    offset: 0x200
+    description: "error interrupt group"
+    fields:
+      - {name: err, lsb: 0, bits: 1, access: ro, reset: 0x0, description: "error flag"}

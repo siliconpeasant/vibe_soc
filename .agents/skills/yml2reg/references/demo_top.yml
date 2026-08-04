@@ -1,0 +1,13 @@
+# Multi-block top for yml2uvm_ral_top / yml2docs
+name: DEMO_CHIP_TOP
+type: top
+version: "1.0"
+base_address: 0x0
+protocol: apb
+coverage: false
+description: "demo multi-block top RAL"
+blocks:
+  - yaml: demo_docs.yml
+    base_address: 0x1000
+    instance: u_sys_ctrl
+    hdl_path: tb.dut.u_sys_ctrl

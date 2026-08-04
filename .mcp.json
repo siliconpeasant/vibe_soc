@@ -24,6 +24,22 @@
         ".agents/skills/yml2reg/mcp_server.py"
       ]
     },
+    "silicon-crew:gen-asic-memmap": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/gen-asic-memmap/mcp_server.py"
+      ]
+    },
+    "silicon-crew:gen-memwrap": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/gen-memwrap/mcp_server.py"
+      ]
+    },
     "silicon-crew:excel-yml-gen": {
       "type": "stdio",
       "command": "sh",
@@ -56,12 +72,28 @@
         ".agents/skills/crg-gen/mcp_server.py"
       ]
     },
+    "silicon-crew:io-top-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/io-top-gen/mcp_server.py"
+      ]
+    },
     "silicon-crew:cr-tree-diag-gen": {
       "type": "stdio",
       "command": "sh",
       "args": [
         "scripts/mcp_python.sh",
         ".agents/skills/cr-tree-diag-gen/mcp_server.py"
+      ]
+    },
+    "silicon-crew:noc-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/noc-gen/mcp_server.py"
       ]
     },
     "silicon-crew:soc-openroad": {
@@ -87,6 +119,10 @@
         "ERROR"
       ],
       "cwd": "."
+    },
+    "drawio": {
+      "type": "http",
+      "url": "https://mcp.draw.io/mcp"
     }
   }
 }

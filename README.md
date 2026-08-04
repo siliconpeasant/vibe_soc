@@ -349,7 +349,9 @@ router 只输出需要读取的规则、需要执行的检查和 fingerprint 缓
 | 顶层集成 | `soc-integrate` | 端口提取、实例化、wrapper、top 生成、快照、diff、刷新 |
 | OpenROAD handoff | `soc-pd-engineer` + `soc-openroad` | 物理设计 handoff agent 负责约束审查和流程调度；MCP 生成 ORFS config/SDC、运行 synth/floorplan/place/cts/route/finish/all 并汇总结果 |
 | Liberty/DB 辅助生成 | `lib-db-gen` | 使用 Library Compiler 将 `.lib` 转 `.db`，或从 Verilog top 端口生成早期 black-box stub `.lib/.db` |
-| 寄存器 YAML 生成 RTL | `yml2reg` | 从 YAML 生成 APB/AHB regfile RTL |
+| 寄存器 YAML 生成 | `yml2reg` | 从 YAML 生成 APB/AHB regfile RTL，以及 Spirit XML / Excel 表 / C header / sysmap |
+| Excel memmap → 芯片 sysmap | `gen-asic-memmap` | 从 Excel memmap 生成 `*_ASIC.yml` 与 C/SV `*_sysmap` header |
+| Excel mem → wrap + lib/lef | `gen-memwrap` | sky130 OpenRAM / nangate45 FakeRAM：统一 wrap RTL + 复制 `.lib`/`.lef` |
 | Excel 寄存器生成 | `excel-yml-gen` | 从 Excel 生成 YAML、regfile RTL、wrapper 等 |
 | CRG 需求转设计表 | `crg-req-to-design` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |
 | 时钟/复位树图 | `cr-tree-diag-gen` | 从设计表生成 Draw.io 和 Excalidraw 图 |
@@ -493,7 +495,7 @@ pd/openroad/<platform>/<design>/constraint.sdc
 
 寄存器：
 
-- 已批准 YAML 源：使用 `yml2reg` 生成 APB/AHB regfile RTL。
+- 已批准 YAML 源：使用 `yml2reg` 生成 APB/AHB regfile RTL；需要软件/DV 交付物时用 `yml2docs`（XML + Excel 表 + C header + sysmap），格式对齐 `xml_reg_converter`。
 - 已批准 Excel 源：使用 `excel-yml-gen` 生成 YAML、regfile RTL、instance wrapper 和 TDR buffer list。
 - 不手工修改生成 RTL；修改源 YAML/Excel 后重新生成。
 

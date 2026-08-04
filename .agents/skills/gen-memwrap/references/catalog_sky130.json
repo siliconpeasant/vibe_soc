@@ -1,0 +1,63 @@
+{
+  "orfs_platforms_env": "ORFS_PLATFORMS",
+  "default_orfs_platforms": "",
+  "platform": "sky130",
+  "macros": [
+    {
+      "name": "sky130_sram_1rw1r_128x256_8",
+      "depth": 256,
+      "width": 128,
+      "ports": "1rw1r",
+      "write_size": 8,
+      "family": "openram",
+      "assets": {
+        "v": "sky130ram/sky130_sram_1rw1r_128x256_8/sky130_sram_1rw1r_128x256_8.v",
+        "lef": "sky130ram/sky130_sram_1rw1r_128x256_8/sky130_sram_1rw1r_128x256_8.lef",
+        "lib": "sky130ram/sky130_sram_1rw1r_128x256_8/sky130_sram_1rw1r_128x256_8_TT_1p8V_25C.lib",
+        "gds": "sky130ram/sky130_sram_1rw1r_128x256_8/sky130_sram_1rw1r_128x256_8.gds"
+      }
+    },
+    {
+      "name": "sky130_sram_1rw1r_44x64_8",
+      "depth": 64,
+      "width": 44,
+      "ports": "1rw1r",
+      "write_size": 8,
+      "family": "openram",
+      "assets": {
+        "v": "sky130ram/sky130_sram_1rw1r_44x64_8/sky130_sram_1rw1r_44x64_8.v",
+        "lef": "sky130ram/sky130_sram_1rw1r_44x64_8/sky130_sram_1rw1r_44x64_8.lef",
+        "lib": "sky130ram/sky130_sram_1rw1r_44x64_8/sky130_sram_1rw1r_44x64_8_TT_1p8V_25C.lib",
+        "gds": "sky130ram/sky130_sram_1rw1r_44x64_8/sky130_sram_1rw1r_44x64_8.gds"
+      }
+    },
+    {
+      "name": "sky130_sram_1rw1r_64x256_8",
+      "depth": 256,
+      "width": 64,
+      "ports": "1rw1r",
+      "write_size": 8,
+      "family": "openram",
+      "assets": {
+        "v": "sky130ram/sky130_sram_1rw1r_64x256_8/sky130_sram_1rw1r_64x256_8.v",
+        "lef": "sky130ram/sky130_sram_1rw1r_64x256_8/sky130_sram_1rw1r_64x256_8.lef",
+        "lib": "sky130ram/sky130_sram_1rw1r_64x256_8/sky130_sram_1rw1r_64x256_8_TT_1p8V_25C.lib",
+        "gds": "sky130ram/sky130_sram_1rw1r_64x256_8/sky130_sram_1rw1r_64x256_8.gds"
+      }
+    },
+    {
+      "name": "sky130_sram_1rw1r_80x64_8",
+      "depth": 64,
+      "width": 80,
+      "ports": "1rw1r",
+      "write_size": 8,
+      "family": "openram",
+      "assets": {
+        "v": "sky130ram/sky130_sram_1rw1r_80x64_8/sky130_sram_1rw1r_80x64_8.v",
+        "lef": "sky130ram/sky130_sram_1rw1r_80x64_8/sky130_sram_1rw1r_80x64_8.lef",
+        "lib": "sky130ram/sky130_sram_1rw1r_80x64_8/sky130_sram_1rw1r_80x64_8_TT_1p8V_25C.lib",
+        "gds": "sky130ram/sky130_sram_1rw1r_80x64_8/sky130_sram_1rw1r_80x64_8.gds"
+      }
+    }
+  ]
+}
