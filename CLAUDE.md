@@ -169,13 +169,23 @@ For RTL/verification/synthesis work, stage agents must call the registered MCP s
 | synthesis | `soc-build` | `soc_syn` |
 | OpenROAD handoff | `soc-openroad` | `soc_openroad_init`, `soc_openroad_run`, `soc_openroad_status` |
 | ports / top / wrapper / snapshots | `soc-integrate` | `soc_extract`, `soc_instantiate`, `soc_integrate`, `soc_update`, `soc_snapshot`, ... |
-| YAML regfile RTL | `yml2reg` | `yml2reg` |
+| YAML regfile / Excel / C / sysmap / UVM RAL / DV pack | `yml2reg` | `yml2reg`, `yml2xml`, `yml2excel`, `yml2reg_c`, `yml2sysmap`, `yml2uvm_ral`, `yml2uvm_ral_top`, `yml2sv_define`, `yml2regs_init`, `yml2ral_lib`, `yml2bus_adapters`, `yml2regmap_export`, `yml2docs` |
+| Excel memmap → ASIC sysmap | `gen-asic-memmap` | `gen_asic_memmap` |
+| Excel mem → wrap + lib/lef | `gen-memwrap` | `gen_memwrap` |
 | Excel regfile RTL | `excel-yml-gen` | `excel_yml_gen` |
 | CRG requirement → design tables | `crg-req-to-design` | `crg_req_to_design` |
 | CRG Excel → RTL / SDC | `crg-gen` | `crg_gen` |
 | clock/reset diagrams | `cr-tree-diag-gen` | `cr_tree_diag_gen*` |
+| NoC / interconnect (NL or YAML → spec + skeleton + FlexNoC handoff + RTL/UVM export) | `noc-gen` | `noc_from_nl`, `noc_nl_to_spec`, `noc_gen`, `noc_export_rtl`, `noc_validate_spec`, `noc_status` |
 
 ## Coding and style defaults
+
+Canonical style rules:
+
+- Short agent contract: `.agents/rules/04_coding_style.md` (auto-loaded for RTL)
+- Full Verilog standard: `.agents/rules/04_verilog_coding_style.md` (M/S/R; open when writing or reviewing RTL)
+
+Defaults when the full rule file is not in context:
 
 - Default language is synthesizable Verilog-2005; use SystemVerilog only if the project/module explicitly does.
 - Match module name and filename; use `lower_snake_case`.
@@ -203,4 +213,4 @@ Do not commit `scripts/local.mk`, `scripts/local.sh`, `scripts/local.csh`, simul
 - `Makefile` is the unified top-level entry.
 - `scripts/common.mk`, `scripts/config.mk`, `scripts/toolchains/*.mk` define the build rules.
 - `chip/top/README.md` explains the OpenTitan vendor-island setup.
-- `.agents/rules/` contains the gated flow, toolchain, pipeline-state, exception, and coding-style contracts.
+- `.agents/rules/` contains the gated flow, toolchain, pipeline-state, exception, and coding-style contracts (detailed Verilog standard: `04_verilog_coding_style.md`).

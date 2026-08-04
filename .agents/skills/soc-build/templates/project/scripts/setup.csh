@@ -65,6 +65,14 @@ endif
 if ($?XCELIUM_HOME) then
     if (-d "$XCELIUM_HOME/tools.lnx86/bin") set path = ("$XCELIUM_HOME/tools.lnx86/bin" $path)
 endif
+# Project verdi wrapper must win over VERDI_HOME/bin so root CWD launches
+# cannot drop novas.conf / verdiLog into the repository root.
+if (-d "$PROJECT_ROOT/scripts/bin") set path = ("$PROJECT_ROOT/scripts/bin" $path)
+
+# Verdi always writes session caches into CWD; scrub accidental root leakage.
+rm -rf "$PROJECT_ROOT/novas.conf" "$PROJECT_ROOT/novas.rc" \
+       "$PROJECT_ROOT/novas.log" "$PROJECT_ROOT/verdiLog" >& /dev/null
+mkdir -p "$PROJECT_ROOT/tmp/verdi"
 
 # ---------------------------------------------------------------------------
 # 5. 工具链检测

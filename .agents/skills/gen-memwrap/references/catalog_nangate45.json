@@ -1,0 +1,315 @@
+{
+  "orfs_platforms_env": "ORFS_PLATFORMS",
+  "default_orfs_platforms": "",
+  "platform": "nangate45",
+  "macros": [
+    {
+      "name": "fakeram45_1024x32",
+      "depth": 1024,
+      "width": 32,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_1024x32.lef",
+        "lib": "nangate45/lib/fakeram45_1024x32.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_128x116",
+      "depth": 128,
+      "width": 116,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_128x116.lef",
+        "lib": "nangate45/lib/fakeram45_128x116.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_128x256",
+      "depth": 128,
+      "width": 256,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_128x256.lef",
+        "lib": "nangate45/lib/fakeram45_128x256.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_128x32",
+      "depth": 128,
+      "width": 32,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_128x32.lef",
+        "lib": "nangate45/lib/fakeram45_128x32.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_2048x39",
+      "depth": 2048,
+      "width": 39,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_2048x39.lef",
+        "lib": "nangate45/lib/fakeram45_2048x39.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_256x16",
+      "depth": 256,
+      "width": 16,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_256x16.lef",
+        "lib": "nangate45/lib/fakeram45_256x16.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_256x32",
+      "depth": 256,
+      "width": 32,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_256x32.lef",
+        "lib": "nangate45/lib/fakeram45_256x32.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_256x34",
+      "depth": 256,
+      "width": 34,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_256x34.lef",
+        "lib": "nangate45/lib/fakeram45_256x34.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_256x48",
+      "depth": 256,
+      "width": 48,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_256x48.lef",
+        "lib": "nangate45/lib/fakeram45_256x48.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_256x95",
+      "depth": 256,
+      "width": 95,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_256x95.lef",
+        "lib": "nangate45/lib/fakeram45_256x95.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_256x96",
+      "depth": 256,
+      "width": 96,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_256x96.lef",
+        "lib": "nangate45/lib/fakeram45_256x96.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_32x32",
+      "depth": 32,
+      "width": 32,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_32x32.lef",
+        "lib": "nangate45/lib/fakeram45_32x32.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_32x64",
+      "depth": 32,
+      "width": 64,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_32x64.lef",
+        "lib": "nangate45/lib/fakeram45_32x64.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_512x64",
+      "depth": 512,
+      "width": 64,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_512x64.lef",
+        "lib": "nangate45/lib/fakeram45_512x64.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x124",
+      "depth": 64,
+      "width": 124,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x124.lef",
+        "lib": "nangate45/lib/fakeram45_64x124.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x15",
+      "depth": 64,
+      "width": 15,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x15.lef",
+        "lib": "nangate45/lib/fakeram45_64x15.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x21",
+      "depth": 64,
+      "width": 21,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x21.lef",
+        "lib": "nangate45/lib/fakeram45_64x21.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x32",
+      "depth": 64,
+      "width": 32,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x32.lef",
+        "lib": "nangate45/lib/fakeram45_64x32.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x62",
+      "depth": 64,
+      "width": 62,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x62.lef",
+        "lib": "nangate45/lib/fakeram45_64x62.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x64",
+      "depth": 64,
+      "width": 64,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x64.lef",
+        "lib": "nangate45/lib/fakeram45_64x64.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x7",
+      "depth": 64,
+      "width": 7,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x7.lef",
+        "lib": "nangate45/lib/fakeram45_64x7.lib",
+        "gds": null
+      }
+    },
+    {
+      "name": "fakeram45_64x96",
+      "depth": 64,
+      "width": 96,
+      "ports": "1rw",
+      "write_size": 1,
+      "family": "fakeram",
+      "assets": {
+        "v": null,
+        "lef": "nangate45/lef/fakeram45_64x96.lef",
+        "lib": "nangate45/lib/fakeram45_64x96.lib",
+        "gds": null
+      }
+    }
+  ]
+}

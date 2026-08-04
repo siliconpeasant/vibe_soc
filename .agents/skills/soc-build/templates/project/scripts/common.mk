@@ -196,21 +196,30 @@ verdi: $(CANONICAL_FLIST)
 	$(VERDI_CMD)
 
 
+# Verdi session caches accidentally left at the repository root.
+define scrub_root_verdi_junk
+	rm -rf $(PROJECT_ROOT)/novas.conf $(PROJECT_ROOT)/novas.rc \
+		$(PROJECT_ROOT)/novas.log $(PROJECT_ROOT)/verdiLog
+endef
+
 clean:
 	@echo "[CLEAN] Removing runtime artifacts; preserving compile cache ..."
 	rm -rf $(SIM_DIR)/sim.log $(SIM_DIR)/wave.* $(SIM_DIR)/regress \
 		$(SIM_DIR)/*.fsdb $(SIM_DIR)/*.vpd $(SIM_DIR)/*.vcd \
 		$(SIM_DIR)/coverage.vdb $(MODULE_PATH)/dv/cov
+	$(scrub_root_verdi_junk)
 
 debugclean: clean
 	@echo "[DEBUGCLEAN] Removing reports and debug logs; preserving compiled image ..."
 	rm -rf $(RUN_DIR)/* $(SIM_DIR)/verdiLog $(SIM_DIR)/novas.* \
 		$(SIM_DIR)/urgReport $(SIM_DIR)/*.key
+	$(scrub_root_verdi_junk)
 
 deepclean:
 	@echo "[DEEPCLEAN] Removing all transient compile/simulation artifacts; preserving synthesis deliverables ..."
 	rm -rf $(RUN_DIR) $(SIM_DIR) $(MODULE_PATH)/dv/cov
 	rm -f $(SYN_DIR)/*.log
+	$(scrub_root_verdi_junk)
 
 # --- flist: generate and validate a canonical filelist ---
 flist: $(CANONICAL_FLIST)

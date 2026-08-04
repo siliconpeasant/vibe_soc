@@ -7,10 +7,11 @@ module tb_std_cell_clk_mux;
     reg  sel;
     wire clk_out;
 
+    // Port names match crg-gen std_cell_clk_mux (clk_in0/clk_in1/clk_sel).
     std_cell_clk_mux u_dut (
-        .clk0    (clk0),
-        .clk1    (clk1),
-        .sel     (sel),
+        .clk_in0 (clk0),
+        .clk_in1 (clk1),
+        .clk_sel (sel),
         .clk_out (clk_out)
     );
 

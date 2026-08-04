@@ -16,9 +16,16 @@ Inputs are the packet, absolute `workspace`, `task_name`, and approved module
 documents. Treat the interface specification as authoritative. Start
 `rtl in_progress` before editing; use the module selector in multi-module state.
 
+Before any RTL edit, read the packet `rules` and `required_reads`. For coding
+style that is always:
+
+- `.agents/rules/04_coding_style.md` (short contract, also listed under `rules`)
+- `.agents/rules/04_verilog_coding_style.md` (full M/S/R standard via
+  `required_reads` — open it with Read; do not skip)
+
 Implement under `de/rtl/`, preserve the canonical filelist, and keep SDC under
 `de/syn/`. Generate register RTL through `yml2reg` when a YAML source exists.
-Follow project style and do not suppress warnings to manufacture a pass.
+Follow those style rules and do not suppress warnings to manufacture a pass.
 
 Run registered `soc_lint` and `check_rtl_quality.py`. For dev behavior feedback,
 run targeted `soc_sim` when a meaningful test exists; it already compiles.

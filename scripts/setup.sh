@@ -55,12 +55,20 @@ _prepend_path() {
 _prepend_path "${VCS_HOME:-}/bin"
 _prepend_path "${VERDI_HOME:-}/bin"
 _prepend_path "${XCELIUM_HOME:-}/tools.lnx86/bin"
+# Project verdi wrapper must win over VERDI_HOME/bin so root CWD launches
+# cannot drop novas.conf / verdiLog into the repository root.
+_prepend_path "$PROJECT_ROOT/scripts/bin"
 export PATH
 
 export PROJECT_ROOT
 export SOC="$PROJECT_ROOT"
 export CHIP_PATH="$PROJECT_ROOT/chip"
 export IP_PATH="$PROJECT_ROOT/ip"
+
+# Verdi always writes session caches into CWD; scrub accidental root leakage.
+rm -rf "$PROJECT_ROOT/novas.conf" "$PROJECT_ROOT/novas.rc" \
+       "$PROJECT_ROOT/novas.log" "$PROJECT_ROOT/verdiLog" 2>/dev/null || true
+mkdir -p "$PROJECT_ROOT/tmp/verdi"
 export SIMULATOR=${SIMULATOR:-verilator}
 export LINT_TOOL=${LINT_TOOL:-verilator}
 export SPYGLASS_HOME=${SPYGLASS_HOME:-/usr/Synopsys/spyglass/latest}

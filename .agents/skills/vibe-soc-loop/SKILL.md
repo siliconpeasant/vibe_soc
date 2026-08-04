@@ -10,9 +10,10 @@ Turn the request into one outcome-first packet with the fewest useful tool loops
 1. Resolve root and workspace, then run
    `python3 <root>/.agents/scripts/loop_context.py <workspace> --format text`.
    Request `--mode merge` only for delivery. Never lower returned mode or scope.
-2. Treat selected paths, owner, rules, checks, execution budget, cache, and next
-   action as authoritative. Read only listed rules. Use the packet's compact state;
-   load full state or logs only to diagnose a failure.
+2. Treat paths, owner, rules, `required_reads`, checks, budget, cache, and next
+   action as authoritative. Read listed `rules`; also Read each `required_reads`
+   path before owned edits (RTL full coding style injects this way). Use the
+   packet's compact state; load full state/logs only on failure.
 3. Dispatch one matching owner in `dev`. Use `soc-pipeline` only for multi-stage
    delivery. Parallelize only independent work, normally `verif` and `syn` after
    current RTL evidence exists, and stay within `max_parallel_owners`.

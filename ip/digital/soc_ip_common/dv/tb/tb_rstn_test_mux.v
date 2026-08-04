@@ -11,13 +11,13 @@ module tb_rstn_test_mux;
     wire rst_n_out;
 
     // -------------------------------------------------------------------------
-    // DUT instantiation
+    // DUT instantiation (crg-gen port names)
     // -------------------------------------------------------------------------
     rstn_test_mux u_dut (
-        .rst_n      (rst_n),
-        .test_rst_n (test_rst_n),
-        .test_mode  (test_mode),
-        .rst_n_out  (rst_n_out)
+        .test_md   (test_mode),
+        .rstn_in   (rst_n),
+        .test_rstn (test_rst_n),
+        .rstn_out  (rst_n_out)
     );
 
     // -------------------------------------------------------------------------
