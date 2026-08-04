@@ -2,6 +2,9 @@
 
 The approved interface/design specification and existing repository style take precedence. Defaults apply only when the project is silent.
 
+**Detailed project standard (open when writing or reviewing RTL):**
+`.agents/rules/04_verilog_coding_style.md` (M mandatory / S should / R recommend).
+
 ## Language and structure
 
 - Default to synthesizable Verilog-2005; use SystemVerilog only when the project explicitly does.
@@ -13,7 +16,8 @@ The approved interface/design specification and existing repository style take p
 
 ## Clock and reset
 
-- Implement reset polarity and synchronous/asynchronous behavior exactly as specified; do not impose a global reset style.
+- Implement reset polarity and synchronous/asynchronous behavior exactly as specified; do not impose a global reset style that contradicts the approved design.
+- If the design is silent, follow S.DFF / S.CRG in `04_verilog_coding_style.md`.
 - Every state element must have intentional reset/initialization behavior documented in the design specification.
 - Generated clocks, clock muxes/gates, and reset synchronizers use reviewed library wrappers or the CRG generator, not ad-hoc logic.
 
