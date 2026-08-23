@@ -72,22 +72,25 @@ def resolve_openram() -> Tuple[Optional[Path], str]:
     if w:
         return w, f"PATH openram={w}"
     return None, (
-        "OpenRAM not found. Set OPENRAM_HOME / OPENRAM_COMPILER / "
-        "OPENRAM_TECH / PDK_ROOT (see gen-memwrap SKILL.md)."
+        "OpenRAM not found. Set OPENRAM_HOME / OPENRAM_COMPILER "
+        "(plus PDK_ROOT / OPENRAM_TECH) or put openram on PATH."
     )
 
 
-def _resolve_openram_python() -> str:
-    """Prefer OpenRAM conda python; fall back to sys.executable."""
+def _resolve_openram_python(compiler: Optional[Path] = None) -> str:
+    """Prefer OpenRAM conda-env python; fall back to sys.executable."""
     env_py = os.environ.get("OPENRAM_PYTHON", "").strip()
     if env_py and Path(env_py).is_file():
         return env_py
-    for cand in (
-        Path(os.environ.get("OPENRAM_HOME", "")).expanduser().resolve().parent
-        / "conda-env"
-        / "bin"
-        / "python",
-    ):
+    candidates = []
+    if compiler is not None:
+        candidates.append(compiler.parent / "conda-env" / "bin" / "python")
+    home = os.environ.get("OPENRAM_HOME", "").strip()
+    if home:
+        candidates.append(
+            Path(home).expanduser().resolve().parent / "conda-env" / "bin" / "python"
+        )
+    for cand in candidates:
         if cand.is_file():
             return str(cand)
     return sys.executable
@@ -185,21 +188,11 @@ def generate_openram(
 
     env = os.environ.copy()
     env.pop("PYTHONHOME", None)
-    default_home = Path(os.environ.get("OPENRAM_HOME", "")).expanduser()
-    default_tech = Path(os.environ.get("OPENRAM_TECH", "")).expanduser()
-    default_pdk = Path(os.environ.get("PDK_ROOT", "")).expanduser()
-    if default_home.is_dir():
-        env.setdefault("OPENRAM_HOME", str(default_home))
-    else:
-        env.setdefault("OPENRAM_HOME", str(compiler.parent))
-    if default_tech.is_dir():
-        env.setdefault("OPENRAM_TECH", str(default_tech))
-    else:
-        env.setdefault("OPENRAM_TECH", str(Path(env["OPENRAM_HOME"]).parent / "technology"))
-    if default_pdk.is_dir():
-        env.setdefault("PDK_ROOT", str(default_pdk))
-    else:
-        env.setdefault("PDK_ROOT", str(Path.cwd()))
+    # OpenRAM convention (see setpaths.sh): HOME=<repo>/compiler, TECH=<repo>/technology
+    repo_root = compiler.parent
+    env.setdefault("OPENRAM_HOME", str(repo_root / "compiler"))
+    env.setdefault("OPENRAM_TECH", str(repo_root / "technology"))
+    env.setdefault("PDK_ROOT", str(Path.home() / ".ciel"))
     env["PYTHONPATH"] = env["OPENRAM_HOME"] + (
         os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else ""
     )
@@ -216,7 +209,7 @@ def generate_openram(
         encoding="utf-8",
     )
 
-    py = _resolve_openram_python()
+    py = _resolve_openram_python(compiler)
     # -n disables LVS/DRC checks; still writes v/lib/lef/gds
     cmd = [py, "-u", str(compiler)]
     if netlist_only:
@@ -434,6 +427,27 @@ def _snap(val: float, grid: float) -> float:
     return math.ceil(val / grid - 1e-12) * grid
 
 
+def _macro_outline(n_pins: int, area_um2: float, pin_pitch: float = 0.280) -> Tuple[float, float]:
+    """Pick a site-snapped outline that fits every left-edge pin without wrap.
+
+    Old builtin packed large SRAMs as a 66 mm x 35 um ribbon and wrapped pins
+    back onto the same RECT (OpenROAD DRT-0073, no access point). Prefer a
+    near-square block; never shorter than the pin stack.
+    """
+    pin_start = 2.800
+    site_y = 1.400
+    site_x = 0.190
+    min_h = _snap(max(pin_start + float(n_pins) * pin_pitch + site_y, 10.0), site_y)
+    area = max(float(area_um2), min_h * 8.0)
+    height = max(min_h, _snap(math.sqrt(area), site_y))
+    mac_w = _snap(max(area / height, 8.0), site_x)
+    # Cap extreme ribbons at 4:1 so global-place bins stay sane.
+    if mac_w > (4.0 * height):
+        height = max(min_h, _snap(math.sqrt(area / 4.0), site_y))
+        mac_w = _snap(max(area / height, 8.0), site_x)
+    return mac_w, height
+
+
 def generate_builtin_fakeram(
     depth: int,
     width: int,
@@ -447,12 +461,10 @@ def generate_builtin_fakeram(
     aw = max(1, math.ceil(math.log2(depth)))
     pin_pitch = 0.280  # um
     pin_w = 0.070
-    # estimate height from pin count on left edge
-    n_left = width * 3 + aw + 3  # mask + rd + wd + addr + ctrl-ish
-    height = _snap(max(n_left * pin_pitch + 2.0, 10.0), 1.400)
-    # area ~ 0.55 um^2 / bit (ballpark vs ORFS fakeram45_64x32 ≈ 0.61)
-    area = max(depth * width * 0.55, height * 8.0)
-    mac_w = _snap(max(area / height, 8.0), 0.190)
+    # mask + rd + wd + addr + we/ce/clk (VDD/VSS are metal4 stripes, not edge pins)
+    n_left = width * 3 + aw + 3
+    area = depth * width * 0.55
+    mac_w, height = _macro_outline(n_left, area, pin_pitch)
 
     lef_path = gen_dir / f"{name}.lef"
     lib_path = gen_dir / f"{name}.lib"
@@ -472,6 +484,226 @@ def generate_builtin_fakeram(
         assets={"v": v_path.resolve(), "lib": lib_path.resolve(), "lef": lef_path.resolve(), "gds": None},
         notes="builtin FakeRAM black-box (no bsg_fakeram/CACTI)",
     )
+
+
+def generate_builtin_fakerom(
+    depth: int,
+    width: int,
+    work_dir: Path,
+) -> GeneratedMacro:
+    """Emit read-only FakeROM .lib/.lef + behavioral .v (nangate45)."""
+    name = f"fakerom45_{depth}x{width}"
+    gen_dir = work_dir / "generated" / "nangate45" / name
+    gen_dir.mkdir(parents=True, exist_ok=True)
+
+    aw = max(1, math.ceil(math.log2(depth)))
+    pin_pitch = 0.280
+    pin_w = 0.070
+    n_left = width + aw + 2  # rd + addr + ce/clk
+    mac_w, height = _macro_outline(n_left, depth * width * 0.35, pin_pitch)
+
+    lef_path = gen_dir / f"{name}.lef"
+    lib_path = gen_dir / f"{name}.lib"
+    v_path = gen_dir / f"{name}.v"
+
+    _write_fakerom_lef(lef_path, name, mac_w, height, depth, width, aw, pin_pitch, pin_w)
+    _write_fakerom_lib(lib_path, name, depth, width, aw, area_um2=mac_w * height)
+    _write_fakerom_v(v_path, name, depth, width, aw)
+
+    return GeneratedMacro(
+        name=name,
+        depth=depth,
+        width=width,
+        ports="1r",
+        write_size=0,
+        family="fakerom-builtin",
+        assets={
+            "v": v_path.resolve(),
+            "lib": lib_path.resolve(),
+            "lef": lef_path.resolve(),
+            "gds": None,
+        },
+        notes="builtin FakeROM black-box",
+    )
+
+
+def _lef_edge_pins_and_obs(
+    mac_w: float,
+    height: float,
+    pin_list: List[Tuple[str, str]],
+    pin_pitch: float,
+    pin_w: float,
+) -> List[str]:
+    """Left-edge metal3 pins with ORFS-style metal3 OBS cutouts.
+
+    Pins never wrap. VDD/VSS are internal metal4 stripes so they do not
+    steal edge slots or sit on the block boundary.
+    """
+    pin_start = 2.800
+    lines: List[str] = []
+    pin_ys: List[float] = []
+    y = pin_start
+    last_allowed = height - pin_w - 0.5
+    for pname, direction in pin_list:
+        if y > last_allowed + 1e-9:
+            raise ValueError(
+                f"LEF height {height:.3f} cannot fit pin {pname} at y={y:.3f}"
+            )
+        pin_ys.append(y)
+        lines += [
+            f"  PIN {pname}",
+            f"    DIRECTION {direction} ;",
+            "    USE SIGNAL ;",
+            "    PORT",
+            "      LAYER metal3 ;",
+            f"      RECT 0.000 {y:.3f} {pin_w:.3f} {y + pin_w:.3f} ;",
+            "    END",
+            f"  END {pname}",
+        ]
+        y += pin_pitch
+
+    # Power stripes (ORFS fakeram style) — not edge abutment pins.
+    vss_xs = [2.66, 7.14]
+    vdd_xs = [4.90]
+    stripe = 0.280
+    y0, y1 = 2.800, max(height - 2.800, 3.200)
+    while vss_xs[-1] + 8.96 < mac_w - 2.0:
+        vss_xs.append(vss_xs[-1] + 8.96)
+    while vdd_xs[-1] + 8.96 < mac_w - 2.0:
+        vdd_xs.append(vdd_xs[-1] + 8.96)
+    lines += ["  PIN VSS", "    DIRECTION INOUT ;", "    USE GROUND ;", "    PORT", "      LAYER metal4 ;"]
+    for x in vss_xs:
+        lines.append(f"      RECT {x:.3f} {y0:.3f} {x + stripe:.3f} {y1:.3f} ;")
+    lines += ["    END", "  END VSS"]
+    lines += ["  PIN VDD", "    DIRECTION INOUT ;", "    USE POWER ;", "    PORT", "      LAYER metal4 ;"]
+    for x in vdd_xs:
+        lines.append(f"      RECT {x:.3f} {y0:.3f} {x + stripe:.3f} {y1:.3f} ;")
+    lines += ["    END", "  END VDD"]
+
+    lines += ["  OBS", "    LAYER metal1 ;", f"    RECT 0 0 {mac_w:.3f} {height:.3f} ;"]
+    lines += ["    LAYER metal2 ;", f"    RECT 0 0 {mac_w:.3f} {height:.3f} ;"]
+    lines += ["    LAYER metal3 ;", f"    RECT {pin_w:.3f} 0 {mac_w:.3f} {height:.3f} ;"]
+    # metal3 leftovers on the pin column, same idea as ORFS fakeram45_64x32
+    prev = 0.0
+    for py in pin_ys:
+        if py > prev:
+            lines.append(f"    RECT 0 {prev:.3f} {pin_w:.3f} {py:.3f} ;")
+        prev = py + pin_w
+    if prev < height:
+        lines.append(f"    RECT 0 {prev:.3f} {pin_w:.3f} {height:.3f} ;")
+    lines += ["  END"]
+    return lines
+
+
+def _write_fakerom_lef(
+    path: Path,
+    name: str,
+    mac_w: float,
+    height: float,
+    depth: int,
+    width: int,
+    aw: int,
+    pin_pitch: float,
+    pin_w: float,
+) -> None:
+    lines = [
+        "VERSION 5.8 ;",
+        f"BUSBITCHARS \"[]\" ;",
+        f"DIVIDERCHAR \"/\" ;",
+        f"MACRO {name}",
+        "  CLASS BLOCK ;",
+        f"  ORIGIN 0 0 ;",
+        f"  FOREIGN {name} 0 0 ;",
+        f"  SIZE {mac_w:.3f} BY {height:.3f} ;",
+        "  SYMMETRY X Y ;",
+    ]
+    pin_list = []
+    for i in range(width):
+        pin_list.append((f"rd_out[{i}]", "OUTPUT"))
+    for i in range(aw):
+        pin_list.append((f"addr_in[{i}]", "INPUT"))
+    pin_list += [("ce_in", "INPUT"), ("clk", "INPUT")]
+    lines += _lef_edge_pins_and_obs(mac_w, height, pin_list, pin_pitch, pin_w)
+    lines += [f"END {name}", "END LIBRARY", ""]
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _write_fakerom_lib(
+    path: Path, name: str, depth: int, width: int, aw: int, area_um2: float
+) -> None:
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    lines = [
+        f"library({name}) {{",
+        "  technology (cmos);",
+        "  delay_model : table_lookup;",
+        '  date : "' + now + '";',
+        '  comment : "gen-memwrap builtin FakeROM black-box";',
+        '  time_unit : "1ns";',
+        '  voltage_unit : "1V";',
+        '  current_unit : "1uA";',
+        '  leakage_power_unit : "1nw";',
+        "  nom_process : 1;",
+        "  nom_temperature : 25.0;",
+        "  nom_voltage : 1.1;",
+        "  capacitive_load_unit (1,ff);",
+        '  pulling_resistance_unit : "1kohm";',
+        "  operating_conditions(tt_1.1_25.0) {",
+        "    process : 1; temperature : 25.0; voltage : 1.1;",
+        "    tree_type : balanced_tree;",
+        "  }",
+        "  default_operating_conditions : tt_1.1_25.0;",
+        "  default_max_transition : 0.5;",
+        f"  type ({name}_DATA) {{ base_type : array; data_type : bit; bit_width : {width}; bit_from : {width-1}; bit_to : 0; downto : true; }}",
+        f"  type ({name}_ADDR) {{ base_type : array; data_type : bit; bit_width : {aw}; bit_from : {aw-1}; bit_to : 0; downto : true; }}",
+        f"  cell({name}) {{",
+        f"    area : {area_um2:.3f};",
+        "    interface_timing : true;",
+        "    memory() { type : rom; "
+        + f"address_width : {aw}; word_width : {width}; }}",
+        "    pin(clk) { direction : input; capacitance : 10.0; clock : true; }",
+        "    pin(ce_in) { direction : input; capacitance : 5.0; }",
+        f"    bus(addr_in) {{ bus_type : {name}_ADDR; direction : input;",
+        f"      pin(addr_in[{aw-1}:0]) {{ capacitance : 2.0; }} }}",
+        f"    bus(rd_out) {{ bus_type : {name}_DATA; direction : output;",
+        f"      pin(rd_out[{width-1}:0]) {{",
+        "        timing() {",
+        '          related_pin : "clk";',
+        "          timing_type : rising_edge;",
+        '          cell_rise(scalar) { values("0.50"); }',
+        '          cell_fall(scalar) { values("0.50"); }',
+        '          rise_transition(scalar) { values("0.05"); }',
+        '          fall_transition(scalar) { values("0.05"); }',
+        "        }",
+        "      }",
+        "    }",
+        "  }",
+        "}",
+        "",
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _write_fakerom_v(path: Path, name: str, depth: int, width: int, aw: int) -> None:
+    lines = [
+        f"// Builtin FakeROM behavioral model — {name}",
+        f"module {name} (",
+        f"  output reg [{width-1}:0] rd_out,",
+        f"  input  [{aw-1}:0]      addr_in,",
+        "  input                  clk,",
+        "  input                  ce_in",
+        ");",
+        f"  reg [{width-1}:0] mem [0:{depth-1}];",
+        "  integer i;",
+        "  initial begin",
+        f"    for (i = 0; i < {depth}; i = i + 1) mem[i] = {{{width}{{1'b0}}}};",
+        "  end",
+        "  always @(posedge clk) begin",
+        "    if (ce_in) rd_out <= mem[addr_in];",
+        "  end",
+        "endmodule",
+        "",
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def _write_fakeram_lef(
@@ -494,7 +726,6 @@ def _write_fakeram_lef(
         f"  SIZE {mac_w:.3f} BY {height:.3f} ;",
         "  CLASS BLOCK ;",
     ]
-    y = 2.800
     # Order similar to ORFS: w_mask, rd_out, wd_in, addr, controls
     pin_list: List[Tuple[str, str]] = []
     for i in range(width):
@@ -505,30 +736,8 @@ def _write_fakeram_lef(
         pin_list.append((f"wd_in[{i}]", "INPUT"))
     for i in range(aw):
         pin_list.append((f"addr_in[{i}]", "INPUT"))
-    pin_list += [
-        ("we_in", "INPUT"),
-        ("ce_in", "INPUT"),
-        ("clk", "INPUT"),
-        ("VDD", "INOUT"),
-        ("VSS", "INOUT"),
-    ]
-    for pname, direction in pin_list:
-        use = "POWER" if pname == "VDD" else ("GROUND" if pname == "VSS" else "SIGNAL")
-        layer = "metal4" if pname in {"VDD", "VSS"} else "metal3"
-        lines += [
-            f"  PIN {pname}",
-            f"    DIRECTION {direction} ;",
-            f"    USE {use} ;",
-            "    SHAPE ABUTMENT ;",
-            "    PORT",
-            f"      LAYER {layer} ;",
-            f"      RECT 0.000 {y:.3f} {pin_w:.3f} {y + pin_w:.3f} ;",
-            "    END",
-            f"  END {pname}",
-        ]
-        y += pin_pitch
-        if y + pin_w > height - 0.5:
-            y = 2.800  # wrap (still on left; black-box only)
+    pin_list += [("we_in", "INPUT"), ("ce_in", "INPUT"), ("clk", "INPUT")]
+    lines += _lef_edge_pins_and_obs(mac_w, height, pin_list, pin_pitch, pin_w)
     lines += [f"END {name}", "END LIBRARY", ""]
     path.write_text("\n".join(lines), encoding="utf-8")
 

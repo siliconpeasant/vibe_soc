@@ -18,3 +18,11 @@ repair in this RTL epoch, return to the RTL owner instead. Close or fail with
 real artifacts/checks and report tool/cell statistics, STA status, changed RTL,
 immutable evidence, and exact state update. Never invent area, WNS, or TNS.
 '''
+
+[mcp_servers.lib-db-gen]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/lib-db-gen/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 3600

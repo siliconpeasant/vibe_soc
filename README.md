@@ -179,7 +179,10 @@ python3 scripts/package_design_release.py \
 | `check-repo` | 检查不应入库的本机路径和 license 信息 |
 | `flist` | 生成/刷新模块 filelist |
 | `validate-flist` | 展平并检查嵌套 filelist、循环和失效路径 |
-| `lint` | RTL lint，默认 Verilator，可切换工具 |
+| `lint` | RTL lint，默认 Verilator，可切 SpyGlass 或 `LINT_TOOL=vc_static` |
+| `cdc` | CDC，默认 SpyGlass，可切 `CDC_TOOL=vc_static` |
+| `rdc` | 可选 VC Static RDC |
+| `dft` | 可选 VC SpyGlass TestMAX DFT |
 | `comp` | 编译/elaboration |
 | `sim` / `run` / `test` | 单次仿真，支持 TEST/SEED |
 | `regress` | 多测试、多 seed 回归 |
@@ -345,7 +348,10 @@ router 只输出需要读取的规则、需要执行的检查和 fingerprint 缓
 | 能力 | MCP/Skill | 说明 |
 |---|---|---|
 | 项目/IP/模块脚手架 | `soc-build` | `soc_init`、`soc_add_chip`、`soc_add_ip` |
-| 构建与验证 | `soc-build` | filelist、lint、compile、sim、regress、coverage、syn |
+| 构建与验证 | `soc-build` | filelist、lint、CDC、可选 VC Static RDC/DFT、compile、sim、regress、coverage、syn |
+| IP-XACT/Spirit → YAML | `xml2yml` | 转成 yml2reg YAML，再生成 RTL/DV/SW |
+| DFT 前端 | `dft-gen` + `soc-dft-engineer` | 扫描 test_mode/scan 钩子，生成 `de/dft/` SGDC/Tcl |
+| 时序图 | `wavedrom-gen` | WaveJSON/JSON5 → SVG/PNG/HTML |
 | 顶层集成 | `soc-integrate` | 端口提取、实例化、wrapper、top 生成、快照、diff、刷新 |
 | OpenROAD handoff | `soc-pd-engineer` + `soc-openroad` | 物理设计 handoff agent 负责约束审查和流程调度；MCP 生成 ORFS config/SDC、运行 synth/floorplan/place/cts/route/finish/all 并汇总结果 |
 | Liberty/DB 辅助生成 | `lib-db-gen` | 使用 Library Compiler 将 `.lib` 转 `.db`，或从 Verilog top 端口生成早期 black-box stub `.lib/.db` |
@@ -436,15 +442,20 @@ make coverage-regress MODULE=ip/digital/uart REGRESS_SEEDS=1-10 REGRESS_JOBS=4
 回归摘要写入模块 `dv/sim/regress/summary.txt` 和 `summary.json`。覆盖率默认指标为 `line+branch+cond+tgl+fsm+assert`，报告位于 `dv/cov/report/`。
 
 
-## CDC
+## CDC / RDC / DFT
 
-CDC 使用 SpyGlass CDC 入口，配置位于 `scripts/cdc/sg_cdc.tcl`。常用入口：
+CDC 默认使用 SpyGlass（`scripts/cdc/sg_cdc.tcl`）。VC Static 是可选额外后端，不替换默认工具链：
 
 ```bash
 make cdc MODULE=ip/digital/uart RTL_TOP=uart CDC_TOOL=spyglass
+make lint MODULE=ip/digital/uart LINT_TOOL=vc_static RTL_TOP=uart
+make cdc MODULE=ip/digital/uart CDC_TOOL=vc_static RTL_TOP=uart
+make rdc MODULE=ip/digital/uart RTL_TOP=uart
+make dft MODULE=ip/digital/uart RTL_TOP=uart
 ```
 
-CDC 运行产物写入模块 `de/run/cdc/`，属于本地运行输出，不入库。
+SpyGlass CDC 产物在 `de/run/cdc/`；VC Static lint/CDC/RDC/DFT 产物分别在
+`de/run/lint_vc_static/`、`de/run/cdc/`、`de/run/rdc/`、`de/run/dft/`，均不入库。
 
 ## 综合与 STA
 

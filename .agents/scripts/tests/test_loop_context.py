@@ -85,6 +85,7 @@ class LoopContextCase(unittest.TestCase):
         self.assertIn("targeted_soc_sim_or_soc_comp", result["required_checks"])
         self.assertEqual(result["owner"], "soc-rtl-designer")
         self.assertIn(".agents/rules/04_coding_style.md", result["rules"])
+        self.assertIn(".agents/rules/15_reset_ownership.md", result["rules"])
         self.assertIn(
             ".agents/rules/04_verilog_coding_style.md", result["required_reads"]
         )

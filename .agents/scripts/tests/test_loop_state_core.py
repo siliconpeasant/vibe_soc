@@ -534,10 +534,69 @@ class WorkspaceCase(unittest.TestCase):
         )
         result = core.check(str(self.workspace), "normal")
         self.assertEqual(result["outcome"], "pass", result["issues"])
-        self.assertEqual(
-            set(result["details"]["evidence_checks"]["demo"]),
-            {"doc", "rtl", "verif", "syn"},
+        # formal/integrate remain pending unless closed or skipped; evidence
+        # report lists stages that recorded checks in this review path.
+        self.assertTrue(
+            {"doc", "rtl", "verif", "syn"}.issubset(
+                set(result["details"]["evidence_checks"]["demo"])
+            )
         )
+
+    def _handoff_pack(self, *, netlist: str, formal: str, note: str) -> dict:
+        write(self.workspace / "de" / "rtl" / "filelist.f", "demo.sv\n")
+        write(self.workspace / "de" / "syn" / "demo_netlist.v", netlist)
+        write(self.workspace / "de" / "syn" / "demo.sdc", "create_clock -period 10 clk\n")
+        write(
+            self.workspace / "de" / "run" / "formality" / "verification_status.rpt",
+            formal,
+        )
+        write(self.workspace / "docs" / "frontend_handoff.md", note)
+        return {
+            "artifacts": [
+                "de/rtl/filelist.f",
+                "de/syn/demo_netlist.v",
+                "de/syn/demo.sdc",
+                "de/run/formality/verification_status.rpt",
+                "docs/frontend_handoff.md",
+            ]
+        }
+
+    def test_handoff_checker_requires_nonempty_netlist_and_formal_succeeded(self) -> None:
+        empty_netlist = self._handoff_pack(
+            netlist="",
+            formal="VERIFICATION_STATUS=SUCCEEDED\n",
+            note="# frontend handoff\nNot timing closure.\n",
+        )
+        empty_result = core._call_checker(
+            "handoff", self.workspace, "", empty_netlist, policy="closure"
+        )
+        self.assertFalse(empty_result["passed"])
+        self.assertTrue(
+            any("empty" in issue and "netlist" in issue for issue in empty_result["issues"])
+        )
+
+        failed_formal = self._handoff_pack(
+            netlist="module demo; endmodule\n",
+            formal="VERIFICATION_STATUS=FAILED\n",
+            note="# frontend handoff\nNot timing closure.\n",
+        )
+        failed_result = core._call_checker(
+            "handoff", self.workspace, "", failed_formal, policy="closure"
+        )
+        self.assertFalse(failed_result["passed"])
+        self.assertTrue(
+            any("SUCCEEDED" in issue for issue in failed_result["issues"])
+        )
+
+        good = self._handoff_pack(
+            netlist="module demo; endmodule\n",
+            formal="Status:             SUCCEEDED\nVERIFICATION_STATUS=SUCCEEDED\n",
+            note="# frontend handoff\nNot timing closure.\n",
+        )
+        good_result = core._call_checker(
+            "handoff", self.workspace, "", good, policy="closure"
+        )
+        self.assertTrue(good_result["passed"], good_result["issues"])
 
 
 if __name__ == "__main__":

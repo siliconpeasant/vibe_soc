@@ -3,4 +3,5 @@
 
 set -eu
 plugin_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)
-exec /bin/sh "$plugin_root/scripts/run_mcp_python.sh" --setup-only
+/bin/sh "$plugin_root/scripts/run_mcp_python.sh" --setup-only
+exec /bin/sh "$plugin_root/scripts/run_mcp_node.sh" --setup-only

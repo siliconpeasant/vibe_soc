@@ -1,0 +1,31 @@
+# SpyGlass DFT SGDC source (reviewed hierarchical paths).
+# Generate: python scripts/dft_gen.py gen --config this.yml -o de/dft/<top>_dft.sgdc
+
+design: example_top
+period_ns: 5.0
+
+test_modes:
+  - name: test_mode
+    value: 1
+  # hierarchical example:
+  # - name: example_top.u_io.tm_in
+  #   value: 1
+
+resets:
+  - name: rst_n
+    value: 0
+  - name: test_rst_n
+    value: 0
+  # - name: example_top.u_blk.dftrstdisable
+  #   value: 0
+
+clocks:
+  - name: clk
+    period: 5.0
+    # testclock: true
+    # atspeed: true
+    # edge: "0 1"
+
+# Optional comments written into the SGDC header
+notes:
+  - "Starter template — replace hierarchical paths before chip DFT signoff."

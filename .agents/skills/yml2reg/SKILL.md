@@ -71,3 +71,4 @@ Expand to RAW/STAT/MASK/SET/CLR/MODE/POLAR (RTL + RAL + headers), rals_parser al
 - C header struct now inserts `volatile uint32_t reserved_*[]` for offset holes — safe for MMIO cast when offsets are word-aligned.
 - Bus adapters are templates; replace `apb_seq_item` / `ahb_seq_item` / `dab_seq_item` with project types if needed.
 - Do not hand-edit generated files; change YAML and regenerate.
+- Reverse path (IP-XACT / Spirit XML → YAML): skill **`xml2yml`** (`xml2yml` / `ipxact2yml` tools).

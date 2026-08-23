@@ -29,6 +29,13 @@ class PublicEdaFlowContractTest(unittest.TestCase):
         module_make = self.read("ip/digital/upf_dc_demo/Makefile")
         self.assertIn('set analyze_options "-f $filelist"', dc)
         self.assertIn("analyze -format sverilog -vcs $analyze_options", dc)
+        vc_common = self.read("scripts/vc_static/vc_flow_common.tcl")
+        self.assertIn('set analyze_vcs "-f $prepared $vcs_opts"', vc_common)
+        self.assertIn("analyze -format $format -vcs $analyze_vcs", vc_common)
+        self.assertIn("LINT_TOOL ?= verilator", config)
+        self.assertIn("CDC_TOOL            ?= spyglass", config)
+        self.assertIn("VC_LINT_GATE", config)
+        self.assertIn("DFT_TOOL            ?= vc_static", config)
         self.assertIn("RTL_SYNTHESIS_DEFINE ?= SYNTHESIS", config)
         self.assertIn('DC_RTL_DEFINE="$(DC_RTL_DEFINE)"', common)
         self.assertIn('FM_RTL_DEFINE="$(FORMAL_RTL_DEFINE)"', common)
@@ -78,6 +85,12 @@ class PublicEdaFlowContractTest(unittest.TestCase):
         common = self.read("scripts/common.mk")
         self.assertIn("formal-upf: formal", common)
         self.assertIn("clp-upf:\n", common)
+        self.assertIn("rdc: $(RTL_FLIST)", common)
+        self.assertIn("dft: $(RTL_FLIST)", common)
+        self.assertIn("VC_LINT_GATE", common)
+        self.assertIn("VC_DFT_GATE", common)
+        root_make = self.read("Makefile")
+        self.assertIn("verdi lint cdc rdc dft syn formal formal-upf clp-upf", root_make)
         module_make = self.read("ip/digital/upf_dc_demo/Makefile")
         self.assertIn("scripts/syn/dc_upf_synth.tcl", module_make)
         self.assertFalse(
@@ -112,13 +125,23 @@ class PublicEdaFlowContractTest(unittest.TestCase):
         self.assertIn("formal-upf: formal", common)
         self.assertIn("clp-upf:\n", common)
         self.assertIn("syn-artifacts:\n", common)
-        self.assertIn("formal formal-upf clp-upf", root_make)
+        self.assertIn("rdc: $(RTL_FLIST)", common)
+        self.assertIn("dft: $(RTL_FLIST)", common)
+        self.assertIn("verdi lint cdc rdc dft syn formal formal-upf clp-upf", root_make)
+        config = (template / "scripts/config.mk").read_text(encoding="utf-8")
+        self.assertIn("LINT_TOOL ?= verilator", config)
+        self.assertIn("CDC_TOOL            ?= spyglass", config)
         for relative in (
             "scripts/syn/dc_synth.tcl",
             "scripts/syn/dc_upf_synth.tcl",
             "scripts/formal/formality_verify.tcl",
             "scripts/clp/clp_rtl_upf_check.tcl",
             "scripts/tcl/flow_common.tcl",
+            "scripts/lint/vc_lint.tcl",
+            "scripts/cdc/vc_cdc.tcl",
+            "scripts/rdc/vc_rdc.tcl",
+            "scripts/dft/vc_dft.tcl",
+            "scripts/vc_static/vc_flow_common.tcl",
         ):
             self.assertTrue((template / relative).is_file(), relative)
 

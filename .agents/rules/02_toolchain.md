@@ -5,11 +5,13 @@ Use logical MCP names; host namespaces may differ.
 | Work | Registered tool |
 |---|---|
 | scaffold/filelist/lint/CDC/compile/sim/regress/coverage/synthesis/debug | `soc-build.soc_*` |
+| optional VC Static lint/CDC/RDC/DFT | `soc_lint`/`soc_cdc`/`soc_rdc`/`soc_dft` (`vc_static`) |
 | ports/snapshots/wrappers/generated top | `soc-integrate.soc_*` |
-| physical design | `soc-openroad.soc_openroad_*` |
-| YAML or Excel registers | `yml2reg.yml2reg`, `excel-yml-gen.excel_yml_gen` |
+| YAML/Excel registers; IP-XACT→YAML | `yml2reg`, `excel-yml-gen`, `xml2yml` |
+| memwrap / Liberty `.db` / DFT SGDC / WaveDrom | `gen-memwrap`, `lib-db-gen`, `dft-gen`, `wavedrom-gen` |
 | CRG requirements/diagrams | `crg-req-to-design.*`, `cr-tree-diag-gen.*` |
 | CRG Excel → RTL / SDC | `crg-gen.crg_gen` |
+| physical design | `soc-openroad.soc_openroad_*` |
 
 Only schedule tools currently registered in the context. In particular, do not
 substitute hand-written clock/reset trees when `crg-gen.crg_gen` applies, and do

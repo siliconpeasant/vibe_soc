@@ -7,7 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 `vibe_soc` is a silicon-crew style SoC frontend project. RTL creation and material refactoring follow a gated pipeline:
 
 ```text
-architecture (optional) -> doc -> rtl -> {verif, syn}
+architecture (optional) -> doc -> rtl -> {verif, syn} -> formal -> handoff
+(optional integrate after rtl; CDC/RDC/DFT/low-power are side lanes)
 ```
 
 Stage role agents produce canonical artifacts under strict artifact roots only:

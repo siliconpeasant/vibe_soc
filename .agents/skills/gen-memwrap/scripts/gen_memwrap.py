@@ -36,6 +36,7 @@ if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mem_generators import (  # noqa: E402
     GeneratedMacro,
+    generate_builtin_fakerom,
     generate_macro,
     generator_status,
 )
@@ -85,17 +86,22 @@ class Macro:
 
 def _resolve_orfs_root(catalog: dict) -> Path:
     env_key = catalog.get("orfs_platforms_env", "ORFS_PLATFORMS")
-    env_val = os.environ.get(env_key, "").strip()
-    if env_val:
-        root = Path(env_val).expanduser().resolve()
-    else:
-        root = Path(catalog.get("default_orfs_platforms", "")).expanduser().resolve()
-    if not root.is_dir():
-        raise FileNotFoundError(
-            f"ORFS platforms root not found: {root}\n"
-            f"Set ${env_key} or fix catalog default_orfs_platforms."
-        )
-    return root
+    candidates = [os.environ.get(env_key, "").strip()]
+    for var in ("SILICON_CREW_ORFS_DIR", "OPENROAD_FLOW_HOME"):
+        base = os.environ.get(var, "").strip()
+        if base:
+            candidates.append(str(Path(base) / "platforms"))
+    candidates.append(catalog.get("default_orfs_platforms", ""))
+    root = Path("").resolve()
+    for cand in candidates:
+        if cand:
+            root = Path(cand).expanduser().resolve()
+            if root.is_dir():
+                return root
+    raise FileNotFoundError(
+        f"ORFS platforms root not found: {root}\n"
+        f"Set ${env_key} (or SILICON_CREW_ORFS_DIR / OPENROAD_FLOW_HOME)."
+    )
 
 
 def load_catalog(platform: str) -> Tuple[Path, List[Macro]]:
@@ -1011,6 +1017,30 @@ def emit_rom_wrap(
     write_text(path, lines)
 
 
+def emit_rom_wrap_fakerom(
+    path: Path, wrap: str, macro_name: str, depth: int, width: int
+) -> None:
+    aw = addr_width(depth)
+    lines = header_lines(path.name) + [
+        f"// Unified ROM wrap → {macro_name} (FakeROM 1r)",
+        f"module {wrap} (",
+        "  input                  clk,",
+        "  input                  me,",
+        f"  input  [{aw-1}:0]      addr,",
+        f"  output [{width-1}:0]   dout",
+        ");",
+        f"  {macro_name} u_mem (",
+        "    .clk     (clk),",
+        "    .ce_in   (me),",
+        "    .addr_in (addr),",
+        "    .rd_out  (dout)",
+        "  );",
+        "endmodule",
+        "",
+    ]
+    write_text(path, lines)
+
+
 # ---------------------------------------------------------------------------
 # Main generation
 # ---------------------------------------------------------------------------
@@ -1043,11 +1073,26 @@ def process_row(
     bit_write = req.bit_write
     mtype = req.mem_type
 
-    # --- ROM (pure behavioral) ---
+    # --- ROM ---
     if mtype == "rom":
         base = req.name or wrap_base_name("rom", req.depth, req.width, req.platform, False)
         wrap = base if base.endswith("_wrap") else base + "_wrap"
         path = rtl_dir / f"{wrap}.v"
+        if req.platform == "nangate45" and do_generate:
+            macro = generate_builtin_fakerom(req.depth, req.width, out)
+            assets_copied: Dict[str, Optional[str]] = {}
+            for key, d in (("lib", lib_dir), ("lef", lef_dir), ("v", rtl_dir)):
+                dst = copy_asset(macro.assets.get(key), d, key)
+                assets_copied[key] = str(dst) if dst else None
+            emit_rom_wrap_fakerom(path, wrap, macro.name, req.depth, req.width)
+            return GenResult(
+                req,
+                wrap,
+                path,
+                macro.name,
+                assets_copied,
+                macro.notes,
+            )
         emit_rom_wrap(path, wrap, req.depth, req.width)
         return GenResult(req, wrap, path, "(behavioral_rom)", {}, "behavioral ROM")
 

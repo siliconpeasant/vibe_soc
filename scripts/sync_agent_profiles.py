@@ -31,7 +31,10 @@ HELPER_RE = re.compile(
 # Root sessions keep only commonly useful generators enabled. These role-local
 # overrides activate heavyweight servers only for the agent that owns them.
 ROLE_MCP_SERVERS = {
-    "soc-integrator": ("soc-integrate",),
+    "soc-integrator": ("soc-integrate", "xml2yml"),
+    "soc-synthesis-engineer": ("lib-db-gen",),
+    "soc-low-power-engineer": ("lib-db-gen",),
+    "soc-dft-engineer": ("dft-gen",),
     "soc-pd-engineer": ("soc-openroad",),
 }
 

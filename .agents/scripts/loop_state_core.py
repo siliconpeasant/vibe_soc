@@ -25,19 +25,30 @@ from pathlib import Path
 
 
 CURRENT_SCHEMA_VERSION = 3
-STAGE_ORDER = ("doc", "rtl", "verif", "syn")
+# Frontend delivery spine:
+#   doc -> rtl -> {verif, syn} -> formal(optional) -> handoff
+#                ↘ integrate(optional, multi-module tops)
+STAGE_ORDER = ("doc", "rtl", "verif", "syn", "formal", "integrate", "handoff")
 DEPENDENCIES = {
     "doc": (),
     "rtl": ("doc",),
     "verif": ("rtl",),
     "syn": ("rtl",),
+    "formal": ("syn",),
+    "integrate": ("rtl",),
+    "handoff": ("verif", "syn", "formal", "integrate"),
 }
 STAGE_META = {
     "doc": ("设计文档编写", "soc-doc-engineer"),
     "rtl": ("RTL设计与编码", "soc-rtl-designer"),
     "verif": ("验证环境搭建与仿真", "soc-verification-engineer"),
-    "syn": ("逻辑综合与时序分析", "soc-synthesis-engineer"),
+    "syn": ("逻辑综合与预综合", "soc-synthesis-engineer"),
+    "formal": ("等价性/形式验证", "soc-synthesis-engineer"),
+    "integrate": ("多模块顶层集成", "soc-integrator"),
+    "handoff": ("前端交付打包", "soc-synthesis-engineer"),
 }
+# Optional gates: skip with --note (formal optional; integrate for leaf modules).
+SKIPPABLE_STAGES = frozenset({"doc", "formal", "integrate"})
 SUCCESS_STATES = {"done", "skipped"}
 ALLOWED_STATUS = {"pending", "blocked", "in_progress", "done", "fail", "skipped"}
 ALLOWED_TRANSITIONS = {
@@ -71,6 +82,15 @@ STAGE_REQUIRED_CHECK_GROUPS = {
     ),
     "syn": (
         ("registered synthesis", frozenset({"soc_syn"})),
+    ),
+    "formal": (
+        ("registered formal", frozenset({"soc_formal"})),
+    ),
+    "integrate": (
+        ("registered integrate or lint", frozenset({"soc_integrate", "soc_lint", "rtl_quality"})),
+    ),
+    "handoff": (
+        ("frontend handoff audit", frozenset({"frontend_handoff", "handoff_review", "delivery_pack"})),
     ),
 }
 LEGACY_STAGE_REQUIRED_CHECK_GROUPS = {
@@ -498,6 +518,31 @@ def stage_artifact_issues(stage: str, artifacts: list[str]) -> list[str]:
         return [] if has_output else [
             "syn requires a synthesis log or netlist artifact"
         ]
+    if stage == "formal":
+        has_report = any(
+            (
+                rel.startswith("de/run/formality/")
+                or "/formality/" in rel
+                or Path(rel).name in {"formality.log", "fm_shell.log"}
+            )
+            for rel in artifacts
+        )
+        return [] if has_report else [
+            "formal requires a de/run/formality/* or formality.log artifact"
+        ]
+    if stage == "integrate":
+        has_top = any(
+            rel.startswith("de/rtl/")
+            and Path(rel).name in {"filelist.f", "filelist.mk"}
+            for rel in artifacts
+        ) or any(rel.startswith("docs/") and "integrat" in rel.lower() for rel in artifacts)
+        return [] if has_top else [
+            "integrate requires de/rtl/filelist.f|filelist.mk or docs/*integrat* artifact"
+        ]
+    if stage == "handoff":
+        return [] if artifacts else [
+            "handoff requires at least one delivery artifact path"
+        ]
     return [f"unknown stage: {stage}"]
 
 
@@ -741,7 +786,7 @@ def _validate_stage(
                 module=module,
                 stage=stage,
             )
-        if stage in {"rtl", "verif", "syn"}:
+        if stage in {"rtl", "verif", "syn", "formal"}:
             fingerprint = info.get("rtl_fingerprint")
             if not fingerprint:
                 _issue(
@@ -751,9 +796,13 @@ def _validate_stage(
                     module=module,
                     stage=stage,
                 )
-        if stage in {"verif", "syn"}:
+        if stage in {"verif", "syn", "formal"}:
             run_evidence = info.get("run_evidence")
-            expected_family = "soc_sim" if stage == "verif" else "soc_syn"
+            expected_family = {
+                "verif": "soc_sim",
+                "syn": "soc_syn",
+                "formal": "soc_formal",
+            }[stage]
             evidence_policy = str(info.get("evidence_policy") or "")
             valid_run = (
                 isinstance(run_evidence, dict)
@@ -855,7 +904,7 @@ def _validate_pipeline(
                 current_fingerprint=current_fingerprint,
                 allow_material_drift=(
                     downstream_repair
-                    and stage in {"rtl", "verif", "syn"}
+                    and stage in {"rtl", "verif", "syn", "formal"}
                     and isinstance(pipeline.get(stage), dict)
                     and pipeline[stage].get("status") == "done"
                 ),
@@ -863,7 +912,7 @@ def _validate_pipeline(
 
     fingerprints = {
         stage: pipeline[stage].get("rtl_fingerprint")
-        for stage in ("rtl", "verif", "syn")
+        for stage in ("rtl", "verif", "syn", "formal")
         if isinstance(pipeline.get(stage), dict)
         and pipeline[stage].get("status") == "done"
         and pipeline[stage].get("rtl_fingerprint")
@@ -1268,8 +1317,11 @@ def _validate_transition(pipeline: dict, stage: str, target: str, note: str) -> 
         raise ValueError("skipped status requires --note with the applicable exception")
     if target == "pending" and current in {"done", "fail", "in_progress"} and not note:
         raise ValueError("pending invalidation from an active or completed stage requires --note")
-    if target == "skipped" and stage != "doc":
-        raise ValueError("only the doc stage may be skipped")
+    if target == "skipped" and stage not in SKIPPABLE_STAGES:
+        raise ValueError(
+            f"stage {stage} may not be skipped; allowed skip stages: "
+            + ", ".join(sorted(SKIPPABLE_STAGES))
+        )
 
 
 def _clear_stage(info: dict, status: str, note: str) -> None:
@@ -1336,7 +1388,11 @@ def _run_binding(
         normalized_legacy_fingerprint = True
     if not run_id and not legacy:
         raise ValueError(f"{stage} closure requires --run-id from the MCP run")
-    tool_family = "soc_sim" if stage == "verif" else "soc_syn"
+    tool_family = {
+        "verif": "soc_sim",
+        "syn": "soc_syn",
+        "formal": "soc_formal",
+    }.get(stage, "soc_syn")
     if run_id and not legacy and not run_id.startswith(tool_family + "-"):
         raise ValueError(
             f"{stage} run ID must be emitted by {tool_family} (expected {tool_family}-...)"
@@ -1447,6 +1503,12 @@ def _settle_downstream_repair(
         sibling,
         f"RTL changed during {stage}; {sibling} rerun required",
     )
+    for consumer in ("formal", "integrate", "handoff"):
+        _invalidate_stage(
+            pipeline,
+            consumer,
+            f"RTL changed during {stage}; {consumer} rerun required",
+        )
     return fingerprint
 
 
@@ -1511,8 +1573,8 @@ def _apply_transition(
         fingerprint = None
         run_evidence = None
         legacy_binding = False
-        if stage in {"rtl", "verif", "syn"}:
-            if stage in {"verif", "syn"}:
+        if stage in {"rtl", "verif", "syn", "formal"}:
+            if stage in {"verif", "syn", "formal"}:
                 fingerprint, run_evidence, legacy_binding = _run_binding(
                     stage,
                     info,
@@ -1521,14 +1583,15 @@ def _apply_transition(
                     run_id,
                     parsed_checks,
                 )
-                fingerprint = _settle_downstream_repair(
-                    pipeline,
-                    workspace,
-                    stage,
-                    status,
-                    run_evidence,
-                    parsed_checks,
-                )
+                if stage in {"verif", "syn"}:
+                    fingerprint = _settle_downstream_repair(
+                        pipeline,
+                        workspace,
+                        stage,
+                        status,
+                        run_evidence,
+                        parsed_checks,
+                    )
             else:
                 fingerprint = _current_snapshot(workspace)
         info.update(
@@ -1567,7 +1630,7 @@ def _apply_transition(
         fingerprint = info.get("rtl_fingerprint")
         run_evidence = None
         legacy_binding = False
-        if stage in {"verif", "syn"}:
+        if stage in {"verif", "syn", "formal"}:
             if source_fingerprint or run_id:
                 fingerprint, run_evidence, legacy_binding = _run_binding(
                     stage,
@@ -1579,14 +1642,15 @@ def _apply_transition(
                 )
             else:
                 fingerprint = _current_snapshot(workspace)
-            fingerprint = _settle_downstream_repair(
-                pipeline,
-                workspace,
-                stage,
-                status,
-                run_evidence,
-                parsed_checks,
-            )
+            if stage in {"verif", "syn"}:
+                fingerprint = _settle_downstream_repair(
+                    pipeline,
+                    workspace,
+                    stage,
+                    status,
+                    run_evidence,
+                    parsed_checks,
+                )
         info.update(
             {
                 "status": status,
@@ -1622,8 +1686,30 @@ def _apply_transition(
     info["last_updated"] = now()
     if stage == "rtl" and status == "in_progress" and current in SUCCESS_STATES:
         invalidation_note = note or "RTL reopened; downstream results invalidated"
-        _invalidate_stage(pipeline, "verif", invalidation_note)
-        _invalidate_stage(pipeline, "syn", invalidation_note)
+        for consumer in ("verif", "syn", "formal", "integrate", "handoff"):
+            _invalidate_stage(pipeline, consumer, invalidation_note)
+    if stage == "syn" and status == "in_progress" and current in SUCCESS_STATES:
+        invalidation_note = note or "synthesis reopened; formal/handoff invalidated"
+        for consumer in ("formal", "handoff"):
+            _invalidate_stage(pipeline, consumer, invalidation_note)
+    if stage == "syn" and status == "done":
+        # New syn epoch requires formal/handoff re-run unless still pending.
+        for consumer in ("formal", "handoff"):
+            cinfo = pipeline.get(consumer) or {}
+            if cinfo.get("status") in {"done", "fail", "in_progress"}:
+                _invalidate_stage(
+                    pipeline,
+                    consumer,
+                    "synthesis completed with new evidence; rerun required",
+                )
+    if stage in {"verif", "formal", "integrate"} and status == "done":
+        hinfo = pipeline.get("handoff") or {}
+        if hinfo.get("status") in {"done", "fail", "in_progress"}:
+            _invalidate_stage(
+                pipeline,
+                "handoff",
+                f"{stage} completed with new evidence; handoff rerun required",
+            )
     recompute_blocked(pipeline)
 
 
@@ -2161,6 +2247,49 @@ def _call_checker(
                 "results": results,
             },
         }
+    if stage == "formal":
+        reports = [
+            rel
+            for rel in info.get("artifacts") or []
+            if (
+                rel.startswith("de/run/formality/")
+                or "/formality/" in rel
+                or Path(rel).name in {"formality.log", "fm_shell.log", "verification_status.rpt"}
+            )
+        ]
+        existing = [
+            rel
+            for rel in reports
+            if (workspace / rel).is_file() and (workspace / rel).stat().st_size > 0
+        ]
+        if not existing:
+            return {
+                "passed": False,
+                "issues": ["no recorded Formality report is available"],
+                "details": {"reports": reports},
+            }
+        status_files = [
+            rel for rel in existing if Path(rel).name == "verification_status.rpt"
+        ]
+        if status_files:
+            text = (workspace / status_files[0]).read_text(errors="replace")
+            if "VERIFICATION_STATUS=SUCCEEDED" not in text and "SUCCEEDED" not in text:
+                return {
+                    "passed": False,
+                    "issues": [
+                        "Formality verification_status.rpt does not record SUCCEEDED"
+                    ],
+                    "details": {"reports": existing},
+                }
+        return {"passed": True, "issues": [], "details": {"reports": existing}}
+    if stage == "integrate":
+        from check_integrate import check as checker
+
+        return checker(str(workspace), info)
+    if stage == "handoff":
+        from check_handoff import check as checker
+
+        return checker(str(workspace), info)
     raise ValueError(f"unknown stage: {stage}")
 
 

@@ -19,6 +19,10 @@ endif
     TOP_MODULE ?= tb
   endif
   FSDB ?= 0
+  # X-propagation needs VCS-ELITE-COMPILE / VT_VCS_XProp. Site licenses that
+  # only have VCS-BASE-COMPILE hang forever when -xprop is combined with
+  # -licqueue. CI sets VCS_XPROP=0; keep the OpenTitan default locally.
+  VCS_XPROP ?= 1
   VERDI_HOME ?= /usr/Synopsys/verdi/T-2022.06
   OT_WAVES ?= $(if $(filter 1,$(FSDB)),fsdb,none)
   ifeq ($(FSDB),1)
@@ -77,7 +81,9 @@ endif
   USER_COMPILE_FLAGS += -error=MATN -error=STASKW_NDTAZ1 -error=TMPO
   USER_COMPILE_FLAGS += -error=SV-OHCM -error=ENUMASSIGN -error=TEIF
   USER_COMPILE_FLAGS += -deraceclockdata $(VCS_KDB_COMPILE_FLAGS)
+  ifeq ($(VCS_XPROP),1)
   USER_COMPILE_FLAGS += -xprop=$(OT_VENDOR_ROOT)/hw/top_earlgrey/dv/vcs_xprop.cfg -xprop=mmsopt
+  endif
   USER_COMPILE_FLAGS += -Xcflags='-Wno-error=implicit-function-declaration'
   USER_COMPILE_FLAGS += -CFLAGS --std=c99 -CFLAGS -fno-extended-identifiers -CFLAGS -std=c++11
   USER_COMPILE_FLAGS += -CFLAGS -DEVP_CTRL_AEAD_GET_TAG=0x10 -CFLAGS -DEVP_CTRL_AEAD_SET_TAG=0x11

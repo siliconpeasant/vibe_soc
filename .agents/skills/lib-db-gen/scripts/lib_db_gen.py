@@ -282,16 +282,50 @@ def parse_lib_name(lib_path: Path) -> str:
     return match.group(1).strip('"')
 
 
-def write_lc_tcl(lib_path: Path, db_path: Path, tcl_path: Path, lib_name: str) -> None:
+SUPPORTED_DB_SHELL_MODES = ("auto", "dc", "lc")
+
+
+def write_db_tcl(
+    lib_path: Path,
+    db_path: Path,
+    tcl_path: Path,
+    lib_name: str,
+    *,
+    backend: str,
+) -> None:
+    """Emit the tool-specific convert Tcl.
+
+    backend:
+      - ``lc``: native Library Compiler session
+      - ``dc``: Design Compiler write-lib mode (enable_write_lib_mode)
+
+    On some RHEL 8 hosts LC X-2025.06 successfully write_lib then SIGSEGVs in
+    process exit handlers after any read_lib. DC write-lib mode has been
+    observed to write the same DB and exit 0 cleanly.
+    """
+    if backend not in {"lc", "dc"}:
+        raise ValueError(f"unsupported DB backend: {backend}")
     lib_abs = lib_path.resolve().as_posix()
     db_abs = db_path.resolve().as_posix()
     tcl_path.parent.mkdir(parents=True, exist_ok=True)
-    tcl_path.write_text(
-        f'read_lib "{lib_abs}"\n'
-        f'write_lib {lib_name} -format db -output "{db_abs}"\n'
-        'exit\n',
-        encoding="utf-8",
+    lines: list[str] = []
+    if backend == "dc":
+        # Required before write_lib in dc_shell (UIL-91 when omitted).
+        lines.append("enable_write_lib_mode")
+    lines.extend(
+        [
+            f'read_lib "{lib_abs}"',
+            f'write_lib {lib_name} -format db -output "{db_abs}"',
+            "exit",
+            "",
+        ]
     )
+    tcl_path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_lc_tcl(lib_path: Path, db_path: Path, tcl_path: Path, lib_name: str) -> None:
+    """Backward-compatible alias: emit LC-style convert Tcl."""
+    write_db_tcl(lib_path, db_path, tcl_path, lib_name, backend="lc")
 
 
 def default_work_dir(db_path: Path) -> Path:
@@ -318,8 +352,136 @@ def staging_db_path(db_path: Path) -> Path:
     return db_path.with_name(f".{db_path.name}.{uuid.uuid4().hex}.tmp.db")
 
 
+def _resolve_executable(name_or_path: str) -> str | None:
+    if not name_or_path:
+        return None
+    path = Path(name_or_path)
+    if path.is_file() and os.access(path, os.X_OK):
+        return str(path)
+    found = shutil.which(name_or_path)
+    return found
+
+
+def resolve_db_backend(
+    mode: str,
+    *,
+    lc_shell: str,
+    dc_shell: str,
+) -> tuple[str, str]:
+    """Return (backend, executable path) for Liberty→DB conversion."""
+    # Default backend is DC write-lib mode (avoids LC exit-handler SIGSEGV).
+    mode = (mode or "dc").strip().lower()
+    if mode not in SUPPORTED_DB_SHELL_MODES:
+        raise ValueError(
+            f"shell mode must be one of: {', '.join(SUPPORTED_DB_SHELL_MODES)}"
+        )
+
+    lc_exe = _resolve_executable(lc_shell)
+    dc_exe = _resolve_executable(dc_shell)
+
+    if mode == "dc":
+        if not dc_exe:
+            raise FileNotFoundError(
+                f"dc_shell not found ({dc_shell}); set DC_SHELL or --dc-shell"
+            )
+        return "dc", dc_exe
+    if mode == "lc":
+        if not lc_exe:
+            raise FileNotFoundError(
+                f"lc_shell not found ({lc_shell}); set LC_SHELL or --lc-shell"
+            )
+        return "lc", lc_exe
+
+    # auto: prefer DC; fall back to LC only when DC is unavailable.
+    if dc_exe:
+        return "dc", dc_exe
+    if lc_exe:
+        return "lc", lc_exe
+    raise FileNotFoundError(
+        "neither dc_shell nor lc_shell found; set DC_SHELL/LC_SHELL or --dc-shell/--lc-shell"
+    )
+
+
+def _staged_db_ready(staged_db_path: Path) -> bool:
+    return staged_db_path.is_file() and staged_db_path.stat().st_size > 0
+
+
+def _is_crash_exit(returncode: int | None) -> bool:
+    """True only for the observed LC post-write SIGSEGV encodings.
+
+    subprocess reports signal death as a negative code (-N). Some wrappers
+    report 128+N instead. Do not recover SIGKILL, SIGTERM, SIGABRT, or other
+    fatal signals: they may leave a partial .db that merely happens to be
+    non-empty.
+    """
+    if returncode is None:
+        return False
+    # subprocess: -SIGSEGV; wrappers: bare 11 or 128 + SIGSEGV = 139.
+    return returncode in {-11, 11, 139}
+
+
+def _recover_lc_post_write_crash(
+    returncode: int,
+    staged_db_path: Path,
+) -> bool:
+    """Return True if LC wrote a usable DB then crashed in exit handlers."""
+    if not _is_crash_exit(returncode):
+        return False
+    if not _staged_db_ready(staged_db_path):
+        return False
+    print(
+        "[LIBDB] WARNING: lc_shell exited with status "
+        f"{returncode} after writing a non-empty DB "
+        f"({staged_db_path}). Treating conversion as success "
+        "(known LC X-2025.06 exit-handler SIGSEGV after read_lib). "
+        "Prefer --shell-mode dc (dc_shell + enable_write_lib_mode) for a "
+        "clean process exit, or upgrade/patch Library Compiler.",
+        file=sys.stderr,
+    )
+    return True
+
+
+def run_db_shell(
+    exe: str,
+    tcl_path: Path,
+    work_dir: Path,
+    staged_db_path: Path,
+    *,
+    backend: str,
+) -> None:
+    """Run DC/LC convert Tcl and enforce DB production.
+
+    LC on some hosts (observed: RHEL 8.10 + LC X-2025.06) may write a valid
+    .db then SIGSEGV during exit handlers after read_lib. When backend is ``lc``
+    and the staged DB is non-empty after a crash exit, treat that as success
+    with a warning so callers still install the artifact. DC write-lib mode is
+    preferred because it has been observed to exit 0 cleanly.
+    """
+    work_dir.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        [exe, "-f", str(tcl_path.resolve())],
+        cwd=work_dir,
+        check=False,
+    )
+    if result.returncode == 0:
+        return
+    if backend == "lc" and _recover_lc_post_write_crash(
+        result.returncode, staged_db_path
+    ):
+        return
+    raise RuntimeError(
+        f"{backend}_shell failed with status {result.returncode}: {exe} -f {tcl_path}"
+    )
+
+
 def run_lc_shell(lc_shell: str, tcl_path: Path, work_dir: Path) -> None:
-    exe = shutil.which(lc_shell) or lc_shell
+    """Run Library Compiler; unit tests may monkeypatch this hook.
+
+    Production callers should prefer :func:`run_db_shell` (via finalize) so
+    post-write SIGSEGV recovery is applied. This thin wrapper keeps the
+    historical test seam and still surfaces crash exits as CalledProcessError.
+    """
+    exe = _resolve_executable(lc_shell) or lc_shell
     work_dir.mkdir(parents=True, exist_ok=True)
     subprocess.run([exe, "-f", str(tcl_path.resolve())], cwd=work_dir, check=True)
 
@@ -334,20 +496,37 @@ def run_lc_shell_and_finalize_tcl(
     lib_name: str,
     *,
     keep_tcl: bool,
+    backend: str = "lc",
+    shell_exe: str | None = None,
 ) -> None:
-    # Cleanup intentionally happens only after lc_shell succeeds. A failed
+    # Cleanup intentionally happens only after a usable DB is produced. A failed
     # conversion leaves the exact command file available for diagnosis.
-    run_lc_shell(lc_shell, tcl_path, work_dir)
-    if not staged_db_path.is_file() or staged_db_path.stat().st_size == 0:
+    exe = shell_exe or lc_shell
+    if backend == "dc":
+        # Clean-exit path: dc_shell + enable_write_lib_mode.
+        run_db_shell(exe, tcl_path, work_dir, staged_db_path, backend="dc")
+    else:
+        # LC path keeps the run_lc_shell hook (unit tests monkeypatch it).
+        # Stock implementation raises CalledProcessError on SIGSEGV; recover
+        # when a non-empty staged DB was produced (known LC exit-handler crash).
+        try:
+            run_lc_shell(exe, tcl_path, work_dir)
+        except subprocess.CalledProcessError as exc:
+            if not _recover_lc_post_write_crash(exc.returncode, staged_db_path):
+                raise RuntimeError(
+                    f"lc_shell failed with status {exc.returncode}: "
+                    f"{exe} -f {tcl_path}"
+                ) from exc
+    if not _staged_db_ready(staged_db_path):
         raise RuntimeError(
-            "lc_shell completed without a non-empty current-run DB output: "
+            f"{backend}_shell completed without a non-empty current-run DB output: "
             f"{staged_db_path}"
         )
     staged_db_path.replace(db_path)
     if keep_tcl:
         # Preserve a reusable command file that targets the final DB path.
         # On failure, the untouched Tcl continues to reference the staged path.
-        write_lc_tcl(lib_path, db_path, tcl_path, lib_name)
+        write_db_tcl(lib_path, db_path, tcl_path, lib_name, backend=backend)
         print(f"[LIBDB] Tcl retained: {tcl_path}")
         return
     tcl_path.unlink(missing_ok=True)
@@ -371,12 +550,27 @@ def cmd_convert(args: argparse.Namespace) -> int:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     lib_name = args.library_name or parse_lib_name(lib_path)
     run_db_path = db_path if args.no_run else staging_db_path(db_path)
-    write_lc_tcl(lib_path, run_db_path, tcl_path, lib_name)
+
+    shell_mode = getattr(args, "shell_mode", None) or os.environ.get(
+        "LIB_DB_SHELL_MODE", "dc"
+    )
+    dc_shell = getattr(args, "dc_shell", None) or os.environ.get("DC_SHELL", "dc_shell")
+    if args.no_run:
+        # Default offline Tcl matches production backend (dc write-lib mode).
+        no_run_backend = "lc" if str(shell_mode).strip().lower() == "lc" else "dc"
+        write_db_tcl(lib_path, run_db_path, tcl_path, lib_name, backend=no_run_backend)
+        print(f"[LIBDB] Tcl:  {tcl_path}")
+        print(f"[LIBDB] Work: {work_dir}")
+        print("[LIBDB] --no-run set; not invoking dc_shell/lc_shell")
+        return 0
+
+    backend, shell_exe = resolve_db_backend(
+        shell_mode, lc_shell=args.lc_shell, dc_shell=dc_shell
+    )
+    write_db_tcl(lib_path, run_db_path, tcl_path, lib_name, backend=backend)
+    print(f"[LIBDB] Backend: {backend} ({shell_exe})")
     print(f"[LIBDB] Tcl:  {tcl_path}")
     print(f"[LIBDB] Work: {work_dir}")
-    if args.no_run:
-        print("[LIBDB] --no-run set; not invoking lc_shell")
-        return 0
     run_lc_shell_and_finalize_tcl(
         args.lc_shell,
         tcl_path,
@@ -386,6 +580,8 @@ def cmd_convert(args: argparse.Namespace) -> int:
         lib_path,
         lib_name,
         keep_tcl=args.keep_tcl,
+        backend=backend,
+        shell_exe=shell_exe,
     )
     print(f"[LIBDB] DB:   {db_path}")
     return 0
@@ -414,17 +610,30 @@ def cmd_stub(args: argparse.Namespace) -> int:
     lib_path.write_text(generate_stub_lib(library_name, module, ports), encoding="utf-8")
     lib_name = liberty_name(library_name)
     run_db_path = db_path if args.no_run else staging_db_path(db_path)
-    write_lc_tcl(lib_path, run_db_path, tcl_path, lib_name)
     print(f"[LIBDB] Parsed module: {module}")
     print(f"[LIBDB] Ports: {len(ports)}")
     for warning in warnings:
         print(f"[LIBDB] WARNING: {warning}", file=sys.stderr)
     print(f"[LIBDB] Liberty: {lib_path}")
+    shell_mode = getattr(args, "shell_mode", None) or os.environ.get(
+        "LIB_DB_SHELL_MODE", "dc"
+    )
+    dc_shell = getattr(args, "dc_shell", None) or os.environ.get("DC_SHELL", "dc_shell")
+    if args.no_run:
+        no_run_backend = "lc" if str(shell_mode).strip().lower() == "lc" else "dc"
+        write_db_tcl(lib_path, run_db_path, tcl_path, lib_name, backend=no_run_backend)
+        print(f"[LIBDB] Tcl:     {tcl_path}")
+        print(f"[LIBDB] Work:    {work_dir}")
+        print("[LIBDB] --no-run set; not invoking dc_shell/lc_shell")
+        return 0
+
+    backend, shell_exe = resolve_db_backend(
+        shell_mode, lc_shell=args.lc_shell, dc_shell=dc_shell
+    )
+    write_db_tcl(lib_path, run_db_path, tcl_path, lib_name, backend=backend)
+    print(f"[LIBDB] Backend: {backend} ({shell_exe})")
     print(f"[LIBDB] Tcl:     {tcl_path}")
     print(f"[LIBDB] Work:    {work_dir}")
-    if args.no_run:
-        print("[LIBDB] --no-run set; not invoking lc_shell")
-        return 0
     run_lc_shell_and_finalize_tcl(
         args.lc_shell,
         tcl_path,
@@ -434,6 +643,8 @@ def cmd_stub(args: argparse.Namespace) -> int:
         lib_path,
         lib_name,
         keep_tcl=args.keep_tcl,
+        backend=backend,
+        shell_exe=shell_exe,
     )
     print(f"[LIBDB] DB:      {db_path}")
     return 0
@@ -442,10 +653,24 @@ def cmd_stub(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lc-shell", default=os.environ.get("LC_SHELL", "lc_shell"))
+    parser.add_argument(
+        "--dc-shell",
+        default=os.environ.get("DC_SHELL", "dc_shell"),
+        help="Design Compiler shell (default backend; write-lib mode)",
+    )
+    parser.add_argument(
+        "--shell-mode",
+        default=os.environ.get("LIB_DB_SHELL_MODE", "dc"),
+        choices=sorted(SUPPORTED_DB_SHELL_MODES),
+        help="dc (default): dc_shell + enable_write_lib_mode; "
+        "auto: prefer dc, fall back to lc; lc: Library Compiler (may SIGSEGV on exit)",
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
     convert = sub.add_parser("convert", help="Convert an existing Liberty .lib to Synopsys .db")
     convert.add_argument("--lc-shell", default=argparse.SUPPRESS)
+    convert.add_argument("--dc-shell", default=argparse.SUPPRESS)
+    convert.add_argument("--shell-mode", default=argparse.SUPPRESS, choices=sorted(SUPPORTED_DB_SHELL_MODES))
     convert.add_argument("--lib", required=True)
     convert.add_argument("--db", required=True)
     convert.add_argument("--tcl", help="override the temporary Library Compiler Tcl path")
@@ -461,6 +686,8 @@ def main() -> int:
 
     stub = sub.add_parser("stub", help="Generate stub Liberty from a Verilog top module and optionally compile to .db")
     stub.add_argument("--lc-shell", default=argparse.SUPPRESS)
+    stub.add_argument("--dc-shell", default=argparse.SUPPRESS)
+    stub.add_argument("--shell-mode", default=argparse.SUPPRESS, choices=sorted(SUPPORTED_DB_SHELL_MODES))
     stub.add_argument("--top-v", required=True)
     stub.add_argument("--top")
     stub.add_argument("--lib", required=True)

@@ -13,7 +13,7 @@ include $(PROJECT_ROOT)/scripts/config.mk
 
 .PHONY: help setup check-env check-repo list-modules print-config module \
         flist validate-flist comp sim run test regress report coverage \
-        coverage-regress coverage-report verdi lint cdc syn formal formal-upf clp-upf \
+        coverage-regress coverage-report verdi lint cdc rdc dft syn formal formal-upf clp-upf \
         clean debugclean deepclean \
         agent-sync agent-check agent-setup mcp-setup
 
@@ -30,7 +30,7 @@ help:
 	@echo "  make module MODULE=<path> TARGET=<target>"
 	@echo ""
 	@echo "Targets: flist validate-flist comp sim test regress report coverage"
-	@echo "         coverage-regress verdi lint cdc syn formal formal-upf clp-upf"
+	@echo "         coverage-regress verdi lint cdc rdc dft syn formal formal-upf clp-upf"
 	@echo "         clean debugclean deepclean print-config"
 	@echo "Example: make lint MODULE=ip/digital/uart"
 	@echo "         make comp MODULE=chip/top SIMULATOR=verilator"
@@ -86,6 +86,9 @@ print-config:
 	@echo "MODULE=$(MODULE)"
 	@echo "SIMULATOR=$(or $(SIMULATOR),verilator)"
 	@echo "LINT_TOOL=$(or $(LINT_TOOL),verilator)"
+	@echo "CDC_TOOL=$(or $(CDC_TOOL),spyglass)"
+	@echo "RDC_TOOL=$(or $(RDC_TOOL),vc_static)"
+	@echo "DFT_TOOL=$(or $(DFT_TOOL),vc_static)"
 
 module:
 	@test -f "$(MODULE_DIR)/Makefile" || { \
@@ -94,6 +97,6 @@ module:
 	@$(MAKE) --no-print-directory -C "$(MODULE_DIR)" "$(TARGET)"
 
 flist validate-flist comp sim run test regress report coverage \
-coverage-regress coverage-report verdi lint cdc syn formal formal-upf clp-upf \
+coverage-regress coverage-report verdi lint cdc rdc dft syn formal formal-upf clp-upf \
 clean debugclean deepclean:
 	@$(MAKE) --no-print-directory module TARGET=$@
