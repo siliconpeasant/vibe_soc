@@ -131,6 +131,9 @@ jobs:
       TEST: chip_sw_uart_smoketest
       SEED: ${{ inputs.seed || '1' }}
       FSDB: "0"
+      # This self-hosted farm's VCS license is VCS-BASE-COMPILE only.
+      # OpenTitan -xprop + -licqueue queues forever for VCS-ELITE / VT_VCS_XProp.
+      VCS_XPROP: "0"
       OT_USE_PREBUILT_SIMV: ${{ inputs.use_prebuilt_simv && '1' || vars.OT_USE_PREBUILT_SIMV || '0' }}
       OT_SMOKE_PREBUILT_SIMV: ${{ vars.OT_SMOKE_PREBUILT_SIMV }}
       CI_SITE_ENV_SCRIPT: ${{ vars.CI_SITE_ENV_SCRIPT }}
@@ -190,6 +193,7 @@ jobs:
             TEST="$TEST" \
             SEED="$SEED" \
             FSDB="$FSDB" \
+            VCS_XPROP="${VCS_XPROP:-0}" \
             OT_USE_PREBUILT_SIMV="$OT_USE_PREBUILT_SIMV" \
             "${simv_arg[@]}"
 
