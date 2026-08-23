@@ -62,6 +62,8 @@ CHECK_STAGE = {
     "soc_sim": "verif",
     "sim_log": "verif",
     "soc_syn": "syn",
+    "soc_formal_or_skipped": "formal",
+    "frontend_handoff": "handoff",
 }
 RTL_SUFFIXES = {".v", ".sv", ".vh", ".svh"}
 CLOCK_RESET_RE = re.compile(r"\b(?:clk|clock|rst|reset|cdc|rdc)[A-Za-z0-9_]*\b", re.I)
@@ -426,12 +428,16 @@ def _stage_freshness(
     result = {}
     for stage in STAGE_ORDER:
         info = pipeline.get(stage, {})
-        status_ok = info.get("status") in SUCCESS_STATES
+        if info.get("status") not in SUCCESS_STATES:
+            continue
+        status_ok = True
         recorded_paths = set(info.get("artifacts") or []) | set(
             (info.get("artifact_evidence") or {}).keys()
         )
         unrecorded_changes = [
-            path for path in stage_changes[stage] if path not in recorded_paths
+            path
+            for path in stage_changes.get(stage, [])
+            if path not in recorded_paths
         ]
         stage_errors = [
             issue
@@ -581,6 +587,9 @@ def build_context(
         full_style = ".agents/rules/04_verilog_coding_style.md"
         if full_style not in required_reads:
             required_reads.append(full_style)
+        reset_rule = ".agents/rules/15_reset_ownership.md"
+        if reset_rule not in rules:
+            rules.append(reset_rule)
 
     if not governed:
         required_checks = ["closest_non_eda_validation"]
@@ -598,7 +607,7 @@ def build_context(
         if (
             mode in {"merge", "signoff"}
             and stage
-            and freshness.get(stage, {}).get("fresh")
+            and freshness.get(stage, {}).get("fresh", True)
         ):
             continue
         if check.startswith("loop_review_") and review_result == "pass":

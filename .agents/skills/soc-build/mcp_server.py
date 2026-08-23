@@ -37,9 +37,45 @@ from loop_state_core import compute_rtl_fingerprint
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).parent / "scripts"
 SUPPORTED_SIMULATORS = {"vcs", "verilator", "xcelium"}
-SUPPORTED_LINT_TOOLS = {"spyglass", "verilator"}
-SUPPORTED_CDC_TOOLS = {"spyglass"}
+SUPPORTED_LINT_TOOLS = {"spyglass", "verilator", "vc_static"}
+SUPPORTED_CDC_TOOLS = {"spyglass", "vc_static"}
+SUPPORTED_RDC_TOOLS = {"vc_static"}
+SUPPORTED_DFT_TOOLS = {"vc_static"}
 SUPPORTED_SYN_TOOLS = {"yosys", "dc"}
+VC_STATIC_RESULT_FORMAT = "vc-static-result-v1"
+VC_STATIC_BLOCKING_SEVERITIES = "error,warning"
+VC_STATIC_MAX_BLOCKING = 0
+VC_STATIC_RESULT_CONTRACTS = {
+    "lint": {
+        "gate": ("VC_LINT_GATE", Path("de/run/lint_vc_static/result_gate.txt")),
+        "max": "VC_LINT_MAX_BLOCKING",
+        "reports": (
+            ("VC_LINT_SUMMARY", Path("de/run/lint_vc_static/report_lint.summary.txt")),
+            ("VC_LINT_REPORT", Path("de/run/lint_vc_static/report_lint.txt")),
+        ),
+    },
+    "cdc": {
+        "gate": ("VC_CDC_GATE", Path("de/run/cdc/result_gate.txt")),
+        "max": "VC_CDC_MAX_BLOCKING",
+        "reports": (
+            ("VC_CDC_SUMMARY", Path("de/run/cdc/report_cdc.summary.log")),
+            ("VC_CDC_REPORT", Path("de/run/cdc/report_cdc.detailed.log")),
+        ),
+    },
+    "rdc": {
+        "gate": ("VC_RDC_GATE", Path("de/run/rdc/result_gate.txt")),
+        "max": "VC_RDC_MAX_BLOCKING",
+        "reports": (("VC_RDC_REPORT", Path("de/run/rdc/report_rdc.log")),),
+    },
+    "dft": {
+        "gate": ("VC_DFT_GATE", Path("de/run/dft/result_gate.txt")),
+        "max": "VC_DFT_MAX_BLOCKING",
+        "reports": (
+            ("VC_DFT_SUMMARY", Path("de/run/dft/report_dft.summary.txt")),
+            ("VC_DFT_REPORT", Path("de/run/dft/report_dft.txt")),
+        ),
+    },
+}
 TEST_NAME_RE = re.compile(r"[A-Za-z0-9_.-]+")
 HDL_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_$]*")
 SEED_MATRIX_RE = re.compile(r"\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*")
@@ -54,7 +90,7 @@ mcp = FastMCP(
     name="soc-build",
     instructions=(
         "SoC 项目脚手架和 EDA Make 目标执行工具。\n"
-        "支持项目/模块创建、filelist、lint、编译、仿真、回归、覆盖率、综合和 Formality。"
+        "支持项目/模块创建、filelist、lint、CDC、RDC、DFT、编译、仿真、回归、覆盖率、综合和 Formality。"
     ),
 )
 
@@ -197,6 +233,141 @@ def _make(
     command = ["make", *targets]
     command.extend(f"{name}={value}" for name, value in variables.items())
     return _run(command, cwd=str(path), timeout=timeout)
+
+
+def _vc_static_result_paths(
+    module: Path, flow: str
+) -> tuple[Path, list[Path], dict[str, str | int]]:
+    """Return canonical in-module VC Static artifacts and forced Make values."""
+    contract = VC_STATIC_RESULT_CONTRACTS[flow]
+    gate_variable, gate_relative = contract["gate"]
+    gate = module / gate_relative
+    reports: list[Path] = []
+    variables: dict[str, str | int] = {
+        gate_variable: str(gate),
+        contract["max"]: VC_STATIC_MAX_BLOCKING,
+    }
+    for report_variable, report_relative in contract["reports"]:
+        report = module / report_relative
+        reports.append(report)
+        variables[report_variable] = str(report)
+    return gate, reports, variables
+
+
+def _discard_vc_static_results(module: Path, paths: list[Path]) -> None:
+    """Validate all artifact parents, then remove only canonical result files."""
+    resolved_module = module.resolve()
+    for path in paths:
+        try:
+            resolved_parent = path.parent.resolve()
+            resolved_parent.relative_to(resolved_module)
+        except (OSError, ValueError) as exc:
+            raise RuntimeError(
+                f"VC Static result artifact parent escapes module directory: {path}"
+            ) from exc
+
+    for path in paths:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            raise RuntimeError(
+                f"cannot remove stale VC Static result artifact: {path}"
+            ) from exc
+
+
+def _read_vc_static_artifact(path: Path, description: str) -> str:
+    if path.is_symlink() or not path.is_file():
+        raise RuntimeError(f"VC Static {description} is missing: {path}")
+    try:
+        if path.stat().st_size == 0:
+            raise RuntimeError(f"VC Static {description} is empty: {path}")
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        raise RuntimeError(f"cannot read VC Static {description}: {path}") from exc
+
+
+def _validate_vc_static_result(flow: str, gate: Path, reports: list[Path]) -> None:
+    report_marker = f"# VC_STATIC_REPORT_COMPLETE flow={flow}"
+    for report in reports:
+        text = _read_vc_static_artifact(report, f"{flow} report")
+        lines = text.splitlines()
+        if lines.count(report_marker) != 1 or lines[-1] != report_marker:
+            raise RuntimeError(
+                f"VC Static {flow} report completion marker must appear exactly "
+                f"once at the final line: {report}"
+            )
+
+    text = _read_vc_static_artifact(gate, f"{flow} result gate")
+    lines = text.splitlines()
+    completion = f"# VC_STATIC_RESULT_COMPLETE flow={flow}"
+    keys = (
+        "format",
+        "flow",
+        "blocking_severities",
+        "blocking_count",
+        "max_blocking",
+        "status",
+    )
+    if len(lines) != len(keys) + 1 or lines[-1] != completion:
+        raise RuntimeError(f"VC Static {flow} result gate is malformed: {gate}")
+
+    values: dict[str, str] = {}
+    for key, line in zip(keys, lines[:-1]):
+        actual_key, separator, value = line.partition("=")
+        if separator != "=" or actual_key != key or not value:
+            raise RuntimeError(f"VC Static {flow} result gate is malformed: {gate}")
+        values[key] = value
+
+    if values["format"] != VC_STATIC_RESULT_FORMAT:
+        raise RuntimeError(f"VC Static {flow} result gate has unsupported format")
+    if values["flow"] != flow:
+        raise RuntimeError(f"VC Static result gate flow mismatch: expected {flow}")
+    if values["blocking_severities"] != VC_STATIC_BLOCKING_SEVERITIES:
+        raise RuntimeError(
+            f"VC Static {flow} result gate has unexpected blocking severities"
+        )
+    for key in ("blocking_count", "max_blocking"):
+        if not re.fullmatch(r"[0-9]+", values[key]):
+            raise RuntimeError(
+                f"VC Static {flow} result gate has non-integer {key}"
+            )
+    blocking_count = int(values["blocking_count"])
+    max_blocking = int(values["max_blocking"])
+    if max_blocking != VC_STATIC_MAX_BLOCKING:
+        raise RuntimeError(
+            f"VC Static {flow} result gate did not use max_blocking=0"
+        )
+    expected_status = "pass" if blocking_count <= max_blocking else "fail"
+    if values["status"] not in {"pass", "fail"} or values["status"] != expected_status:
+        raise RuntimeError(f"VC Static {flow} result gate has inconsistent status")
+    if blocking_count > max_blocking:
+        raise RuntimeError(
+            f"VC Static {flow} found {blocking_count} blocking error/warning violation(s)"
+        )
+
+
+def _run_vc_static_check(
+    module_dir: str,
+    flow: str,
+    variables: dict[str, str | int],
+    timeout: int,
+) -> str:
+    if os.environ.get(MCP_SERVER_ACTIVE_ENV) != "1":
+        raise RuntimeError(
+            "EDA Make targets must run through the registered soc-build MCP server; "
+            "direct Python/Tool object invocation is disabled"
+        )
+    module = _module_path(module_dir)
+    gate, reports, forced_variables = _vc_static_result_paths(module, flow)
+    _discard_vc_static_results(module, [gate, *reports])
+    make_variables = dict(variables)
+    make_variables.update(forced_variables)
+    output = _make(str(module), [flow], make_variables, timeout=timeout)
+    _validate_vc_static_result(flow, gate, reports)
+    return output
 
 
 def _native_evidence_files(path: Path, tool_family: str) -> list[Path]:
@@ -762,7 +933,7 @@ def soc_lint(
 
     Args:
         module_dir: 包含 Makefile 的模块目录（如 chip/top 或 ip/digital/xxx）
-        lint_tool: lint 工具，可选 verilator / spyglass
+        lint_tool: lint 工具，可选 verilator / spyglass / vc_static
         rtl_top: 可选 RTL 顶层模块名
         gui: 是否在 lint 完成后打开图形界面
     """
@@ -775,7 +946,10 @@ def soc_lint(
     if gui:
         variables["GUI"] = 1
         variables.update(_detect_gui_variables())
-    return _make(module_dir, ["lint"], variables, timeout=120)
+    timeout = 900 if lint_tool == "vc_static" else 120
+    if lint_tool == "vc_static":
+        return _run_vc_static_check(module_dir, "lint", variables, timeout)
+    return _make(module_dir, ["lint"], variables, timeout=timeout)
 
 
 @mcp.tool()
@@ -789,7 +963,7 @@ def soc_cdc(
 
     Args:
         module_dir: 包含 Makefile 的模块目录（如 chip/top 或 ip/digital/xxx）
-        cdc_tool: CDC 工具；当前 MCP 只允许 spyglass
+        cdc_tool: CDC 工具；spyglass（默认）或 vc_static
         rtl_top: 可选 RTL 顶层模块名
         gui: 是否在 CDC 完成后打开图形界面
     """
@@ -802,7 +976,67 @@ def soc_cdc(
     if gui:
         variables["GUI"] = 1
         variables.update(_detect_gui_variables())
+    if cdc_tool == "vc_static":
+        return _run_vc_static_check(module_dir, "cdc", variables, timeout=1200)
     return _make(module_dir, ["cdc"], variables, timeout=1200)
+
+
+@mcp.tool()
+def soc_rdc(
+    module_dir: str,
+    rdc_tool: str = "vc_static",
+    rtl_top: str = "",
+    gui: bool = False,
+) -> str:
+    """对指定模块执行 RDC（Reset Domain Crossing）检查。
+
+    Args:
+        module_dir: 包含 Makefile 的模块目录（如 chip/top 或 ip/digital/xxx）
+        rdc_tool: RDC 工具；仅支持 vc_static
+        rtl_top: 可选 RTL 顶层模块名
+        gui: 是否在 RDC 完成后打开图形界面
+    """
+    if rdc_tool not in SUPPORTED_RDC_TOOLS:
+        choices = ", ".join(sorted(SUPPORTED_RDC_TOOLS))
+        raise ValueError(f"rdc_tool must be one of: {choices}")
+    variables = {"RDC_TOOL": rdc_tool}
+    if rtl_top:
+        variables["RTL_TOP"] = _hdl_identifier(rtl_top, "rtl_top")
+    if gui:
+        variables["GUI"] = 1
+        variables.update(_detect_gui_variables())
+    return _run_vc_static_check(module_dir, "rdc", variables, timeout=1200)
+
+
+@mcp.tool()
+def soc_dft(
+    module_dir: str,
+    dft_tool: str = "vc_static",
+    rtl_top: str = "",
+    gui: bool = False,
+    best_practice: bool = False,
+) -> str:
+    """对指定模块执行 VC SpyGlass DFT 检查（默认 goal: dft_scan_ready）。
+
+    Args:
+        module_dir: 包含 Makefile 的模块目录（如 chip/top 或 ip/digital/xxx）
+        dft_tool: DFT 工具；仅支持 vc_static（TestMAX Advisor / VCUM）
+        rtl_top: 可选 RTL 顶层模块名
+        gui: 是否在 DFT 完成后打开图形界面
+        best_practice: 是否额外跑 dft_best_practice
+    """
+    if dft_tool not in SUPPORTED_DFT_TOOLS:
+        choices = ", ".join(sorted(SUPPORTED_DFT_TOOLS))
+        raise ValueError(f"dft_tool must be one of: {choices}")
+    variables = {"DFT_TOOL": dft_tool}
+    if rtl_top:
+        variables["RTL_TOP"] = _hdl_identifier(rtl_top, "rtl_top")
+    if best_practice:
+        variables["VC_DFT_BEST_PRACTICE"] = 1
+    if gui:
+        variables["GUI"] = 1
+        variables.update(_detect_gui_variables())
+    return _run_vc_static_check(module_dir, "dft", variables, timeout=1200)
 
 
 @mcp.tool()

@@ -24,6 +24,30 @@
         ".agents/skills/yml2reg/mcp_server.py"
       ]
     },
+    "silicon-crew:xml2yml": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/xml2yml/mcp_server.py"
+      ]
+    },
+    "silicon-crew:lib-db-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/lib-db-gen/mcp_server.py"
+      ]
+    },
+    "silicon-crew:dft-gen": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "scripts/mcp_python.sh",
+        ".agents/skills/dft-gen/mcp_server.py"
+      ]
+    },
     "silicon-crew:gen-asic-memmap": {
       "type": "stdio",
       "command": "sh",
@@ -103,6 +127,16 @@
         "scripts/mcp_python.sh",
         ".agents/skills/soc-openroad/mcp_server.py"
       ]
+    },
+    "silicon-crew:wavedrom-gen": {
+      "type": "stdio",
+      "command": "/bin/sh",
+      "args": [
+        "scripts/mcp_node.sh",
+        ".agents/skills/wavedrom-gen/scripts/mcp-server.mjs",
+        "--stdio"
+      ],
+      "cwd": "."
     },
     "silicon-crew:openroad-mcp": {
       "type": "stdio",

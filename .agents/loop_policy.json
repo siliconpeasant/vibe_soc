@@ -46,6 +46,8 @@
         "soc_sim",
         "sim_log",
         "soc_syn",
+        "soc_formal_or_skipped",
+        "frontend_handoff",
         "loop_review_normal"
       ],
       "rules": [
@@ -75,6 +77,8 @@
         "soc_sim",
         "sim_log",
         "soc_syn",
+        "soc_formal_or_skipped",
+        "frontend_handoff",
         "risk_specific_checks",
         "loop_review_strict"
       ],

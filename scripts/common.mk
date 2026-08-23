@@ -302,14 +302,41 @@ else ifeq ($(LINT_TOOL),spyglass)
 	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
 	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
 	  "$(SG_SHELL)" -tcl "$(SG_LINT_TCL)" -licqueue -shell_log_file "$(SG_LINT_LOG)"
+else ifeq ($(LINT_TOOL),vc_static)
+	@test -x "$(VC_STATIC_SHELL)" || { echo "[LINT] vc_static_shell not found: $(VC_STATIC_SHELL) (set VC_STATIC_HOME)"; exit 127; }
+	@test -f "$(VC_LINT_TCL)" || { echo "[LINT] VC Static lint Tcl not found: $(VC_LINT_TCL)"; exit 2; }
+	@mkdir -p "$(VC_LINT_RUN_DIR)"
+	@cd "$(VC_LINT_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  SOC="$(PROJECT_ROOT)" \
+	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	  VC_FILELIST="$(RUN_DIR)/rtl.f" \
+	  VC_TOP="$(RTL_TOP)" \
+	  VC_LINT_GOAL="$(VC_LINT_GOAL)" \
+	  VC_LINT_GUIDEWARE="$(VC_LINT_GUIDEWARE)" \
+	  VC_LINT_REPORT="$(VC_LINT_REPORT)" \
+	  VC_LINT_SUMMARY="$(VC_LINT_SUMMARY)" \
+	  VC_LINT_GATE="$(VC_LINT_GATE)" \
+	  VC_LINT_MAX_BLOCKING="$(VC_LINT_MAX_BLOCKING)" \
+	  VC_ANALYZE_VCS_OPTS="$(VC_ANALYZE_VCS_OPTS)" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(VC_STATIC_SHELL)" $(VC_STATIC_MODE) -lic_wait $(VC_STATIC_LIC_WAIT) \
+	    -f "$(VC_LINT_TCL)" \
+	    -cmd_log_file "$(VC_LINT_RUN_DIR)/vcst_command.log" \
+	    -output_log_file "$(VC_LINT_LOG)"
 else
-	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL)"
+	@echo "[LINT] Unknown LINT_TOOL: $(LINT_TOOL) (verilator|spyglass|vc_static)"
 	@exit 2
 endif
 	@if [ "$(LINT_TOOL)" = "spyglass" ]; then \
 		echo "[LINT] Log:     $(SG_LINT_LOG)"; \
 		echo "[LINT] Report:  $(SG_LINT_REPORT)"; \
 		echo "[LINT] Reports: $(SG_LINT_PROJECT_DIR)/consolidated_reports/lint_lint_rtl"; \
+	elif [ "$(LINT_TOOL)" = "vc_static" ]; then \
+		echo "[LINT] Log:     $(VC_LINT_LOG)"; \
+		echo "[LINT] Summary: $(VC_LINT_SUMMARY)"; \
+		echo "[LINT] Report:  $(VC_LINT_REPORT)"; \
 	else \
 		echo "[LINT] Report: $(RUN_DIR)/lint.log"; \
 	fi
@@ -345,10 +372,116 @@ ifeq ($(CDC_TOOL),spyglass)
 	  cd "$(CDC_RUN_DIR)" && \
 	    setsid sh -c 'DISPLAY="$(DISPLAY)" XAUTHORITY="$(XAUTHORITY)" SPYGLASS_HOME="$(SG_HOME)" SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" LM_LICENSE_FILE="$(LM_LICENSE_FILE)" nohup "$(SG_HOME)/bin/spyglass" -project "$(notdir $(SG_CDC_PROJECT_DIR))" -disablesplashscreen > "$(SG_CDC_GUI_LOG)" 2>&1 &'; \
 	fi
+else ifeq ($(CDC_TOOL),vc_static)
+	@test -x "$(VC_STATIC_SHELL)" || { echo "[CDC] vc_static_shell not found: $(VC_STATIC_SHELL) (set VC_STATIC_HOME)"; exit 127; }
+	@test -f "$(VC_CDC_TCL)" || { echo "[CDC] VC Static CDC Tcl not found: $(VC_CDC_TCL)"; exit 2; }
+	@mkdir -p "$(CDC_RUN_DIR)"
+	@cd "$(CDC_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  SOC="$(PROJECT_ROOT)" \
+	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	  VC_FILELIST="$(RUN_DIR)/rtl.f" \
+	  VC_TOP="$(RTL_TOP)" \
+	  VC_SDC="$(CDC_SDC)" \
+	  VC_CLOCK_PORT="$(VC_CLOCK_PORT)" \
+	  VC_RESET_PORT="$(VC_RESET_PORT)" \
+	  VC_RESET_VALUE="$(VC_RESET_VALUE)" \
+	  VC_CLOCK_PERIOD="$(VC_CLOCK_PERIOD)" \
+	  VC_CDC_SUMMARY="$(VC_CDC_SUMMARY)" \
+	  VC_CDC_REPORT="$(VC_CDC_REPORT)" \
+	  VC_CDC_GATE="$(VC_CDC_GATE)" \
+	  VC_CDC_MAX_BLOCKING="$(VC_CDC_MAX_BLOCKING)" \
+	  VC_ANALYZE_VCS_OPTS="$(VC_ANALYZE_VCS_OPTS)" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(VC_STATIC_SHELL)" $(VC_STATIC_MODE) -lic_wait $(VC_STATIC_LIC_WAIT) \
+	    -f "$(VC_CDC_TCL)" \
+	    -cmd_log_file "$(CDC_RUN_DIR)/vcst_command.log" \
+	    -output_log_file "$(CDC_LOG)"
+	@echo "[CDC] Log:      $(CDC_LOG)"
+	@echo "[CDC] Summary:  $(VC_CDC_SUMMARY)"
+	@echo "[CDC] Report:   $(VC_CDC_REPORT)"
 else
-	@echo "[CDC] Unknown CDC_TOOL: $(CDC_TOOL)"
+	@echo "[CDC] Unknown CDC_TOOL: $(CDC_TOOL) (spyglass|vc_static)"
 	@exit 2
 endif
+
+# --- rdc: RDC check (optional VC Static backend) ---
+rdc: $(RTL_FLIST)
+	@echo "[RDC] Tool: $(RDC_TOOL) | Top: $(RTL_TOP)"
+ifneq ($(RDC_TOOL),vc_static)
+	@echo "[RDC] Unknown RDC_TOOL: $(RDC_TOOL) (only vc_static is supported)"
+	@exit 2
+endif
+	@test -x "$(VC_STATIC_SHELL)" || { echo "[RDC] vc_static_shell not found: $(VC_STATIC_SHELL) (set VC_STATIC_HOME)"; exit 127; }
+	@test -f "$(VC_RDC_TCL)" || { echo "[RDC] VC Static RDC Tcl not found: $(VC_RDC_TCL)"; exit 2; }
+	@mkdir -p "$(RDC_RUN_DIR)"
+	@cd "$(RDC_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  SOC="$(PROJECT_ROOT)" \
+	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	  VC_FILELIST="$(RUN_DIR)/rtl.f" \
+	  VC_TOP="$(RTL_TOP)" \
+	  VC_SDC="$(RDC_SDC)" \
+	  VC_CLOCK_PORT="$(VC_CLOCK_PORT)" \
+	  VC_RESET_PORT="$(VC_RESET_PORT)" \
+	  VC_RESET_VALUE="$(VC_RESET_VALUE)" \
+	  VC_CLOCK_PERIOD="$(VC_CLOCK_PERIOD)" \
+	  VC_RDC_REPORT="$(VC_RDC_REPORT)" \
+	  VC_RDC_GATE="$(VC_RDC_GATE)" \
+	  VC_RDC_MAX_BLOCKING="$(VC_RDC_MAX_BLOCKING)" \
+	  VC_ANALYZE_VCS_OPTS="$(VC_ANALYZE_VCS_OPTS)" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(VC_STATIC_SHELL)" $(VC_STATIC_MODE) -lic_wait $(VC_STATIC_LIC_WAIT) \
+	    -f "$(VC_RDC_TCL)" \
+	    -cmd_log_file "$(RDC_RUN_DIR)/vcst_command.log" \
+	    -output_log_file "$(RDC_LOG)"
+	@echo "[RDC] Log:      $(RDC_LOG)"
+	@echo "[RDC] Report:   $(VC_RDC_REPORT)"
+
+# --- dft: optional VC SpyGlass TestMAX backend ---
+dft: $(RTL_FLIST)
+	@echo "[DFT] Tool: $(DFT_TOOL) | Top: $(RTL_TOP) | Goal: $(VC_DFT_GOAL)"
+ifneq ($(DFT_TOOL),vc_static)
+	@echo "[DFT] Unknown DFT_TOOL: $(DFT_TOOL) (only vc_static is supported)"
+	@exit 2
+endif
+	@test -x "$(VC_STATIC_SHELL)" || { echo "[DFT] vc_static_shell not found: $(VC_STATIC_SHELL) (set VC_STATIC_HOME)"; exit 127; }
+	@test -f "$(VC_DFT_TCL)" || { echo "[DFT] VC Static DFT Tcl not found: $(VC_DFT_TCL)"; exit 2; }
+	@mkdir -p "$(DFT_RUN_DIR)"
+	@cd "$(DFT_RUN_DIR)" && \
+	  PROJECT_ROOT="$(PROJECT_ROOT)" \
+	  SOC="$(PROJECT_ROOT)" \
+	  VC_STATIC_HOME="$(VC_STATIC_HOME)" \
+	  VC_FILELIST="$(RUN_DIR)/rtl.f" \
+	  VC_TOP="$(RTL_TOP)" \
+	  VC_DFT_GOAL="$(VC_DFT_GOAL)" \
+	  VC_DFT_BEST_PRACTICE="$(if $(filter 1 true yes,$(strip $(SG_DFT_BEST_PRACTICE) $(VC_DFT_BEST_PRACTICE))),1,0)" \
+	  VC_DFT_REPORT="$(VC_DFT_REPORT)" \
+	  VC_DFT_SUMMARY="$(VC_DFT_SUMMARY)" \
+	  VC_DFT_GATE="$(VC_DFT_GATE)" \
+	  VC_DFT_MAX_BLOCKING="$(VC_DFT_MAX_BLOCKING)" \
+	  VC_DFT_SETUP_TCL="$(VC_DFT_SETUP_TCL)" \
+	  VC_DFT_SEARCH_PATH="$(VC_DFT_SEARCH_PATH)" \
+	  VC_DFT_LINK_LIBRARY="$(VC_DFT_LINK_LIBRARY)" \
+	  VC_CLOCK_PORT="$(VC_CLOCK_PORT)" \
+	  VC_RESET_PORT="$(VC_RESET_PORT)" \
+	  VC_RESET_VALUE="$(VC_RESET_VALUE)" \
+	  VC_CLOCK_PERIOD="$(VC_CLOCK_PERIOD)" \
+	  VC_TEST_MODE_PORT="$(VC_TEST_MODE_PORT)" \
+	  VC_TEST_MODE_VALUE="$(VC_TEST_MODE_VALUE)" \
+	  VC_TEST_RST_PORT="$(VC_TEST_RST_PORT)" \
+	  VC_ANALYZE_VCS_OPTS="$(VC_ANALYZE_VCS_OPTS)" \
+	  SNPSLMD_LICENSE_FILE="$(SNPSLMD_LICENSE_FILE)" \
+	  LM_LICENSE_FILE="$(LM_LICENSE_FILE)" \
+	  "$(VC_STATIC_SHELL)" $(VC_STATIC_MODE) -lic_wait $(VC_STATIC_LIC_WAIT) \
+	    -f "$(VC_DFT_TCL)" \
+	    -cmd_log_file "$(DFT_RUN_DIR)/vcst_command.log" \
+	    -output_log_file "$(DFT_LOG)"
+	@echo "[DFT] Log:      $(DFT_LOG)"
+	@echo "[DFT] Summary:  $(VC_DFT_SUMMARY)"
+	@echo "[DFT] Report:   $(VC_DFT_REPORT)"
 
 # --- syn-artifacts: exact structural contract for registered synthesis evidence ---
 syn-artifacts:

@@ -25,6 +25,27 @@
       "tool_timeout_sec": 300
     },
     {
+      "name": "xml2yml",
+      "script": ".agents/skills/xml2yml/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 300
+    },
+    {
+      "name": "lib-db-gen",
+      "script": ".agents/skills/lib-db-gen/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 3600
+    },
+    {
+      "name": "dft-gen",
+      "script": ".agents/skills/dft-gen/mcp_server.py",
+      "default_enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 300
+    },
+    {
       "name": "gen-asic-memmap",
       "script": ".agents/skills/gen-asic-memmap/mcp_server.py",
       "default_enabled": true,
@@ -93,6 +114,19 @@
       "default_enabled": false,
       "startup_timeout_sec": 120,
       "tool_timeout_sec": 7500
+    },
+    {
+      "name": "wavedrom-gen",
+      "command": "/bin/sh",
+      "args": [
+        "scripts/mcp_node.sh",
+        ".agents/skills/wavedrom-gen/scripts/mcp-server.mjs",
+        "--stdio"
+      ],
+      "cwd": ".",
+      "default_enabled": true,
+      "startup_timeout_sec": 180,
+      "tool_timeout_sec": 300
     },
     {
       "name": "openroad-mcp",

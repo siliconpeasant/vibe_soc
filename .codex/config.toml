@@ -25,6 +25,30 @@ args = ["scripts/mcp_python.sh", ".agents/skills/yml2reg/mcp_server.py"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
+[mcp_servers.xml2yml]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/xml2yml/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
+[mcp_servers.lib-db-gen]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/lib-db-gen/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 3600
+
+[mcp_servers.dft-gen]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_python.sh", ".agents/skills/dft-gen/mcp_server.py"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+
 [mcp_servers.gen-asic-memmap]
 enabled = true
 command = "/bin/sh"
@@ -104,6 +128,14 @@ cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-openroad/mcp_server.py"]
 startup_timeout_sec = 120
 tool_timeout_sec = 7500
+
+[mcp_servers.wavedrom-gen]
+enabled = true
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_node.sh", ".agents/skills/wavedrom-gen/scripts/mcp-server.mjs", "--stdio"]
+startup_timeout_sec = 180
+tool_timeout_sec = 300
 
 [mcp_servers.openroad-mcp]
 enabled = false

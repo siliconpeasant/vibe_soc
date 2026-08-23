@@ -35,6 +35,7 @@ python3 .agents/skills/gen-memwrap/scripts/gen_memwrap.py --status
 | 变量 | 用途 |
 |------|------|
 | `ORFS_PLATFORMS` | catalog 预置宏根（ORFS `flow/platforms`） |
+| `SILICON_CREW_ORFS_DIR` / `OPENROAD_FLOW_HOME` | 若未设 `ORFS_PLATFORMS`，回退 `$VAR/platforms` |
 | `OPENRAM_HOME` | OpenRAM compiler 目录 |
 | `OPENRAM_TECH` | OpenRAM technology 目录 |
 | `OPENRAM_COMPILER` | `sram_compiler.py` 入口 |

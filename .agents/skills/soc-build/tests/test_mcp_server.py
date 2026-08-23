@@ -185,7 +185,7 @@ class SocBuildMcpTest(unittest.TestCase):
 
     def test_tool_registry_contains_new_interfaces(self) -> None:
         tools = SERVER.mcp._tool_manager._tools
-        self.assertTrue({"soc_sim", "soc_regress", "soc_coverage", "soc_syn", "soc_formal", "soc_verdi", "soc_cdc"} <= set(tools))
+        self.assertTrue({"soc_sim", "soc_regress", "soc_coverage", "soc_syn", "soc_formal", "soc_verdi", "soc_cdc", "soc_rdc", "soc_dft"} <= set(tools))
 
     def test_rejects_direct_tool_object_invocation(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
@@ -299,7 +299,7 @@ class SocBuildMcpTest(unittest.TestCase):
         )
 
     def test_lint_rejects_unknown_tool(self) -> None:
-        with self.assertRaisesRegex(ValueError, "spyglass, verilator"):
+        with self.assertRaisesRegex(ValueError, "spyglass"):
             SERVER.soc_lint(str(self.module_dir), "bad_lint_tool", "uart")
 
     @patch.object(SERVER, "_detect_gui_variables", return_value={"DISPLAY": ":0", "XAUTHORITY": "/tmp/xauth"})
@@ -329,9 +329,14 @@ class SocBuildMcpTest(unittest.TestCase):
             timeout=1200,
         )
 
-    def test_cdc_rejects_non_spyglass(self) -> None:
+    def test_cdc_rejects_unknown_tool(self) -> None:
         with self.assertRaisesRegex(ValueError, "spyglass"):
             SERVER.soc_cdc(str(self.module_dir), "bad_cdc_tool", "uart")
+
+    def test_cdc_accepts_vc_static_contract(self) -> None:
+        self.assertIn("vc_static", SERVER.SUPPORTED_CDC_TOOLS)
+        self.assertEqual(SERVER.SUPPORTED_RDC_TOOLS, {"vc_static"})
+        self.assertEqual(SERVER.SUPPORTED_DFT_TOOLS, {"vc_static"})
 
     @patch.object(SERVER, "_run")
     def test_syn_uses_project_target(self, run) -> None:

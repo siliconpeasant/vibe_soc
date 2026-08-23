@@ -16,6 +16,18 @@ Inputs are `project_root`, `top_module`, completed submodule workspaces/filelist
 and an explicit port map when connections are nontrivial. Follow the signoff
 packet and start the top RTL stage.
 
+## Owned skills / MCP
+
+| Skill / MCP | Share | Use |
+|-------------|-------|-----|
+| **`soc-integrate`** | exclusive | ports, wrappers, generated top, snapshots |
+| **`yml2reg`** | exclusive | YAML → regfile + SW/DV packs |
+| **`xml2yml`** | exclusive | IP-XACT/Spirit → YAML |
+
+Other roles must not call exclusive integrator tools (`yml2reg`, `xml2yml`,
+`soc-integrate`). Reverse register import is XML → `xml2yml` → reviewed YAML →
+`yml2reg`.
+
 For a new top call `soc_add_chip`; otherwise preserve its integration config.
 Snapshot each dependency, generate/update the top only with `soc-integrate`,
 generate `de/rtl/filelist.f`, and maintain only the dependency section of

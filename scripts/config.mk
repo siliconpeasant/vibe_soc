@@ -96,6 +96,58 @@ SG_CDC_RESET_VALUE  ?= 0
 SG_CDC_PROJECT_DIR  ?= $(CDC_RUN_DIR)/$(RTL_TOP)_cdc
 SG_CDC_GUI          ?= $(GUI)
 SG_CDC_GUI_LOG      ?= $(CDC_RUN_DIR)/spyglass_gui.log
+
+# Optional VC Static (VC SpyGlass) backends. Defaults stay Verilator lint and
+# SpyGlass CDC. Select with LINT_TOOL=vc_static / CDC_TOOL=vc_static, or the
+# extra make rdc / dft targets (VC Static only).
+RDC_RUN_DIR         ?= $(RUN_DIR)/rdc
+RDC_LOG             ?= $(RDC_RUN_DIR)/rdc.log
+RDC_TOOL            ?= vc_static
+RDC_SDC             ?= $(firstword $(wildcard $(MODULE_PATH)/de/rdc/*.sdc $(MODULE_PATH)/de/cdc/*.sdc $(MODULE_PATH)/de/syn/$(RTL_TOP).sdc $(MODULE_PATH)/de/syn/$(MODULE_NAME).sdc $(MODULE_PATH)/de/syn/final.sdc))
+VC_STATIC_HOME      ?= /usr/Synopsys/vc_static/latest
+VC_STATIC_SHELL     ?= $(VC_STATIC_HOME)/bin/vc_static_shell
+VC_STATIC_MODE      ?= -mode64
+VC_STATIC_LIC_WAIT  ?= 10
+VC_LINT_TCL         ?= $(PROJECT_ROOT)/scripts/lint/vc_lint.tcl
+VC_LINT_RUN_DIR     ?= $(RUN_DIR)/lint_vc_static
+VC_LINT_LOG         ?= $(VC_LINT_RUN_DIR)/vc_lint.log
+VC_LINT_REPORT      ?= $(VC_LINT_RUN_DIR)/report_lint.txt
+VC_LINT_SUMMARY     ?= $(VC_LINT_RUN_DIR)/report_lint.summary.txt
+VC_LINT_GATE        ?= $(VC_LINT_RUN_DIR)/result_gate.txt
+VC_LINT_MAX_BLOCKING ?= 0
+VC_LINT_GOAL        ?= lint_rtl
+VC_LINT_GUIDEWARE   ?= $(VC_STATIC_HOME)/auxx/monet/tcl/GuideWare/block/rtl_handoff/lint/
+VC_CDC_TCL          ?= $(PROJECT_ROOT)/scripts/cdc/vc_cdc.tcl
+VC_CDC_REPORT       ?= $(CDC_RUN_DIR)/report_cdc.detailed.log
+VC_CDC_SUMMARY      ?= $(CDC_RUN_DIR)/report_cdc.summary.log
+VC_CDC_GATE         ?= $(CDC_RUN_DIR)/result_gate.txt
+VC_CDC_MAX_BLOCKING ?= 0
+VC_RDC_TCL          ?= $(PROJECT_ROOT)/scripts/rdc/vc_rdc.tcl
+VC_RDC_REPORT       ?= $(RDC_RUN_DIR)/report_rdc.log
+VC_RDC_GATE         ?= $(RDC_RUN_DIR)/result_gate.txt
+VC_RDC_MAX_BLOCKING ?= 0
+VC_CLOCK_PORT       ?= clk
+VC_RESET_PORT       ?= rst_n
+VC_RESET_VALUE      ?= 0
+VC_CLOCK_PERIOD     ?= 10
+VC_ANALYZE_VCS_OPTS ?= -sverilog +libext+.v+.sv+.svh+.vp+.svp
+DFT_RUN_DIR         ?= $(RUN_DIR)/dft
+DFT_LOG             ?= $(DFT_RUN_DIR)/dft.log
+DFT_TOOL            ?= vc_static
+VC_DFT_TCL          ?= $(PROJECT_ROOT)/scripts/dft/vc_dft.tcl
+VC_DFT_GOAL         ?= dft_scan_ready
+VC_DFT_REPORT       ?= $(DFT_RUN_DIR)/report_dft.txt
+VC_DFT_SUMMARY      ?= $(DFT_RUN_DIR)/report_dft.summary.txt
+VC_DFT_GATE         ?= $(DFT_RUN_DIR)/result_gate.txt
+VC_DFT_MAX_BLOCKING ?= 0
+VC_DFT_BEST_PRACTICE ?= 0
+VC_DFT_SETUP_TCL    ?= $(firstword $(wildcard $(MODULE_PATH)/de/dft/*_vc.tcl $(MODULE_PATH)/de/dft/*_lib.tcl $(MODULE_PATH)/de/dft/dft_lib.tcl))
+VC_DFT_SEARCH_PATH  ?=
+VC_DFT_LINK_LIBRARY ?=
+VC_TEST_MODE_PORT   ?=
+VC_TEST_MODE_VALUE  ?= 1
+VC_TEST_RST_PORT    ?=
+SG_DFT_BEST_PRACTICE ?= $(VC_DFT_BEST_PRACTICE)
 VLOG_FLAGS      ?= +systemverilogext+.sv+.svi+.svh+.v \
                    -extinclude \
                    +libext+.vlib+.v+.sv+.svi+.svh+.vt+.vp+.defs \

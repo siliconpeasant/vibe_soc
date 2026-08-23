@@ -27,6 +27,8 @@ Every chip module and IP uses the same structure:
 ├── de/rtl/          # RTL + filelist.f/filelist.mk
 ├── de/lint/         # lint configuration or reviewed collateral
 ├── de/cdc/          # CDC configuration or reviewed collateral
+├── de/rdc/          # RDC configuration or reviewed collateral
+├── de/dft/          # DFT SGDC/Tcl/waiver collateral
 ├── de/formal/       # formal configuration or reviewed collateral
 ├── de/run/          # transient lint/build output
 ├── de/syn/          # SDC, synthesis and STA output
@@ -52,8 +54,10 @@ Create structure with `soc_init`, `soc_add_chip`, or `soc_add_ip`. Do not create
 | `soc_add_chip` | add a chip module |
 | `soc_add_ip` | add a digital/third-party IP |
 | `soc_flist` | generate a Verilog/SystemVerilog filelist |
-| `soc_lint` | project-filelist lint with Verilator or SpyGlass; accepts `rtl_top` |
-| `soc_cdc` | SpyGlass CDC check; accepts `rtl_top` |
+| `soc_lint` | project-filelist lint with Verilator (default) / SpyGlass / optional VC Static; accepts `rtl_top` |
+| `soc_cdc` | SpyGlass CDC (default) or optional VC Static; accepts `rtl_top` |
+| `soc_rdc` | optional VC Static RDC check; accepts `rtl_top` |
+| `soc_dft` | optional VC SpyGlass DFT / TestMAX (default `dft_scan_ready`); accepts `rtl_top` |
 | `soc_comp` | compile; accepts `top_module` |
 | `soc_sim` | compile then simulate; accepts simulator/test/seed/top |
 | `soc_regress` | test/seed matrix regression |
@@ -73,7 +77,9 @@ emitted run ID and fingerprint to `update_state.py` when closing `verif` or
 
 ## Stage use
 
-- RTL agents call `soc_lint`; MCP allows Verilator or SpyGlass lint only; no direct EDA fallback.
+- RTL agents call `soc_lint`; MCP allows Verilator (default), SpyGlass, or optional VC Static; no direct EDA fallback.
+- CDC/RDC side-lane (`soc-cdc-engineer`) calls `soc_cdc` (SpyGlass default, `vc_static` extra) and/or `soc_rdc` (`vc_static` only).
+- DFT side-lane (`soc-dft-engineer`) generates collateral via `dft-gen`, then calls `soc_dft` (`vc_static` only).
 - Verification agents call `soc_sim` or `soc_regress`; no direct Make/simulator fallback.
 - Synthesis agents call `soc_syn`; use `syn_tool=dc` for Design Compiler or `syn_tool=yosys` for structural checks. Yosys output is not STA evidence.
 - Formal agents call `soc_formal` with the exact `run_id` and `source_fingerprint` emitted by `soc_syn`. Plain DC snapshots run ordinary RTL-to-netlist equivalence; snapshots containing both canonical and saved UPF run the UPF-aware mode.

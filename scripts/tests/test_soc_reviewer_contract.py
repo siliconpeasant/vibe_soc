@@ -21,13 +21,24 @@ class SocReviewerContractTest(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
 
     def test_role_mcp_servers_define_transport(self) -> None:
-        for role in ("soc-integrator", "soc-pd-engineer"):
+        for role in ("soc-integrator", "soc-pd-engineer", "soc-dft-engineer"):
             profile = (ROOT / f".codex/agents/{role}.toml").read_text(encoding="utf-8")
             mcp_config = profile.split("\n[mcp_servers.", maxsplit=1)[1]
             self.assertTrue(
                 'command = "' in mcp_config or 'url = "' in mcp_config,
                 f"{role} MCP config must define a command or URL transport",
             )
+
+    def test_ported_roles_exist(self) -> None:
+        for role in (
+            "soc-dft-engineer",
+            "soc-cdc-engineer",
+            "soc-low-power-engineer",
+        ):
+            self.assertTrue((ROOT / f".agents/agents/{role}.md").is_file(), role)
+            self.assertTrue((ROOT / f".codex/agents/{role}.toml").is_file(), role)
+        self.assertTrue((ROOT / ".agents/rules/14_dft_gate.md").is_file())
+        self.assertTrue((ROOT / ".agents/rules/15_reset_ownership.md").is_file())
 
     def test_required_review_sections_and_classifications(self) -> None:
         contract = (ROOT / ".agents/agents/soc-reviewer.md").read_text(encoding="utf-8")

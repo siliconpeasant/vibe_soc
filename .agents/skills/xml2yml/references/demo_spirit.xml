@@ -1,0 +1,117 @@
+<?xml version="1.0" ?>
+<spirit:component xmlns:spirit="http://www.siliconpeasant.com">
+  <spirit:name>DEMO_SYS_CTRL</spirit:name>
+  <spirit:version>1.0</spirit:version>
+  <spirit:addressBlock>
+    <spirit:name>DEMO_SYS_CTRL</spirit:name>
+    <spirit:description>demo system control for yml2reg docs</spirit:description>
+    <spirit:baseAddress>0x0</spirit:baseAddress>
+    <spirit:range>0x1000</spirit:range>
+    <spirit:width>32</spirit:width>
+    <spirit:byteVisit>1</spirit:byteVisit>
+    <spirit:usage>register</spirit:usage>
+    <spirit:protocol>apb</spirit:protocol>
+    <spirit:register>
+      <spirit:name>version</spirit:name>
+      <spirit:description>IP version</spirit:description>
+      <spirit:addressOffset>0x0</spirit:addressOffset>
+      <spirit:size>32</spirit:size>
+      <spirit:access>RO</spirit:access>
+      <spirit:reset>
+        <spirit:value>0x1</spirit:value>
+      </spirit:reset>
+      <spirit:field>
+        <spirit:name>version_id</spirit:name>
+        <spirit:description>version id</spirit:description>
+        <spirit:bitOffset>0</spirit:bitOffset>
+        <spirit:bitWidth>16</spirit:bitWidth>
+        <spirit:access>RO</spirit:access>
+      </spirit:field>
+    </spirit:register>
+    <spirit:register>
+      <spirit:name>ctrl</spirit:name>
+      <spirit:description>control</spirit:description>
+      <spirit:addressOffset>0x4</spirit:addressOffset>
+      <spirit:size>32</spirit:size>
+      <spirit:access>RW</spirit:access>
+      <spirit:reset>
+        <spirit:value>0x0</spirit:value>
+      </spirit:reset>
+      <spirit:field>
+        <spirit:name>enable</spirit:name>
+        <spirit:description>module enable</spirit:description>
+        <spirit:bitOffset>0</spirit:bitOffset>
+        <spirit:bitWidth>1</spirit:bitWidth>
+        <spirit:access>RW</spirit:access>
+      </spirit:field>
+      <spirit:field>
+        <spirit:name>soft_rst</spirit:name>
+        <spirit:description>soft reset</spirit:description>
+        <spirit:bitOffset>1</spirit:bitOffset>
+        <spirit:bitWidth>1</spirit:bitWidth>
+        <spirit:access>RW</spirit:access>
+        <spirit:lockOffset>16</spirit:lockOffset>
+        <spirit:lockWidth>1</spirit:lockWidth>
+        <spirit:lockValue>0x1</spirit:lockValue>
+      </spirit:field>
+    </spirit:register>
+    <spirit:register>
+      <spirit:name>scratch</spirit:name>
+      <spirit:description>scratch pad</spirit:description>
+      <spirit:addressOffset>0x8</spirit:addressOffset>
+      <spirit:size>32</spirit:size>
+      <spirit:access>RW</spirit:access>
+      <spirit:reset>
+        <spirit:value>0x0</spirit:value>
+      </spirit:reset>
+      <spirit:field>
+        <spirit:name>scratch_data</spirit:name>
+        <spirit:description>scratch</spirit:description>
+        <spirit:bitOffset>0</spirit:bitOffset>
+        <spirit:bitWidth>32</spirit:bitWidth>
+        <spirit:access>RW</spirit:access>
+      </spirit:field>
+    </spirit:register>
+    <spirit:register>
+      <spirit:name>status</spirit:name>
+      <spirit:description>status</spirit:description>
+      <spirit:addressOffset>0xc</spirit:addressOffset>
+      <spirit:size>32</spirit:size>
+      <spirit:access>RO</spirit:access>
+      <spirit:reset>
+        <spirit:value>0x0</spirit:value>
+      </spirit:reset>
+      <spirit:field>
+        <spirit:name>busy</spirit:name>
+        <spirit:description>busy</spirit:description>
+        <spirit:bitOffset>0</spirit:bitOffset>
+        <spirit:bitWidth>1</spirit:bitWidth>
+        <spirit:access>RO</spirit:access>
+      </spirit:field>
+      <spirit:field>
+        <spirit:name>enable_status</spirit:name>
+        <spirit:description>enable mirror</spirit:description>
+        <spirit:bitOffset>1</spirit:bitOffset>
+        <spirit:bitWidth>1</spirit:bitWidth>
+        <spirit:access>RO</spirit:access>
+      </spirit:field>
+    </spirit:register>
+    <spirit:interrupt>
+      <spirit:name>err_irq</spirit:name>
+      <spirit:description>error interrupt group</spirit:description>
+      <spirit:addressOffset>0x200</spirit:addressOffset>
+      <spirit:size>32</spirit:size>
+      <spirit:access>RO</spirit:access>
+      <spirit:reset>
+        <spirit:value>0x0</spirit:value>
+      </spirit:reset>
+      <spirit:field>
+        <spirit:name>err</spirit:name>
+        <spirit:description>error flag</spirit:description>
+        <spirit:bitOffset>0</spirit:bitOffset>
+        <spirit:bitWidth>1</spirit:bitWidth>
+        <spirit:access>RO</spirit:access>
+      </spirit:field>
+    </spirit:interrupt>
+  </spirit:addressBlock>
+</spirit:component>

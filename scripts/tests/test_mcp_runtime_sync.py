@@ -33,7 +33,32 @@ class McpRuntimeSyncTest(unittest.TestCase):
         manifest = json.loads((ROOT / ".agents/mcp-servers.json").read_text(encoding="utf-8"))
         names = [server["name"] for server in manifest["servers"]]
         self.assertEqual(len(names), len(set(names)))
-        self.assertEqual(len(names), 9)
+        required_names = {
+            "soc-build",
+            "yml2reg",
+            "xml2yml",
+            "lib-db-gen",
+            "dft-gen",
+            "gen-asic-memmap",
+            "gen-memwrap",
+            "excel-yml-gen",
+            "crg-gen",
+            "soc-openroad",
+            "wavedrom-gen",
+            "openroad-mcp",
+            "drawio",
+        }
+        self.assertTrue(required_names <= set(names), set(names))
+        wavedrom = next(server for server in manifest["servers"] if server["name"] == "wavedrom-gen")
+        self.assertEqual(wavedrom["command"], "/bin/sh")
+        self.assertEqual(
+            wavedrom["args"],
+            [
+                "scripts/mcp_node.sh",
+                ".agents/skills/wavedrom-gen/scripts/mcp-server.mjs",
+                "--stdio",
+            ],
+        )
         upf_gen = next(server for server in manifest["servers"] if server["name"] == "upf-gen")
         self.assertEqual(upf_gen["script"], ".agents/skills/upf-gen/mcp_server.py")
         self.assertGreaterEqual(upf_gen["tool_timeout_sec"], 43200)
@@ -55,7 +80,18 @@ class McpRuntimeSyncTest(unittest.TestCase):
                 self.assertEqual(completed.returncode, 0)
 
     def test_runtime_contract_is_present(self) -> None:
-        runtime = self.sync.expected_runtime_files()[ROOT / ".agents/scripts/run_mcp_python.sh"]
+        expected = self.sync.expected_runtime_files()
+        self.assertEqual(
+            set(expected),
+            {
+                ROOT / "scripts/mcp_python.sh",
+                ROOT / "scripts/mcp_node.sh",
+                ROOT / ".agents/scripts/run_mcp_python.sh",
+                ROOT / ".agents/scripts/run_mcp_node.sh",
+                ROOT / ".agents/scripts/setup_mcp_env.sh",
+            },
+        )
+        runtime = expected[ROOT / ".agents/scripts/run_mcp_python.sh"]
         for required in (
             "unset PYTHONHOME PYTHONPATH PYTHONVERSION",
             "mcp openpyxl pandas yaml xlrd",
@@ -67,6 +103,14 @@ class McpRuntimeSyncTest(unittest.TestCase):
         ):
             self.assertIn(required, runtime)
         self.assertIn("numpy==1.26.4", (ROOT / ".agents/mcp-requirements.txt").read_text(encoding="utf-8"))
+        node_runtime = expected[ROOT / ".agents/scripts/run_mcp_node.sh"]
+        for required in (
+            "unset NODE_OPTIONS NODE_PATH NPM_CONFIG_PREFIX",
+            "pinned_node_version=v22.23.2",
+            "wavedrom-gen",
+            "--setup-only",
+        ):
+            self.assertIn(required, node_runtime)
 
     def test_generated_files_are_synchronized(self) -> None:
         completed = subprocess.run(
