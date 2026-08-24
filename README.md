@@ -1,11 +1,14 @@
 # vibe_soc
 
-`vibe_soc` 是一个 silicon-crew 风格的 SoC 前端开发仓库，覆盖模块/IP 创建、RTL 集成、lint/编译/仿真/回归/覆盖率、综合、OpenROAD 物理设计 handoff、寄存器生成、CRG 需求设计和时钟/复位树图生成。
+`vibe_soc` 是一个 silicon-crew 风格的 SoC 前端开发仓库，覆盖模块/IP 创建、RTL 集成、lint/CDC/RDC/DFT、编译/仿真/回归/覆盖率、综合、Formal/CLP、OpenROAD 物理设计 handoff、寄存器生成、CRG 需求设计和时钟/复位树图生成。
 
 当前仓库采用分层 Loop：日常单模块修改走轻量 `dev` 内环，准备交付时走
-`merge`，接口、时钟复位、约束、Top、跨模块和 PD 等高风险修改自动升级
-为 `signoff`。最终门控依然是 `doc -> rtl -> {verif, syn}`。EDA 执行由
-注册的 MCP 工具驱动，禁止 agent 直接调用仿真器、综合器或 OpenROAD。
+`merge`，接口、时钟复位、约束、Top、跨模块、CDC/RDC、DFT、低功耗和 PD
+等高风险修改自动升级为 `signoff`。正式门控是
+`doc -> rtl -> {verif, syn} -> formal -> handoff`（多模块顶层可在 rtl
+后走可选 `integrate`）。CDC/RDC、DFT、低功耗是 side lane，不是独立
+stage。EDA 执行由注册的 MCP 工具驱动，禁止 agent 直接调用仿真器、综合器
+或 OpenROAD。
 
 ## 仓库布局
 
@@ -67,6 +70,9 @@ vibe_soc/
 source scripts/setup.sh
 make check-env
 
+# clone 后或改 .agents/ 后，装配 agent / skill / MCP
+make agent-setup
+
 # 查看可构建模块
 make list-modules
 
@@ -75,6 +81,13 @@ make print-config MODULE=ip/digital/uart SIMULATOR=vcs
 
 # 提交前检查本机路径、license endpoint 等泄漏风险
 make check-repo
+```
+
+走 HTTP 代理才能访问 GitHub 的 EDA 机，先加载：
+
+```bash
+source scripts/github_git_env.sh   # bash
+source scripts/github_git_env.csh  # csh/tcsh
 ```
 
 所有顶层 Make 目标都可以通过 `MODULE=<path>` 指定模块，默认模块是 `chip/top`。
@@ -86,16 +99,18 @@ make sim  MODULE=ip/digital/uart SIMULATOR=vcs TEST=uart_all SEED=7
 ```
 
 OpenTitan `chip/top` 仿真默认 `FSDB=0`，即不生成波形；需要 debug 波形时显式加 `FSDB=1`。
+UART smoke CI 在仅有 `VCS-BASE-COMPILE` 的 license 上会设 `VCS_XPROP=0`，否则
+`-xprop` 加 `-licqueue` 会一直排队；本地默认仍开 xprop。
 
 ## CI/CD 与合并策略
 
-当前 GitHub Actions 包含三类 workflow：
+当前 GitHub Actions 包含以下 workflow：
 
 | Workflow | 触发方式 | 用途 |
 |---|---|---|
 | `auto-pr-automerge` | `codex/**`、`feature/**`、`fix/**` 分支 push、手动 | 自动创建/复用 PR，并尝试启用 GitHub 原生 auto-merge |
 | `loop-policy` | PR、手动 | 校验 Loop 路由、状态工具、规则和 Agent 契约 |
-| `top-smoke` | PR、手动、定时 | `chip/top` UART smoke CI 门禁 |
+| `top-smoke` | PR、手动、定时 | `chip/top` UART smoke CI 门禁（`FSDB=0`，`VCS_XPROP=0`） |
 | `cd-release-branch` | `release/**` 分支 push、手动 | 发布分支候选包构建 |
 | `cd-release` | `v*` tag、手动 | 正式 release 包和 GitHub Release |
 
@@ -177,6 +192,7 @@ python3 scripts/package_design_release.py \
 | `list-modules` | 列出带模块 Makefile 的 chip/IP 模块 |
 | `check-env` | 检查本机 EDA/Python 环境 |
 | `check-repo` | 检查不应入库的本机路径和 license 信息 |
+| `agent-setup` | 从 `.agents/` 同步各客户端配置并装配 MCP 运行时 |
 | `flist` | 生成/刷新模块 filelist |
 | `validate-flist` | 展平并检查嵌套 filelist、循环和失效路径 |
 | `lint` | RTL lint，默认 Verilator，可切 SpyGlass 或 `LINT_TOOL=vc_static` |
@@ -229,15 +245,16 @@ filelist 中优先使用模块相对路径，避免写入本机绝对目录。�
 
 ### Lint 工具说明
 
-`lint` 默认使用 Verilator，也支持 SpyGlass：
+`lint` 默认使用 Verilator，也支持 SpyGlass，以及可选 VC Static：
 
 ```bash
 make lint MODULE=ip/digital/uart
 make lint MODULE=ip/digital/uart LINT_TOOL=verilator RTL_TOP=uart
 make lint MODULE=ip/digital/uart LINT_TOOL=spyglass RTL_TOP=uart
+make lint MODULE=ip/digital/uart LINT_TOOL=vc_static RTL_TOP=uart
 ```
 
-SpyGlass lint 通过 `scripts/lint/sg_lint.tcl` 运行，默认 goal 为 `lint/lint_rtl`，报告写入模块 `de/run/lint_spyglass/`。VC Static lint 入口已移除；如果后续需要恢复，必须重新补齐合法 license、脚本和 MCP 参数约束。
+SpyGlass lint 通过 `scripts/lint/sg_lint.tcl` 运行，默认 goal 为 `lint/lint_rtl`，报告写入模块 `de/run/lint_spyglass/`。VC Static lint 是可选额外后端（`scripts/lint/vc_lint.tcl`），不替换默认 Verilator/SpyGlass，产物在 `de/run/lint_vc_static/`。
 
 `ip/digital/lint_lab` 是故意构造的坏 RTL 语料库，用于 SpyGlass lint 修复和规则验证基准。相关脚本位于 `scripts/lint/lint_*`。它不是功能 IP，不应接入 chip/top。
 
@@ -249,7 +266,8 @@ SpyGlass lint 通过 `scripts/lint/sg_lint.tcl` 运行，默认 goal 为 `lint/l
 - Verilator
 - Xcelium
 - Verdi、DVE、SimVision、GTKWave（按本地授权和安装情况启用）
-- SpyGlass lint/CDC（本地已授权环境）
+- SpyGlass lint/CDC（本地已授权环境；默认静态检查后端）
+- VC Static lint/CDC/RDC/DFT（可选额外后端，不替换 Verilator/SpyGlass 默认）
 - Yosys 结构综合
 - Design Compiler 逻辑综合（本地已授权环境）
 
@@ -289,24 +307,44 @@ RTL 创建或实质修改先自动选择 Loop 模式：
 
 ```text
 dev:     单模块 RTL owner -> targeted lint/compile/sim -> 保持 rtl in_progress
-merge:   doc delta -> rtl -> {verif, syn} -> reviewer normal
-signoff: architecture 可选 -> doc -> rtl -> {verif, syn} -> risk checks -> reviewer strict
+merge:   doc delta -> rtl -> {verif, syn} -> formal -> handoff -> reviewer normal
+signoff: architecture 可选 -> doc -> rtl -> {verif, syn} -> formal -> handoff
+         -> risk checks -> reviewer strict
 ```
 
 `LOOP_MODE` 是最低模式而不是绕过开关。filelist 和验证 collateral 至少升级
 到 `merge`；新模块、接口/寄存器、时钟复位、约束、生成 Top/wrapper、
-chip-top RTL、跨模块、UPF 和 PD 自动升级到 `signoff`。
+chip-top RTL、跨模块、CDC/RDC、DFT、UPF 和 PD 自动升级到 `signoff`。
+
+正式 `pipeline_state.json` 阶段（`doc -> rtl -> {verif, syn} -> formal -> handoff`；
+`integrate` 在 rtl 之后）：
 
 | 阶段 | 角色 | 典型产物 |
 |---|---|---|
-| architecture | `soc-architect` | `docs/architecture*.md` |
+| architecture（条件，pipeline 前） | `soc-architect` | `docs/architecture*.md` |
 | doc | `soc-doc-engineer` | `docs/design_spec.md`、`interface_spec.md`、`regmap.md`、`verification_plan.md` |
 | rtl | `soc-rtl-designer` 或特化角色 | `de/rtl/*.v`、`de/rtl/filelist.f`、`de/syn/*.sdc` |
 | verif | `soc-verification-engineer` | `dv/tb/tb_<module>.*`、`dv/sim/sim.log` |
 | syn | `soc-synthesis-engineer` | `de/syn/*_netlist.v`、`de/syn/synth.log` |
-| pd handoff (post-syn) | `soc-pd-engineer` | `pd/openroad/<platform>/<design>/config.mk`、`constraint.sdc`、真实 ORFS reports/results |
+| formal（可选） | `soc-synthesis-engineer` | Formality 报告；可用 `--note` skip |
+| integrate（可选） | `soc-integrator` | 顶层 filelist / 生成 top；叶子模块 skip |
+| handoff | `soc-synthesis-engineer` | 前端交付包 + `check_handoff`；要求 verif/syn/formal/integrate 为 done 或 skipped |
 
-PD handoff 使用 `soc-pd-engineer` 协调 OpenROAD，但它不是 `pipeline_state.json` 的正式 `doc/rtl/verif/syn` stage；只有真实 ORFS 报告和结果可作为完成依据。
+`formal` / `integrate` 可 skip；`handoff` 仍要求它们 `done` 或 `skipped`。
+`check_integrate.py` / `check_handoff.py` 由状态工具在对应阶段调用。
+
+Side lane 不是 pipeline stage，不关闭 `rtl` / `verif` / `syn` / `formal` /
+`handoff`：
+
+| 车道 | 角色 | 说明 |
+|---|---|---|
+| CDC/RDC | `soc-cdc-engineer` | 默认 SpyGlass CDC；可选 VC Static CDC/RDC |
+| DFT | `soc-dft-engineer` + `dft-gen` | test_mode/scan 钩子、`de/dft/` SGDC/Tcl、可选 `soc_dft` |
+| 低功耗 | `soc-low-power-engineer` | UPF/CLP 意图与检查；本仓库无 `upf-gen` skill，走已有 `clp-upf` / `formal-upf` |
+| CRG | `soc-crg-engineer` | 需求表 → 设计表 → 拓扑图 → `crg-gen` RTL/SDC |
+| PD handoff（post-syn） | `soc-pd-engineer` | OpenROAD config/SDC 与真实 ORFS reports/results |
+
+PD 不是 `pipeline_state.json` 的正式 stage；只有真实 ORFS 报告和结果可作为完成依据。
 
 每个独立模块/IP 可用 `pipeline_state.json` 跟踪阶段状态。常用状态脚本：
 
@@ -339,7 +377,8 @@ router 只输出需要读取的规则、需要执行的检查和 fingerprint 缓
 - `verif` 和 `syn` 在 RTL 完成后可以并行，但结果只对当时消费的 RTL snapshot 有效。
 - 验证阶段可在 `verif in_progress` 内多次修 RTL，只在阶段完成/失败时结算一次；若 RTL 变更，`syn` 必须退回 `pending` 并重跑。
 - 综合阶段同理；若综合修 RTL，`verif` 必须退回 `pending` 并重跑。
-- 同一个 RTL epoch 只允许一个下游阶段承担 RTL 修复。若另一侧也需要改 RTL，重新打开 `rtl in_progress`，旧 `verif/syn` 结果会自动失效。
+- 同一个 RTL epoch 只允许一个下游阶段承担 RTL 修复。若另一侧也需要改 RTL，重新打开 `rtl in_progress`，旧 `verif` / `syn` / `formal` / `integrate` / `handoff` 结果会自动失效。
+- 新的 `syn` done 会使已开始或已关闭的 `formal` / `handoff` 失效。
 
 ## MCP/Agent 功能
 
@@ -348,19 +387,21 @@ router 只输出需要读取的规则、需要执行的检查和 fingerprint 缓
 | 能力 | MCP/Skill | 说明 |
 |---|---|---|
 | 项目/IP/模块脚手架 | `soc-build` | `soc_init`、`soc_add_chip`、`soc_add_ip` |
-| 构建与验证 | `soc-build` | filelist、lint、CDC、可选 VC Static RDC/DFT、compile、sim、regress、coverage、syn |
-| IP-XACT/Spirit → YAML | `xml2yml` | 转成 yml2reg YAML，再生成 RTL/DV/SW |
+| 构建与验证 | `soc-build` | filelist、lint、CDC、可选 VC Static lint/CDC/RDC/DFT、compile、sim、regress、coverage、syn |
+| IP-XACT/Spirit → YAML | `xml2yml` | 转成 yml2reg YAML，再生成 RTL/DV/SW；`soc-integrator` 独占 |
+| CDC/RDC | `soc-build` + `soc-cdc-engineer` | 默认 SpyGlass CDC；可选 `CDC_TOOL=vc_static` / `soc_rdc` |
 | DFT 前端 | `dft-gen` + `soc-dft-engineer` | 扫描 test_mode/scan 钩子，生成 `de/dft/` SGDC/Tcl |
+| 低功耗检查 | `soc-low-power-engineer` | `clp-upf` / `formal-upf`；本仓库无 `upf-gen` skill |
 | 时序图 | `wavedrom-gen` | WaveJSON/JSON5 → SVG/PNG/HTML |
-| 顶层集成 | `soc-integrate` | 端口提取、实例化、wrapper、top 生成、快照、diff、刷新 |
+| 顶层集成 | `soc-integrate` + `soc-integrator` | 端口提取、实例化、wrapper、top 生成、快照、diff、刷新 |
 | OpenROAD handoff | `soc-pd-engineer` + `soc-openroad` | 物理设计 handoff agent 负责约束审查和流程调度；MCP 生成 ORFS config/SDC、运行 synth/floorplan/place/cts/route/finish/all 并汇总结果 |
 | Liberty/DB 辅助生成 | `lib-db-gen` | 使用 Library Compiler 将 `.lib` 转 `.db`，或从 Verilog top 端口生成早期 black-box stub `.lib/.db` |
 | 寄存器 YAML 生成 | `yml2reg` | 从 YAML 生成 APB/AHB regfile RTL，以及 Spirit XML / Excel 表 / C header / sysmap |
 | Excel memmap → 芯片 sysmap | `gen-asic-memmap` | 从 Excel memmap 生成 `*_ASIC.yml` 与 C/SV `*_sysmap` header |
 | Excel mem → wrap + lib/lef | `gen-memwrap` | sky130 OpenRAM / nangate45 FakeRAM：统一 wrap RTL + 复制 `.lib`/`.lef` |
 | Excel 寄存器生成 | `excel-yml-gen` | 从 Excel 生成 YAML、regfile RTL、wrapper 等 |
-| CRG 需求转设计表 | `crg-req-to-design` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |
-| 时钟/复位树图 | `cr-tree-diag-gen` | 从设计表生成 Draw.io 和 Excalidraw 图 |
+| CRG 需求转设计表 | `crg-req-to-design` + `soc-crg-engineer` | 从 CRG 需求表生成 clock/reset 设计表和 PLL 建议 |
+| 时钟/复位树图 | `cr-tree-diag-gen` + `soc-crg-engineer` | 从设计表生成 Draw.io 和 Excalidraw 图 |
 | 流程编排 | `vibe-soc-loop` → `soc-pipeline` | 自动选择 `dev/merge/signoff`，只协调失效阶段和所需 PD handoff |
 | 独立设计审查 | `soc-reviewer` + `soc-ai-kb` | 对设计交付物做只读第一轮 Review，输出结构化风险、Issue、waiver 和交付清单，不执行 EDA 或宣称 signoff |
 
@@ -507,10 +548,11 @@ pd/openroad/<platform>/<design>/constraint.sdc
 寄存器：
 
 - 已批准 YAML 源：使用 `yml2reg` 生成 APB/AHB regfile RTL；需要软件/DV 交付物时用 `yml2docs`（XML + Excel 表 + C header + sysmap），格式对齐 `xml_reg_converter`。
+- 已批准 Spirit / IP-XACT XML：由 `soc-integrator` 用 `xml2yml` 转成 YAML，再走 `yml2reg`。
 - 已批准 Excel 源：使用 `excel-yml-gen` 生成 YAML、regfile RTL、instance wrapper 和 TDR buffer list。
-- 不手工修改生成 RTL；修改源 YAML/Excel 后重新生成。
+- 不手工修改生成 RTL；修改源 YAML/Excel/XML 后重新生成。
 
-CRG：
+CRG（`soc-crg-engineer`）：
 
 - 需求表到设计表：使用 `crg-req-to-design` 生成 `clock_design.xlsx`、`reset_design.xlsx`、`crg_report.txt`。
 - 设计表到图：使用 `cr-tree-diag-gen` 生成 Draw.io/Excalidraw 拓扑图。
@@ -526,7 +568,7 @@ CRG：
 - `scripts/local.mk`、`scripts/local.sh`、`scripts/local.csh`
 - `pd/openroad/work/`、`pd/openroad/work_local*/`、`pd/openroad/local/`、`pd/openroad/**/config.local.mk`
 
-贡献者和自动化操作约定见 `AGENTS.md`，Claude 侧约定见 `CLAUDE.md`。这两个文件只描述协作和执行规则，不替代 README 的项目功能说明。
+贡献者和自动化操作约定见 `AGENTS.md`，Claude 侧约定见 `CLAUDE.md`。这两个文件只描述协作和执行规则，不替代 README 的项目功能说明。clone 后先 `make agent-setup`。GitHub 代理环境见 `scripts/github_git_env.sh`。
 
 提交前建议执行：
 
