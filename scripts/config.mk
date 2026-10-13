@@ -10,7 +10,7 @@ export TMPDIR
 ifneq ($(wildcard $(PROJECT_ROOT)/scripts/bin),)
   export PATH := $(PROJECT_ROOT)/scripts/bin:$(PATH)
 endif
-PYTHON3 ?= $(shell for name in python3.12 python3.11 python3.10 python3.9 python3.8 python3; do \
+PYTHON3 ?= $(shell for name in python3.13 python3.12 python3.11 python3.10 python3.9 python3.8 python3; do \
   path=$$(command -v $$name 2>/dev/null); \
   if [ -n "$$path" ] && env -u PYTHONHOME -u PYTHONPATH TMPDIR=/tmp $$path \
     -c 'import sys,tempfile; assert sys.version_info >= (3,8); assert tempfile.gettempdir() == "/tmp"' \
@@ -55,13 +55,13 @@ SUPPORTED_VERILATOR_TIMING_MODES := auto on off
 VERILATOR_FLAGS        ?= -Wall --language 1800-2012
 VERILATOR_LINT_FLAGS   ?= $(VERILATOR_FLAGS)
 VERILATOR_THREADS      ?=
-VERILATOR_MAX_CYCLES   ?= 100000
+VERILATOR_MAX_CYCLES   ?= 10000000000
 VERILATOR_TRACE        ?= 1
 VERILATOR_TRACE_FORMAT ?= vcd
 VERILATOR_MODEL        ?= V$(TOP_MODULE)
 VERILATOR_TRACE_FLAGS  ?= $(if $(filter 1 true yes,$(VERILATOR_TRACE)),--trace $(if $(filter fst,$(VERILATOR_TRACE_FORMAT)),--trace-fst,) --trace-structs --trace-params --trace-max-array 1024,)
 VERILATOR_SIM_FLAGS    ?= $(VERILATOR_FLAGS) -Wno-fatal --unroll-count 512 $(if $(strip $(VERILATOR_THREADS)),--threads $(VERILATOR_THREADS),) $(VERILATOR_TRACE_FLAGS)
-VERILATOR_CFLAGS       ?= -std=c++11 -Wall $(if $(filter fst,$(VERILATOR_TRACE_FORMAT)),-DVM_TRACE_FMT_FST,) -DTOPLEVEL_NAME=$(VERILATOR_MODEL) -DTOPLEVEL_HEADER=$(VERILATOR_MODEL).h
+VERILATOR_CFLAGS       ?= -std=c++17 -Wall $(if $(filter fst,$(VERILATOR_TRACE_FORMAT)),-DVM_TRACE_FMT_FST,) -DTOPLEVEL_NAME=$(VERILATOR_MODEL) -DTOPLEVEL_HEADER=$(VERILATOR_MODEL).h
 VERILATOR_EXTRA_LDFLAGS ?=
 VERILATOR_LDFLAGS      ?= -pthread -lutil $(VERILATOR_EXTRA_LDFLAGS)
 VERILATOR_RTL_SRCS     ?= $(filter-out $(TB_FILES),$(FLIST_SRCS))

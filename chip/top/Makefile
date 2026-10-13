@@ -44,7 +44,7 @@ endif
   OT_SW_COPY_DIRS := $(OT_OTP_DIR) $(OT_TEST_ROM_DIR) $(wildcard $(OT_CASE_SW_DIR))
   OT_TEST_CFG := $(OT_TEST_CFG_ROOT)/opentitan_cases.manifest.json
   OT_TEST_CFG_PY := $(OT_TB_ROOT)/scripts/opentitan_test_cfg.py
-  OT_TEST_CFG_PYTHON_BIN := $(shell for name in python3.12 python3.11 python3.10 python3.9 python3.8; do path=$$(command -v $$name 2>/dev/null); if [ -n "$$path" ]; then echo $$path; break; fi; done)
+  OT_TEST_CFG_PYTHON_BIN := $(shell for name in python3.13 python3.12 python3.11 python3.10 python3.9 python3.8; do path=$$(command -v $$name 2>/dev/null); if [ -n "$$path" ]; then echo $$path; break; fi; done)
   ifeq ($(strip $(OT_TEST_CFG_PYTHON_BIN)),)
     $(error Python 3.8 or newer is required for OpenTitan test index queries)
   endif
@@ -134,7 +134,12 @@ ifeq ($(FSDB),1)
   VCS_SIM_FLAGS := +vcs+lic+wait +ntb_random_seed=$(SEED)
 endif
 
-ifeq ($(OT_USE_PREBUILT_SIMV),1)
+# Open-source path: only an explicit SIMULATOR=verilator on the command line
+# selects it; the default chip/top flow stays VCS + UVM.
+OT_SIM_BACKEND := $(if $(filter command line,$(origin SIMULATOR)),$(SIMULATOR),vcs)
+ifeq ($(OT_SIM_BACKEND),verilator)
+include $(OT_TB_ROOT)/verilator/ot_verilator.mk
+else ifeq ($(OT_USE_PREBUILT_SIMV),1)
 BUILD_OUTPUT = $(SIM_DIR)/.ot_smoke_prebuilt_simv
 COMP_CMD = test -x $(OT_SMOKE_PREBUILT_SIMV) && touch $(BUILD_OUTPUT)
 ELAB_CMD =

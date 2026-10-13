@@ -3,7 +3,7 @@ COMP_CMD = { \
            if [ "$(VERILATOR_TIMING_MODE)" = "on" ]; then \
              timing_flags="--timing"; \
            elif [ "$(VERILATOR_TIMING_MODE)" = "auto" ] && [ "$(VERILATOR_REQUIRE_TIMING)" = "1" ]; then \
-             if $(VERILATOR) --help 2>&1 | grep -q -- '--timing'; then \
+             if PAGER=cat $(VERILATOR) --help 2>&1 | grep -q -- '--timing'; then \
                timing_flags="--timing"; \
              else \
                echo "[VERILATOR] ordinary SystemVerilog testbenches require a Verilator build with --timing; provide a *_verilator.cpp harness for this installed version"; \
