@@ -6,6 +6,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-build/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 43200
 
@@ -14,6 +15,7 @@ enabled = false
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-integrate/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -22,6 +24,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/yml2reg/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -30,6 +33,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/xml2yml/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -38,6 +42,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/lib-db-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 3600
 
@@ -46,6 +51,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/dft-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -54,6 +60,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/gen-asic-memmap/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -62,6 +69,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/gen-memwrap/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -70,6 +78,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/excel-yml-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -78,6 +87,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/upf-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 43200
 
@@ -86,6 +96,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/crg-req-to-design/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -94,6 +105,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/crg-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 600
 
@@ -102,6 +114,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/io-top-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 600
 
@@ -110,6 +123,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/cr-tree-diag-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300
 
@@ -118,6 +132,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/noc-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 600
 
@@ -126,6 +141,7 @@ enabled = false
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/soc-openroad/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 7500
 
@@ -134,6 +150,7 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_node.sh", ".agents/skills/wavedrom-gen/scripts/mcp-server.mjs", "--stdio"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 180
 tool_timeout_sec = 300
 
@@ -142,6 +159,7 @@ enabled = false
 command = "/usr/bin/env"
 cwd = "."
 args = ["-u", "PYTHONHOME", "-u", "PYTHONPATH", "FASTMCP_SHOW_SERVER_BANNER=false", "LOG_LEVEL=ERROR", ".openroad-mcp-venv/bin/openroad-mcp", "--log-level", "ERROR"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 30
 tool_timeout_sec = 120
 

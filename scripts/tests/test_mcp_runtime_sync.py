@@ -102,7 +102,7 @@ class McpRuntimeSyncTest(unittest.TestCase):
             "install.lock",
         ):
             self.assertIn(required, runtime)
-        self.assertIn("numpy==1.26.4", (ROOT / ".agents/mcp-requirements.txt").read_text(encoding="utf-8"))
+        self.assertIn("numpy==2.2.6", (ROOT / ".agents/mcp-requirements.txt").read_text(encoding="utf-8"))
         node_runtime = expected[ROOT / ".agents/scripts/run_mcp_node.sh"]
         for required in (
             "unset NODE_OPTIONS NODE_PATH NPM_CONFIG_PREFIX",

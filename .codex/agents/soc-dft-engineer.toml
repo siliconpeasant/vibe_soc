@@ -95,5 +95,6 @@ enabled = true
 command = "/bin/sh"
 cwd = "."
 args = ["scripts/mcp_python.sh", ".agents/skills/dft-gen/mcp_server.py"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 120
 tool_timeout_sec = 300

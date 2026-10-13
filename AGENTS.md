@@ -7,10 +7,10 @@
 a fresh clone or agent change: `make agent-setup`. Routing packet:
 `python3 .agents/scripts/loop_context.py . --format text`.
 
-Task worktrees: persistent path outside this repo, never `/tmp`:
+Task worktrees: persistent path, defaulting to gitignored `tmp/worktrees`:
 
 ```bash
-export CODEX_WORKTREE_ROOT=/project/xuanwu9000/user/silicon/vibe_soc/tmp/worktrees
+export CODEX_WORKTREE_ROOT="${CODEX_WORKTREE_ROOT:-$(git rev-parse --show-toplevel)/tmp/worktrees}"
 scripts/prepare_task_worktree.sh <task-slug>
 ```
 
