@@ -123,6 +123,7 @@ def render_codex_mcp_server(
         f"command = {toml_string(command)}",
         *cwd_line,
         f"args = {json.dumps(args, ensure_ascii=False)}",
+        'env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]',
         f"startup_timeout_sec = {server['startup_timeout_sec']}",
         f"tool_timeout_sec = {server['tool_timeout_sec']}",
         "",
