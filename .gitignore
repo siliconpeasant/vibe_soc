@@ -61,6 +61,7 @@ pd/openroad/**/config.local.mk
 # Project-local OpenROAD-MCP runtime and disposable package cache.
 .openroad-mcp-venv/
 .openroad-mcp-cache/
+.wave-mcp-venv/
 
 # Local agent scratch: worktrees, benchmarks (never system /tmp)
 tmp/

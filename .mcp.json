@@ -154,6 +154,14 @@
       ],
       "cwd": "."
     },
+    "silicon-crew:wave-mcp": {
+      "type": "stdio",
+      "command": "/bin/sh",
+      "args": [
+        "scripts/mcp_wave_mcp.sh"
+      ],
+      "cwd": "."
+    },
     "drawio": {
       "type": "http",
       "url": "https://mcp.draw.io/mcp"

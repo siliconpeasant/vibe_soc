@@ -148,6 +148,14 @@ args = ["-u", "PYTHONHOME", "-u", "PYTHONPATH", "FASTMCP_SHOW_SERVER_BANNER=fals
 startup_timeout_sec = 30
 tool_timeout_sec = 120
 
+[mcp_servers.silicon-crew-wave-mcp]
+enabled = false
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_wave_mcp.sh"]
+startup_timeout_sec = 60
+tool_timeout_sec = 600
+
 [mcp_servers.drawio]
 enabled = true
 url = "https://mcp.draw.io/mcp"

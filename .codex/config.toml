@@ -163,6 +163,15 @@ env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
 startup_timeout_sec = 30
 tool_timeout_sec = 120
 
+[mcp_servers.wave-mcp]
+enabled = false
+command = "/bin/sh"
+cwd = "."
+args = ["scripts/mcp_wave_mcp.sh"]
+env_vars = ["SILICON_CREW_PYTHON", "SILICON_CREW_MCP_VENV"]
+startup_timeout_sec = 60
+tool_timeout_sec = 600
+
 [mcp_servers.drawio]
 enabled = true
 url = "https://mcp.draw.io/mcp"
