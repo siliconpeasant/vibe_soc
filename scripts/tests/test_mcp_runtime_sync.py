@@ -46,6 +46,7 @@ class McpRuntimeSyncTest(unittest.TestCase):
             "soc-openroad",
             "wavedrom-gen",
             "openroad-mcp",
+            "wave-mcp",
             "drawio",
         }
         self.assertTrue(required_names <= set(names), set(names))
@@ -70,6 +71,16 @@ class McpRuntimeSyncTest(unittest.TestCase):
         self.assertEqual(openroad_mcp["command"], "/usr/bin/env")
         self.assertIn(".openroad-mcp-venv/bin/openroad-mcp", openroad_mcp["args"])
         self.assertGreaterEqual(openroad_mcp["tool_timeout_sec"], 120)
+        wave_mcp = next(server for server in manifest["servers"] if server["name"] == "wave-mcp")
+        self.assertEqual(wave_mcp, {
+            "name": "wave-mcp",
+            "command": "/bin/sh",
+            "args": ["scripts/mcp_wave_mcp.sh"],
+            "cwd": ".",
+            "default_enabled": False,
+            "startup_timeout_sec": 60,
+            "tool_timeout_sec": 600,
+        })
 
     def test_generated_shell_is_posix_parseable(self) -> None:
         for content in self.sync.expected_runtime_files().values():

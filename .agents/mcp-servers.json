@@ -148,6 +148,17 @@
       "tool_timeout_sec": 120
     },
     {
+      "name": "wave-mcp",
+      "command": "/bin/sh",
+      "args": [
+        "scripts/mcp_wave_mcp.sh"
+      ],
+      "cwd": ".",
+      "default_enabled": false,
+      "startup_timeout_sec": 60,
+      "tool_timeout_sec": 600
+    },
+    {
       "name": "drawio",
       "url": "https://mcp.draw.io/mcp",
       "default_enabled": true,

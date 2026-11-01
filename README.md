@@ -393,6 +393,7 @@ router 只输出需要读取的规则、需要执行的检查和 fingerprint 缓
 | DFT 前端 | `dft-gen` + `soc-dft-engineer` | 扫描 test_mode/scan 钩子，生成 `de/dft/` SGDC/Tcl |
 | 低功耗检查 | `soc-low-power-engineer` | `clp-upf` / `formal-upf`；本仓库无 `upf-gen` skill |
 | 时序图 | `wavedrom-gen` | WaveJSON/JSON5 → SVG/PNG/HTML |
+| 波形调试 | `wave-mcp` | FST 读取、驱动/X 态追踪、pass/fail 波形对比；可选外部运行时，见 [接入说明](docs/WAVE_MCP.md) |
 | 顶层集成 | `soc-integrate` + `soc-integrator` | 端口提取、实例化、wrapper、top 生成、快照、diff、刷新 |
 | OpenROAD handoff | `soc-pd-engineer` + `soc-openroad` | 物理设计 handoff agent 负责约束审查和流程调度；MCP 生成 ORFS config/SDC、运行 synth/floorplan/place/cts/route/finish/all 并汇总结果 |
 | Liberty/DB 辅助生成 | `lib-db-gen` | 使用 Library Compiler 将 `.lib` 转 `.db`，或从 Verilog top 端口生成早期 black-box stub `.lib/.db` |
