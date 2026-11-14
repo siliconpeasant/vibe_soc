@@ -59,6 +59,7 @@ async def main():
                 assert 'library_dirs' in tools[name]['properties']
             for schema in tools.values():
                 assert 'packages' in schema['properties']
+                assert 'library_dirs' in schema['properties']
             result = await session.call_tool('soc_extract', {'verilog_file': sys.argv[3]})
             assert not result.isError, result
             payload = json.loads(result.content[0].text)
@@ -100,6 +101,12 @@ async def main():
             assert peripheral['param_dims']['Policy'] == '[NumRegs]', peripheral
             if shutil.which('verilator'):
                 assert next(p for p in peripheral['ports'] if p['name']=='tl_i')['bits'] == 8, peripheral
+            body_fixture = fixture.parent/'batch_a'
+            result = await session.call_tool('soc_extract', dict(verilog_file=str(body_fixture/'body_types.sv'),
+                library_dirs=[str(body_fixture/'lib')]))
+            assert not result.isError, result
+            body_data = json.loads(result.content[0].text)
+            assert body_data['ports'][1]['bits'] == 8, body_data
             # Batch 2 keeps the protocol schema/call order while sorting packages.
             base = out.parent/'z_pkg.sv'
             base.write_text('package z_pkg; typedef logic [8:0] t; endpackage\n')

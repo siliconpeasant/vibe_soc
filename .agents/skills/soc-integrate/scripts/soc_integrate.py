@@ -5,6 +5,7 @@ This is an interface parser, not an elaborator. Balanced lists are parsed rather
 than split with regular expressions; unsupported interface syntax is an error.
 """
 import argparse
+import copy
 import ast
 import csv
 import json
@@ -199,6 +200,15 @@ class Preprocessor:
         return ''.join(result)
 
 
+def parameter_value(value):
+    """Convert JSON overrides to HDL, checking bool before int (a Python subtype)."""
+    if isinstance(value, bool):
+        return "1'b1" if value else "1'b0"
+    if isinstance(value, (int, str)):
+        return str(value)
+    raise ValueError(f'parameter value must be int, str or bool, got {type(value).__name__}')
+
+
 def constant(expr, values=None):
     return constant_cached(expr, tuple(sorted((values or {}).items())))
 
@@ -207,7 +217,7 @@ def constant(expr, values=None):
 def constant_cached(expr, assignments):
     """Evaluate a deliberately small integer expression grammar, without eval."""
     values = dict(assignments)
-    expr = expr.replace('$clog2', 'clog2')
+    expr = parameter_value(expr).replace('$clog2', 'clog2')
     expr = re.sub(r"(\d+)?'[sS]?([bBoOdDhH])([0-9a-fA-F_]+)",
                   lambda m: str(int(m[3].replace('_', ''), {'b': 2, 'o': 8, 'd': 10, 'h': 16}[m[2].lower()])), expr)
     ops = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
@@ -304,6 +314,9 @@ class VerilogModule:
 def parse_parameters(section, module, local=False):
     inherited = ''
     for item in split_port_items(section):
+        kind = re.match(r'\s*(parameter|localparam)\b', item)
+        if kind:
+            local = kind[1] == 'localparam'
         item = re.sub(r'^\s*(?:parameter|localparam)\b\s*', '', item).strip()
         match = re.fullmatch(r'(.*?)\b(' + IDENT + r')\s*((?:\[[^\]]+\]\s*)*)=\s*(.+)', item, re.S)
         if not match:
@@ -467,8 +480,6 @@ def parse_module(name, content, file='<text>'):
                 continue
             explicit = [entry for entry in imported if entry.endswith('::' + named[2])]
             qualified = explicit[0] if len(explicit) == 1 else (wildcards[0] + '::' + named[2] if len(wildcards) == 1 else None)
-            if not qualified and len(wildcards) > 1:
-                raise ValueError(f'{file}:{detail["line"]}: unsupported unqualified port type {named[2]} with multiple wildcard imports; use package::type')
             if qualified:
                 detail['declaration_type'] = (named[1] or '') + qualified + (named[3] or '')
         return module
@@ -530,29 +541,146 @@ def ast_constants(tree, module_name, json_format):
             for v in module.findall('var') if v.find('.//const') is not None}
 
 
-def resolve_types(module, packages, include_dirs, defines):
+def typedef_names(text):
+    names = set()
+    for typedef in re.finditer(r'\btypedef\b', uncomment(text)):
+        statement = split_port_items(text[typedef.end():], ';')[0]
+        match = re.search(r'\b(' + IDENT + r')\s*(?:\[[^\]]+\]\s*)*$', statement)
+        if match:
+            names.add(match[1])
+    return names
+
+
+def qualify_imports(module, prepared):
+    """Find a typedef in every imported package rather than guessing the first."""
+    symbols = {}
+    for text, _ in prepared.values():
+        for package in re.finditer(r'\bpackage\s+(' + IDENT + r')\s*;(.*?)\bendpackage\b', uncomment(text), re.S):
+            symbols.setdefault(package[1], set()).update(typedef_names(package[2]))
+    text, _, start, end = module.full_source
+    local_types = typedef_names(text[start:end])
+    module.local_port_types = set()
+    imported = [e.strip() for group in re.findall(r'\bimport\s+([^;]+);', module.imports)
+                for e in group.split(',')]
+    wildcards = [entry[:-3] for entry in imported if entry.endswith('::*')]
+    for direction, _, name in module.ports:
+        detail = module.details[name]
+        named = re.fullmatch(r'((?:(?:wire|var)\s+)?)(' + IDENT + r')(\s+(?:signed|unsigned))?', detail['type'])
+        if direction == 'interface' or not named or not bus_like('', detail['type']):
+            continue
+        if named[2] in local_types:
+            detail.pop('declaration_type', None)
+            module.local_port_types.add(name)
+            continue
+        explicit = [e for e in imported if e.endswith('::' + named[2])]
+        candidates = explicit or [pkg + '::' + named[2] for pkg in wildcards if named[2] in symbols.get(pkg, ())]
+        if len(candidates) > 1:
+            raise ValueError(f'{detail["file"]}:{detail["line"]}: {module.name}.{name}: ambiguous type {named[2]}: {", ".join(candidates)}')
+        if candidates:
+            detail['declaration_type'] = (named[1] or '') + candidates[0] + (named[3] or '')
+        elif imported:
+            # Let full elaboration handle module-body typedefs. Unresolved types
+            # remain unqualified so the compiler can issue the real diagnostic.
+            detail.pop('declaration_type', None)
+
+
+def resolve_instance(instance):
+    """Resolve one configuration without changing the shared default interface."""
+    overrides = {k: parameter_value(v) for k, v in instance['parameters'].items()}
+    module = instance['module']
+    unknown = overrides.keys() - {p[0] for p in module.params}
+    if unknown:
+        raise ValueError(f'{module.file}:1: unknown parameter overrides on {instance["instance"]}: {sorted(unknown)}')
+    if not overrides:
+        return instance
+    cache = getattr(module, '_instance_cache', {})
+    key = tuple(overrides.items())
+    if key not in cache:
+        resolved = copy.copy(module)
+        resolved.details = copy.deepcopy(module.details)
+        params = [(n, overrides.get(n, v), t) for n, v, t in module.params] + module.localparams
+        unresolved = False
+        for direction, width, name in module.ports:
+            detail = resolved.details[name]
+            detail['resolved_width'] = resolve_param_width(width, params)
+            detail['resolved_unpacked'] = resolve_param_width(detail.get('unpacked', ''), params)
+            unresolved |= bit_width(detail['resolved_width'], detail['resolved_unpacked']) is None
+            detail.pop('bits', None)
+        named = any(d != 'interface' and bus_like('', resolved.details[n]['type']) for d, _, n in module.ports)
+        if (unresolved or named) and shutil.which('verilator') and hasattr(module, 'elaboration'):
+            try:
+                resolve_types(resolved, **module.elaboration, overrides=overrides)
+            except ValueError as exc:
+                expressions = '; '.join(f'port {n} expression {resolved.details[n]["resolved_width"]} {resolved.details[n]["resolved_unpacked"]}'
+                                        for d, _, n in module.ports if d != 'interface')
+                raise ValueError(f'instance {instance["instance"]} ({module.name}), parameters {overrides}, {expressions}: {exc}') from None
+        for direction, width, name in module.ports:
+            if direction == 'interface':
+                continue
+            detail = resolved.details[name]
+            for field in ('resolved_width', 'resolved_unpacked'):
+                expr = detail[field]
+                if (bit_width(expr) if field == 'resolved_width' else bit_width('', expr)) is None:
+                    raise ValueError(f'instance {instance["instance"]}, port {name}: cannot evaluate expression {expr!r}; supply packages/dependencies and Verilator')
+        cache[key] = resolved
+        module._instance_cache = cache
+    return dict(instance, module=cache[key], parameters=overrides)
+
+
+def full_elaboration_source(module, probes):
+    """Instrument disposable preprocessed source; preserve every original location."""
+    text, locations, start, end = module.full_source
+    insert = text.rfind('endmodule', start, end)
+    offset, result = 0, []
+    for line, (file, number) in zip(text.splitlines(keepends=True), locations):
+        result.append(f'`line {number} {json.dumps(file)} 0\n')
+        if offset <= insert < offset + len(line):
+            cut = insert - offset
+            line = line[:cut] + '\n' + probes + '\n' + line[cut:]
+        result.append(line)
+        offset += len(line)
+    return ''.join(result)
+
+
+def ast_ports(tree, module_name, json_format):
+    if json_format:
+        module = next(m for m in tree['modulesp'] if m.get('origName', m.get('name')) == module_name)
+        return [(v.get('direction', '').lower(), v['name']) for v in module['stmtsp']
+                if v.get('type') == 'VAR' and v.get('direction') in ('INPUT', 'OUTPUT', 'INOUT')]
+    module = next(m for m in tree.findall('.//module') if m.get('origName', m.get('name')) == module_name)
+    return [(v.get('dir'), v.get('name')) for v in module.findall('var') if v.get('dir') in ('input', 'output', 'inout')]
+
+
+def resolve_types(module, packages, include_dirs, defines, library_dirs=(), source_files=(), overrides=None, full=False):
     """Resolve public-header probes with JSON, legacy XML, then symbolic text.
 
-    A compiler syntax/type error is always fatal, never a reason to downgrade.
-    Only unsupported AST options/formats fall back. Scratch is disposable.
+    Header failures retry the full module with dependencies. Actual module
+    errors remain fatal; unsupported AST formats try the legacy schema. Scratch
+    is disposable and never changes the source RTL.
     """
+    full = full or bool(getattr(module, 'local_port_types', ()))
     with tempfile.TemporaryDirectory(prefix='soc-integrate-') as directory:
         root = Path(directory)
         header = root / (module.name + '.sv')
         dimension_names, bit_names = {}, {}
-        localparams = ''.join(f'localparam {t} {n} = {v};\n' for n, v, t in module.localparams)
+        # Header localparams are already in module.header. Body localparams
+        # retain unpacked dimensions when reproduced in the isolated probe.
+        header_params = set(re.findall(r'\b(' + IDENT + r')\s*(?:\[[^\]]+\]\s*)*=', module.header))
+        localparams = ''.join(f'localparam {t} {n} {module.param_dims.get(n, "")} = {v};\n'
+                              for n, v, t in module.localparams if n not in header_params)
+        probes = ''
         for direction, width, name in module.ports:
             if direction == 'interface':
                 continue
             bit_names[name] = f'__soc_integrate_bits_{len(bit_names)}'
-            localparams += f'localparam integer {bit_names[name]} = $bits({name});\n'
+            probes += f'localparam integer {bit_names[name]} = $bits({name});\n'
             for field, dims in (('resolved_width', width), ('resolved_unpacked', module.details[name].get('unpacked', ''))):
                 names = []
                 for expr in re.findall(r'\[([^\]]+)\]', dims):
                     pair = []
                     for bound in re.split(r'(?<!:):(?!:)', expr):
                         identifier = f'__soc_integrate_dim_{len(dimension_names)}_{len(names)}_{len(pair)}'
-                        localparams += f'localparam integer {identifier} = {bound};\n'
+                        probes += f'localparam integer {identifier} = {bound};\n'
                         pair.append(identifier)
                     names.append(pair)
                 dimension_names[(name, field)] = names
@@ -567,7 +695,8 @@ def resolve_types(module, packages, include_dirs, defines):
             value_ports.append(location + declaration(d, w, n, detail))
         public_header = module.port_prefix + '\n' + ',\n'.join(value_ports) + '\n);' if hasattr(module, 'port_prefix') else module.header
         origin = f'`line {source_line} {json.dumps(source_file)} 0\n'
-        header.write_text(origin + public_header + '\n' + localparams + 'endmodule\n')
+        header.write_text(full_elaboration_source(module, probes) if full else
+                          origin + public_header + '\n' + localparams + probes + 'endmodule\n')
         formats = ['json', 'xml'] if verilator_version() >= (5, 32) else ['xml']
         for format_name in formats:
             json_format = format_name == 'json'
@@ -576,25 +705,63 @@ def resolve_types(module, packages, include_dirs, defines):
             if not json_format:
                 command += ['--xml-output', str(root / 'ports.xml')]
             command += ['-I' + str(d) for d in include_dirs] + ['-D' + d for d in defines]
+            # -G on Verilator 5.032 accepts literals, not arithmetic. Fold our
+            # supported integer grammar while retaining the original expression
+            # in the generated instance. Unsupported expressions fail clearly.
+            command += [f'-G{k}={constant(v) if constant(v) is not None else parameter_value(v)}'
+                        for k, v in (overrides or {}).items()]
+            if full:
+                for d in dict.fromkeys([str(Path(module.file).parent)] + list(library_dirs)):
+                    command += ['-y', str(d)]
+                for source in source_files:
+                    if Path(source).resolve() != Path(module.file).resolve():
+                        command += ['-v', str(source)]
             result = subprocess.run(command + [str(p) for p in packages] + [str(header)],
                                     capture_output=True, text=True, timeout=60)
             if result.returncode:
                 if re.search(r'(?:Invalid|Unknown|Unrecognized|Unsupported) (?:option|argument)', result.stderr, re.I):
                     continue
-                raise ValueError(f'{source_file}:{source_line}: Verilator header type resolution failed:\n{result.stderr.strip().replace(str(header), source_file)}')
+                if not full and hasattr(module, 'full_source'):
+                    return resolve_types(module, packages, include_dirs, defines, library_dirs, source_files, overrides, full=True)
+                errors = result.stderr.strip().replace(str(header), source_file).replace(str(root), '<elaboration>')
+                first = errors.find('%Error')
+                errors = errors[first:] if first >= 0 else errors
+                phase = 'full-module elaboration' if full else 'header type resolution'
+                raise ValueError(f'{source_file}:{source_line}: Verilator {phase} failed for module {module.name}:\n' + '\n'.join(errors.splitlines()[:24]))
             try:
                 tree = json.loads((root / 'obj/Vports.tree.json').read_text()) if json_format else ET.parse(root / 'ports.xml')
                 values = ast_constants(tree, module.name, json_format)
+                if full:
+                    ports = ast_ports(tree, module.name, json_format)
+                    expected = [(d, n) for d, _, n in module.ports if d != 'interface']
+                    if set(ports) != set(expected):
+                        raise ValueError(f'elaborated ports disagree with parsed interface: {ports!r}')
                 if any(identifier not in values for identifier in bit_names.values()):
                     continue
             except (OSError, ValueError, KeyError, TypeError, StopIteration, ET.ParseError):
                 continue
             for name, identifier in bit_names.items():
                 module.details[name]['bits'] = values[identifier]
+            module.resolution = 'full' if full else 'header'
             for (name, field), dimensions in dimension_names.items():
                 if dimensions and all(values.get(n) is not None for pair in dimensions for n in pair):
                     module.details[name][field] = ''.join('[' + ':'.join(str(values[n]) for n in pair) + ']' for pair in dimensions)
+            if full:
+                # A module-local typedef has no name in the parent's scope.
+                # Preserve its original spelling in metadata, but expose its
+                # concrete packed representation in generated declarations.
+                for direction, _, name in module.ports:
+                    detail = module.details[name]
+                    if direction != 'interface' and bus_like('', detail['type']) and '::' not in detail['type'] and not detail.get('declaration_type'):
+                        count = bit_width('', detail.get('resolved_unpacked', detail.get('unpacked', '')))
+                        bits = detail.get('bits')
+                        if count and bits:
+                            detail['declaration_type'] = 'logic'
+                            width = bits // count
+                            detail['resolved_width'] = f'[{width-1}:0]' if width > 1 else ''
             return
+        if full:
+            raise ValueError(f'{module.file}: Verilator full-module AST unsupported for module {module.name}')
         # The text parser has already retained symbolic dimensions and type names.
         # Callers report width-unknown rather than inventing a typedef bit count.
 
@@ -715,13 +882,13 @@ def order_packages(packages, include_dirs=(), defines=(), files=()):
     return ordered
 
 
-def extract_sources(files, include_dirs=(), defines=(), packages=()):
+def extract_sources(files, include_dirs=(), defines=(), packages=(), library_dirs=()):
     packages = order_packages(packages, include_dirs, defines, files)
     prepared = preprocess_sources(files, include_dirs, defines, packages)
-    return {str(file): extract_modules(file, include_dirs, defines, packages, prepared) for file in files}
+    return {str(file): extract_modules(file, include_dirs, defines, packages, prepared, library_dirs, files) for file in files}
 
 
-def extract_modules(filepath, include_dirs=(), defines=(), packages=(), prepared=None):
+def extract_modules(filepath, include_dirs=(), defines=(), packages=(), prepared=None, library_dirs=(), source_files=()):
     standalone = prepared is None
     if standalone:
         packages = order_packages(packages, include_dirs, defines, [filepath])
@@ -757,8 +924,13 @@ def extract_modules(filepath, include_dirs=(), defines=(), packages=(), prepared
         module.file = str(Path(filepath).resolve())
         module.source_file = file
         module.source_line = number
-        if packages and module.kind == 'module' and shutil.which('verilator'):
-            resolve_types(module, packages, include_dirs, defines)
+        module.elaboration = dict(packages=list(packages), include_dirs=list(include_dirs),
+                                  defines=list(defines), library_dirs=list(library_dirs),
+                                  source_files=list(source_files or [filepath]))
+        module.full_source = (text, locations, match.start(), definition_end)
+        qualify_imports(module, prepared)
+        if (packages or re.search(r'\btypedef\b', text[match.start():definition_end])) and module.kind == 'module' and shutil.which('verilator'):
+            resolve_types(module, **module.elaboration)
         modules.append(module)
     definitions = {m.name: m.metadata() for m in modules if m.kind == 'interface'}
     for module in modules:
@@ -1249,7 +1421,25 @@ def expression_width(expr, signals):
     if base:
         dims = ''.join(re.findall(r'\[[^\]]+\]', expr))
         interval = selection_interval(expr)
-        return interval[1] - interval[0] + 1 if interval else (None if dims else signals.get(base, {}).get('bits'))
+        signal = signals.get(base, {})
+        unpacked = re.findall(r'\[[^\]]+\]', signal.get('detail', {}).get('unpacked', ''))
+        selections = re.findall(r'\[[^\]]+\]', dims)
+        if unpacked and selections:
+            # A single index consumes an unpacked dimension, retaining the packed
+            # element's type/width. Never interpret it as a one-bit part-select.
+            bits = signal.get('bits')
+            for dimension, selected in zip(unpacked, selections):
+                if not re.fullmatch(r'\[\s*[^:\[\]]+\s*\]', selected):
+                    raise ValueError(f'unsupported unpacked array slice: {expr}')
+                count = bit_width('', dimension)
+                if bits is None or count is None:
+                    return None
+                bits //= count
+            if len(selections) > len(unpacked):
+                packed = selection_interval(base + ''.join(selections[len(unpacked):]))
+                return packed[1] - packed[0] + 1 if packed else None
+            return bits
+        return interval[1] - interval[0] + 1 if interval else (None if dims else signal.get('bits'))
     if expr.startswith('{') and expr.endswith('}'):
         widths = [expression_width(x, signals) for x in split_port_items(expr[1:-1])]
         return sum(widths) if all(isinstance(w, int) for w in widths) else None
@@ -1265,7 +1455,7 @@ def default_instances(modules, data):
             if spec['module'] not in available:
                 raise ValueError(f"port map references unknown module/instance '{spec['module']}' (known: {', '.join(sorted(available))})")
         return [dict(module=available[s['module']], instance=s['instance'],
-                     parameters=s.get('parameters', {}), parameter_text='', ports={}) for s in specs]
+                     parameters={k: parameter_value(v) for k, v in s.get('parameters', {}).items()}, parameter_text='', ports={}) for s in specs]
     return [dict(module=m, instance=f'u_{m.name.lower()}', parameters={}, parameter_text='', ports={}) for m in modules]
 
 
@@ -1286,10 +1476,10 @@ def port_signature(direction, width, detail, params):
             type_text = 'logic ' + type_text
         if type_text.strip() in ('logic', 'logic unsigned'):
             type_text = 'logic'
-    unpacked = resolve_param_width(detail.get('unpacked', ''), params)
+    unpacked = detail.get('resolved_unpacked', resolve_param_width(detail.get('unpacked', ''), params))
     if direction == 'interface':
         unpacked = repr(interface_shape(unpacked))
-    dimensions = (resolve_param_width(width, params), unpacked)
+    dimensions = (detail.get('resolved_width', resolve_param_width(width, params)), unpacked)
     return (direction == 'interface', ' '.join(type_text.split()),
             *(re.sub(r'\s+', '', dim) for dim in dimensions))
 
@@ -1412,6 +1602,7 @@ def interface_array_checks(base, entries, spec):
 
 def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, top_file=None):
     """Resolve connections, declare actual nets, and check the resulting graph."""
+    instances = [resolve_instance(i) for i in instances]
     mapping = PortMap(map_data)
     rows, groups, checks = [], {}, []
     checks += stale_map_checks(mapping, instances, previous_top is not None)
@@ -1487,12 +1678,10 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
                 if direction == 'output' and name in explicit_targets:
                     expr = name
             detail = dict(module.details[name])
-            resolved = detail.get('resolved_width', resolve_param_width(width, params)) if not inst['parameters'] else resolve_param_width(width, params)
-            detail['unpacked'] = detail.get('resolved_unpacked', resolve_param_width(detail.get('unpacked', ''), params)) if not inst['parameters'] else resolve_param_width(detail.get('unpacked', ''), params)
+            resolved = detail.get('resolved_width', resolve_param_width(width, params))
+            detail['unpacked'] = detail.get('resolved_unpacked', resolve_param_width(detail.get('unpacked', ''), params))
             built_in = re.fullmatch(r'(?:(?:wire|reg|logic|var)\s*)?(?:(?:signed|unsigned)\s*)?', detail['type'])
             bits = bit_width(resolved, detail.get('unpacked', '')) if built_in and direction != 'interface' else detail.get('bits')
-            if inst['parameters'] and not built_in:
-                bits = None  # Elaborated defaults cannot describe arbitrary overrides.
             row = dict(module=module.name, instance=instance, port=name, direction=direction,
                        width=resolved, symbolic_width=width, detail=detail, bits=bits,
                        signal=expr, key=f'{instance}.{name}', annotation=annotation)
@@ -1532,7 +1721,8 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         if len(typed_inputs) > 1:
             warn('explicit-bus-share', f'{base} explicitly shares bus/typed inputs; review protocol intent', [r['key'] for r in typed_inputs])
         drivers = [r for r in entries if r['direction'] in ('output', 'inout')]
-        source = next((r for r in drivers if r['direction'] == 'output'), entries[0])
+        whole_arrays = [r for r in entries if r['signal'].strip() == base and r['detail'].get('unpacked')]
+        source = whole_arrays[0] if whole_arrays else next((r for r in drivers if r['direction'] == 'output'), entries[0])
         direction = 'inout' if any(r['direction'] == 'inout' for r in entries) else (
             '' if drivers and any(r['direction'] == 'input' for r in entries) else
             'output' if drivers else 'input')
@@ -1540,7 +1730,7 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         # Part selections describe a wider parent net, not an implicit truncation.
         slices = [selection_interval(r['signal']) for r in entries]
         high = max((s[1] for s in slices if s), default=-1)
-        if high >= 0 and (not width or bits is None or high + 1 > bits):
+        if not whole_arrays and high >= 0 and (not width or bits is None or high + 1 > bits):
             width, bits = f'[{high}:0]', high + 1
         signals[base] = dict(direction=direction, width=width, bits=bits, detail=source['detail'])
         for i, driver in enumerate(drivers):
@@ -1891,11 +2081,12 @@ def lint_collateral(args, instances):
             rules.append(str(path / '*'))
     rules = list(dict.fromkeys(rules))
     lines = ['`verilator_config', '// Dependency diagnostics only; generated top warnings remain fatal.']
-    # UNOPTFLAT is a performance diagnostic outside Verilator's lint group.
-    # Keep it source-scoped too, as OpenTitan's FIFO/arbiter graphs trigger it.
+    # Performance and C++ symbol-portability diagnostics are outside the lint
+    # group. Scope these to the same explicitly selected vendor sources too.
     for source in rules:
         lines += ['lint_off -file ' + json.dumps(source),
-                  'lint_off -rule UNOPTFLAT -file ' + json.dumps(source)]
+                  'lint_off -rule UNOPTFLAT -file ' + json.dumps(source),
+                  'lint_off -rule SYMRSVDWORD -file ' + json.dumps(source)]
     manifest = [json.dumps(p) for p in packages]
     manifest += [json.dumps('-I' + str(Path(d).resolve())) for d in args.include_dirs]
     manifest += [json.dumps('-D' + d) for d in args.defines]
@@ -2124,7 +2315,7 @@ def main(argv=None):
         else:
             expanded.append(arg)
     args = parser().parse_args(expanded)
-    options = dict(include_dirs=args.include_dirs, defines=args.defines, packages=args.packages)
+    options = dict(include_dirs=args.include_dirs, defines=args.defines, packages=args.packages, library_dirs=args.library_dirs)
     if getattr(args, 'no_config', False):
         args.track = False
     try:
@@ -2134,7 +2325,7 @@ def main(argv=None):
         elif listed:
             raise ValueError('-f filelist is supported with integrate or --files workflows')
         args.packages = order_packages(args.packages, args.include_dirs, args.defines, getattr(args, 'files', []) or ([args.file] if hasattr(args, 'file') and not str(args.file).endswith('.json') else []))
-        options = dict(include_dirs=args.include_dirs, defines=args.defines, packages=args.packages)
+        options = dict(include_dirs=args.include_dirs, defines=args.defines, packages=args.packages, library_dirs=args.library_dirs)
         if args.command == 'integrate':
             if not args.files:
                 raise ValueError('integrate requires module files or -f filelist')

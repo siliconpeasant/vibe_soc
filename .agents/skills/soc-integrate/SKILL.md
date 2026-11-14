@@ -122,6 +122,33 @@ For repeated instances supply an `instances` list as in this example:
 }
 ```
 
+Each `instances[]` entry may supply `parameters`, keyed by the child's public
+parameter name. JSON integers emit decimal literals, booleans emit `1'b1` / `1'b0`,
+and strings emit verbatim HDL expressions. For example:
+
+```json
+{"instances": [{"module": "tlul_socket_1n", "instance": "u_socket",
+                "parameters": {"N": 2, "ExplicitErrs": true}}]}
+```
+
+`{"N":"2"}` and `{"N":"(1+1)"}` also select two devices. Unknown parameters,
+localparam overrides and other JSON value types fail explicitly. Each configured
+instance resolves its own parameter/localparam chains, packed bounds and unpacked
+bounds; the shared default interface is unchanged. Integer arithmetic is folded
+locally where supported. Named types and remaining expressions use Verilator
+probes with `-G` overrides (locally evaluable expressions become literal `-G`
+values). Verilator 5.032 only accepts literals with `-G`; expressions it cannot
+consume produce an error identifying the instance, ports, expressions and compiler
+diagnostic. Supply all referenced packages/dependencies. No child parameter or
+localparam name is emitted in a generated top dimension after an override.
+
+Whole unpacked value-array connections retain the child's packed type followed by
+its concrete unpacked dimensions, e.g. `tlul_pkg::tl_h2d_t dev_h2d [2]`.
+`dev_h2d[0]` selects one unpacked element and is checked against that element's
+packed width. Element connections never widen or replace the whole-array net's
+declaration. This also applies when element instances precede the whole-array
+instance in the map. Unpacked array slices are rejected explicitly.
+
 Precedence is exact `instance.port`, then exact legacy `module.port`, then the
 first matching template. Ordered patterns embedded in `mappings` precede the
 `templates` list; JSON object/list order is preserved. Patterns match the entire
@@ -280,14 +307,23 @@ localparam probes resolve typedef/packed struct/union sizes, and bound probes
 resolve package constants in dimensions. These avoid incomplete pre-width JSON
 dtype links. Older/unknown versions use legacy `--xml-only`. Unsupported JSON
 options or AST schemas fall back to XML; unsupported XML options/schemas fall
-back to the text parser's symbolic widths (`width-unknown` checks). Actual HDL
-syntax/type errors always fail and never trigger fallback. Original source
-locations, including included port declarations, accompany compiler diagnostics.
+back to the text parser's symbolic widths (`width-unknown` checks). If the isolated
+header fails because declarations or constants need the module body, the tool retries the full real module, using disposable preprocessed source
+with compiler probes. Full elaboration reads the AST's port names/directions and
+folded bit/bound probes, while retaining the original type spelling; module-local
+types use a concrete packed representation in parent declarations. Dependencies
+come from repeatable `-y DIR` / `--library-dir DIR` (MCP `library_dirs`), the
+module's sibling directory and remaining supplied source files passed as `-v`
+libraries. Include directories, defines and packages are also forwarded. Full
+elaboration uses `--top-module <module>` and `-Wno-fatal` for extraction only;
+HDL errors fail with the module name and the first real Verilator error lines.
+Original source locations, including included port declarations, accompany compiler diagnostics.
 Original type spelling remains in metadata. Unqualified imported port types receive
 package-qualified declarations in the parent; with multiple wildcard imports,
-qualify the port type explicitly in the source (otherwise extraction fails with
-a location and explanation). Resolved counts describe default parameters;
-nontrivial overrides of named types conservatively retain unknown widths.
+all supplied imported packages are searched for the typedef. Ambiguities identify
+the module port and candidate package names. Explicit imports
+retain precedence over wildcard imports. Extraction reports default-configuration
+counts; integration re-evaluates overridden instances independently.
 Supply all transitive package dependencies. `--package` / MCP `packages` accepts
 any order: package declarations, imports and `pkg::name` references determine a
 stable topological order, also used in generated lint filelists. Dependency
@@ -297,13 +333,12 @@ Files containing mutually interleaved package dependencies must be split if no
 file order can satisfy them. This orders supplied files; use sibling
 `soc-build.soc_flist` for project dependency discovery.
 Without packages, named types remain symbolic and produce `width-unknown` checks.
-Inline structs/aggregates, type parameters, default port values and full
-behavioral elaboration remain outside the parser's scope. Unsupported
-port declarations report a file, line and construct rather than dropping ports.
+Inline structs/aggregates, type parameters and default port values remain outside
+the text parser's scope. Unsupported port declarations report a file, line and construct rather than dropping ports.
 
-All RTL-reading MCP tools accept `include_dirs`, `defines` and `packages`.
+All RTL-reading MCP tools accept `include_dirs`, `defines`, `packages` and `library_dirs`.
 CLI equivalents are repeated `-I dir`, `-D NAME[=value]`, `--package file.sv`
-(in any order), plus `+incdir+dir+dir` / `+define+NAME=value+NAME`.
+(in any order), repeatable `-y dir`, plus `+incdir+dir+dir` / `+define+NAME=value+NAME`.
 When Verilator is on PATH, extraction uses `verilator -E --relative-includes`
 over all package and source files together, with those options. A preprocessing
 pass establishes package dependencies before the ordered extraction pass.
@@ -345,8 +380,8 @@ The config starts with `` `verilator_config `` and scopes `lint_off -file` to
 absolute sources under a `vendor/` path component and explicit library/vendor
 directory globs. First-party module/package files outside those scopes keep
 their warnings fatal, even when passed explicitly or through an include directory. It also
-scopes `UNOPTFLAT` explicitly, since that performance diagnostic is outside
-Verilator's default lint group ([control-file syntax](https://verilator.org/guide/latest/control.html)).
+scopes `UNOPTFLAT` (performance) and `SYMRSVDWORD` (C++ symbol portability)
+explicitly, since those diagnostics are outside Verilator's default lint group ([control-file syntax](https://verilator.org/guide/latest/control.html)).
 The generated top never receives a waiver, including when it is within an
 explicit vendor/library directory: those directories are enumerated with the top excluded.
 Warnings introduced in the generated top still fail `-Wall`; `-Wno-fatal` is not
@@ -365,9 +400,12 @@ name on top check/diff. It is not accepted on integrate/update/remove/extract-ma
 
 Consume sibling `soc-build.soc_flist` output as source/filelist input; this tool
 does not replace project dependency discovery. Address-map inputs come from
-`gen-asic-memmap`; register RTL and maps from `yml2reg`; clock and combinational
-reset sources from approved `crg-gen` workbooks. Integration owns the per-domain
-`rst_synchronizer` on the gated clock per rule 15. DFT readiness and SGDC remain
+`gen-asic-memmap`; register RTL and maps from `yml2reg`; clock/reset modules from approved `crg-gen` workbooks. This skill only wires
+supplied modules. It does not generate reset synchronizers, reset-source logic,
+address decoders/crossbars, project dependency filelists or testbenches. Route those
+to `crg-gen`, `gen-asic-memmap`, `soc-build` and verification respectively. Existing
+opt-in `.lint.f` is only a manifest of explicitly supplied inputs for the tool's
+scoped lint config; it does not discover or create a project filelist. DFT readiness and SGDC remain
 with `dft-gen` and the DFT owner per rule 14. These parser/refresh tools
 do not infer or generate address maps, CRG trees, reset policy or DFT circuitry.
 
@@ -377,15 +415,15 @@ The following ordered parameter names exactly match the registered tool schemas.
 Defaults/types are supplied by MCP; optional additions retain legacy call order.
 
 ```text
-soc_extract(verilog_file, module_name, include_dirs, defines, packages)
-soc_instantiate(verilog_file, instance_name, module_name, include_dirs, defines, packages)
-soc_wrap(verilog_file, module_name, wrapper_name, output, include_dirs, defines, packages)
-soc_csv(verilog_file, module_name, output, include_dirs, defines, packages)
+soc_extract(verilog_file, module_name, include_dirs, defines, packages, library_dirs)
+soc_instantiate(verilog_file, instance_name, module_name, include_dirs, defines, packages, library_dirs)
+soc_wrap(verilog_file, module_name, wrapper_name, output, include_dirs, defines, packages, library_dirs)
+soc_csv(verilog_file, module_name, output, include_dirs, defines, packages, library_dirs)
 soc_integrate(module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force)
 soc_update(config_file, output, port_map, top_name, module_files, top_file, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs)
-soc_extract_map(top_file, output, verify_modules, expand, include_dirs, defines, packages)
-soc_check(verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages)
-soc_snapshot(verilog_file, module_name, output, format_type, version, changelog, include_dirs, defines, packages)
-soc_diff(verilog_file, snapshot_file, module_name, module_files, include_dirs, defines, packages, strict)
+soc_extract_map(top_file, output, verify_modules, expand, include_dirs, defines, packages, library_dirs)
+soc_check(verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages, library_dirs)
+soc_snapshot(verilog_file, module_name, output, format_type, version, changelog, include_dirs, defines, packages, library_dirs)
+soc_diff(verilog_file, snapshot_file, module_name, module_files, include_dirs, defines, packages, strict, library_dirs)
 soc_remove(config_file, module_name, module_files, include_dirs, defines, packages, lint_config, library_dirs, output, strict, port_map, vendor_dirs)
 ```
