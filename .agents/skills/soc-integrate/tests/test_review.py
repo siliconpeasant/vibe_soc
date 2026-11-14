@@ -127,17 +127,18 @@ class ReviewRegressions(unittest.TestCase):
         outside = 'wire spare;\nassign spare = dut_a;\nalways @(dut_a) $display("outside");\nunknown_module extra_instance(.*);\n'
         top.write_text(top.read_text().replace('endmodule\n', outside + protected + 'endmodule\n'))
         result = self.cli('diff', top, '--files', dut)
-        self.assertIn('[unmanaged]', result.stdout)
+        self.assertIn('[preserved-unmanaged]', result.stdout)
         self.assertIn('extra_instance', result.stdout)
-        self.assertIn('outside user regions, omitted on update', result.stdout)
+        self.assertIn('preserved in an automatic user region', result.stdout)
         self.cli('update', top, '--files', dut)
         self.assertIn(protected, top.read_text())
+        self.assertIn(outside, top.read_text())
         self.cli('update', top, '--files', dut)
         self.assertEqual(top.read_text().count(protected), 1)
         self.cli('integrate', dut, '-n', 'top', '-o', top)
         self.assertEqual(top.read_text().count(protected), 1)
         top.write_text(top.read_text().replace('// soc-integrate:user end', ''))
-        self.assertIn('unterminated user region', self.cli('update', top, '--files', dut, ok=False).stderr)
+        self.assertRegex(self.cli('update', top, '--files', dut, ok=False).stderr, '(unterminated|nested) user region')
 
     def test_08_unmanaged_statement_has_one_semicolon_and_separator(self):
         dut = self.source('dut', 'module dut(input a); endmodule')
@@ -149,8 +150,8 @@ class ReviewRegressions(unittest.TestCase):
         for command in ('diff', 'check', 'update'):
             with self.subTest(command=command):
                 result = self.cli(command, top, '--files', dut)
-                self.assertIn(f'Warning [unmanaged]: {top}:{line}: {statement} | '
-                              'outside user regions, omitted on update\n', result.stdout)
+                self.assertIn(f'Warning [preserved-unmanaged]: {top}:{line}: {statement} | '
+                              'preserved in an automatic user region\n', result.stdout)
                 self.assertEqual(result.stdout.count(statement), 1)
                 self.assertNotIn(';;', result.stdout)
 

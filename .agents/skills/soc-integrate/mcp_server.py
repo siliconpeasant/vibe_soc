@@ -70,11 +70,13 @@ def soc_csv(verilog_file: str, module_name: str = '', output: str = 'ports.csv',
 @mcp.tool()
 def soc_integrate(module_files: list[str], top_name: str, output_file: str, port_map: str = '',
                   csv: bool = False, track: bool = False, strict: bool = False,
-                  include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None) -> str:
+                  include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None,
+                  lint_config: bool = False, library_dirs: list[str] | None = None) -> str:
     """Generate a top and print width/driver/connectivity/heuristic CDC checks.
 
     Exact instance.port then legacy module.port keys override ordered regex/glob
-    templates. Native interface instances connect interface/modport ports.
+    templates. interfaces configures concrete interface types, parameters, ports and arrays.
+    lint_config emits vendor-scoped .vlt/.lint.f; generated top warnings stay fatal.
     csv opts into review CSV; track opts into .integrate.json (both default off).
     strict rejects warnings before writing outputs. CDC checks are structural hints.
     """
@@ -83,6 +85,10 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
         args += ['--csv']
     if track:
         args += ['--track']
+    if lint_config:
+        args += ['--lint-config']
+    for directory in library_dirs or []:
+        args += ['-y', directory]
     return _call('integrate', args, include_dirs, defines, strict, packages)
 
 
@@ -90,13 +96,15 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
 def soc_update(config_file: str = '', output: str = '', port_map: str = '', top_name: str = '',
                module_files: list[str] | None = None, top_file: str = '', csv: bool = False,
                track: bool = False, strict: bool = False, include_dirs: list[str] | None = None,
-               defines: list[str] | None = None, packages: list[str] | None = None) -> str:
+               defines: list[str] | None = None, packages: list[str] | None = None,
+               lint_config: bool = False, library_dirs: list[str] | None = None) -> str:
     """Refresh named instances from CURRENT RTL, preserving manual expressions verbatim.
 
     Pass top_file and module_files for JSON-free update. config_file also accepts
     a top path or legacy .integrate.json. Embedded prior-port comments permit
     width/direction change reports; JSON is optional. New ports follow map/shared
-    rules; deleted ports disappear. csv and track are independently opt-in.
+    rules; deleted ports disappear. Unmanaged user text is preserved verbatim.
+    csv, track and lint_config are independently opt-in.
     """
     target = top_file or config_file
     if not target:
@@ -108,6 +116,10 @@ def soc_update(config_file: str = '', output: str = '', port_map: str = '', top_
         args += ['--csv']
     if track:
         args += ['--track']
+    if lint_config:
+        args += ['--lint-config']
+    for directory in library_dirs or []:
+        args += ['-y', directory]
     return _call('update', args, include_dirs, defines, strict, packages)
 
 
@@ -171,11 +183,16 @@ def soc_diff(verilog_file: str, snapshot_file: str = '', module_name: str = '',
 @mcp.tool()
 def soc_remove(config_file: str, module_name: str, module_files: list[str] | None = None,
                include_dirs: list[str] | None = None, defines: list[str] | None = None,
-               packages: list[str] | None = None) -> str:
+               packages: list[str] | None = None,
+               lint_config: bool = False, library_dirs: list[str] | None = None) -> str:
     """Remove a dependency from a tracked integration and regenerate its top."""
     args = [config_file, module_name]
     if module_files:
         args += ['--files'] + module_files
+    if lint_config:
+        args += ['--lint-config']
+    for directory in library_dirs or []:
+        args += ['-y', directory]
     return _call('remove', args, include_dirs, defines, packages=packages)
 
 

@@ -258,9 +258,12 @@ class VerilogModule:
         self.file = ''
         self.imports = ''
         self.param_dims = {}
+        self.kind = 'module'
+        self.interfaces = {}
 
     def metadata(self):
-        return {'module_name': self.name, 'file': self.file,
+        return {'module_name': self.name, 'file': self.file, 'kind': self.kind,
+                'interfaces': self.interfaces,
                 'params': self.params, 'localparams': self.localparams,
                 'imports': self.imports, 'param_dims': self.param_dims,
                 'ports': [dict(direction=d, width=w, name=n, **self.details.get(n, {}))
@@ -306,8 +309,6 @@ def parse_port(item, inherited=None):
     if kind == 'interface' and ('::' in type_text or type_text.endswith('_t')):
         kind = 'input'  # Implicit direction on a clearly identified value type.
     if kind == 'interface':
-        if unpacked.strip():
-            raise ValueError(f'unsupported interface array: {item}')
         if not re.fullmatch(IDENT + r'(?:\.' + IDENT + ')?', type_text):
             raise ValueError(f'unsupported interface port: {item}')
     elif type_text and not re.fullmatch(
@@ -333,9 +334,10 @@ def parse_module(name, content, file='<text>'):
     module = VerilogModule(name)
     module.file = str(file)
     text = uncomment(content)
-    match = re.match(r'\s*module\s+' + re.escape(name) + r'\b\s*', text)
+    match = re.match(r'\s*(module|interface)\s+' + re.escape(name) + r'\b\s*', text)
     if not match:
         fail(file, text, 0, 'module header')
+    module.kind = match[1]
     pos = match.end()
     try:
         import_start = pos
@@ -480,7 +482,9 @@ def resolve_types(module, packages, include_dirs, defines):
         header = root / (module.name + '.sv')
         dimension_names = {}
         localparams = ''.join(f'localparam {t} {n} = {v};\n' for n, v, t in module.localparams)
-        for _, width, name in module.ports:
+        for direction, width, name in module.ports:
+            if direction == 'interface':
+                continue
             for field, dims in (('resolved_width', width), ('resolved_unpacked', module.details[name].get('unpacked', ''))):
                 names = []
                 for index, expr in enumerate(re.findall(r'\[([^\]]+)\]', dims)):
@@ -491,7 +495,15 @@ def resolve_types(module, packages, include_dirs, defines):
                         pair.append(identifier)
                     names.append(pair)
                 dimension_names[(name, field)] = names
-        header.write_text(module.header + '\n' + localparams + 'endmodule\n')
+        # Isolate value ports: generic interfaces cannot be elaborated without
+        # an actual connected instance, and do not have a packed bit count.
+        value_ports = [declaration(d, w, n, module.details[n]) for d, w, n in module.ports if d != 'interface']
+        if any(d == 'interface' for d, _, _ in module.ports):
+            params = '#(' + ', '.join(f'parameter {t} {n} = {v}' for n, v, t in module.params) + ')' if module.params else ''
+            public_header = f'module {module.name} {module.imports} {params} (' + ', '.join(value_ports) + ');'
+        else:
+            public_header = module.header
+        header.write_text(public_header + '\n' + localparams + 'endmodule\n')
         xml = root / 'ports.xml'
         command = ['verilator', '--xml-only', '--xml-output', str(xml), '--Mdir', str(root / 'obj'),
                    '--top-module', module.name, '-Wno-fatal']
@@ -567,14 +579,18 @@ def extract_modules(filepath, include_dirs=(), defines=(), packages=()):
         text = pp.read(filepath)
     modules = []
     scan = re.sub(r'"(?:\\.|[^"\\])*"', lambda m: re.sub(r'[^\n]', ' ', m[0]), text)
-    for match in re.finditer(r'\bmodule\s+(' + IDENT + ')', scan):
-        end = re.search(r'\bendmodule\b', scan[match.end():])
+    definition_end = 0
+    for match in re.finditer(r'\b(module|interface)\s+(' + IDENT + ')', scan):
+        if match.start() < definition_end:
+            continue
+        end = re.search(r'\bend' + match[1] + r'\b', scan[match.end():])
         if not end:
-            fail(filepath, text, match.start(), 'missing endmodule')
+            fail(filepath, text, match.start(), 'missing end' + match[1])
+        definition_end = match.end() + end.end()
         line = text.count('\n', 0, match.start())
         file, number = pp.locations[line] if line < len(pp.locations) else (str(filepath), line + 1)
         try:
-            module = parse_module(match[1], text[match.start():match.end() + end.end()], file)
+            module = parse_module(match[2], text[match.start():match.end() + end.end()], file)
         except ValueError as exc:
             # Translate module-relative diagnostics back to preprocessed source.
             loc = re.match(r'^(.*?):(\d+): (.*)', str(exc), re.S)
@@ -588,9 +604,12 @@ def extract_modules(filepath, include_dirs=(), defines=(), packages=()):
             source, lineno = pp.locations[offset]
             detail.update(file=source, line=lineno)
         module.file = str(Path(filepath).resolve())
-        if packages and shutil.which('verilator'):
+        if packages and module.kind == 'module' and shutil.which('verilator'):
             resolve_types(module, packages, include_dirs, defines)
         modules.append(module)
+    definitions = {m.name: m.metadata() for m in modules if m.kind == 'interface'}
+    for module in modules:
+        module.interfaces = definitions
     if not modules:
         raise ValueError(f'{filepath}:1: no module definition found')
     return modules
@@ -666,7 +685,7 @@ def generate_wrapper(module, wrapper_name=None):
     ports = []
     for d, w, n in module.ports:
         if d == 'interface':
-            ports.append('    ' + module.details[n]['type'] + ' ' + n)
+            ports.append('    ' + module.details[n]['type'] + ' ' + n + (' ' + module.details[n]['unpacked'] if module.details[n]['unpacked'] else ''))
         else:
             ports.append('    ' + declaration(d, resolve_param_width(w), n, module.details[n]))
     instance = generate_instance(module)
@@ -674,14 +693,16 @@ def generate_wrapper(module, wrapper_name=None):
         for n, v, _ in module.params:
             instance = instance.replace(f'.{n}({v})', f'.{n}({n})', 1)
     locals_text = ''.join(f'    localparam {t} {n} = {v};\n' for n, v, t in module.localparams)
-    return f'module {name} {module.imports}{params} (\n' + ',\n'.join(ports) + '\n);\n' + locals_text + instance + 'endmodule\n'
+    metadata = dict(version=1, port_map={}, declarations=locals_text.splitlines(),
+                    instances={f'u_{module.name.lower()}': module.metadata()})
+    return '// soc-integrate: ' + json.dumps(metadata, separators=(',', ':')) + '\n' + f'module {name} {module.imports}{params} (\n' + ',\n'.join(ports) + '\n);\n' + locals_text + instance + 'endmodule\n'
 
 
 class PortMap:
     """Exact instance keys, legacy module keys, then ordered template rules."""
     def __init__(self, data=None):
         data = data or {}
-        self.data = data if any(k in data for k in ('mappings', 'templates', 'domains', 'annotations', 'instances', 'synchronizers')) else {'mappings': data}
+        self.data = data if any(k in data for k in ('mappings', 'templates', 'domains', 'annotations', 'instances', 'synchronizers', 'interfaces')) else {'mappings': data}
         self.mappings = self.data.get('mappings', {})
         self.rules = []
         self.exact = {}
@@ -759,8 +780,45 @@ def user_regions(raw, file='<top>'):
     return regions
 
 
+def top_level_mask(text, start):
+    """Hide opaque nested scopes so user code is never mistaken for owned RTL."""
+    scan = re.sub(r'"(?:\\.|[^"\\])*"', lambda m: re.sub(r'[^\n]', ' ', m[0]), text)
+    # Mask whole conditional branches before interpreting procedural scopes;
+    # alternatives may contain different begin/end shapes.
+    depth, begin = 0, 0
+    for token in re.finditer(r'`(?:ifdef|ifndef|endif)\b', scan[start:]):
+        if token[0] != '`endif':
+            if not depth:
+                begin = start + token.start()
+            depth += 1
+        elif depth:
+            depth -= 1
+            if not depth:
+                end = start + token.end()
+                scan = scan[:begin] + re.sub(r'[^\n]', ' ', scan[begin:end]) + scan[end:]
+    tokens = re.compile(r'\b(?:generate|endgenerate|function|endfunction|task|endtask|begin|end)\b')
+    stack, spans = [], []
+    ends = {'generate': 'endgenerate', 'function': 'endfunction', 'task': 'endtask',
+            'begin': 'end'}
+    for token in tokens.finditer(scan, start):
+        word = token[0]
+        if word in ends:
+            if not stack:
+                begin = token.start()
+            stack.append(ends[word])
+        elif stack and word == stack[-1]:
+            stack.pop()
+            if not stack:
+                spans.append((begin, token.end()))
+    for begin, end in spans:
+        scan = scan[:begin] + re.sub(r'[^\n]', ' ', scan[begin:end]) + scan[end:]
+    return scan
+
+
 def parse_top(top_file, module_names=None):
-    raw = Path(top_file).read_text()
+    # newline='' matters: custom CRLF text must survive byte for byte too.
+    with open(top_file, newline='') as stream:
+        raw = stream.read()
     text = uncomment(raw)
     regions = user_regions(raw, top_file)
     for begin, end, _ in regions:
@@ -780,14 +838,47 @@ def parse_top(top_file, module_names=None):
     if text[start:].lstrip().startswith('('):
         _, start = balanced(text, text.index('(', start), top_file)
     start = text.index(';', start) + 1
+    scan = top_level_mask(text, start)
+    ending = re.search(r'\bendmodule\b', scan[start:])
+    if not ending:
+        fail(top_file, text, start, 'missing endmodule')
+    stop = start + ending.start()
     instances, spans = [], []
+    interface_specs = {}
+    saved_interface_specs = metadata.get('interface_instances', {})
+    interface_types = {p['type'].split('.')[0] for i in metadata.get('instances', {}).values()
+                       for p in i['ports'] if p['direction'] == 'interface'}
+    interface_types |= {spec['type'] for spec in saved_interface_specs.values()}
+    for match in re.finditer(r'\b(' + IDENT + r')\s*(#\s*\()?', scan[start:stop]):
+        if match[1] not in interface_types:
+            continue
+        begin, pos = start + match.start(), start + match.end()
+        parameters = {}
+        if match[2]:
+            _, end = balanced(text, pos - 1, top_file)
+            parameters = named_connections(raw[pos:end - 1], top_file)
+            pos = end
+        name = re.match(r'\s*(' + IDENT + r')\s*((?:\[[^\]]+\]\s*)*)\(', text[pos:])
+        if not name:
+            continue
+        if 'interface_instances' in metadata and name[1] not in saved_interface_specs:
+            continue  # A separate user interface instance is not owned by refresh.
+        open_pos = pos + name.end() - 1
+        _, end = balanced(text, open_pos, top_file)
+        tail = re.match(r'\s*;', text[end:])
+        if not tail:
+            fail(top_file, text, end, 'multiple interface instances per statement')
+        interface_specs[name[1]] = dict(type=match[1], parameters=parameters,
+                                        unpacked=name[2].strip(),
+                                        ports=named_connections(raw[open_pos + 1:end - 1], top_file))
+        spans.append((begin, end + tail.end()))
+        scan = scan[:begin] + re.sub(r'[^\n]', ' ', scan[begin:end + tail.end()]) + scan[end + tail.end():]
     pattern = re.compile(r'\b(' + IDENT + r')\s*(#\s*\()?')
     pos = start
     keywords = {'module', 'endmodule', 'input', 'output', 'inout', 'wire', 'reg', 'logic',
                 'assign', 'parameter', 'localparam', 'always', 'initial', 'if', 'else', 'begin', 'end'}
-    scan = re.sub(r'"(?:\\.|[^"\\])*"', lambda m: re.sub(r'[^\n]', ' ', m[0]), text)
-    while pos < len(text):
-        match = pattern.search(scan, pos)
+    while pos < stop:
+        match = pattern.search(scan, pos, stop)
         if not match:
             break
         pos = match.end()
@@ -815,30 +906,68 @@ def parse_top(top_file, module_names=None):
                               parameter_text=parameter_text, ports=ports))
         pos = end + tail.end()
         spans.append((match.start(), pos))
-    top = parse_module(header[1], text[header.start():], str(top_file))
-    top.user_regions = [region for _, _, region in regions]
-    # Managed declarations are regenerated from the child connections. Anything
-    # else outside protected regions is diagnosed before an update can drop it.
-    body = text[start:]
+    top = parse_module(header[1], text[header.start():start] + '\nendmodule', str(top_file))
+    top.user_regions = [region for a, b, region in regions if start <= a < stop]
+    preamble = raw[:header.start()]
+    preamble = re.sub(r'(?m)^// (?:Generated by soc_integrate.py; named connection expressions survive update\.|soc-integrate: [^\n]*)\r?\n', '', preamble)
+    top.preamble = preamble if preamble.strip() else ''
+    suffix = raw[start + ending.end():]
+    top.suffix = suffix if suffix.strip() else ''
+    spans += [(a, b) for a, b, _ in regions]
+    # Exact ownership records avoid reclassifying a user's declaration merely
+    # because it happens to name a connected net.
+    owned = metadata.get('declarations')
+    if owned is not None:
+        for declaration_text in owned:
+            for match in re.finditer(re.escape(declaration_text), raw[start:stop]):
+                a, b = start + match.start(), start + match.end()
+                if scan[a:b].strip() and not any(a < y and b > x for x, y in spans):
+                    spans.append((a, b))
+                    break
+    # Older/manual tops have no declaration ownership record. Preserve those
+    # declarations conservatively rather than guessing which text may be lost.
+    # The only comments owned by generation are the empty-pin lint annotations;
+    # they already reside within managed instance spans. All other raw text is
+    # retained, including comments and preprocessor branches.
+    residual, cursor, diagnostics = [], start, []
+    for begin, end in sorted(spans) + [(stop, stop)]:
+        if begin > cursor:
+            chunk = raw[cursor:begin]
+            if chunk.strip():
+                residual.append(chunk)
+                diagnostics += [(raw.count('\n', 0, cursor) + index + 1, line.strip())
+                                for index, line in enumerate(chunk.splitlines()) if line.strip()]
+        cursor = max(cursor, end)
     for begin, end in spans:
-        a, b = begin - start, end - start
-        body = body[:a] + re.sub(r'[^\n]', ' ', body[a:b]) + body[b:]
-    nets = {net_base(v) for i in instances for v in i['ports'].values()}
-    for decl in list(re.finditer(r'\b(?:wire|logic|reg)\b[^;]*;', body)):
-        try:
-            port, _, _ = parse_port('output ' + decl[0][:-1])
-        except ValueError:
+        if not (start <= begin < stop) or any(a <= begin < b for a, b, _ in regions):
             continue
-        if port[2] in nets:
-            body = body[:decl.start()] + re.sub(r'[^\n]', ' ', decl[0]) + body[decl.end():]
-    interface_types = {p['type'].split('.')[0] for i in metadata.get('instances', {}).values()
-                       for p in i['ports'] if p['direction'] == 'interface'}
-    for decl in list(re.finditer(r'\b(' + IDENT + r')\s+(' + IDENT + r')\s*\(\s*\)\s*;', body)):
-        if decl[1] in interface_types and decl[2] in nets:
-            body = body[:decl.start()] + re.sub(r'[^\n]', ' ', decl[0]) + body[decl.end():]
-    body = re.sub(r'\bendmodule\b', '', body)
-    top.unmanaged = [(text.count('\n', 0, start) + index + 1, line.strip())
-                     for index, line in enumerate(body.splitlines()) if line.strip()]
+        retained = [expr for inst in instances for expr in inst['ports'].values()]
+        retained += [inst['parameter_text'] for inst in instances]
+        retained += [expr for spec in interface_specs.values() for field in ('ports', 'parameters') for expr in spec[field].values()]
+        for comment in re.finditer(r'"(?:\\.|[^"\\])*"|//[^\n]*|/\*.*?\*/', raw[begin:end], re.S):
+            value = comment[0]
+            if not value.startswith(('//', '/*')) or re.match(r'// verilator lint_(?:off|on) PINCONNECTEMPTY$', value):
+                continue
+            if any(value in expr for expr in retained):
+                continue
+            residual.append(value + '\n')
+            diagnostics.append((raw.count('\n', 0, begin + comment.start()) + 1, value))
+    top.unmanaged = diagnostics
+    top.unmanaged_text = ''.join(residual)
+    top.custom_signals = {}
+    custom = uncomment(''.join(top.user_regions) + top.unmanaged_text)
+    custom = top_level_mask(custom, 0)
+    for decl in re.finditer(r'\b(?:wire|logic|reg)\b[^;]*;', custom):
+        inherited = None
+        for item in split_port_items(decl[0][:-1]):
+            try:
+                declarator = split_port_items(item, '=')[0]
+                port, detail, inherited = parse_port('output ' + declarator if inherited is None else declarator, inherited)
+            except ValueError:
+                continue
+            _, width, name = port
+            top.custom_signals[name] = dict(direction='', width=width, detail=detail, bits=bit_width(width, detail.get('unpacked', '')))
+    top.interface_instances = interface_specs
     return header[1], instances, metadata, top
 
 
@@ -879,6 +1008,7 @@ def expression_width(expr, signals):
 
 
 def default_instances(modules, data):
+    modules = [m for m in modules if m.kind == 'module']
     specs = data.get('instances') if isinstance(data, dict) else None
     if specs:
         available = {m.name: m for m in modules}
@@ -907,10 +1037,69 @@ def port_signature(direction, width, detail, params):
             type_text = 'logic ' + type_text
         if type_text.strip() in ('logic', 'logic unsigned'):
             type_text = 'logic'
-    dimensions = (resolve_param_width(width, params),
-                  resolve_param_width(detail.get('unpacked', ''), params))
+    unpacked = resolve_param_width(detail.get('unpacked', ''), params)
+    if direction == 'interface':
+        unpacked = repr(interface_shape(unpacked))
+    dimensions = (resolve_param_width(width, params), unpacked)
     return (direction == 'interface', ' '.join(type_text.split()),
             *(re.sub(r'\s+', '', dim) for dim in dimensions))
+
+
+def interface_shape(dimensions):
+    """Canonical bounds for equivalent size/range unpacked declarations."""
+    shape = []
+    for dimension in re.findall(r'\[([^\]]+)\]', dimensions):
+        bounds = [constant(v) for v in dimension.split(':')]
+        if None in bounds:
+            shape.append(re.sub(r'\s+', '', dimension))
+        else:
+            shape.append((0, bounds[0] - 1) if len(bounds) == 1 else tuple(bounds))
+    return tuple(shape)
+
+
+def interface_signal(base, entries, specs, definitions):
+    """Resolve one concrete interface instance, including whole/element arrays."""
+    spec = dict(specs.get(base, {}))
+    types = {r['detail']['type'].split('.')[0] for r in entries} - {'interface'}
+    if spec.get('type'):
+        types.add(spec['type'])
+    if len(types) != 1:
+        raise ValueError(f'interface {base}: supply one concrete type via interfaces.{base}.type')
+    spec['type'] = next(iter(types))
+    parameters = {k: str(v) for k, v in spec.get('parameters', {}).items()}
+    definition = definitions.get(spec['type'], {})
+    defaults = [(n, str(parameters.get(n, v)), t) for n, v, t in definition.get('params', [])]
+    if definition and parameters.keys() - {p[0] for p in defaults}:
+        raise ValueError(f'interface {base}: unknown parameter override')
+    dimensions = list(dict.fromkeys(r['detail'].get('unpacked', '') for r in entries if r['signal'].strip() == base))
+    if len({interface_shape(d) for d in dimensions}) > 1:
+        raise ValueError(f'interface {base}: incompatible array dimensions')
+    unpacked = spec.get('unpacked', next(iter(dimensions), ''))
+    if dimensions and interface_shape(unpacked) != interface_shape(next(iter(dimensions))):
+        raise ValueError(f'interface {base}: incompatible array dimensions')
+    selections = [selection_interval(r['signal']) for r in entries if r['signal'].strip() != base]
+    if selections:
+        if any(selection is None for selection in selections):
+            raise ValueError(f'interface {base}: array indices must be constant; specify concrete mappings')
+        high = max(selection[1] for selection in selections)
+        if not unpacked:
+            unpacked = f'[0:{high}]'
+        bounds = re.fullmatch(r'\[([^\]]+)\]', unpacked)
+        interval = selection_interval(base + unpacked) if bounds and ':' in bounds[1] else None
+        count = constant(bounds[1]) if bounds and ':' not in bounds[1] else None
+        low, upper = interval if interval else (0, count - 1 if count is not None else -1)
+        if any(a < low or b > upper for a, b in selections):
+            raise ValueError(f'interface {base}: element outside array dimensions {unpacked}')
+        if any(r['detail'].get('unpacked') for r in entries if r['signal'].strip() != base):
+            raise ValueError(f'interface {base}: an array port requires a whole-array connection')
+    spec['unpacked'] = unpacked
+    spec['parameters'] = parameters
+    spec['ports'] = dict(spec.get('ports', {}))
+    for port in definition.get('ports', []):
+        spec['ports'].setdefault(port['name'], port['name'])
+    spec['definition'] = definition
+    spec['defaults'] = defaults
+    return {k: spec[k] for k in ('type', 'parameters', 'unpacked', 'ports', 'definition', 'defaults')}
 
 
 def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
@@ -1015,13 +1204,19 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
         for d, w, n in previous_top.ports:
             old[n] = dict(direction=d, width=w, bits=bit_width(w, previous_top.details[n].get('unpacked', '')), detail=previous_top.details[n])
     signals = {}
+    definitions = {n: d for i in instances for n, d in i['module'].interfaces.items()}
+    interface_specs = dict(mapping.data.get('interfaces', {}))
+    if previous_top:
+        interface_specs.update(getattr(previous_top, 'interface_instances', {}))
+    resolved_interfaces = {}
     for base, entries in groups.items():
         interface = [r for r in entries if r['direction'] == 'interface']
         if interface:
-            types = {r['detail']['type'].split('.')[0] for r in interface}
-            if len(types) != 1 or len(interface) != len(entries):
+            if len(interface) != len(entries):
                 raise ValueError(f'incompatible interface connection: {base}')
-            signals[base] = dict(direction='interface', width='', bits=None, detail={'type': next(iter(types))})
+            spec = interface_signal(base, interface, interface_specs, definitions)
+            resolved_interfaces[base] = spec
+            signals[base] = dict(direction='interface', width='', bits=None, detail=spec)
             continue
         typed_inputs = [r for r in entries if r['direction'] == 'input' and bus_like(r['port'], r['detail']['type'])]
         if len(typed_inputs) > 1:
@@ -1044,6 +1239,27 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
                 b = selection_interval(other['signal']) or (0, (bits or 1) - 1)
                 if max(a[0], b[0]) <= min(a[1], b[1]):
                     warn('multiple-driver', f'{base} has multiple drivers: {driver["key"]}, {other["key"]}', [driver['key'], other['key']])
+    if previous_top:
+        signals.update(getattr(previous_top, 'custom_signals', {}))
+    for spec in resolved_interfaces.values():
+        for port in spec['definition'].get('ports', []):
+            expr = str(spec['ports'][port['name']])
+            if not expr or literal_width(expr) is not None:
+                continue
+            if not re.fullmatch(IDENT, expr):
+                if expr in old:
+                    signals.setdefault(expr, old[expr])
+                else:
+                    raise ValueError(f'interface input expression {expr!r} needs a declared top signal')
+            width = resolve_param_width(port['width'], spec['defaults'])
+            detail = dict(port, unpacked=resolve_param_width(port.get('unpacked', ''), spec['defaults']))
+            signals.setdefault(expr, dict(direction=port['direction'], width=width,
+                                          bits=bit_width(width, detail['unpacked']), detail=detail))
+    if previous_top:
+        custom = ''.join(getattr(previous_top, 'user_regions', [])) + getattr(previous_top, 'unmanaged_text', '')
+        for name, signal in old.items():
+            if re.search(r'\b' + re.escape(name) + r'\b', uncomment(custom)):
+                signals.setdefault(name, signal)
     # General input expressions may reference old top inputs; retain their declarations.
     for row in rows:
         if net_base(row['signal']) or literal_width(row['signal']) is not None or not row['signal'].strip():
@@ -1101,6 +1317,7 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
                 elif len(domains[sink['instance']]) > 1 and b is None:
                     warn('cdc-unknown', f'ambiguous clock domain for {sink["key"]}; annotate clock', [sink['key']])
     metadata = {'version': 1, 'port_map': mapping.data,
+                'interface_instances': {n: {k: v for k, v in spec.items() if k not in ('definition', 'defaults')} for n, spec in resolved_interfaces.items()},
                 'instances': {i['instance']: dict(i['module'].metadata(), overrides=i['parameters']) for i in instances}}
     lines = ['// Generated by soc_integrate.py; named connection expressions survive update.',
              '// soc-integrate: ' + json.dumps(metadata, separators=(',', ':')),
@@ -1112,13 +1329,20 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
     signal_order += [name for name in signals if name not in old]
     for name in signal_order:
         signal = signals[name]
+        if previous_top and name in getattr(previous_top, 'custom_signals', {}):
+            continue
         d, w, detail = signal['direction'], signal['width'], signal['detail']
         if d == 'interface':
-            internal.append(f'    {detail["type"]} {name} ();')
+            params = '#(' + ', '.join(f'.{k}({v})' for k, v in detail['parameters'].items()) + ') ' if detail['parameters'] else ''
+            dimensions = ' ' + detail['unpacked'] if detail['unpacked'] else ''
+            connections = ', '.join(f'.{k}({v})' for k, v in detail['ports'].items())
+            internal.append(f'    {detail["type"]} {params}{name}{dimensions} ({connections});')
         elif d:
             ports.append('    ' + declaration(d, w, name, detail))
         else:
             internal.append('    ' + declaration('', w, name, detail) + ';')
+    metadata['declarations'] = [line.lstrip() for line in internal]
+    lines[1] = '// soc-integrate: ' + json.dumps(metadata, separators=(',', ':'))
     lines += [',\n'.join(ports), ');'] + internal
     for inst in instances:
         module = inst['module']
@@ -1139,9 +1363,18 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
     if previous_top:
         for region in getattr(previous_top, 'user_regions', []):
             lines.append(region.rstrip('\n'))
+        unmanaged = getattr(previous_top, 'unmanaged_text', '')
+        if unmanaged:
+            lines.append('// soc-integrate:user begin\n' + unmanaged + ('\n' if not unmanaged.endswith('\n') else '') + '// soc-integrate:user end')
     lines.append('endmodule')
     shared = {net: [r['key'] for r in entries] for net, entries in groups.items() if len(entries) > 1}
-    return '\n'.join(lines) + '\n', rows, checks, shared, metadata
+    code = '\n'.join(lines) + '\n'
+    if previous_top:
+        code = getattr(previous_top, 'preamble', '') + code
+        suffix = getattr(previous_top, 'suffix', '')
+        if suffix:
+            code = code.rstrip('\n') + suffix
+    return code, rows, checks, shared, metadata
 
 
 def generate_top(modules, top_name='soc_top', port_map=None):
@@ -1164,6 +1397,9 @@ def extract_map_from_top(top_file, expand=False):
             if base:
                 shared.setdefault(base, []).append(f'{inst["instance"]}.{port}')
     data['mappings'] = mappings
+    if meta.get('interface_instances'):
+        _, _, _, top = parse_top(top_file)
+        data['interfaces'] = top.interface_instances
     interface_types = {p.get('type', '').split('.')[0] for m in meta.get('instances', {}).values()
                        for p in m.get('ports', []) if p['direction'] == 'interface'}
     data['instances'] = [i for i in instances if i['module'] not in interface_types]
@@ -1207,19 +1443,26 @@ def port_changes(instances, meta):
 
 def load_update(target, files, options):
     config = {}
+    implicit_files = not files
     if str(target).endswith('.json'):
         config = read_json_object(target, 'update config')
         target = config['output_file']
         files = files or [entry['file'] for entry in config['modules']]
-    if not files:
+    if implicit_files:
         # Source paths are an optional convenience carried by generated metadata.
         for line in Path(target).read_text().splitlines():
             if line.startswith('// soc-integrate: '):
                 saved = json.loads(line[len('// soc-integrate: '):])
-                files = list(dict.fromkeys(i['file'] for i in saved.get('instances', {}).values() if i.get('file')))
+                sources = [p for i in saved.get('instances', {}).values()
+                           for p in [i.get('file')] + [d.get('file') for d in i.get('interfaces', {}).values()] if p]
+                files = list(dict.fromkeys(list(files) + sources))
     available = {}
     for file in files:
         available.update((m.name, m) for m in extract_modules(file, **options))
+    definitions = {n: d for m in available.values() for n, d in m.interfaces.items()}
+    available = {n: m for n, m in available.items() if m.kind == 'module'}
+    for m in available.values():
+        m.interfaces = definitions
     name, parsed, meta, top = parse_top(target, set(available))
     instances = []
     for inst in parsed:
@@ -1245,20 +1488,69 @@ def export_csv(module, filepath):
         writer.writerows(module.ports)
 
 
+def lint_collateral(args, instances):
+    """Scope dependency warnings by source file; never waive the generated top."""
+    if not args.output:
+        raise ValueError('--lint-config requires an output top file')
+    top = Path(args.output).resolve()
+    config = top.with_suffix('.vlt')
+    filelist = top.with_suffix('.lint.f')
+    packages = list(dict.fromkeys(str(Path(p).resolve()) for p in args.packages))
+    dependencies = [d['file'] for i in instances for d in i['module'].interfaces.values()]
+    dependencies += [i['module'].file for i in instances] + list(getattr(args, 'files', []))
+    sources = list(dict.fromkeys(packages + [str(Path(p).resolve()) for p in dependencies]))
+    directories = list(dict.fromkeys(str(Path(d).resolve()) for d in args.include_dirs + args.library_dirs))
+    if str(top) in sources:
+        raise ValueError('generated top cannot also be a dependency source')
+    rules = list(sources)
+    for directory in directories:
+        path = Path(directory)
+        if top.is_relative_to(path):
+            # A glob over an ancestor of the top would suppress its diagnostics.
+            rules += [str(p.resolve()) for p in sorted(path.rglob('*'))
+                      if p.is_file() and p.suffix in ('.sv', '.v', '.vh', '.svh') and p.resolve() != top]
+        else:
+            rules.append(str(path / '*'))
+    rules = list(dict.fromkeys(rules))
+    lines = ['`verilator_config', '// Dependency diagnostics only; generated top warnings remain fatal.']
+    # UNOPTFLAT is a performance diagnostic outside Verilator's lint group.
+    # Keep it source-scoped too, as OpenTitan's FIFO/arbiter graphs trigger it.
+    for source in rules:
+        lines += ['lint_off -file ' + json.dumps(source),
+                  'lint_off -rule UNOPTFLAT -file ' + json.dumps(source)]
+    manifest = [json.dumps(p) for p in packages]
+    manifest += [json.dumps('-I' + str(Path(d).resolve())) for d in args.include_dirs]
+    manifest += [json.dumps('-D' + d) for d in args.defines]
+    manifest += ['-y ' + json.dumps(str(Path(d).resolve())) for d in args.library_dirs]
+    manifest += [json.dumps(p) for p in sources if p not in packages]
+    manifest.append(json.dumps(str(top)))
+    return config, '\n'.join(lines) + '\n', filelist, '\n'.join(manifest) + '\n'
+
+
 def emit_result(args, instances, name, data, previous=None, changes=None, extra_checks=()):
     if previous is None and args.output and Path(args.output).exists():
-        previous = VerilogModule(name)
-        previous.user_regions = [r for _, _, r in user_regions(Path(args.output).read_text(), args.output)]
+        _, _, _, previous = parse_top(args.output, {i['module'].name for i in instances})
     code, rows, checks, shared, _ = build_top(instances, name, data, previous)
     checks = list(extra_checks) + checks
+    if previous is not None:
+        checks += [dict(code='preserved-unmanaged', severity='warning', ports=[],
+                        message=f'{args.output}:{line}: {statement} | preserved in an automatic user region')
+                   for line, statement in getattr(previous, 'unmanaged', [])
+                   if not any(c['code'] == 'preserved-unmanaged' and f':{line}: ' in c['message'] for c in extra_checks)]
     report_checks(checks)
     if args.strict and checks:
         raise ValueError('strict check failed; no output written')
+    collateral = lint_collateral(args, instances) if args.lint_config else None
     if args.output:
         write_text(args.output, code)
         print(f'Top written: {args.output}')
     else:
         print(code, end='')
+    if collateral:
+        config, config_text, filelist, manifest = collateral
+        write_text(config, config_text)
+        write_text(filelist, manifest)
+        print(f'Lint config written: {config}\nLint filelist written: {filelist}')
     directory = Path(args.output).resolve().parent if args.output else Path.cwd()
     if args.track:
         config = dict(top_module=name, output_file=str(Path(args.output).resolve()) if args.output else None,
@@ -1300,6 +1592,7 @@ def parser():
         sub.add_argument('-I', '--include-dir', dest='include_dirs', action='append', default=[])
         sub.add_argument('-D', '--define', dest='defines', action='append', default=[])
         sub.add_argument('--package', dest='packages', action='append', default=[], help='Package/typedef source in dependency order (repeatable)')
+        sub.add_argument('-y', '--library-dir', dest='library_dirs', action='append', default=[])
         sub.add_argument('--strict', action='store_true', help='Warnings fail without writing outputs')
         sub.add_argument('-m', '--module')
         sub.add_argument('-n', '--name')
@@ -1311,6 +1604,7 @@ def parser():
         if command in ('integrate', 'update', 'remove'):
             sub.add_argument('--map')
             sub.add_argument('--csv', action='store_true', help='Opt in to review CSV')
+            sub.add_argument('--lint-config', action='store_true', help='Write vendor-scoped .vlt and .lint.f; top warnings stay fatal')
             sub.add_argument('--track', action='store_true', help='Opt in to .integrate.json')
             sub.add_argument('--no-config', action='store_true', help=argparse.SUPPRESS)
         if command in ('update', 'diff', 'check', 'remove'):
@@ -1348,6 +1642,9 @@ def main(argv=None):
     try:
         if args.command == 'integrate':
             modules = [select_module(file, **options) for file in args.files]
+            definitions = {n: d for m in modules for n, d in m.interfaces.items()}
+            for m in modules:
+                m.interfaces = definitions
             data = read_json_object(args.map, 'port map') if args.map else {}
             emit_result(args, default_instances(modules, data), args.name or 'soc_top', data)
         elif args.command in ('update', 'remove') or (args.command in ('diff', 'check') and not args.snapshot):
@@ -1356,8 +1653,8 @@ def main(argv=None):
                 instances = [i for i in instances if i['module'].name != args.module_name]
             messages, checks = port_changes(instances, meta)
             for line, statement in top.unmanaged:
-                checks.append(dict(code='unmanaged', severity='warning', ports=[],
-                                   message=f'{target}:{line}: {statement} | outside user regions, omitted on update'))
+                checks.append(dict(code='preserved-unmanaged', severity='warning', ports=[],
+                                   message=f'{target}:{line}: {statement} | preserved in an automatic user region'))
             for message in messages:
                 print(message)
             if args.command == 'diff':

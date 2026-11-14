@@ -28,8 +28,14 @@ Validate the generated top with registered lint and `check_rtl_quality.py`.
 CSV and tracking JSON default off; request `csv`/`--csv` and `track`/`--track`
 independently when needed. Dependency snapshots are optional historical evidence.
 Update/diff can read the generated top directly with current module sources.
-Keep custom statements inside `// soc-integrate:user begin` / `end` blocks;
-outside statements reported as unmanaged are omitted on refresh. Pass ordered
+Custom statements inside `// soc-integrate:user begin` / `end` blocks are
+preserved verbatim. Unmanaged body text is moved verbatim into an automatic user
+region, with `[preserved-unmanaged]` file:line warnings; never discard user text.
+Use the map's `interfaces` section for interface types, parameter overrides,
+header connections and arrays. Generic ports require an inferred or explicit
+concrete interface type. Request `lint_config` / `--lint-config` for vendor-scoped
+Verilator `.vlt` and `.lint.f` collateral; `library_dirs` / `-y` adds library
+discovery. Keep top warnings fatal with `-Wall` and no `-Wno-fatal`. Pass ordered
 `packages`, `include_dirs` and `defines` for package types and macro headers.
 Use explicit maps to connect buses and pads; review typed-input sharing warnings.
 

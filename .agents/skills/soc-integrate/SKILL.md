@@ -60,12 +60,15 @@ assign custom_enable = test_mode;
 
 Blocks are preserved verbatim by `update` and by `integrate -o` when regenerating
 an existing top. Their contents are opaque to connection checks. Nested or
-unmatched markers fail before writing. Other unrecognized body statements,
-including extra declarations, assign/always logic and unknown module instances,
-are skipped and reported with `[unmanaged]` source lines by diff/check/update.
-**Outside protected blocks these statements are omitted on update**; move custom
-logic into a user block before refreshing. Positional/wildcard connections,
-arrays and duplicate pins on managed instances still fail explicitly.
+unmatched markers fail before writing. Unrecognized body text outside protected regions is preserved verbatim in an
+automatically created user region, including declarations, assign/always logic,
+unknown module instances, generate/preprocessor blocks, comments and functions/tasks.
+Diff/check/update report `[preserved-unmanaged]` with the original file:line.
+The next update is idempotent. The same preservation applies when regenerating
+an existing top with `integrate -o`. Generated declarations carry ownership
+metadata so new user declarations are not mistaken for generated nets.
+Positional/wildcard connections, module instance arrays and duplicate pins on
+managed instances still fail explicitly. Opaque user code is preserved, not elaborated.
 
 ## Maps and templates
 
@@ -186,13 +189,54 @@ preserved verbatim in declarations; package-qualified or `_t` value types may
 omit the input direction. Provide package/typedef sources to the HDL
 tool. Unknown type widths produce a check warning rather than a guessed width.
 
-Native interface/modport ports (`bus_if s`, `bus_if.slave s`) generate internal
-`bus_if s ();` instances and connect `.s(s)`. Map endpoints to the same interface
-name to connect peers. Supply interface definitions separately to your HDL tool.
-Modports are retained in child metadata; the interface declaration uses the base
-type. Parameterized interface declarations, interface arrays, inline aggregates,
-default-valued ports, positional/wildcard instance connections and instance
-arrays/multiple instances per statement are unsupported and fail explicitly.
+Native interface ports support `bus_if.mp s`, `bus_if s`, generic `interface s` /
+`interface.mp s`, and unpacked arrays such as `bus_if.mp s [N]` or `[0:N-1]`.
+Parameterized types belong on the interface instance: `bus_if #(.W(32)).mp s`
+is not legal port syntax and is rejected. Interface definitions can have parameter
+and signal headers, e.g. `interface bus_if #(parameter int W=8)(input logic clk)`.
+Pass definition files alongside module files (interface-only files are dependencies,
+not managed child modules), through includes, or in `packages`. Extract reports the
+definitions under `interfaces`; instantiate connects complete expressions.
+
+Configure concrete instances by the mapped signal's base name:
+
+```json
+{
+  "mappings": {"u_source.s": "bus", "u_sink.s": "bus"},
+  "interfaces": {
+    "bus": {
+      "type": "bus_if",
+      "parameters": {"W": 32},
+      "ports": {"clk": "clk"},
+      "unpacked": "[0:1]"
+    }
+  }
+}
+```
+
+This emits `bus_if #(.W(32)) bus [0:1] (.clk(clk));`. Omit `unpacked` for a scalar;
+whole-array ports infer their resolved dimensions. `type` is inferred from typed
+ports; generic ports need a concrete peer on the same net or an explicit `type`.
+Omitted parameter overrides use definition defaults. Interface header signals
+default to same-name top signals; `ports` remaps them or supplies constants.
+Parameter overrides also resolve dimensions of these signals. Definitions absent
+from the input still permit typed instances with explicit `ports`/`parameters`.
+Interface inputs using expressions beyond a simple identifier or constant need
+an existing declaration. There is no protocol or modport-direction signoff.
+
+For per-element connections, use scalar child ports and templates such as
+`{"regex":"u_sink(\\d+)\\.s","value":"bus[$1]"}`. Constant indices infer a
+zero-based interface instance array; explicit `unpacked` can specify its bounds.
+Array child ports connect to the whole array. Update reads actual interface
+parameter overrides, dimensions and header connections, and extract-map retains
+these under `interfaces`. Definition source paths remain available for JSON-free
+refresh. Verilator 5.032 rejects legal generic interface ports with `UNSUPPORTED`;
+parser/generator/refresh tests still cover them, and generic lint tests explicitly
+skip only when that compiler capability is absent. Concrete/modport ports and
+arrays are linted with fatal warnings.
+
+Inline aggregates, default-valued ports, positional/wildcard module connections
+and module instance arrays/multiple instances per statement remain unsupported.
 The parser is not a complete SystemVerilog elaborator. With ordered package
 sources it asks Verilator to elaborate an isolated public header through
 `--xml-only` (the width-resolved AST in 5.032; `--json-only` runs before width
@@ -205,8 +249,8 @@ a location and explanation). Resolved counts describe default parameters;
 nontrivial overrides of named types conservatively retain unknown widths.
 Package files must include all transitive package dependencies in compile order.
 Without packages, named types remain symbolic and produce `width-unknown` checks.
-Parameterized interfaces, inline structs/aggregates, type parameters, default
-port values and full behavioral elaboration remain outside the parser's scope. Unsupported
+Inline structs/aggregates, type parameters, default port values and full
+behavioral elaboration remain outside the parser's scope. Unsupported
 port declarations report a file, line and construct rather than dropping ports.
 
 All RTL-reading MCP tools accept `include_dirs`, `defines` and `packages`.
@@ -228,3 +272,28 @@ cannot resolve package typedef widths or elaborate function-like header macros.
 python3 scripts/soc_integrate.py extract peripheral.sv -I rtl/prim \
   --package rtl/common_pkg.sv --package rtl/peripheral_reg_pkg.sv -D FEATURE=1
 ```
+
+## Scoped vendor lint
+
+`integrate` / `update` / `remove` accept `--lint-config` (MCP `lint_config=True`).
+This independently opts into `<output-stem>.vlt` and `<output-stem>.lint.f` next
+to the output top. Pass `-y dir` / `--library-dir dir` (MCP `library_dirs`) for
+library discovery. Ordered `packages`, include directories, defines, interface
+sources, library directories, module files and the top are included in the filelist.
+
+```bash
+python3 scripts/soc_integrate.py integrate vendor/ip.sv -n top -o top.sv \
+  --package vendor/pkg.sv -I vendor/include -y vendor/rtl --lint-config
+verilator --lint-only -Wall --top-module top top.vlt -f top.lint.f
+```
+
+The config starts with `` `verilator_config `` and scopes `lint_off -file` to
+absolute dependency source paths and include/library directory globs. It also
+scopes `UNOPTFLAT` explicitly, since that performance diagnostic is outside
+Verilator's default lint group ([control-file syntax](https://verilator.org/guide/latest/control.html)).
+The generated top never receives a waiver, including when it is within an
+include/library directory: those directories are enumerated with the top excluded.
+Warnings introduced in the generated top still fail `-Wall`; `-Wno-fatal` is not
+needed. Syntax/elaboration errors remain errors. Review the dependency scopes
+before using this option on mixed first-party/vendor trees. Paths are absolute;
+regenerate collateral when moving the checkout or changing dependencies.

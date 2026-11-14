@@ -35,11 +35,12 @@ async def main():
             tools = {tool.name: tool.inputSchema for tool in listing.tools}
             assert 'soc_check' in tools, tools
             for name in ('soc_integrate', 'soc_update'):
-                for flag in ('csv', 'track', 'strict'):
+                for flag in ('csv', 'track', 'strict', 'lint_config'):
                     assert tools[name]['properties'][flag]['default'] is False
                 assert 'include_dirs' in tools[name]['properties']
                 assert 'defines' in tools[name]['properties']
                 assert 'packages' in tools[name]['properties']
+                assert 'library_dirs' in tools[name]['properties']
             for schema in tools.values():
                 assert 'packages' in schema['properties']
             result = await session.call_tool('soc_extract', {'verilog_file': sys.argv[3]})
@@ -51,6 +52,16 @@ async def main():
                 port_map=sys.argv[4]))
             assert error.isError, error
             assert "port map references unknown module/instance 'dmaa' (known:" in error.content[0].text, error
+            out = __import__('pathlib').Path(sys.argv[3]).parent/'top.sv'
+            result = await session.call_tool('soc_integrate', dict(module_files=[sys.argv[3]],
+                top_name='top', output_file=str(out), lint_config=True, library_dirs=[str(out.parent)]))
+            assert not result.isError, result
+            assert out.with_suffix('.vlt').exists()
+            assert out.with_suffix('.lint.f').exists()
+            assert str(out) not in out.with_suffix('.vlt').read_text()
+            result = await session.call_tool('soc_update', dict(top_file=str(out), module_files=[sys.argv[3]],
+                lint_config=True, library_dirs=[str(out.parent)]))
+            assert not result.isError, result
             fixture = __import__('pathlib').Path(sys.argv[5])
             result = await session.call_tool('soc_extract', dict(verilog_file=str(fixture/'peripheral.sv'),
                 include_dirs=[str(fixture)], packages=[str(fixture/'demo_pkg.sv')], defines=['FEATURE=1']))
