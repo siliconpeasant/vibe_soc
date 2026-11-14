@@ -52,17 +52,6 @@ warnings before accepting refresh. Check interface-array element coverage
 warnings; opaque user-region drivers need manual review.
 Use explicit maps to connect buses and pads; review typed-input sharing warnings.
 
-Request `soc_integrate(flist=True)` / `soc_flist` for package-first integration
-manifests; optional directory discovery delegates to sibling soc-build. Use
-`soc_smoke_tb` for bounded clock/reset wiring smoke collateral and an optional
-real Verilator build/run with a PASS line. Review detected clock/reset names and
-polarity; the smoke harness does not establish functional or reset-policy signoff.
-IP-XACT component XML (1685-2014/2022) can supply module wire ports and explicit
-bus-interface metadata through `soc_ipxact_import` / `.xml` integration inputs.
-`soc_ipxact_export` emits module/top components and known bus groups. Supply HDL
-implementations for lint/smoke; component import does not replace `xml2yml` or
-`yml2reg` register generation. See soc-integrate examples for tiny runnable cases.
-
 Close only with current generated top/filelist/approved SDC artifacts, requested
 sidecars, and passing checks. Never copy dependency RTL, hand-edit generated instances,
 or add compatibility symlinks. Report included dependencies, generated files,

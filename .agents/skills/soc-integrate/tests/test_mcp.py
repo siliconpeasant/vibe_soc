@@ -78,20 +78,6 @@ async def main():
             result = await session.call_tool('soc_update', dict(top_file=str(out), module_files=[sys.argv[3]],
                 lint_config=True, library_dirs=[str(out.parent)]))
             assert not result.isError, result
-            for name in ('soc_flist', 'soc_smoke_tb', 'soc_ipxact_import', 'soc_ipxact_export'):
-                assert name in tools, tools
-            result = await session.call_tool('soc_flist', dict(top_file=str(out)))
-            assert not result.isError and out.with_suffix('.f').exists(), result
-            result = await session.call_tool('soc_smoke_tb', dict(top_file=str(out), cycles=4, run=bool(shutil.which('verilator'))))
-            assert not result.isError and 'Build/run: verilator --binary' in result.content[0].text, result
-            if shutil.which('verilator'):
-                assert 'PASS: top smoke (4 cycles)' in result.content[0].text, result
-            component = out.parent/'component.xml'
-            result = await session.call_tool('soc_ipxact_export', dict(verilog_file=str(out), output=str(component), ipxact_version='2022'))
-            assert not result.isError and component.exists(), result
-            result = await session.call_tool('soc_ipxact_import', dict(component_file=str(component)))
-            assert not result.isError, result
-            assert json.loads(result.content[0].text)['module_name'] == 'top', result
             source = __import__('pathlib').Path(sys.argv[3])
             original = source.read_text()
             source.write_text(original.replace('input a', 'input [1:0] a'))
