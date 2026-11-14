@@ -16,7 +16,10 @@ Tools:
 
 ## Outputs and refresh
 
-`soc_integrate` writes the top and prints check results. **Both sidecars default
+`soc_integrate` writes the top. Warnings and the Checks summary go to stderr;
+stdout carries the primary result or output paths. For CLI integration, `-n name`
+defaults to `-o name.sv`; `-o path.sv` derives the top name from the file stem.
+Omitting both is an error. **Both sidecars default
 off**: `csv=True` / `--csv` requests `<top>.integrate.csv`; `track=True` / `--track`
 requests `<top>.integrate.json`, including a `checks` array. They are independent.
 `soc_csv` remains an explicit module-port CSV export. Every text output ends in a
@@ -39,7 +42,11 @@ existing header order; new top ports are appended. Existing connections take
 precedence over a supplied map; maps provide defaults for newly added ports.
 It reports `[NEW]`, `[DEL]`, and `[MOD]` per instance. Neither update, diff-from-top,
 nor extract-map requires JSON. Update accepts the legacy `config_file` JSON form
-as well. `soc_remove` accepts a tracked config or generated top.
+as well. `soc_remove` accepts a tracked config or generated top. Its `module_name` may
+name one instance or a module (removing all its instances). Unknown names fail
+without writing. Matching exact map owners and templates used only by removed
+endpoints are dropped; templates also used by surviving endpoints remain.
+`output`, `strict` and `port_map` have the same meaning as on update.
 
 Generated tops carry a `// soc-integrate:` metadata comment containing the prior
 interface and original map rules. This lets width/direction/type changes and
@@ -65,7 +72,14 @@ automatically created user region, including declarations, assign/always logic,
 unknown module instances, generate/preprocessor blocks, comments and functions/tasks.
 Diff/check/update report `[preserved-unmanaged]` with the original file:line.
 The next update is idempotent. The same preservation applies when regenerating
-an existing top with `integrate -o`. Generated declarations carry ownership
+an existing generated top with `integrate -o`. Regeneration drops removed
+tool-managed instances rather than preserving them as user text. Existing
+non-generated files are refused unless `--force` (MCP `force=True`) is given;
+force replaces that file. Conditional owned instances stay verbatim with their
+wrapping and connections, participate in the connection graph, and report
+`conditional-preserved`. Their nets retain declarations and are never promoted
+merely because of conditional wrapping. Refresh does not rewrite their pins;
+review conditional source when a child interface changes. Generated declarations carry ownership
 metadata so new user declarations are not mistaken for generated nets.
 Positional/wildcard connections, module instance arrays and duplicate pins on
 managed instances still fail explicitly. Opaque user code is preserved, not elaborated.
@@ -257,7 +271,9 @@ All RTL-reading MCP tools accept `include_dirs`, `defines` and `packages`.
 CLI equivalents are repeated `-I dir`, `-D NAME[=value]`, `--package file.sv`
 (in dependency order), plus `+incdir+dir+dir` / `+define+NAME=value+NAME`.
 When Verilator is on PATH, extraction uses `verilator -E --relative-includes`
-with those options and parses its output. Retained `line directives map each port
+once over all package and source files together, in dependency order, with
+those options. Cross-file macro definitions persist; reversed order can fail.
+Root and include `line directives split the output back by source file. Retained `line directives map each port
 and diagnostic to the original source file and absolute line, including includes.
 Function-like macros in headers and bodies are handled by Verilator.
 
@@ -278,7 +294,9 @@ python3 scripts/soc_integrate.py extract peripheral.sv -I rtl/prim \
 `integrate` / `update` / `remove` accept `--lint-config` (MCP `lint_config=True`).
 This independently opts into `<output-stem>.vlt` and `<output-stem>.lint.f` next
 to the output top. Pass `-y dir` / `--library-dir dir` (MCP `library_dirs`) for
-library discovery. Ordered `packages`, include directories, defines, interface
+library discovery. `--vendor-dir dir` (MCP `vendor_dirs`) explicitly opts a
+directory into lint waivers without adding library discovery. Include directories
+alone do not opt first-party RTL into waivers. Ordered `packages`, include directories, defines, interface
 sources, library directories, module files and the top are included in the filelist.
 
 ```bash
@@ -288,12 +306,50 @@ verilator --lint-only -Wall --top-module top top.vlt -f top.lint.f
 ```
 
 The config starts with `` `verilator_config `` and scopes `lint_off -file` to
-absolute dependency source paths and include/library directory globs. It also
+absolute sources under a `vendor/` path component and explicit library/vendor
+directory globs. First-party module/package files outside those scopes keep
+their warnings fatal, even when passed explicitly or through an include directory. It also
 scopes `UNOPTFLAT` explicitly, since that performance diagnostic is outside
 Verilator's default lint group ([control-file syntax](https://verilator.org/guide/latest/control.html)).
 The generated top never receives a waiver, including when it is within an
-include/library directory: those directories are enumerated with the top excluded.
+explicit vendor/library directory: those directories are enumerated with the top excluded.
 Warnings introduced in the generated top still fail `-Wall`; `-Wno-fatal` is not
 needed. Syntax/elaboration errors remain errors. Review the dependency scopes
 before using this option on mixed first-party/vendor trees. Paths are absolute;
 regenerate collateral when moving the checkout or changing dependencies.
+
+## Filelists and integration boundaries
+
+`integrate -f filelist` accepts source lines, `+incdir+`, `+define+`, `-I`, `-D`,
+`-y`, comments (`#` and `//`) and nested `-f` lists. Paths resolve against each
+filelist's directory. `update`/`remove`/top `check`/top `diff` also accept `-f`
+for current module sources. Snapshot keeps its legacy `-f` format option.
+Module selection `-m` is supported for module commands and validates the top
+name on top check/diff. It is not accepted on integrate/update/remove/extract-map.
+
+Consume sibling `soc-build.soc_flist` output as source/filelist input; this tool
+does not replace project dependency discovery. Address-map inputs come from
+`gen-asic-memmap`; register RTL and maps from `yml2reg`; clock and combinational
+reset sources from approved `crg-gen` workbooks. Integration owns the per-domain
+`rst_synchronizer` on the gated clock per rule 15. DFT readiness and SGDC remain
+with `dft-gen` and the DFT owner per rule 14. These Batch 1 parser/refresh fixes
+do not infer or generate address maps, CRG trees, reset policy or DFT circuitry.
+
+## MCP parameter reference
+
+The following ordered parameter names exactly match the registered tool schemas.
+Defaults/types are supplied by MCP; optional additions retain legacy call order.
+
+```text
+soc_extract(verilog_file, module_name, include_dirs, defines, packages)
+soc_instantiate(verilog_file, instance_name, module_name, include_dirs, defines, packages)
+soc_wrap(verilog_file, module_name, wrapper_name, output, include_dirs, defines, packages)
+soc_csv(verilog_file, module_name, output, include_dirs, defines, packages)
+soc_integrate(module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force)
+soc_update(config_file, output, port_map, top_name, module_files, top_file, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs)
+soc_extract_map(top_file, output, verify_modules, expand, include_dirs, defines, packages)
+soc_check(verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages)
+soc_snapshot(verilog_file, module_name, output, format_type, version, changelog, include_dirs, defines, packages)
+soc_diff(verilog_file, snapshot_file, module_name, module_files, include_dirs, defines, packages, strict)
+soc_remove(config_file, module_name, module_files, include_dirs, defines, packages, lint_config, library_dirs, output, strict, port_map, vendor_dirs)
+```

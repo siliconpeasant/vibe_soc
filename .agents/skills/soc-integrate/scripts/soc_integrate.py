@@ -12,6 +12,7 @@ import operator
 import re
 import sys
 import shutil
+import shlex
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
@@ -503,7 +504,10 @@ def resolve_types(module, packages, include_dirs, defines):
             public_header = f'module {module.name} {module.imports} {params} (' + ', '.join(value_ports) + ');'
         else:
             public_header = module.header
-        header.write_text(public_header + '\n' + localparams + 'endmodule\n')
+        source_file = getattr(module, 'source_file', module.file)
+        source_line = getattr(module, 'source_line', 1)
+        origin = f'`line {source_line} {json.dumps(source_file)} 0\n'
+        header.write_text(origin + public_header + '\n' + localparams + 'endmodule\n')
         xml = root / 'ports.xml'
         command = ['verilator', '--xml-only', '--xml-output', str(xml), '--Mdir', str(root / 'obj'),
                    '--top-module', module.name, '-Wno-fatal']
@@ -511,7 +515,7 @@ def resolve_types(module, packages, include_dirs, defines):
         command += [str(p) for p in packages] + [str(header)]
         result = subprocess.run(command, capture_output=True, text=True, timeout=60)
         if result.returncode:
-            raise ValueError(f'{module.file}:1: Verilator header type resolution failed:\n{result.stderr.strip()}')
+            raise ValueError(f'{source_file}:{source_line}: Verilator header type resolution failed:\n{result.stderr.strip().replace(str(header), source_file)}')
         tree = ET.parse(xml)
         types = {node.get('id'): node for node in tree.findall('.//typetable/*')}
 
@@ -550,33 +554,57 @@ def resolve_types(module, packages, include_dirs, defines):
 
 
 
-def extract_modules(filepath, include_dirs=(), defines=(), packages=()):
-    pp = Preprocessor(include_dirs, defines)
-    if shutil.which('verilator'):
-        command = ['verilator', '-E', '--relative-includes', '-I' + str(Path(filepath).resolve().parent)] + ['-I' + str(d) for d in include_dirs] + ['-D' + d for d in defines]
-        result = subprocess.run(command + [str(p) for p in packages] + [str(filepath)],
-                                capture_output=True, text=True, timeout=60)
-        if result.returncode:
-            error = result.stderr.strip()
-            if 'Cannot find include file' in error:
-                match = re.search(r"%Error: (.*?):(\d+):\d+: Cannot find include file: '([^']+)'", error)
-                if match:
-                    error = f'{match[1]}:{match[2]}: missing include "{match[3]}"'
-            if 'Define or directive not defined' in error:
-                error = 'undefined macro: ' + error
-            raise ValueError(error)
-        lines, source, number = [], str(filepath), 1
-        for line in result.stdout.splitlines(keepends=True):
-            directive = re.match(r'\s*`line\s+(\d+)\s+"([^"]+)"', line)
-            if directive:
-                number, source = int(directive[1]), directive[2]
-                continue
-            pp.locations.append((source, number))
-            lines.append(line)
-            number += 1
-        text = ''.join(lines)
-    else:
-        text = pp.read(filepath)
+def preprocess_sources(files, include_dirs=(), defines=(), packages=()):
+    """One ordered compilation unit, with per-root text and real-source locations."""
+    roots = list(dict.fromkeys(str(Path(p).resolve()) for p in list(packages) + list(files)))
+    for source in roots:
+        if not Path(source).is_file():
+            raise ValueError(f'{source}: source file not found')
+    if not roots:
+        return {}
+    if not shutil.which('verilator'):
+        pp = Preprocessor(include_dirs, defines)
+        result = {}
+        for source in roots:
+            pp.locations = []
+            result[source] = (pp.read(source), list(pp.locations))
+        return result
+    command = ['verilator', '-E', '--relative-includes']
+    command += ['-I' + str(d) for d in include_dirs] + ['-D' + d for d in defines]
+    result = subprocess.run(command + roots, capture_output=True, text=True, timeout=60)
+    if result.returncode:
+        error = result.stderr.strip()
+        match = re.search(r"%Error: (.*?):(\d+):\d+: Cannot find include file: '([^']+)'", error)
+        if match:
+            error = f'{match[1]}:{match[2]}: missing include "{match[3]}"'
+        if 'Define or directive not defined' in error:
+            error = 'undefined macro: ' + error
+        raise ValueError(error)
+    chunks = {source: ([], []) for source in roots}
+    root, source, number = roots[0], roots[0], 1
+    for line in result.stdout.splitlines(keepends=True):
+        directive = re.match(r'\s*`line\s+(\d+)\s+"([^"\n]+)"\s+(\d+)', line)
+        if directive:
+            number, source, level = int(directive[1]), str(Path(directive[2]).resolve()), int(directive[3])
+            # Level 1 enters files; root sources enter in command-line order.
+            if level == 1 and source in chunks:
+                root = source
+            continue
+        chunks[root][0].append(line)
+        chunks[root][1].append((source, number))
+        number += 1
+    return {root: (''.join(lines), locations) for root, (lines, locations) in chunks.items()}
+
+
+def extract_sources(files, include_dirs=(), defines=(), packages=()):
+    prepared = preprocess_sources(files, include_dirs, defines, packages)
+    return {str(file): extract_modules(file, include_dirs, defines, packages, prepared) for file in files}
+
+
+def extract_modules(filepath, include_dirs=(), defines=(), packages=(), prepared=None):
+    standalone = prepared is None
+    prepared = prepared if prepared is not None else preprocess_sources([filepath], include_dirs, defines, packages)
+    text, locations = prepared[str(Path(filepath).resolve())]
     modules = []
     scan = re.sub(r'"(?:\\.|[^"\\])*"', lambda m: re.sub(r'[^\n]', ' ', m[0]), text)
     definition_end = 0
@@ -585,10 +613,11 @@ def extract_modules(filepath, include_dirs=(), defines=(), packages=()):
             continue
         end = re.search(r'\bend' + match[1] + r'\b', scan[match.end():])
         if not end:
-            fail(filepath, text, match.start(), 'missing end' + match[1])
+            source, number = locations[text.count('\n', 0, match.start())]
+            raise ValueError(f'{source}:{number}: unsupported missing end{match[1]}')
         definition_end = match.end() + end.end()
         line = text.count('\n', 0, match.start())
-        file, number = pp.locations[line] if line < len(pp.locations) else (str(filepath), line + 1)
+        file, number = locations[line] if line < len(locations) else (str(filepath), line + 1)
         try:
             module = parse_module(match[2], text[match.start():match.end() + end.end()], file)
         except ValueError as exc:
@@ -596,21 +625,23 @@ def extract_modules(filepath, include_dirs=(), defines=(), packages=()):
             loc = re.match(r'^(.*?):(\d+): (.*)', str(exc), re.S)
             if loc:
                 offset = line + int(loc[2]) - 1
-                source, lineno = pp.locations[offset] if offset < len(pp.locations) else (file, number)
+                source, lineno = locations[offset] if offset < len(locations) else (file, number)
                 raise ValueError(f'{source}:{lineno}: {loc[3]}') from None
             raise
         for detail in module.details.values():
             offset = line + detail['line'] - 1
-            source, lineno = pp.locations[offset]
+            source, lineno = locations[offset]
             detail.update(file=source, line=lineno)
         module.file = str(Path(filepath).resolve())
+        module.source_file = file
+        module.source_line = number
         if packages and module.kind == 'module' and shutil.which('verilator'):
             resolve_types(module, packages, include_dirs, defines)
         modules.append(module)
     definitions = {m.name: m.metadata() for m in modules if m.kind == 'interface'}
     for module in modules:
         module.interfaces = definitions
-    if not modules:
+    if not modules and standalone:
         raise ValueError(f'{filepath}:1: no module definition found')
     return modules
 
@@ -716,6 +747,13 @@ class PortMap:
             kind = 'regex' if 'regex' in rule else 'glob'
             self.rules.append((kind, rule[kind], rule.get('value')))
 
+        for kind, pattern, _ in self.rules:
+            if kind == 'regex':
+                try:
+                    re.compile(pattern)
+                except re.error as exc:
+                    raise ValueError(f'template {pattern!r}: invalid regex: {exc}') from None
+
     def lookup(self, instance, module, port):
         for key in (f'{instance}.{port}', f'{module}.{port}'):
             if key in self.exact:
@@ -813,6 +851,44 @@ def top_level_mask(text, start):
     for begin, end in spans:
         scan = scan[:begin] + re.sub(r'[^\n]', ' ', scan[begin:end]) + scan[end:]
     return scan
+
+
+def preserved_instances(raw, metadata):
+    """Read owned instances hidden in opaque text, without rewriting their source."""
+    text = uncomment(raw)
+    text = re.sub(r'"(?:\\.|[^"\\])*"', lambda m: re.sub(r'[^\n]', ' ', m[0]), text)
+    result = []
+    for name, saved in metadata.get('instances', {}).items():
+        pattern = r'\b' + re.escape(saved['module_name']) + r'\s*(#\s*\()?'
+        for match in re.finditer(pattern, text):
+            pos, parameters, parameter_text = match.end(), {}, ''
+            if match[1]:
+                _, end = balanced(text, pos - 1)
+                parameters = named_connections(raw[pos:end - 1])
+                parameter_text = raw[match.start(1):end]
+                pos = end
+            inst = re.match(r'\s*' + re.escape(name) + r'\s*\(', text[pos:])
+            if not inst:
+                continue
+            open_pos = pos + inst.end() - 1
+            _, end = balanced(text, open_pos)
+            tail = re.match(r'\s*;', text[end:])
+            if not tail:
+                continue
+            result.append(dict(module=saved['module_name'], instance=name, parameters=parameters,
+                               parameter_text=parameter_text, ports=named_connections(raw[open_pos + 1:end - 1]),
+                               preserved=True, span=(match.start(), end + tail.end())))
+    return result
+
+
+def prune_preserved(top, names, metadata):
+    def prune(raw):
+        spans = [i['span'] for i in preserved_instances(raw, metadata) if i['instance'] in names]
+        for begin, end in sorted(spans, reverse=True):
+            raw = raw[:begin] + raw[end:]
+        return raw
+    top.user_regions = [prune(region) for region in top.user_regions]
+    top.unmanaged_text = prune(top.unmanaged_text)
 
 
 def parse_top(top_file, module_names=None):
@@ -967,6 +1043,11 @@ def parse_top(top_file, module_names=None):
                 continue
             _, width, name = port
             top.custom_signals[name] = dict(direction='', width=width, detail=detail, bits=bit_width(width, detail.get('unpacked', '')))
+    opaque = ''.join(top.user_regions) + top.unmanaged_text
+    for inst in preserved_instances(opaque, metadata):
+        if not any(i['instance'] == inst['instance'] for i in instances):
+            inst.pop('span')
+            instances.append(inst)
     top.interface_instances = interface_specs
     return header[1], instances, metadata, top
 
@@ -1343,8 +1424,14 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
             internal.append('    ' + declaration('', w, name, detail) + ';')
     metadata['declarations'] = [line.lstrip() for line in internal]
     lines[1] = '// soc-integrate: ' + json.dumps(metadata, separators=(',', ':'))
-    lines += [',\n'.join(ports), ');'] + internal
+    if ports:
+        lines += [',\n'.join(ports), ');']
+    else:
+        lines[-1] = f'module {top_name} ();'
+    lines += internal
     for inst in instances:
+        if inst.get('preserved'):
+            continue
         module = inst['module']
         params = inst.get('parameter_text', '')
         if not params and inst['parameters']:
@@ -1411,6 +1498,10 @@ def port_changes(instances, meta):
     messages, checks = [], []
     for inst in instances:
         module, name = inst['module'], inst['instance']
+        if inst.get('preserved'):
+            checks.append(dict(code='conditional-preserved', severity='warning', ports=[],
+                               message=f'{name}: owned instance preserved verbatim with its wrapping and connections'))
+            continue
         old_meta = meta.get('instances', {}).get(name, {})
         old = {p['name']: p for p in old_meta.get('ports', [])}
         previous = set(inst['ports'])
@@ -1457,8 +1548,8 @@ def load_update(target, files, options):
                            for p in [i.get('file')] + [d.get('file') for d in i.get('interfaces', {}).values()] if p]
                 files = list(dict.fromkeys(list(files) + sources))
     available = {}
-    for file in files:
-        available.update((m.name, m) for m in extract_modules(file, **options))
+    for modules in extract_sources(files, **options).values():
+        available.update((m.name, m) for m in modules)
     definitions = {n: d for m in available.values() for n, d in m.interfaces.items()}
     available = {n: m for n, m in available.items() if m.kind == 'module'}
     for m in available.values():
@@ -1466,9 +1557,11 @@ def load_update(target, files, options):
     name, parsed, meta, top = parse_top(target, set(available))
     instances = []
     for inst in parsed:
+        if inst['module'] not in available:
+            raise ValueError(f'{target}: source for owned instance {inst["instance"]} ({inst["module"]}) is required')
         inst['module'] = available[inst['module']]
         instances.append(inst)
-    if not instances:
+    if not instances and not meta.get('version'):
         raise ValueError(f'{target}:1: no supported module instances found')
     if not meta and config.get('port_snapshot'):
         meta['instances'] = {i['instance']: {'ports': config['port_snapshot'].get(i['module'].name, [])} for i in instances}
@@ -1477,8 +1570,8 @@ def load_update(target, files, options):
 
 def report_checks(checks):
     for check in checks:
-        print(f'Warning [{check["code"]}]: {check["message"]}')
-    print(f'Checks: {len(checks)} warning(s)')
+        print(f'Warning [{check["code"]}]: {check["message"]}', file=sys.stderr)
+    print(f'Checks: {len(checks)} warning(s)', file=sys.stderr)
 
 
 def export_csv(module, filepath):
@@ -1499,10 +1592,15 @@ def lint_collateral(args, instances):
     dependencies = [d['file'] for i in instances for d in i['module'].interfaces.values()]
     dependencies += [i['module'].file for i in instances] + list(getattr(args, 'files', []))
     sources = list(dict.fromkeys(packages + [str(Path(p).resolve()) for p in dependencies]))
-    directories = list(dict.fromkeys(str(Path(d).resolve()) for d in args.include_dirs + args.library_dirs))
+    explicit = [Path(d).resolve() for d in args.vendor_dirs + args.library_dirs]
+    for source in sources + [str(Path(d).resolve()) for d in args.include_dirs]:
+        parts = Path(source).parts
+        if 'vendor' in parts:
+            explicit.append(Path(*parts[:parts.index('vendor') + 1]))
+    directories = list(dict.fromkeys(str(d) for d in explicit))
     if str(top) in sources:
         raise ValueError('generated top cannot also be a dependency source')
-    rules = list(sources)
+    rules = [source for source in sources if 'vendor' in Path(source).parts]
     for directory in directories:
         path = Path(directory)
         if top.is_relative_to(path):
@@ -1529,7 +1627,23 @@ def lint_collateral(args, instances):
 
 def emit_result(args, instances, name, data, previous=None, changes=None, extra_checks=()):
     if previous is None and args.output and Path(args.output).exists():
-        _, _, _, previous = parse_top(args.output, {i['module'].name for i in instances})
+        raw = Path(args.output).read_text()
+        generated = re.search(r'(?m)^// Generated by soc_integrate.py;', raw) and re.search(r'(?m)^// soc-integrate: ', raw)
+        if not generated:
+            if not getattr(args, 'force', False):
+                raise ValueError(f'{args.output}: not a soc-integrate generated top; use --force to replace')
+        else:
+            _, prior_instances, meta, previous = parse_top(args.output)
+            surviving = {i['instance'] for i in instances}
+            removed = {i['instance'] for i in prior_instances} - surviving
+            prune_preserved(previous, removed, meta)
+            for instance in sorted(removed):
+                print(f'Warning [removed-instance]: dropped tool-managed {instance}', file=sys.stderr)
+            # Retained opaque instances participate in the graph but stay verbatim.
+            opaque = {i['instance']: i for i in prior_instances if i.get('preserved')}
+            for inst in instances:
+                if inst['instance'] in opaque:
+                    inst.update({k: v for k, v in opaque[inst['instance']].items() if k != 'module'})
     code, rows, checks, shared, _ = build_top(instances, name, data, previous)
     checks = list(extra_checks) + checks
     if previous is not None:
@@ -1537,6 +1651,9 @@ def emit_result(args, instances, name, data, previous=None, changes=None, extra_
                         message=f'{args.output}:{line}: {statement} | preserved in an automatic user region')
                    for line, statement in getattr(previous, 'unmanaged', [])
                    if not any(c['code'] == 'preserved-unmanaged' and f':{line}: ' in c['message'] for c in extra_checks)]
+    if any(i.get('preserved') for i in instances) and not any(c['code'] == 'conditional-preserved' for c in checks):
+        checks.append(dict(code='conditional-preserved', severity='warning', ports=[],
+                           message='owned conditional instances preserved verbatim with their wrapping and connections'))
     report_checks(checks)
     if args.strict and checks:
         raise ValueError('strict check failed; no output written')
@@ -1584,6 +1701,80 @@ def compare_ports(module, snapshot):
     return messages
 
 
+def prune_map(data, removed, surviving):
+    """Drop exact owners and templates which only matched removed endpoints."""
+    data = json.loads(json.dumps(PortMap(data).data))
+    live = {i['instance'] for i in surviving} | {i['module'].name for i in surviving}
+    dead = ({i['instance'] for i in removed} | {i['module'].name for i in removed}) - live
+    old_keys = [f'{i["instance"]}.{p}' for i in removed for _, _, p in i['module'].ports]
+    live_keys = [f'{i["instance"]}.{p}' for i in surviving for _, _, p in i['module'].ports]
+
+    def dead_rule(kind, pattern):
+        regex = ''.join('(.*)' if c == '*' else '(.)' if c == '?' else re.escape(c) for c in pattern) if kind == 'glob' else pattern
+        return any(re.fullmatch(regex, key) for key in old_keys) and not any(re.fullmatch(regex, key) for key in live_keys)
+
+    patterns = {pattern: kind for kind, pattern, _ in PortMap(data).rules}
+    for field in ('mappings', 'annotations', 'domains'):
+        cleaned = {}
+        for key, value in data.get(field, {}).items():
+            if field == 'mappings' and (key.startswith(('regex:', 'glob:')) or key in patterns):
+                pattern = key.split(':', 1)[1] if key.startswith(('regex:', 'glob:')) else key
+                if dead_rule(patterns[pattern], pattern):
+                    continue
+            elif key.split('.')[0] in dead:
+                continue
+            cleaned[key] = value
+        if field in data:
+            data[field] = cleaned
+    if 'templates' in data:
+        data['templates'] = [r for r in data['templates'] if not dead_rule('regex' if 'regex' in r else 'glob', r.get('regex', r.get('glob')))]
+    if 'instances' in data:
+        data['instances'] = [i for i in data['instances'] if i.get('instance', i.get('instance_name')) not in dead and i.get('module') not in dead]
+    if 'synchronizers' in data:
+        data['synchronizers'] = [key for key in data['synchronizers'] if key.split('.')[0] not in dead]
+    return data
+
+
+def read_filelists(filelists, args, active=()):
+    """Consume soc_flist-compatible plain source/option lists; paths are list-relative."""
+    files = []
+    for file in filelists:
+        path = Path(file).resolve()
+        if path in active:
+            raise ValueError(f'{path}: recursive filelist')
+        tokens = []
+        for line in uncomment(path.read_text()).splitlines():
+            tokens.extend(shlex.split(line, comments=True))
+        index = 0
+        def relative(value):
+            return str((path.parent / value).resolve())
+        while index < len(tokens):
+            token = tokens[index]
+            index += 1
+            if token in ('-I', '-D', '-y', '-f'):
+                if index == len(tokens):
+                    raise ValueError(f'{path}: {token} requires a value')
+                value = tokens[index]
+                index += 1
+                if token == '-f':
+                    files += read_filelists([relative(value)], args, active + (path,))
+                elif token == '-D':
+                    args.defines.append(value)
+                else:
+                    getattr(args, 'include_dirs' if token == '-I' else 'library_dirs').append(relative(value))
+            elif token.startswith('+incdir+'):
+                args.include_dirs.extend(relative(d) for d in token[len('+incdir+'):].split('+'))
+            elif token.startswith('+define+'):
+                args.defines.extend(token[len('+define+'):].split('+'))
+            elif token.startswith(('-I', '-D')):
+                getattr(args, 'include_dirs' if token[:2] == '-I' else 'defines').append(relative(token[2:]) if token[:2] == '-I' else token[2:])
+            elif token.startswith('-'):
+                raise ValueError(f'{path}: unsupported filelist option {token}')
+            else:
+                files.append(relative(token))
+    return files
+
+
 def parser():
     cli = argparse.ArgumentParser(description=__doc__)
     subs = cli.add_subparsers(dest='command', required=True)
@@ -1593,12 +1784,17 @@ def parser():
         sub.add_argument('-D', '--define', dest='defines', action='append', default=[])
         sub.add_argument('--package', dest='packages', action='append', default=[], help='Package/typedef source in dependency order (repeatable)')
         sub.add_argument('-y', '--library-dir', dest='library_dirs', action='append', default=[])
+        sub.add_argument('--vendor-dir', dest='vendor_dirs', action='append', default=[])
+        if command != 'snapshot':
+            sub.add_argument('-f', '--filelist', action='append', default=[])
         sub.add_argument('--strict', action='store_true', help='Warnings fail without writing outputs')
-        sub.add_argument('-m', '--module')
+        if command not in ('integrate', 'update', 'remove', 'extract-map'):
+            sub.add_argument('-m', '--module')
         sub.add_argument('-n', '--name')
         sub.add_argument('-o', '--output')
         if command == 'integrate':
-            sub.add_argument('files', nargs='+')
+            sub.add_argument('files', nargs='*')
+            sub.add_argument('--force', action='store_true', help='Allow replacing a non-generated file')
         else:
             sub.add_argument('file')
         if command in ('integrate', 'update', 'remove'):
@@ -1640,17 +1836,35 @@ def main(argv=None):
     if getattr(args, 'no_config', False):
         args.track = False
     try:
+        listed = read_filelists(getattr(args, 'filelist', []), args)
+        if hasattr(args, 'files'):
+            args.files += listed
+        elif listed:
+            raise ValueError('-f filelist is supported with integrate or --files workflows')
         if args.command == 'integrate':
-            modules = [select_module(file, **options) for file in args.files]
+            if not args.files:
+                raise ValueError('integrate requires module files or -f filelist')
+            name = args.name or (Path(args.output).stem if args.output else None)
+            if not name:
+                raise ValueError('integrate requires -n NAME or -o OUTPUT')
+            args.output = args.output or name + '.sv'
+            modules = [next((m for m in ms if m.name == Path(file).stem), ms[0])
+                       for file, ms in extract_sources(args.files, **options).items() if ms]
             definitions = {n: d for m in modules for n, d in m.interfaces.items()}
             for m in modules:
                 m.interfaces = definitions
             data = read_json_object(args.map, 'port map') if args.map else {}
-            emit_result(args, default_instances(modules, data), args.name or 'soc_top', data)
+            emit_result(args, default_instances(modules, data), name, data)
         elif args.command in ('update', 'remove') or (args.command in ('diff', 'check') and not args.snapshot):
             target, name, instances, meta, top, config = load_update(args.file, args.files, options)
+            if getattr(args, 'module', None) and args.module != name:
+                raise ValueError(f'{target}: top module {args.module} not found (found {name})')
+            removed = []
             if args.command == 'remove':
-                instances = [i for i in instances if i['module'].name != args.module_name]
+                removed = [i for i in instances if args.module_name in (i['module'].name, i['instance'])]
+                if not removed:
+                    raise ValueError(f'unknown module/instance {args.module_name!r}')
+                instances = [i for i in instances if i not in removed]
             messages, checks = port_changes(instances, meta)
             for line, statement in top.unmanaged:
                 checks.append(dict(code='preserved-unmanaged', severity='warning', ports=[],
@@ -1668,12 +1882,15 @@ def main(argv=None):
                     return 1
             else:
                 data = read_json_object(args.map, 'port map') if args.map else meta.get('port_map', config.get('port_map', {'mappings': config.get('mappings', {})}))
+                if removed:
+                    data = prune_map(data, removed, instances)
+                    prune_preserved(top, {i['instance'] for i in removed}, meta)
                 args.output = args.output or target
                 emit_result(args, instances, args.name or name, data, top, messages, checks)
         elif args.command == 'extract-map':
             data = extract_map_from_top(args.file, args.expand)
             if args.verify:
-                available = {m.name: m for f in args.verify for m in extract_modules(f, **options)}
+                available = {m.name: m for ms in extract_sources(args.verify, **options).values() for m in ms}
                 for inst in data['instances']:
                     module = available.get(inst['module'])
                     if not module:

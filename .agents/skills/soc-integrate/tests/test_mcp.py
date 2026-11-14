@@ -21,8 +21,8 @@ class MCPStdioTest(unittest.TestCase):
             source.write_text('module dut(input a, output y); assign y=a; endmodule\n')
             mapping = Path(directory) / 'map.json'
             mapping.write_text(json.dumps({'mappings': {'dmaa.a': 'x'}}))
-            client = """
-import asyncio, json, sys, shutil
+            client = r"""
+import asyncio, json, sys, shutil, re, ast
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
@@ -34,6 +34,22 @@ async def main():
             listing = await session.list_tools()
             tools = {tool.name: tool.inputSchema for tool in listing.tools}
             assert 'soc_check' in tools, tools
+            skill_root = __import__('pathlib').Path(sys.argv[2]).parent
+            docs = (skill_root/'SKILL.md').read_text()
+            funcs = {node.name: node for node in ast.parse((skill_root/'mcp_server.py').read_text()).body
+                     if isinstance(node, ast.FunctionDef) and node.name.startswith('soc_')}
+            for name, schema in tools.items():
+                documented = re.search(r'(?m)^'+name+r'\(([^\n]*)\)$', docs)
+                assert documented, name
+                params = [p.strip() for p in documented[1].split(',')]
+                assert set(params) == set(schema['properties']), (name, params, schema)
+                docstring = ast.get_docstring(funcs[name])
+                match = re.search(r'Parameters: ([^\n]+)', docstring)
+                assert match and match[1].split(', ') == params, (name, docstring)
+            for flag in ('output', 'strict', 'port_map'):
+                assert flag in tools['soc_remove']['properties']
+            assert 'strict' in tools['soc_diff']['properties']
+
             for name in ('soc_integrate', 'soc_update'):
                 for flag in ('csv', 'track', 'strict', 'lint_config'):
                     assert tools[name]['properties'][flag]['default'] is False
@@ -62,6 +78,20 @@ async def main():
             result = await session.call_tool('soc_update', dict(top_file=str(out), module_files=[sys.argv[3]],
                 lint_config=True, library_dirs=[str(out.parent)]))
             assert not result.isError, result
+            source = __import__('pathlib').Path(sys.argv[3])
+            original = source.read_text()
+            source.write_text(original.replace('input a', 'input [1:0] a'))
+            result = await session.call_tool('soc_diff', dict(verilog_file=str(out), module_files=[str(source)], strict=True))
+            assert result.isError, result
+            source.write_text(original)
+            destination = out.parent/'removed'
+            destination.mkdir()
+            result = await session.call_tool('soc_remove', dict(config_file=str(out), module_name='u_dut',
+                module_files=[str(source)], output=str(destination/'top.sv'), strict=True, port_map=''))
+            assert not result.isError, result
+            assert 'module top ();' in (destination/'top.sv').read_text()
+            result = await session.call_tool('soc_remove', dict(config_file=str(out), module_name='unknown', module_files=[str(source)]))
+            assert result.isError, result
             fixture = __import__('pathlib').Path(sys.argv[5])
             result = await session.call_tool('soc_extract', dict(verilog_file=str(fixture/'peripheral.sv'),
                 include_dirs=[str(fixture)], packages=[str(fixture/'demo_pkg.sv')], defines=['FEATURE=1']))

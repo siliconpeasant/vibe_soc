@@ -44,7 +44,12 @@ Use the map's `interfaces` section for interface types, parameter overrides,
 header connections and arrays. Generic ports require an inferred or explicit
 concrete interface type. Request `lint_config` / `--lint-config` for vendor-scoped
 Verilator `.vlt` and `.lint.f` collateral; `library_dirs` / `-y` adds library
-discovery. Keep top warnings fatal with `-Wall` and no `-Wno-fatal`. Pass ordered
+discovery; `vendor_dirs` / `--vendor-dir` opts in vendor waivers without
+library discovery. Include directories alone do not waive user RTL. Regeneration
+refuses non-generated targets unless `force` is explicit, and drops removed
+owned instances. Conditional owned instances remain verbatim with declared nets
+and a `conditional-preserved` warning. Remove accepts instance or module names;
+unknown names fail. CLI warnings/check summaries use stderr. Keep top warnings fatal with `-Wall` and no `-Wno-fatal`. Pass ordered
 `packages`, `include_dirs` and `defines` for package types and macro headers.
 Use explicit maps to connect buses and pads; review typed-input sharing warnings.
 
@@ -52,3 +57,9 @@ Close only with current generated top/filelist/approved SDC artifacts, requested
 sidecars, and passing checks. Never copy dependency RTL, hand-edit generated instances,
 or add compatibility symlinks. Report included dependencies, generated files,
 tool results, and exact state update.
+
+Reuse `gen-asic-memmap` for address maps, `yml2reg` for registers, approved
+`crg-gen` workbooks for CRG sources and `soc-build.soc_flist` for dependency
+lists. Reset integration follows rule 15: one STAGES=2 `rst_synchronizer` per
+domain on its gated clock, consuming the CRG combinational async reset. Route
+DFT readiness/collateral to the DFT owner and `dft-gen` under rule 14.

@@ -88,7 +88,7 @@ class ReviewRegressions(unittest.TestCase):
                 data = {'instances': [{'module': 'dut', 'instance': f'u{i}'} for i in range(4)],
                         'templates': [{'regex': r'u(\d+)\.rdata', 'value': f'rdata[{base} {sign}: 8]'}]}
                 result = self.cli('integrate', dut, '--map', self.mapping(data), '-n', 'top', '-o', 'top.sv')
-                self.assertIn('Checks: 0 warning(s)', result.stdout)
+                self.assertIn('Checks: 0 warning(s)', result.stderr)
                 self.assertIn('output wire [31:0] rdata', (self.root / 'top.sv').read_text())
                 self.lint(dut, self.root / 'top.sv')
         self.assertEqual(MODULE.selection_interval('q[2*8 +: 8]'), (16, 23))
@@ -110,7 +110,7 @@ class ReviewRegressions(unittest.TestCase):
     def test_06_actionable_map_and_construct_errors(self):
         dut = self.source('dma', 'module dma(input a); endmodule')
         for data in ({'instances': [{'module': 'dmaa', 'instance': 'u0'}]}, {'mappings': {'dmaa.a': 'x'}}):
-            result = self.cli('integrate', dut, '--map', self.mapping(data), ok=False)
+            result = self.cli('integrate', dut, '-n', 'top', '--map', self.mapping(data), ok=False)
             self.assertIn("port map references unknown module/instance 'dmaa' (known:", result.stderr)
             self.assertNotIn("Error: 'dmaa'", result.stderr)
         dut.write_text('module dma(\ninput struct packed {logic a;} x\n); endmodule\n')
@@ -127,9 +127,9 @@ class ReviewRegressions(unittest.TestCase):
         outside = 'wire spare;\nassign spare = dut_a;\nalways @(dut_a) $display("outside");\nunknown_module extra_instance(.*);\n'
         top.write_text(top.read_text().replace('endmodule\n', outside + protected + 'endmodule\n'))
         result = self.cli('diff', top, '--files', dut)
-        self.assertIn('[preserved-unmanaged]', result.stdout)
-        self.assertIn('extra_instance', result.stdout)
-        self.assertIn('preserved in an automatic user region', result.stdout)
+        self.assertIn('[preserved-unmanaged]', result.stderr)
+        self.assertIn('extra_instance', result.stderr)
+        self.assertIn('preserved in an automatic user region', result.stderr)
         self.cli('update', top, '--files', dut)
         self.assertIn(protected, top.read_text())
         self.assertIn(outside, top.read_text())
@@ -151,9 +151,9 @@ class ReviewRegressions(unittest.TestCase):
             with self.subTest(command=command):
                 result = self.cli(command, top, '--files', dut)
                 self.assertIn(f'Warning [preserved-unmanaged]: {top}:{line}: {statement} | '
-                              'preserved in an automatic user region\n', result.stdout)
-                self.assertEqual(result.stdout.count(statement), 1)
-                self.assertNotIn(';;', result.stdout)
+                              'preserved in an automatic user region\n', result.stderr)
+                self.assertEqual(result.stderr.count(statement), 1)
+                self.assertNotIn(';;', result.stderr)
 
     def test_09_invalid_snapshot_and_map_json_errors(self):
         dut = self.source('dma', 'module dma(input a); endmodule')
@@ -203,7 +203,7 @@ class ReviewRegressions(unittest.TestCase):
                 self.assertEqual(top.details['gpio_b_mem_cfg']['unpacked'],
                                  MODULE.resolve_param_width(unpacked, mod.params))
                 result = self.cli('integrate', dut, '--strict', '-n', 'top', '-o', 'top.sv')
-                self.assertIn('Checks: 0 warning(s)', result.stdout)
+                self.assertIn('Checks: 0 warning(s)', result.stderr)
                 self.cli('update', self.root / 'top.sv', '--files', dut, '--strict')
         for packed, unpacked in (('[7:0]', '[DEPTH]'), ('[7:0]', '[0:LAST]'),
                                  ('[WIDTH-1:0]', '[4]')):

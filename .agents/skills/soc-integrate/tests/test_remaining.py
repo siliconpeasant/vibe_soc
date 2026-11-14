@@ -57,7 +57,7 @@ class RemainingLimitations(unittest.TestCase):
         top.write_text(top.read_text().replace('endmodule\n', custom + 'endmodule\n'))
         line = top.read_text().splitlines().index('  // User comment and whitespace stay byte identical.  ') + 1
         result = self.cli('update', top, '--files', dut)
-        self.assertIn(f'[preserved-unmanaged]: {top}:{line}:', result.stdout)
+        self.assertIn(f'[preserved-unmanaged]: {top}:{line}:', result.stderr)
         self.assertIn(custom.encode(), top.read_bytes())
         first = top.read_bytes()
         self.cli('update', top, '--files', dut)
