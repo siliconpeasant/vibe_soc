@@ -90,7 +90,8 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
                   csv: bool = False, track: bool = False, strict: bool = False,
                   include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None,
                   lint_config: bool = False, library_dirs: list[str] | None = None,
-                  vendor_dirs: list[str] | None = None, force: bool = False) -> str:
+                  vendor_dirs: list[str] | None = None, force: bool = False,
+                  chip: bool = False, domains: str = '', irq_json: str = '', irq_header: str = '') -> str:
     """Generate a top and print width/driver/connectivity/heuristic CDC checks.
 
     Exact instance.port then legacy module.port keys override ordered regex/glob
@@ -98,8 +99,10 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
     lint_config emits vendor-scoped .vlt/.lint.f; generated top warnings stay fatal.
     csv opts into review CSV; track opts into .integrate.json (both default off).
     strict rejects warnings before writing outputs. CDC checks are structural hints.
+    chip exposes only pads/top_ports and explicitly top domain nets; incomplete wiring fails.
+    domains reads clock/reset JSON wiring only. irq_json/irq_header opt into IRQ tables.
 
-    Parameters: module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force
+    Parameters: module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force, chip, domains, irq_json, irq_header
     """
     args = module_files + _options(name=top_name, output=output_file, map=port_map)
     if csv:
@@ -112,6 +115,9 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
         args += ['-y', directory]
     if force:
         args += ['--force']
+    if chip:
+        args += ['--chip']
+    args += _options(domains=domains, irq_json=irq_json, irq_header=irq_header)
     for directory in vendor_dirs or []:
         args += ['--vendor-dir', directory]
     return _call('integrate', args, include_dirs, defines, strict, packages)
@@ -177,18 +183,23 @@ def soc_extract_map(top_file: str, output: str = '', verify_modules: list[str] |
 def soc_check(verilog_file: str, spec_file: str = '', module_name: str = '',
               module_files: list[str] | None = None, strict: bool = False,
               include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None,
-              library_dirs: list[str] | None = None) -> str:
+              library_dirs: list[str] | None = None, chip: bool = False,
+              domains: str = '', port_map: str = '') -> str:
     """Check a module against a port spec, or a top's graph against CURRENT RTL.
 
     With spec_file, missing/extra/modified ports fail. Without it, supply the top
     and module_files; report width, multiple-driver, unconnected and CDC warnings.
     strict makes graph warnings errors. This is not CDC or timing signoff.
+    chip checks whitelist/completeness; domains/port_map supply declared wiring intent.
 
-    Parameters: verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages, library_dirs
+    Parameters: verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages, library_dirs, chip, domains, port_map
     """
     args = [verilog_file] + ([spec_file] if spec_file else []) + _options(module=module_name)
     if module_files:
         args += ['--files'] + module_files
+    if chip:
+        args += ['--chip']
+    args += _options(domains=domains, map=port_map)
     return _call('check', args, include_dirs, defines, strict, packages, library_dirs=library_dirs)
 
 

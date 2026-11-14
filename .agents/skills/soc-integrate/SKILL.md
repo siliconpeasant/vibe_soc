@@ -176,7 +176,7 @@ implicit slicing is performed.
 Inout pads never auto-share. Bus-like ports (`tl_*`, `*_req`/`*_rsp` including
 `_i`/`_o` suffixes, names containing `h2d`/`d2h`, `axi_`/`apb_`/`ahb_` prefixes)
 and package/user/struct value types are also excluded from automatic sharing.
-They receive separate instance/module-prefixed nets, with `auto-share-blocked`
+They receive separate instance-prefixed nets, with `auto-share-blocked`
 messages when same-name candidates exist. To opt in, map each endpoint explicitly
 to the same signal, e.g. `{"mappings":{"u_a.tl_i":"host","u_b.tl_i":"host"}}`.
 Sharing multiple typed/bus inputs this way produces `explicit-bus-share` so the
@@ -188,14 +188,116 @@ resolved widths, type text and unpacked dimensions match. One compatible output
 plus inputs connects through an internal net. Normalization treats implicit
 wires and wire/reg/logic storage as the same four-state value type; signedness
 and named/package types remain distinct. Incompatible candidates are exposed
-separately with a module prefix and an `auto-share-incompatible` warning, so users
-can map explicitly. Otherwise unique ports are exposed with a module prefix.
+separately with an instance prefix and an `auto-share-incompatible` warning, so users
+can map explicitly. Otherwise unique ports are exposed with an instance prefix.
 Explicit maps can share otherwise different names. Inspect the generated wiring:
 names alone do not establish protocol compatibility.
 
 `extract-map` retains templates from the top's metadata and adds exact keys only
 for unmapped/manual connections. `--expand` (MCP `expand=True`) explicitly
 materializes all instance-port keys. Rules are never expanded by default.
+
+## Chip pads, IRQs and clock/reset wiring
+
+`integrate --chip` (MCP `chip=True`) or port-map `"chip": true` disables
+implicit exposure of unmatched child ports. `pads` (alias `top_ports`, used
+when `pads` is absent) is a list of exact names or Python `fnmatch` globs,
+matched against would-be top net names and `instance.port` names. An object
+`{"name":"uart_tx_o","from":"u_uart.cio_tx_o"}` renames the whole connected
+net, including its peers. A rename must select one net; conflicting names,
+collisions, ties/opens and partial-net pad selections fail. Unmatched whitelist
+entries are errors in chip mode (warnings otherwise). Pad selection/renaming
+also works outside chip mode, without restricting other top ports.
+
+Only whitelisted nets and clock/reset specs with `"top": true` become chip
+top ports. Every other input needs an internal driver or an explicit constant
+such as `"1'b0"`, `"'0"`, or `"{N{1'b0}}"` (instance parameters in replication
+counts are resolved). Every other output needs a consumer or explicit `null`
+(empty connection); inputs mapped to `null` remain errors. Sharing inputs alone
+does not supply a driver. Connectivity errors list `instance.port`, direction,
+and type and fail before writing the top or sidecars, even without `--strict`.
+`check`/MCP `soc_check` uses actual top ports when identifying undriven inputs,
+unconsumed outputs and overlapping drivers. Pass `--chip`, `--map`, `--domains`
+(MCP `chip`, `port_map`, `domains`) to check an existing top against that intent;
+generated tops retain the map automatically. Opaque user-region logic still
+needs manual review. Explicitly opened outputs retain the existing
+`unused-output` warning; `--strict` rejects that warning as in other modes.
+
+Unique/non-shareable auto-exposed nets now use the **instance** prefix in all
+modes, e.g. `u_uart_cio_tx_o`, including a single instance or custom instance
+name. Compatible automatically shared ports keep their common net name.
+Explicit mapping names and surviving refresh connections remain unchanged.
+Tests/docs migrate to this naming; there is no module-prefix compatibility flag.
+
+Small chip-mode example (the two children have the listed ports):
+
+```json
+{
+  "chip": true,
+  "instances": [{"module":"uart", "instance":"u_uart"},
+                {"module":"plic", "instance":"u_plic"}],
+  "pads": ["clk_main_i", "rst_main_ni", "u_uart.cio_rx_i", "u_plic.irq_o",
+           {"name":"uart_tx_o", "from":"u_uart.cio_tx_o"}],
+  "clocks": {"main":{"net":"clk_main_i", "ports":["u_*.clk_i"]}},
+  "resets": {"main":{"net":"rst_main_ni", "ports":["u_*.rst_ni"]}},
+  "mappings": {"u_uart.test_i":"1'b0", "u_uart.status_o":null},
+  "irq": {"target":"u_plic.intr_src_i", "sources":["u_uart.intr_*_o"],
+          "reserve_zero":true}
+}
+```
+
+`irq.target` is an input `instance.port` or a simple net name. `sources` is an
+ordered list of output endpoints or `fnmatch` globs. List order wins; each glob
+expands in `instances` order, then child port declaration order. A repeated
+source or an unmatched source pattern is an error. A multi-bit packed vector
+expands in ascending declared numeric bit order, including nonzero lower bounds;
+scalars have no bit suffix. Unpacked/multidimensional arrays and unresolved
+widths need a supplied adapter and fail explicitly. Sources/target may have
+explicit whole-net mappings; ties, opens and slices cannot serve as IRQ nets.
+`reserve_zero` defaults false; true fixes vector index 0 to zero. `width` is an
+optional positive integer capacity. The vector is zero-padded to the target
+port width (or mapped target-net consumer width); excessive sources/capacity
+fail. A standalone net target uses `width` or the required bit count and needs
+a consumer or a whitelist entry in chip mode. SV declares the vector and
+emits one explicit `assign` concatenation; no decoder or interrupt controller
+logic is generated.
+
+`--irq-json FILE` / `--irq-header FILE` (MCP `irq_json`, `irq_header`) independently
+export IRQ assignments, default off. JSON contains `top`, `target`, `width`,
+`count`, `reserve_zero`, and ordered `irqs` entries (`index`, `source`, `instance`,
+`module`, `port`, `bit`). The guarded C header emits
+`#define <TOP>_IRQ_<INST>_<PORT>[_<bit>] <index>` and `<TOP>_IRQ_COUNT`.
+`count` is the number of allocated indices including reserved zero, excluding
+high padding. Identifiers are uppercased; macro collisions fail. Export flags
+require an IRQ section. CLI update/remove can also re-export with these flags.
+
+`clocks` and `resets` are objects keyed by domain, each containing a simple
+`net`, optional `ports` pattern list, and optional boolean `top` (default false).
+If exactly one domain exists in a section, its default patterns also connect
+input ports named `clk`, `clk_i`, `clk_*_i` or `rst_n`, `rst_ni`, `rst_*_ni`
+respectively. For multiple domains supply unambiguous patterns. Exact/template
+signal mappings and preserved RTL connections take precedence. Conflicting
+applicable domain matches fail with the endpoint. Declared clock domains feed
+the CDC graph even for nonstandard clock pin names; legacy `domains` annotations
+and per-port clock/sync annotations remain supported. Multi-clock instances
+still need per-port annotations where the sink domain is ambiguous.
+
+`--domains FILE` (MCP `domains`) **reads** a JSON list and persists the equivalent
+`clocks`/`resets` specs in the generated metadata, so refresh needs no manifest:
+
+```json
+[{"name":"main", "clk":"clk_main_i", "rst":"rst_main_ni",
+  "ports":{"clk":["u_*.clk_i", "u_sram.clk"], "rst":["u_*.rst_ni"]}}]
+```
+
+`ports` may be omitted; `clocks`/`resets` are accepted aliases for `clk`/`rst`
+inside `ports`. Optional `"top": true` declares both domain nets as top inputs;
+otherwise whitelist them in chip mode or drive them from supplied modules.
+Conflicting manifest/map specs and duplicate domain names fail. CLI
+integrate/update/remove/check accept `--domains`; MCP integration/check expose
+it directly, and MCP update/remove consume the persisted or replacement map.
+The reader wires supplied nets only. It generates no reset synchronizers, reset
+source trees, dividers, gates, address fabric, project filelists or testbenches.
 
 ## Checks
 
@@ -419,10 +521,10 @@ soc_extract(verilog_file, module_name, include_dirs, defines, packages, library_
 soc_instantiate(verilog_file, instance_name, module_name, include_dirs, defines, packages, library_dirs)
 soc_wrap(verilog_file, module_name, wrapper_name, output, include_dirs, defines, packages, library_dirs)
 soc_csv(verilog_file, module_name, output, include_dirs, defines, packages, library_dirs)
-soc_integrate(module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force)
+soc_integrate(module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force, chip, domains, irq_json, irq_header)
 soc_update(config_file, output, port_map, top_name, module_files, top_file, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs)
 soc_extract_map(top_file, output, verify_modules, expand, include_dirs, defines, packages, library_dirs)
-soc_check(verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages, library_dirs)
+soc_check(verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages, library_dirs, chip, domains, port_map)
 soc_snapshot(verilog_file, module_name, output, format_type, version, changelog, include_dirs, defines, packages, library_dirs)
 soc_diff(verilog_file, snapshot_file, module_name, module_files, include_dirs, defines, packages, strict, library_dirs)
 soc_remove(config_file, module_name, module_files, include_dirs, defines, packages, lint_config, library_dirs, output, strict, port_map, vendor_dirs)

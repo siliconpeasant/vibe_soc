@@ -60,7 +60,7 @@ class BatchA(unittest.TestCase):
                     code = top.read_text()
                     self.assertIn(f'.N({n})', code)
                     self.assertIn(".ExplicitErrs(1'b" + str(int(flag)) + ')', code)
-                    self.assertIn('[1:0] array_socket_select_i' if flag else '[0:0] array_socket_select_i', code)
+                    self.assertIn('[1:0] u_socket_select_i' if flag else '[0:0] u_socket_select_i', code)
                     before = top.read_bytes()
                     self.cli('update', top, '--files', socket, leaf, '--package', pkg)
                     self.assertEqual(before, top.read_bytes())
@@ -161,7 +161,7 @@ endmodule""")
         self.assertEqual(m.details['y']['bits'], 8)
         top = self.root/'top.sv'
         self.cli('integrate', dut, '--package', pkg, '-o', top)
-        self.assertIn('output logic [7:0] dut_y', top.read_text())
+        self.assertIn('output logic [7:0] u_dut_y', top.read_text())
         self.lint(pkg, dut, top)
 
     def test_full_module_remaining_sources_and_real_error(self):

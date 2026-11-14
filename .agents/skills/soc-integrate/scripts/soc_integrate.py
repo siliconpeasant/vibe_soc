@@ -8,6 +8,7 @@ import argparse
 import copy
 import ast
 import csv
+import fnmatch
 import json
 import operator
 import re
@@ -1027,7 +1028,9 @@ class PortMap:
     """Exact instance keys, legacy module keys, then ordered template rules."""
     def __init__(self, data=None):
         data = data or {}
-        self.data = data if any(k in data for k in ('mappings', 'templates', 'domains', 'annotations', 'instances', 'synchronizers', 'interfaces')) else {'mappings': data}
+        self.data = data if any(k in data for k in ('mappings', 'templates', 'domains', 'annotations', 'instances', 'synchronizers', 'interfaces', 'chip', 'pads', 'top_ports', 'irq', 'clocks', 'resets')) else {'mappings': data}
+        if not isinstance(self.data.get('chip', False), bool):
+            raise ValueError('chip must be a boolean')
         self.mappings = self.data.get('mappings', {})
         self.rules = []
         self.exact = {}
@@ -1441,9 +1444,19 @@ def expression_width(expr, signals):
             return bits
         return interval[1] - interval[0] + 1 if interval else (None if dims else signal.get('bits'))
     if expr.startswith('{') and expr.endswith('}'):
+        repeated = re.fullmatch(r'\{\s*([^{}]+)\s*\{(.*)\}\s*\}', expr, re.S)
+        if repeated:
+            count = constant(repeated[1])
+            width = expression_width('{' + repeated[2] + '}', signals)
+            return count * width if isinstance(count, int) and count > 0 and isinstance(width, int) else None
         widths = [expression_width(x, signals) for x in split_port_items(expr[1:-1])]
         return sum(widths) if all(isinstance(w, int) for w in widths) else None
     return None
+
+
+def constant_expression(expr):
+    identifiers = re.sub(r"(?:\d+)?'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+|'[01xXzZ]", '', uncomment(expr))
+    return not re.search(IDENT, identifiers) and expression_width(expr, {}) is not None
 
 
 def default_instances(modules, data):
@@ -1600,10 +1613,285 @@ def interface_array_checks(base, entries, spec):
     return checks
 
 
-def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, top_file=None):
+def wiring_options(data, args):
+    """Normalize optional CLI manifests into the persisted port-map contract."""
+    data = copy.deepcopy(PortMap(data).data)
+    if getattr(args, 'chip', False):
+        data['chip'] = True
+    if getattr(args, 'domains', None):
+        manifest = json.loads(Path(args.domains).read_text())
+        if not isinstance(manifest, list):
+            raise ValueError('domains file must contain a JSON list')
+        seen = set()
+        for item in manifest:
+            if not isinstance(item, dict) or not isinstance(item.get('name'), str):
+                raise ValueError('each domains entry needs a name, clk and rst')
+            name = item['name']
+            if name in seen:
+                raise ValueError(f'duplicate domain {name}')
+            seen.add(name)
+            ports = item.get('ports', {})
+            if not isinstance(ports, dict):
+                raise ValueError(f'domain {name}: ports must be an object with clk/rst patterns')
+            for section, key in (('clocks', 'clk'), ('resets', 'rst')):
+                spec = dict(net=item[key], ports=ports.get(key, ports.get(section, [])), top=item.get('top', False))
+                existing = data.setdefault(section, {}).get(name)
+                normalized = {k: existing.get(k, default) for k, default in
+                              (('net', None), ('ports', []), ('top', False))} if isinstance(existing, dict) else existing
+                if existing is not None and normalized != spec:
+                    raise ValueError(f'conflicting {section} domain {name} in map and domains file')
+                data[section][name] = spec
+    return data
+
+
+def domain_connections(instances, mapping):
+    """Only assign supplied nets. Never synthesize clock/reset circuitry."""
+    connections, assigned, top_nets = {}, {}, set()
+    for section, default in (('clocks', r'clk|clk_i|clk_\w+_i'),
+                             ('resets', r'rst_n|rst_ni|rst_\w+_ni')):
+        specs = mapping.data.get(section, {})
+        if not isinstance(specs, dict):
+            raise ValueError(f'{section} must be an object keyed by domain')
+        for name, spec in specs.items():
+            if not isinstance(spec, dict) or not re.fullmatch(IDENT, str(spec.get('net', ''))):
+                raise ValueError(f'{section}.{name}: net must be a simple identifier')
+            patterns = spec.get('ports', [])
+            if not isinstance(patterns, list) or any(not isinstance(p, str) for p in patterns):
+                raise ValueError(f'{section}.{name}: ports must be a list of patterns')
+            if not isinstance(spec.get('top', False), bool):
+                raise ValueError(f'{section}.{name}: top must be a boolean')
+            if spec.get('top'):
+                top_nets.add(spec['net'])
+        for inst in instances:
+            for direction, _, port in inst['module'].ports:
+                key = f'{inst["instance"]}.{port}'
+                matches = [(name, spec['net']) for name, spec in specs.items()
+                           if any(fnmatch.fnmatchcase(key, p) for p in spec.get('ports', [])) or
+                           (len(specs) == 1 and direction == 'input' and re.fullmatch(default, port))]
+                # Explicit mapping (including preserved RTL connections) wins.
+                found, value = mapping.lookup(inst['instance'], inst['module'].name, port)
+                explicit = found and (not isinstance(value, dict) or 'signal' in value or 'value' in value)
+                if not matches or explicit or port in inst.get('ports', {}):
+                    # Retained connections still carry declared domain intent when
+                    # the net agrees, including nonstandard clock port names.
+                    actual = inst.get('ports', {}).get(port, value)
+                    if isinstance(actual, dict):
+                        actual = actual.get('signal', actual.get('value'))
+                    matching = [(n, net) for n, net in matches if isinstance(actual, str) and actual.strip() == net]
+                    if section == 'clocks' and len(matching) == 1:
+                        assigned.setdefault(inst['instance'], set()).add(matching[0][0])
+                    continue
+                if len(matches) > 1 or key in connections:
+                    raise ValueError(f'conflicting clock/reset domain matches for {key}: {matches}')
+                connections[key] = matches[0][1]
+                if section == 'clocks':
+                    assigned.setdefault(inst['instance'], set()).add(matches[0][0])
+    return connections, assigned, top_nets
+
+
+def irq_plan(instances, mapping):
+    spec = mapping.data.get('irq')
+    if spec is None:
+        return None, {}
+    if not isinstance(spec, dict) or not isinstance(spec.get('sources'), list):
+        raise ValueError('irq needs target and an ordered sources list')
+    endpoints = {f'{i["instance"]}.{p}': (i, d, w, p) for i in instances for d, w, p in i['module'].ports}
+    target = spec.get('target', '')
+    if not isinstance(target, str) or target not in endpoints and not re.fullmatch(IDENT, target):
+        raise ValueError(f'unknown IRQ target {target!r}; use inst.port or a net name')
+    overrides, sources, table, seen = {}, [], [], set()
+    reserve = spec.get('reserve_zero', False)
+    if not isinstance(reserve, bool):
+        raise ValueError('irq.reserve_zero must be boolean')
+    for pattern in spec['sources']:
+        if not isinstance(pattern, str):
+            raise ValueError('irq.sources entries must be inst.port names or globs')
+        matches = [pattern] if pattern in endpoints else [k for k in endpoints if fnmatch.fnmatchcase(k, pattern)]
+        if not matches:
+            raise ValueError(f'IRQ source {pattern!r} matches no inst.port')
+        for key in matches:
+            if key in seen:
+                raise ValueError(f'duplicate IRQ source {key}')
+            seen.add(key)
+            inst, direction, width, port = endpoints[key]
+            detail = inst['module'].details[port]
+            width = detail.get('resolved_width', width)
+            bits = detail.get('bits')
+            bits = bits if bits is not None else bit_width(width)
+            if direction != 'output' or detail.get('unpacked') or not isinstance(bits, int) or bits < 1:
+                raise ValueError(f'IRQ source {key} must be an output with known packed width')
+            ranges = re.findall(r'\[([^\]]+)\]', width)
+            if len(ranges) > 1:
+                raise ValueError(f'IRQ source {key}: use a single packed vector dimension')
+            low = 0
+            if ranges:
+                bounds = [constant(v) for v in ranges[0].split(':')]
+                if len(bounds) != 2 or any(v is None for v in bounds):
+                    raise ValueError(f'IRQ source {key}: unresolved packed bounds {width}')
+                low = min(bounds)
+            sources.append(dict(key=key, bits=bits, low=low, vector=bool(width) or bits > 1))
+            for bit in range(low, low + bits):
+                table.append(dict(index=len(table) + int(reserve), source=key + (f'[{bit}]' if width or bits > 1 else ''),
+                                  instance=inst['instance'], module=inst['module'].name, port=port,
+                                  bit=bit if width or bits > 1 else None))
+            overrides[key] = f'{inst["instance"]}_{port}'
+    required = len(table) + int(reserve)
+    requested = spec.get('width', required)
+    if type(requested) is not int or requested < max(1, required):
+        raise ValueError(f'IRQ width {requested!r} is too small for {required} entries')
+    targets = [target] if target in endpoints else []
+    if not targets:
+        for key, (inst, direction, _, port) in endpoints.items():
+            found, value = mapping.lookup(inst['instance'], inst['module'].name, port)
+            actual = inst.get('ports', {}).get(port, value if found else None)
+            if isinstance(actual, dict):
+                actual = actual.get('signal', actual.get('value'))
+            if direction == 'input' and isinstance(actual, str) and actual.strip() == target:
+                targets.append(key)
+    target_widths = set()
+    for endpoint in targets:
+        inst, direction, width, port = endpoints[endpoint]
+        detail = inst['module'].details[port]
+        bits = detail.get('bits')
+        bits = bits if bits is not None else bit_width(detail.get('resolved_width', width))
+        if direction != 'input' or detail.get('unpacked') or not isinstance(bits, int):
+            raise ValueError(f'IRQ target {endpoint} must be an input with known packed width')
+        if requested > bits:
+            raise ValueError(f'IRQ width {requested} exceeds target {endpoint} width {bits}')
+        target_widths.add(bits)
+        if target == endpoint:
+            overrides[target] = f'{inst["instance"]}_{port}'
+    if len(target_widths) > 1:
+        raise ValueError(f'IRQ target {target} has incompatible consumer widths: {sorted(target_widths)}')
+    if target_widths:
+        requested = target_widths.pop()
+    return dict(target=target, width=requested, count=required, reserve_zero=reserve, sources=sources, irqs=table), overrides
+
+
+def select_pads(rows, mapping, top_nets, checks, rename_connections=True):
+    """Resolve whitelist and renames before constructing the connection graph."""
+    pads = mapping.data.get('pads', mapping.data.get('top_ports', []))
+    if not isinstance(pads, list):
+        raise ValueError('pads/top_ports must be a list')
+    selected, renames = set(top_nets), {}
+    for entry in pads:
+        if isinstance(entry, str):
+            pattern, rename = entry, None
+        elif isinstance(entry, dict) and set(entry) == {'name', 'from'}:
+            pattern, rename = entry['from'], entry['name']
+            if not isinstance(rename, str) or not re.fullmatch(IDENT, rename):
+                raise ValueError(f'invalid pad name {rename!r}')
+        else:
+            raise ValueError(f'invalid pad entry {entry!r}')
+        if not isinstance(pattern, str):
+            raise ValueError('pad patterns must be strings')
+        matched = [r for r in rows if any(fnmatch.fnmatchcase(candidate, pattern) for candidate in
+                   [r['key'], net_base(r['signal']) or '', *r.get('pad_aliases', [])])]
+        bases = {net_base(r['signal']) for r in matched}
+        if not matched:
+            checks.append(dict(code='pad-unmatched', severity='error' if mapping.data.get('chip') else 'warning',
+                               message=f'whitelisted pad {pattern!r} matches no inst.port or top net', ports=[]))
+            continue
+        if None in bases or any(r['signal'].strip() != net_base(r['signal']) for r in matched):
+            raise ValueError(f'pad {pattern!r} must select a whole net, not a tie/open/selection')
+        if rename and len(bases) != 1:
+            raise ValueError(f'pad rename {pattern!r} must match one net')
+        for base in bases:
+            if rename:
+                if base in renames and renames[base] != rename:
+                    raise ValueError(f'conflicting pad renames for {base}')
+                renames[base] = rename
+            selected.add(rename or base)
+    all_bases = {net_base(r['signal']) for r in rows} - {None}
+    targets = {}
+    for base in all_bases:
+        name = renames.get(base, base)
+        if name in targets and targets[name] != base:
+            raise ValueError(f'pad rename collision: {targets[name]} and {base} -> {name}')
+        targets[name] = base
+    if renames and rename_connections:
+        for row in rows:
+            row['signal'] = re.sub(r'\b' + IDENT + r'\b', lambda m: renames.get(m[0], m[0]), row['signal'])
+    return {renames.get(n, n) for n in selected}, renames
+
+
+def irq_connections(plan, rows, groups, renames):
+    """Represent concatenation endpoints in the same driver/consumer graph."""
+    by_key = {r['key']: r for r in rows}
+    target = plan['target']
+    net = by_key[target]['signal'].strip() if target in by_key else renames.get(target, target)
+    if not re.fullmatch(IDENT, net):
+        raise ValueError(f'IRQ target {target} must connect to a whole net')
+    bits = ["1'b0"] if plan['reserve_zero'] else []
+    for source in plan['sources']:
+        row = by_key[source['key']]
+        expr = row['signal'].strip()
+        if not re.fullmatch(IDENT, expr):
+            raise ValueError(f'IRQ source {row["key"]} must connect to a whole net')
+        groups.setdefault(expr, []).append(dict(row, direction='input', synthetic=True))
+        bits += [f'{expr}[{bit}]' if source['vector'] else expr
+                 for bit in range(source['low'], source['low'] + source['bits'])]
+    if len(bits) < plan['width']:
+        bits += [f"{plan['width'] - len(bits)}'b0"]
+    expression = '{' + ', '.join(reversed(bits)) + '}'
+    width = f'[{plan["width"] - 1}:0]'
+    driver = dict(key=target, direction='output', width=width, bits=plan['width'],
+                  signal=net, detail=dict(type='wire', unpacked=''), synthetic=True)
+    groups.setdefault(net, []).append(driver)
+    return f'    assign {net} = {expression};'
+
+
+def irq_header(top_name, plan):
+    prefix = re.sub(r'[^A-Za-z0-9_]', '_', top_name).upper() + '_IRQ_'
+    guard = prefix + 'H_'
+    lines = [f'#ifndef {guard}', f'#define {guard}', '']
+    names = set()
+    for entry in plan['irqs']:
+        name = prefix + re.sub(r'[^A-Za-z0-9_]', '_', entry['instance'] + '_' + entry['port']).upper()
+        if entry['bit'] is not None:
+            name += '_' + str(entry['bit'])
+        if name in names or name == prefix + 'COUNT':
+            raise ValueError(f'IRQ macro collision: {name}')
+        names.add(name)
+        lines.append(f'#define {name} {entry["index"]}')
+    return '\n'.join(lines + [f'#define {prefix}COUNT {plan["count"]}', '', f'#endif /* {guard} */', ''])
+
+
+def connection_interval(row, signal):
+    """Flatten unpacked element selections for coverage and driver overlap."""
+    selections = re.findall(r'\[([^\]]+)\]', row['signal'])
+    if not selections:
+        return 0, (row['bits'] or signal['bits'] or 1) - 1
+    dimensions = interface_shape(signal['detail'].get('unpacked', ''))
+    offset, remaining = 0, signal['bits']
+    for bounds, selection in zip(dimensions, selections):
+        index = constant(selection)
+        if not isinstance(bounds, tuple) or index is None or remaining is None:
+            return None
+        low, high = sorted(bounds)
+        if not low <= index <= high:
+            raise ValueError(f'{row["key"]}: unpacked index out of bounds: {row["signal"]}')
+        remaining //= high - low + 1
+        offset += (index - low) * remaining
+    packed = selections[len(dimensions):]
+    if packed:
+        interval = selection_interval('net' + ''.join('[' + p + ']' for p in packed))
+        if interval is None:
+            return None
+        # A nonzero packed lower bound belongs to the element, not the
+        # flattened parent array's zero-based coverage coordinates.
+        shape = interface_shape(signal['width'])
+        low = min(shape[0]) if len(shape) == 1 and isinstance(shape[0], tuple) else 0
+        return offset + interval[0] - low, offset + interval[1] - low
+    return (offset, offset + remaining - 1) if remaining is not None else None
+
+
+def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, top_file=None, checking=False):
     """Resolve connections, declare actual nets, and check the resulting graph."""
     instances = [resolve_instance(i) for i in instances]
     mapping = PortMap(map_data)
+    domain_wires, declared_domains, domain_tops = domain_connections(instances, mapping)
+    irq, irq_wires = irq_plan(instances, mapping)
     rows, groups, checks = [], {}, []
     checks += stale_map_checks(mapping, instances, previous_top is not None)
     known = {i['instance'] for i in instances} | {i['module'].name for i in instances}
@@ -1642,10 +1930,6 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
                 value = value.get('signal', value.get('value'))
             if found and isinstance(value, str) and net_base(value):
                 explicit_targets.add(net_base(value))
-    module_counts = {}
-    for inst in instances:
-        name = inst['module'].name
-        module_counts[name] = module_counts.get(name, 0) + 1
     for inst in instances:
         module, instance = inst['module'], inst['instance']
         unknown_params = inst['parameters'].keys() - {p[0] for p in module.params}
@@ -1662,6 +1946,10 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
                 expr = inst['ports'][name]
             elif found:
                 expr = '' if value is None else str(value)
+            elif f'{instance}.{name}' in domain_wires:
+                expr = domain_wires[f'{instance}.{name}']
+            elif f'{instance}.{name}' in irq_wires:
+                expr = irq_wires[f'{instance}.{name}']
             else:
                 if name in incompatible and name not in reported_incompatible:
                     warn('auto-share-incompatible',
@@ -1672,11 +1960,22 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
                 if len(named_ports[name]) > 1 and (direction == 'inout' or bus_like(name, module.details[name]['type'])):
                     warn('auto-share-blocked', f'{instance}.{name} exposed per-instance; inout/bus ports require explicit mapping', [f'{instance}.{name}'])
                 shared = name in auto_shared or (direction == 'interface' and len(named_ports[name]) == 1)
-                prefix = instance if module_counts[module.name] > 1 or direction == 'inout' else module.name.lower()
-                expr = name if shared else f'{prefix}_{name}'
+                expr = name if shared else f'{instance}_{name}'
                 # An explicitly named consumer also connects to the default producer name.
                 if direction == 'output' and name in explicit_targets:
                     expr = name
+            repetition = re.fullmatch(r'\{\s*([^{}]+)\{(.*)\}\s*\}', expr, re.S)
+            if repetition:
+                values = {}
+                for parameter, default, _ in params:
+                    value = constant(default, values)
+                    if value is not None:
+                        values[parameter] = value
+                count = constant(repetition[1], values)
+                if count is not None:
+                    if count <= 0:
+                        raise ValueError(f'{instance}.{name}: replication count must be positive')
+                    expr = '{' + str(count) + '{' + repetition[2] + '}}'
             detail = dict(module.details[name])
             resolved = detail.get('resolved_width', resolve_param_width(width, params))
             detail['unpacked'] = detail.get('resolved_unpacked', resolve_param_width(detail.get('unpacked', ''), params))
@@ -1685,18 +1984,48 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
             row = dict(module=module.name, instance=instance, port=name, direction=direction,
                        width=resolved, symbolic_width=width, detail=detail, bits=bits,
                        signal=expr, key=f'{instance}.{name}', annotation=annotation)
+            row['pad_aliases'] = [f'{instance}_{name}']
+            if found and isinstance(value, str) and net_base(value):
+                row['pad_aliases'].append(net_base(value))
             rows.append(row)
             base = net_base(expr)
-            if base:
-                groups.setdefault(base, []).append(row)
-            elif not expr.strip():
+            if not base and not expr.strip():
                 warn('undriven-input' if direction == 'input' else 'unused-output',
                      f'{row["key"]} is unconnected', [row['key']])
-            elif literal_width(expr) is not None:
+            elif not base and constant_expression(expr):
                 if direction != 'input':
                     raise ValueError(f'{module.file}:{detail["line"]}: constant on {direction} {row["key"]}')
-            elif direction in ('output', 'inout', 'interface'):
+            elif not base and direction in ('output', 'inout', 'interface'):
                 raise ValueError(f'{module.file}:{detail["line"]}: unsupported {direction} connection: {expr}')
+    # Expressions consume the referenced endpoints too. Keep these graph-only
+    # sinks separate from child rows so declarations/instances/CSV stay intact.
+    references = {}
+    for row in rows:
+        if net_base(row['signal']):
+            references.setdefault(net_base(row['signal']), row)
+    if previous_top:
+        for direction, width, name in previous_top.ports:
+            detail = previous_top.details[name]
+            references.setdefault(name, dict(width=width, bits=bit_width(width, detail.get('unpacked', '')), detail=detail))
+    expression_sinks = []
+    for row in rows:
+        if row['direction'] != 'input' or net_base(row['signal']) or constant_expression(row['signal']):
+            continue
+        expression = re.sub(r"(?:\d+)?'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+|'[01xXzZ]|\$" + IDENT, '', uncomment(row['signal']))
+        for match in re.finditer(r'\b(' + IDENT + r')((?:\s*\[[^\]]+\])*)', expression):
+            if match[1] in references:
+                reference = references[match[1]]
+                expression_sinks.append(dict(row, signal=match[0], width=reference['width'], bits=reference['bits'],
+                                             detail=reference['detail'], synthetic='expression'))
+    pad_rows = rows + expression_sinks
+    if irq and irq['target'] not in {r['key'] for r in rows}:
+        pad_rows.append(dict(key='irq.' + irq['target'], signal=irq['target']))
+    pads, renames = select_pads(pad_rows, mapping, domain_tops, checks, rename_connections=not checking)
+    for row in rows + expression_sinks:
+        base = net_base(row['signal'])
+        if base:
+            groups.setdefault(base, []).append(row)
+    irq_assign = irq_connections(irq, rows, groups, renames) if irq else None
     old = {}
     if previous_top:
         for d, w, n in previous_top.ports:
@@ -1726,6 +2055,13 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         direction = 'inout' if any(r['direction'] == 'inout' for r in entries) else (
             '' if drivers and any(r['direction'] == 'input' for r in entries) else
             'output' if drivers else 'input')
+        if checking and previous_top:
+            direction = old.get(base, {}).get('direction', '')
+        elif mapping.data.get('chip'):
+            direction = ('inout' if any(r['direction'] == 'inout' for r in entries) else
+                         'output' if drivers else 'input') if base in pads else ''
+        if base in domain_tops:
+            direction = 'input'
         width, bits = source['width'], source['bits']
         # Part selections describe a wider parent net, not an implicit truncation.
         slices = [selection_interval(r['signal']) for r in entries]
@@ -1733,12 +2069,55 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         if not whole_arrays and high >= 0 and (not width or bits is None or high + 1 > bits):
             width, bits = f'[{high}:0]', high + 1
         signals[base] = dict(direction=direction, width=width, bits=bits, detail=source['detail'])
+        if (checking or base in domain_tops) and direction == 'input' and drivers:
+            warn('multiple-driver', f'{base} is driven by top input and {", ".join(r["key"] for r in drivers)}',
+                 [r['key'] for r in drivers])
+        # External ports establish graph drivers/consumers. Chip-internal and
+        # actual checked internal nets cannot silently become external ports.
+        inputs = [r for r in entries if r['direction'] == 'input']
+        def covered(row, peers):
+            interval = connection_interval(row, signals[base])
+            ranges = [connection_interval(p, signals[base]) for p in peers]
+            if interval is None or any(r is None for r in ranges):
+                return bool(peers)  # Unknown coverage is handled by width-unknown.
+            ranges.sort()
+            cursor = interval[0]
+            for low, high in ranges:
+                if low > cursor:
+                    break
+                cursor = max(cursor, high + 1)
+            return cursor > interval[1]
+        for row in inputs:
+            if direction not in ('input', 'inout') and not covered(row, drivers):
+                warn('undriven-input', f'{row["key"]} has no driver for {row["signal"]}', [row['key']])
+        for row in drivers:
+            interval = connection_interval(row, signals[base])
+            consumers = [connection_interval(p, signals[base]) for p in inputs]
+            consumed = bool(inputs) and (interval is None or any(c is None or
+                           max(interval[0], c[0]) <= min(interval[1], c[1]) for c in consumers))
+            if direction not in ('output', 'inout') and not consumed:
+                warn('unused-output', f'{row["key"]} drives no consumer for {row["signal"]}', [row['key']])
         for i, driver in enumerate(drivers):
             for other in drivers[i + 1:]:
-                a = selection_interval(driver['signal']) or (0, (bits or 1) - 1)
-                b = selection_interval(other['signal']) or (0, (bits or 1) - 1)
-                if max(a[0], b[0]) <= min(a[1], b[1]):
+                a = connection_interval(driver, signals[base])
+                b = connection_interval(other, signals[base])
+                if a is None or b is None or max(a[0], b[0]) <= min(a[1], b[1]):
                     warn('multiple-driver', f'{base} has multiple drivers: {driver["key"]}, {other["key"]}', [driver['key'], other['key']])
+    if mapping.data.get('chip'):
+        open_outputs = {r['key'] for r in rows if r['direction'] == 'output' and not r['signal'].strip()}
+        for row in rows:
+            codes = {c['code'] for c in checks if row['key'] in c['ports']}
+            explicitly_open = row['direction'] == 'output' and not row['signal'].strip()
+            if ('undriven-input' in codes or 'unused-output' in codes and not explicitly_open):
+                detail = row['detail']
+                checks.append(dict(code='chip-untied', severity='error', ports=[row['key']],
+                                   message=f'{row["key"]}: {row["direction"]} {detail["type"] or "wire"} '
+                                           f'{row["width"]}{detail.get("unpacked", "")} is neither connected, whitelisted nor explicitly tied/open'))
+        for check in checks:
+            if check['code'] in ('multiple-driver', 'undriven-input', 'interface-element-undriven'):
+                check['severity'] = 'error'
+            if check['code'] == 'unused-output' and not set(check['ports']) <= open_outputs:
+                check['severity'] = 'error'
     if previous_top:
         signals.update(getattr(previous_top, 'custom_signals', {}))
     for spec in resolved_interfaces.values():
@@ -1755,6 +2134,16 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
             detail = dict(port, unpacked=resolve_param_width(port.get('unpacked', ''), spec['defaults']))
             signals.setdefault(expr, dict(direction=port['direction'], width=width,
                                           bits=bit_width(width, detail['unpacked']), detail=detail))
+            if mapping.data.get('chip') and expr not in pads and signals[expr]['direction']:
+                checks.append(dict(code='chip-untied', severity='error', ports=[],
+                                   message=f'interface header {expr}: {port["direction"]} must be wired, tied or whitelisted'))
+                signals[expr]['direction'] = ''
+    if checking and previous_top and mapping.data.get('chip'):
+        for name in old.keys() - pads:
+            endpoints = [r['key'] for r in groups.get(name, [])]
+            checks.append(dict(code='chip-unapproved-pad', severity='error',
+                               ports=endpoints,
+                               message=f'top port {name} ({", ".join(endpoints)}) is not whitelisted or declared top'))
     if previous_top:
         custom = ''.join(getattr(previous_top, 'user_regions', [])) + getattr(previous_top, 'unmanaged_text', '')
         custom_names = set(re.findall(IDENT, uncomment(custom)))
@@ -1790,7 +2179,7 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         by_key[row['key']] = row
     domains = {}
     for inst in instances:
-        clocks = [r['signal'].strip() for r in by_instance.get(inst['instance'], []) if
+        clocks = sorted(declared_domains[inst['instance']]) if inst['instance'] in declared_domains else [r['signal'].strip() for r in by_instance.get(inst['instance'], []) if
                   re.fullmatch(r'(?:clk(?:_\w+)?|\w+_clk(?:_i|_o)?)', r['port'])]
         domains[inst['instance']] = list(dict.fromkeys(clocks))
     annotations = mapping.data.get('annotations', {})
@@ -1806,21 +2195,35 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         clock = ann.get('clock', spec)
         if clock:
             clock_row = by_key.get(f'{row["instance"]}.{clock}')
-            return clock_row['signal'].strip() if clock_row else clock
+            clock = clock_row['signal'].strip() if clock_row else clock
+            names = [n for n, s in mapping.data.get('clocks', {}).items() if s['net'] == clock]
+            return names[0] if len(names) == 1 else clock
         values = domains[row['instance']]
         return values[0] if len(values) == 1 else None
 
     for base, entries in groups.items():
-        for sink in [r for r in entries if r['direction'] == 'input']:
+        for sink in [r for r in entries if r['direction'] == 'input' and r.get('synthetic') in (None, 'expression')]:
             ann = annotations.get(sink['key'], annotations.get(f'{sink["module"]}.{sink["port"]}', {}))
             if sink['annotation'].get('sync') or ann.get('sync') or sink['key'] in synchronizers or sink['instance'] in synchronizers:
                 continue
-            for source in [r for r in entries if r['direction'] == 'output']:
+            for source in [r for r in entries if r['direction'] == 'output' and not r.get('synthetic')]:
                 a, b = domain(source), domain(sink)
                 if a and b and a != b:
                     warn('cdc', f'CDC crossing {base}: {source["key"]} ({a}) -> {sink["key"]} ({b}) without declared synchronizer', [source['key'], sink['key']])
                 elif len(domains[sink['instance']]) > 1 and b is None:
                     warn('cdc-unknown', f'ambiguous clock domain for {sink["key"]}; annotate clock', [sink['key']])
+    if irq:
+        target = irq['target']
+        net = by_key[target]['signal'].strip() if target in by_key else renames.get(target, target)
+        for sink in [r for r in groups[net] if r['direction'] == 'input' and not r.get('synthetic')]:
+            ann = annotations.get(sink['key'], annotations.get(f'{sink["module"]}.{sink["port"]}', {}))
+            if sink['annotation'].get('sync') or ann.get('sync') or sink['key'] in synchronizers or sink['instance'] in synchronizers:
+                continue
+            for item in irq['sources']:
+                source = by_key[item['key']]
+                a, b = domain(source), domain(sink)
+                if a and b and a != b:
+                    warn('cdc', f'CDC crossing {net}: {source["key"]} ({a}) -> {sink["key"]} ({b}) without declared synchronizer', [source['key'], sink['key']])
     module_metadata = {}
     for inst in instances:
         module = inst['module']
@@ -1829,6 +2232,8 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
     metadata = {'version': 1, 'port_map': mapping.data,
                 'interface_instances': {n: {k: v for k, v in spec.items() if k not in ('definition', 'defaults')} for n, spec in resolved_interfaces.items()},
                 'instances': {i['instance']: dict(module_metadata[i['module'].name], overrides=i['parameters']) for i in instances}}
+    if irq:
+        metadata['irq'] = {k: v for k, v in irq.items() if k != 'sources'}
     lines = ['// Generated by soc_integrate.py; named connection expressions survive update.',
              '',
              f'module {top_name} (']
@@ -1852,12 +2257,16 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         else:
             internal.append('    ' + declaration('', w, name, detail) + ';')
     metadata['declarations'] = [line.lstrip() for line in internal]
+    if irq_assign:
+        metadata['declarations'].append(irq_assign.lstrip())
     lines[1] = '// soc-integrate: ' + json.dumps(compact_metadata(metadata, top_file), separators=(',', ':'))
     if ports:
         lines += [',\n'.join(ports), ');']
     else:
         lines[-1] = f'module {top_name} ();'
     lines += internal
+    if irq_assign:
+        lines.append(irq_assign)
     for inst in instances:
         if inst.get('preserved'):
             continue
@@ -2040,8 +2449,9 @@ def load_update(target, files, options):
 
 def report_checks(checks):
     for check in checks:
-        print(f'Warning [{check["code"]}]: {check["message"]}', file=sys.stderr)
-    print(f'Checks: {len(checks)} warning(s)', file=sys.stderr)
+        print(f'{check["severity"].capitalize()} [{check["code"]}]: {check["message"]}', file=sys.stderr)
+    errors = sum(c['severity'] == 'error' for c in checks)
+    print(f'Checks: {len(checks) - errors} warning(s)' + (f', {errors} error(s)' if errors else ''), file=sys.stderr)
 
 
 def export_csv(module, filepath):
@@ -2115,7 +2525,7 @@ def emit_result(args, instances, name, data, previous=None, changes=None, extra_
             for inst in instances:
                 if inst['instance'] in opaque:
                     inst.update({k: v for k, v in opaque[inst['instance']].items() if k != 'module'})
-    code, rows, checks, shared, _ = build_top(instances, name, data, previous, args.output)
+    code, rows, checks, shared, metadata = build_top(instances, name, data, previous, args.output)
     checks = list(extra_checks) + checks
     if previous is not None:
         checks += [dict(code='preserved-unmanaged', severity='warning', ports=[],
@@ -2126,8 +2536,12 @@ def emit_result(args, instances, name, data, previous=None, changes=None, extra_
         checks.append(dict(code='conditional-preserved', severity='warning', ports=[],
                            message='owned conditional instances preserved verbatim with their wrapping and connections'))
     report_checks(checks)
-    if args.strict and checks:
-        raise ValueError('strict check failed; no output written')
+    if any(c['severity'] == 'error' for c in checks) or args.strict and checks:
+        raise ValueError('connectivity/strict check failed; no output written')
+    irq = metadata.get('irq')
+    if (getattr(args, 'irq_json', None) or getattr(args, 'irq_header', None)) and irq is None:
+        raise ValueError('--irq-json/--irq-header requires an irq section; no output written')
+    header = irq_header(name, irq) if getattr(args, 'irq_header', None) else None
     collateral = lint_collateral(args, instances) if args.lint_config else None
     if args.output:
         write_text(args.output, code)
@@ -2155,6 +2569,10 @@ def emit_result(args, instances, name, data, previous=None, changes=None, extra_
                 status = next((m.split(']')[0][1:] for m in changes or [] if row['key'] in m), '')
                 warnings = '; '.join(c['code'] for c in checks if row['key'] in c['ports'])
                 writer.writerow([row['module'], row['instance'], row['port'], row['direction'], row['width'], row['signal'], ', '.join(others), status, warnings])
+    if getattr(args, 'irq_json', None):
+        write_json(args.irq_json, dict(top=name, **irq))
+    if getattr(args, 'irq_header', None):
+        write_text(args.irq_header, header)
     return checks
 
 
@@ -2281,11 +2699,17 @@ def parser():
         else:
             sub.add_argument('file')
         if command in ('integrate', 'update', 'remove'):
-            sub.add_argument('--map')
             sub.add_argument('--csv', action='store_true', help='Opt in to review CSV')
             sub.add_argument('--lint-config', action='store_true', help='Write vendor-scoped .vlt and .lint.f; top warnings stay fatal')
             sub.add_argument('--track', action='store_true', help='Opt in to .integrate.json')
             sub.add_argument('--no-config', action='store_true', help=argparse.SUPPRESS)
+        if command in ('integrate', 'update', 'remove', 'check'):
+            sub.add_argument('--map')
+            sub.add_argument('--chip', action='store_true', help='Only whitelisted pads or declared domain tops may be exposed')
+            sub.add_argument('--domains', help='Read a JSON list of clock/reset domain wiring')
+        if command in ('integrate', 'update', 'remove'):
+            sub.add_argument('--irq-json', help='Export IRQ bit assignments as JSON')
+            sub.add_argument('--irq-header', help='Export IRQ index C defines')
         if command in ('update', 'diff', 'check', 'remove'):
             sub.add_argument('--files', nargs='+', default=[])
         if command in ('diff', 'check'):
@@ -2338,7 +2762,7 @@ def main(argv=None):
             definitions = {n: d for m in modules for n, d in m.interfaces.items()}
             for m in modules:
                 m.interfaces = definitions
-            data = read_json_object(args.map, 'port map') if args.map else {}
+            data = wiring_options(read_json_object(args.map, 'port map') if args.map else {}, args)
             emit_result(args, default_instances(modules, data), name, data)
         elif args.command in ('update', 'remove') or (args.command in ('diff', 'check') and not args.snapshot):
             target, name, instances, meta, top, config = load_update(args.file, args.files, options)
@@ -2351,6 +2775,7 @@ def main(argv=None):
                     raise ValueError(f'unknown module/instance {args.module_name!r}')
                 instances = [i for i in instances if i not in removed]
             data = read_json_object(args.map, 'port map') if getattr(args, 'map', None) else meta.get('port_map', config.get('port_map', {'mappings': config.get('mappings', {})}))
+            data = wiring_options(data, args)
             messages, checks = port_changes(instances, meta, top, data)
             for line, statement in top.unmanaged:
                 checks.append(dict(code='preserved-unmanaged', severity='warning', ports=[],
@@ -2363,9 +2788,9 @@ def main(argv=None):
                 if args.strict and checks:
                     return 1
             elif args.command == 'check':
-                _, _, graph_checks, _, _ = build_top(instances, name, meta.get('port_map', {}), top)
+                _, _, graph_checks, _, _ = build_top(instances, name, data, top, checking=True)
                 report_checks(checks + graph_checks)
-                if args.strict and (checks or graph_checks):
+                if any(c['severity'] == 'error' for c in checks + graph_checks) or args.strict and (checks or graph_checks):
                     return 1
             else:
                 if removed:

@@ -78,3 +78,53 @@ reset synchronizers, address decoders/crossbars, project filelists or testbenche
 Route reset/clock module generation to `crg-gen`, address-map/fabric work to
 `gen-asic-memmap`, filelists to `soc-build`, and testbenches to verification. Route
 DFT readiness/collateral to the DFT owner and `dft-gen` under rule 14.
+
+## Chip wiring and declared domains
+
+Use `soc_integrate(chip=True)` / CLI `--chip` (or map `"chip": true`) for a
+bounded chip pad list. `pads` (alias `top_ports`) accepts exact/fnmatch top net
+or `inst.port` patterns and `{"name":"uart_tx_o","from":"u_uart.cio_tx_o"}`
+renames. Every other port needs an internal connection, an explicit input
+constant (`"1'b0"`, `"'0"`, `"{N{1'b0}}"`) or explicit output `null`.
+Unmatched pads, untied inputs/unconsumed outputs and overlapping drivers fail
+before outputs are written; inspect the endpoint/direction/type diagnostics.
+`soc_check` accepts `chip`, `port_map`, `domains` and checks the actual top
+interface. Unique auto-exposed names use instance prefixes in every mode;
+compatible auto-shared nets retain their common names. Existing refresh
+connections and explicit mapping names survive.
+
+For example, given a UART with exactly these ports:
+
+```json
+{"chip":true,
+ "instances":[{"module":"uart","instance":"u_uart"}],
+ "pads":["clk_main_i","rst_main_ni","u_uart.cio_rx_i",
+         {"name":"uart_tx_o","from":"u_uart.cio_tx_o"}],
+ "clocks":{"main":{"net":"clk_main_i","ports":["u_*.clk_i"]}},
+ "resets":{"main":{"net":"rst_main_ni","ports":["u_*.rst_ni"]}},
+ "mappings":{"u_uart.test_i":"1'b0","u_uart.status_o":null}}
+```
+
+`clocks`/`resets` contain domain-keyed `net`, optional `ports` pattern lists,
+and `top` boolean. A single declared domain also matches input names
+`clk`, `clk_i`, `clk_*_i` / `rst_n`, `rst_ni`, `rst_*_ni`. Explicit maps and
+retained connections win; conflicting applicable matches fail. Domain nets
+become chip inputs only when whitelisted or explicitly `top:true`.
+`--domains FILE` / MCP `domains` reads a JSON list such as
+`[{"name":"main","clk":"clk_main_i","rst":"rst_main_ni"}]` with optional
+`ports:{"clk":[...],"rst":[...]}` patterns and `top:true`; persisted specs
+support refresh without the file. Declared clock domains feed heuristic CDC
+checks even for nonstandard pin names. Per-port annotations/legacy `domains`
+still resolve multi-clock intent; these checks are not CDC/RDC signoff.
+
+`irq:{"target":"u_plic.intr_src_i","sources":["u_*.intr_*_o"],
+"reserve_zero":false,"width":8}` wires an explicitly declared vector and
+concatenation. Targets may also be net names. Sources expand in list order,
+then instance order, port declaration order, and ascending vector bit order.
+Zero-pad to target width; fail on overflow, duplicates or unmatched sources.
+`--irq-json FILE`/`--irq-header FILE` (MCP `irq_json`/`irq_header`) opt into
+ordered index/source/instance/module tables and guarded C defines
+`<TOP>_IRQ_<INST>_<PORT>[_<bit>]` plus `<TOP>_IRQ_COUNT` (includes reserved zero,
+excludes high padding). Neither export is produced by default. See the skill
+for supported vector types, manifest aliases, rename rules and refresh flags.
+The wiring-only scope generates no reset synchronizer or CRG logic.
