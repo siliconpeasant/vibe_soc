@@ -40,7 +40,15 @@ connection expression verbatim, adds current ports using the shared/map rules,
 removes deleted ports, and rebuilds top ports/wires. Surviving top ports keep their
 existing header order; new top ports are appended. Existing connections take
 precedence over a supplied map; maps provide defaults for newly added ports.
-It reports `[NEW]`, `[DEL]`, and `[MOD]` per instance. Neither update, diff-from-top,
+It reports `[NEW]`, `[DEL]`, and `[MOD]` per instance. A single deletion/addition
+on the same module with equal direction and resolved bit count also reports
+`[REN?] old -> new` and a suggested exact port-map entry retaining the former
+connection. This is a suggestion; refresh does not rename connections automatically.
+Review it before updating, or use `--strict` to stop before writing. A removed
+child port that exposes its former internal net as a new top input/output reports
+`removed-port-exposes-net`. Refresh/diff warn about stale exact port-map keys
+(non-existent instances or ports); initial integration still rejects unknown
+owners to catch typos. Non-existent ports on a known owner warn in all flows. Neither update, diff-from-top,
 nor extract-map requires JSON. Update accepts the legacy `config_file` JSON form
 as well. `soc_remove` accepts a tracked config or generated top. Its `module_name` may
 name one instance or a module (removing all its instances). Unknown names fail
@@ -49,8 +57,14 @@ endpoints are dropped; templates also used by surviving endpoints remain.
 `output`, `strict` and `port_map` have the same meaning as on update.
 
 Generated tops carry a `// soc-integrate:` metadata comment containing the prior
-interface and original map rules. This lets width/direction/type changes and
-templates survive without a sidecar. Connections are always read from RTL, not
+interface and original map rules. Version 2 stores each module interface once in
+`modules`; `instances` reference the module name and store only parameter overrides.
+Source paths are relative to the top file, so moving an identical source/top tree
+produces identical metadata and supports implicit-source refresh from any working
+directory. Original map/template precedence and source/instance order remain
+stable. Legacy version 1 full-instance metadata (including absolute source paths)
+is still readable and upgrades on refresh. This lets width/direction/type changes
+and templates survive without a sidecar. Connections are always read from RTL, not
 from that comment. Without prior metadata, additions/deletions are detectable;
 old internal port directions/widths cannot generally be recovered. Provide
 current RTL with `--files` (MCP `module_files`); generated source paths are an
@@ -236,7 +250,15 @@ default to same-name top signals; `ports` remaps them or supplies constants.
 Parameter overrides also resolve dimensions of these signals. Definitions absent
 from the input still permit typed instances with explicit `ports`/`parameters`.
 Interface inputs using expressions beyond a simple identifier or constant need
-an existing declaration. There is no protocol or modport-direction signoff.
+an existing declaration. There is no protocol or per-signal modport-direction signoff. Integration, check
+and update warn about interface-array elements with no connected child port
+(`interface-element-unconnected`), or no connected output/inout modport
+(`interface-element-undriven`). Whole-array ports cover all elements; `[N]`,
+ascending and descending constant bounds are supported. Plain/generic interface
+ports have unknown driver roles and do not establish an undriven finding. Opaque
+user logic is not analyzed for interface drivers; review these warnings when
+custom code drives an element. This is an element-coverage heuristic, not a check
+that every individual signal inside a connected interface is driven.
 
 For per-element connections, use scalar child ports and templates such as
 `{"regex":"u_sink(\\d+)\\.s","value":"bus[$1]"}`. Constant indices infer a
@@ -251,17 +273,29 @@ arrays are linted with fatal warnings.
 
 Inline aggregates, default-valued ports, positional/wildcard module connections
 and module instance arrays/multiple instances per statement remain unsupported.
-The parser is not a complete SystemVerilog elaborator. With ordered package
-sources it asks Verilator to elaborate an isolated public header through
-`--xml-only` (the width-resolved AST in 5.032; `--json-only` runs before width
-resolution). This resolves package typedef/packed struct bit counts and package
-constants in packed dimensions without needing child implementations. Original
-type spelling remains in metadata. Unqualified imported port types receive
+The parser is not a complete SystemVerilog elaborator. With package sources it
+asks Verilator to elaborate an isolated public header using `--json-only` on
+versions 5.032 and later (detected with `--version`). Compiler-folded `$bits`
+localparam probes resolve typedef/packed struct/union sizes, and bound probes
+resolve package constants in dimensions. These avoid incomplete pre-width JSON
+dtype links. Older/unknown versions use legacy `--xml-only`. Unsupported JSON
+options or AST schemas fall back to XML; unsupported XML options/schemas fall
+back to the text parser's symbolic widths (`width-unknown` checks). Actual HDL
+syntax/type errors always fail and never trigger fallback. Original source
+locations, including included port declarations, accompany compiler diagnostics.
+Original type spelling remains in metadata. Unqualified imported port types receive
 package-qualified declarations in the parent; with multiple wildcard imports,
 qualify the port type explicitly in the source (otherwise extraction fails with
 a location and explanation). Resolved counts describe default parameters;
 nontrivial overrides of named types conservatively retain unknown widths.
-Package files must include all transitive package dependencies in compile order.
+Supply all transitive package dependencies. `--package` / MCP `packages` accepts
+any order: package declarations, imports and `pkg::name` references determine a
+stable topological order, also used in generated lint filelists. Dependency
+analysis uses active preprocessed text, ignoring comments/strings/inactive
+branches. Missing packages and dependency cycles fail with real source file:line.
+Files containing mutually interleaved package dependencies must be split if no
+file order can satisfy them. This orders supplied files; use sibling
+`soc-build.soc_flist` for project dependency discovery.
 Without packages, named types remain symbolic and produce `width-unknown` checks.
 Inline structs/aggregates, type parameters, default port values and full
 behavioral elaboration remain outside the parser's scope. Unsupported
@@ -269,10 +303,12 @@ port declarations report a file, line and construct rather than dropping ports.
 
 All RTL-reading MCP tools accept `include_dirs`, `defines` and `packages`.
 CLI equivalents are repeated `-I dir`, `-D NAME[=value]`, `--package file.sv`
-(in dependency order), plus `+incdir+dir+dir` / `+define+NAME=value+NAME`.
+(in any order), plus `+incdir+dir+dir` / `+define+NAME=value+NAME`.
 When Verilator is on PATH, extraction uses `verilator -E --relative-includes`
-once over all package and source files together, in dependency order, with
-those options. Cross-file macro definitions persist; reversed order can fail.
+over all package and source files together, with those options. A preprocessing
+pass establishes package dependencies before the ordered extraction pass.
+Cross-file macro definitions persist in the ordered compilation unit; macros
+that require a particular source-file order still need that order.
 Root and include `line directives split the output back by source file. Retained `line directives map each port
 and diagnostic to the original source file and absolute line, including includes.
 Function-like macros in headers and bodies are handled by Verilator.
@@ -332,7 +368,7 @@ does not replace project dependency discovery. Address-map inputs come from
 `gen-asic-memmap`; register RTL and maps from `yml2reg`; clock and combinational
 reset sources from approved `crg-gen` workbooks. Integration owns the per-domain
 `rst_synchronizer` on the gated clock per rule 15. DFT readiness and SGDC remain
-with `dft-gen` and the DFT owner per rule 14. These Batch 1 parser/refresh fixes
+with `dft-gen` and the DFT owner per rule 14. These parser/refresh tools
 do not infer or generate address maps, CRG trees, reset policy or DFT circuitry.
 
 ## MCP parameter reference

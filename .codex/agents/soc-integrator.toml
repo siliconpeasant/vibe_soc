@@ -40,8 +40,16 @@ library discovery. Include directories alone do not waive user RTL. Regeneration
 refuses non-generated targets unless `force` is explicit, and drops removed
 owned instances. Conditional owned instances remain verbatim with declared nets
 and a `conditional-preserved` warning. Remove accepts instance or module names;
-unknown names fail. CLI warnings/check summaries use stderr. Keep top warnings fatal with `-Wall` and no `-Wno-fatal`. Pass ordered
-`packages`, `include_dirs` and `defines` for package types and macro headers.
+unknown names fail. CLI warnings/check summaries use stderr. Keep top warnings
+fatal with `-Wall` and no `-Wno-fatal`. Pass `packages` in any order; the tool sorts
+supplied package dependencies and
+reports missing packages/cycles with source locations. Supply `include_dirs` and
+`defines` for macro headers. JSON AST width probes are preferred on Verilator
+5.032+, with legacy XML/text fallbacks. Version 2 top metadata deduplicates module
+interfaces and uses top-relative source paths; version 1 remains readable.
+Review `[REN?]` port-map suggestions and stale-map / removed-port-exposes-net
+warnings before accepting refresh. Check interface-array element coverage
+warnings; opaque user-region drivers need manual review.
 Use explicit maps to connect buses and pads; review typed-input sharing warnings.
 
 Close only with current generated top/filelist/approved SDC artifacts, requested

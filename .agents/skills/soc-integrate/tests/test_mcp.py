@@ -100,6 +100,24 @@ async def main():
             assert peripheral['param_dims']['Policy'] == '[NumRegs]', peripheral
             if shutil.which('verilator'):
                 assert next(p for p in peripheral['ports'] if p['name']=='tl_i')['bits'] == 8, peripheral
+            # Batch 2 keeps the protocol schema/call order while sorting packages.
+            base = out.parent/'z_pkg.sv'
+            base.write_text('package z_pkg; typedef logic [8:0] t; endpackage\n')
+            dependent = out.parent/'a_pkg.sv'
+            dependent.write_text('package a_pkg; typedef z_pkg::t t; endpackage\n')
+            typed = out.parent/'typed.sv'
+            typed.write_text('module typed(input a_pkg::t x, output y); assign y=|x; endmodule\n')
+            result = await session.call_tool('soc_extract', dict(verilog_file=str(typed),
+                packages=[str(dependent), str(base)]))
+            assert not result.isError, result
+            if shutil.which('verilator'):
+                assert json.loads(result.content[0].text)['ports'][0]['bits'] == 9, result
+            metadata = json.loads(out.read_text().splitlines()[1].split(': ', 1)[1])
+            assert metadata['version'] == 2 and len(metadata['modules']) == 1, metadata
+            source.write_text(original.replace('output y', 'output renamed').replace('assign y=', 'assign renamed='))
+            result = await session.call_tool('soc_diff', dict(verilog_file=str(out), module_files=[str(source)], strict=True))
+            assert result.isError and '[REN?] u_dut.y -> u_dut.renamed' in result.content[0].text, result
+            source.write_text(original)
             print(json.dumps({'initialized': initialized.serverInfo.name,
                               'tools': sorted(tools), 'call': payload['module_name']}))
 asyncio.run(main())

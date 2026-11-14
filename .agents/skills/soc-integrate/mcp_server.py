@@ -40,7 +40,8 @@ def soc_extract(verilog_file: str, module_name: str = '', include_dirs: list[str
     """Extract directions, symbolic widths, types, dimensions and parameter defaults.
 
     include_dirs searches `include files; defines contains NAME or NAME=value.
-    packages lists package/typedef files in dependency order for width resolution.
+    packages lists package/typedef files in any order; dependencies are sorted.
+    Width resolution prefers version-detected Verilator JSON, then XML, then text.
     Unsupported interface syntax reports source file, line and construct.
 
     Parameters: verilog_file, module_name, include_dirs, defines, packages
@@ -120,7 +121,7 @@ def soc_update(config_file: str = '', output: str = '', port_map: str = '', top_
     """Refresh named instances from CURRENT RTL, preserving manual expressions verbatim.
 
     Pass top_file and module_files for JSON-free update. config_file also accepts
-    a top path or legacy .integrate.json. Embedded prior-port comments permit
+    a top path or legacy .integrate.json. Embedded v1/v2 prior-port comments permit
     width/direction change reports; JSON is optional. New ports follow map/shared
     rules; deleted ports disappear. Unmanaged user text is preserved verbatim.
     csv, track and lint_config are independently opt-in.
