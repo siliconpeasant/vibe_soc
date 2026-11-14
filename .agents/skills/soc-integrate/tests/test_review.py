@@ -46,7 +46,7 @@ class ReviewRegressions(unittest.TestCase):
             self.skipTest('verilator unavailable')
         self.cli('integrate', dut, '--package', FIXTURES / 'demo_pkg.sv', '-n', 'top', '-o', 'top.sv')
         code = (self.root / 'top.sv').read_text()
-        self.assertIn('input demo_pkg::enable_t dut_enable_i', code)
+        self.assertIn('input demo_pkg::enable_t u_dut_enable_i', code)
         self.lint(FIXTURES / 'demo_pkg.sv', dut, self.root / 'top.sv')
 
     def test_02_header_import_and_unpacked_parameter_wrapper(self):
@@ -62,7 +62,7 @@ class ReviewRegressions(unittest.TestCase):
     def test_02_imported_unqualified_type_in_generated_top(self):
         dut = self.source('dut', "module dut import demo_pkg::*; (input h2d_t request_i, output h2d_t response_o); assign response_o=request_i ^ h2d_t'(NumRegs); endmodule")
         self.cli('integrate', dut, '--package', FIXTURES / 'demo_pkg.sv', '-n', 'top', '-o', 'top.sv')
-        self.assertIn('input demo_pkg::h2d_t dut_request_i', (self.root / 'top.sv').read_text())
+        self.assertIn('input demo_pkg::h2d_t u_dut_request_i', (self.root / 'top.sv').read_text())
         self.lint(FIXTURES / 'demo_pkg.sv', dut, self.root / 'top.sv')
 
     def test_03_pads_buses_and_structs_need_opt_in(self):
@@ -123,8 +123,8 @@ class ReviewRegressions(unittest.TestCase):
         dut = self.source('dut', 'module dut(input a, output y); assign y=a; endmodule')
         self.cli('integrate', dut, '-n', 'top', '-o', 'top.sv')
         top = self.root / 'top.sv'
-        protected = '// soc-integrate:user begin\n  // Preserve tabs, whitespace and unknown syntax verbatim.\n\twire extra;  \n  assign extra = dut_a;\n  always_comb begin : custom\n    if (extra) $display("user module endmodule");\n  end\n  unknown_user u_other(.*);\n// soc-integrate:user end\n'
-        outside = 'wire spare;\nassign spare = dut_a;\nalways @(dut_a) $display("outside");\nunknown_module extra_instance(.*);\n'
+        protected = '// soc-integrate:user begin\n  // Preserve tabs, whitespace and unknown syntax verbatim.\n\twire extra;  \n  assign extra = u_dut_a;\n  always_comb begin : custom\n    if (extra) $display("user module endmodule");\n  end\n  unknown_user u_other(.*);\n// soc-integrate:user end\n'
+        outside = 'wire spare;\nassign spare = u_dut_a;\nalways @(u_dut_a) $display("outside");\nunknown_module extra_instance(.*);\n'
         top.write_text(top.read_text().replace('endmodule\n', outside + protected + 'endmodule\n'))
         result = self.cli('diff', top, '--files', dut)
         self.assertIn('[preserved-unmanaged]', result.stderr)
@@ -200,7 +200,7 @@ class ReviewRegressions(unittest.TestCase):
                 self.assertFalse(any(c['code'] == 'width-unknown' for c in checks), checks)
                 top = MODULE.parse_module('soc_top', code)
                 self.assertEqual(top.ports[0][1], MODULE.resolve_param_width(packed, mod.params))
-                self.assertEqual(top.details['gpio_b_mem_cfg']['unpacked'],
+                self.assertEqual(top.details['u_gpio_b_mem_cfg']['unpacked'],
                                  MODULE.resolve_param_width(unpacked, mod.params))
                 result = self.cli('integrate', dut, '--strict', '-n', 'top', '-o', 'top.sv')
                 self.assertIn('Checks: 0 warning(s)', result.stderr)
