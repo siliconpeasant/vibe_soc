@@ -28,7 +28,11 @@ CSV and tracking JSON default off; request `csv`/`--csv` and `track`/`--track`
 independently when needed. Dependency snapshots are optional historical evidence.
 Update/diff can read the generated top directly with current module sources.
 Custom statements inside `// soc-integrate:user begin` / `end` blocks are
-preserved verbatim. Unmanaged body text is moved verbatim into an automatic user
+preserved verbatim. Simple continuous/procedural value-net assignments and reads
+participate in chip connectivity checks; conditional behavior, scoped logic and
+custom instance pin roles still need lint/review. Package-qualified constant
+ties retain enum/type spelling and use compiler probes for constantness/width
+when packages and Verilator are supplied. Unmanaged body text is moved verbatim into an automatic user
 region, with `[preserved-unmanaged]` file:line warnings; never discard user text.
 Use the map's `interfaces` section for interface types, parameter overrides,
 header connections and arrays. Generic ports require an inferred or explicit

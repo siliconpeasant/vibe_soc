@@ -80,7 +80,14 @@ assign custom_enable = test_mode;
 ```
 
 Blocks are preserved verbatim by `update` and by `integrate -o` when regenerating
-an existing top. Their contents are opaque to connection checks. Nested or
+an existing top. Connection checks recognize simple continuous/procedural
+assignments to whole value nets or constant selections and their reads, including
+user-declared nets and IRQ vectors. Declarations/comments alone do not establish
+drivers or consumers. Partial writes retain coverage checks and overlapping
+child/user drivers fail in chip mode. This is a connectivity heuristic: it does
+not prove conditional assignment coverage or functional behavior. Functions,
+tasks, generate scopes, member/concatenation lvalues and custom module pin roles
+remain opaque and need separate lint/review. Nested or
 unmatched markers fail before writing. Unrecognized body text outside protected regions is preserved verbatim in an
 automatically created user region, including declarations, assign/always logic,
 unknown module instances, generate/preprocessor blocks, comments and functions/tasks.
@@ -165,7 +172,12 @@ Selections (`sig[7:4]`, `sig[3]`, `sig[$1*8 +: 8]`,
 constant integer arithmetic determines the selected interval, parent bus size,
 connection width and driver overlap. Symbolic selections retain unknown widths;
 negative indices and nonpositive indexed widths fail explicitly. Constants (`1'b0`, `'0`, `8'hFF`, `'1`)
-are valid input tie-offs. `null` and `""` emit `.port()`: outputs report unused;
+are valid input tie-offs. Qualified package constants (`pkg::Enabled`) retain
+their type spelling. With supplied packages and Verilator, an isolated constant
+probe verifies constantness and width, including enum values; missing symbols
+and package variables fail. Otherwise their widths remain unknown. General
+package expressions/casts still need supplied adapter/user logic.
+`null` and `""` emit `.port()`: outputs report unused;
 inputs warn as undriven and should instead receive a constant when tied off.
 Generated empty connections are individually enclosed in Verilator
 `lint_off PINCONNECTEMPTY` / `lint_on PINCONNECTEMPTY` comments. These comments
@@ -219,8 +231,9 @@ and type and fail before writing the top or sidecars, even without `--strict`.
 `check`/MCP `soc_check` uses actual top ports when identifying undriven inputs,
 unconsumed outputs and overlapping drivers. Pass `--chip`, `--map`, `--domains`
 (MCP `chip`, `port_map`, `domains`) to check an existing top against that intent;
-generated tops retain the map automatically. Opaque user-region logic still
-needs manual review. Explicitly opened outputs retain the existing
+generated tops retain the map automatically. User-region logic beyond the simple
+assignment/read heuristic above still needs manual review. Explicitly opened
+outputs retain the existing
 `unused-output` warning; `--strict` rejects that warning as in other modes.
 
 Unique/non-shareable auto-exposed nets now use the **instance** prefix in all
@@ -482,7 +495,8 @@ The config starts with `` `verilator_config `` and scopes `lint_off -file` to
 absolute sources under a `vendor/` path component and explicit library/vendor
 directory globs. First-party module/package files outside those scopes keep
 their warnings fatal, even when passed explicitly or through an include directory. It also
-scopes `UNOPTFLAT` (performance) and `SYMRSVDWORD` (C++ symbol portability)
+scopes `UNOPTFLAT` (performance), `SYMRSVDWORD` (C++ symbol portability) and
+`MULTIDRIVEN` (including vendor array-element writes on Verilator 5.032)
 explicitly, since those diagnostics are outside Verilator's default lint group ([control-file syntax](https://verilator.org/guide/latest/control.html)).
 The generated top never receives a waiver, including when it is within an
 explicit vendor/library directory: those directories are enumerated with the top excluded.
@@ -501,8 +515,9 @@ Module selection `-m` is supported for module commands and validates the top
 name on top check/diff. It is not accepted on integrate/update/remove/extract-map.
 
 Consume sibling `soc-build.soc_flist` output as source/filelist input; this tool
-does not replace project dependency discovery. Address-map inputs come from
-`gen-asic-memmap`; register RTL and maps from `yml2reg`; clock/reset modules from approved `crg-gen` workbooks. This skill only wires
+does not replace project dependency discovery. Address-map inputs and decoder/
+crossbar generation belong to `gen-asic-memmap`; register RTL and maps come from
+`yml2reg`; clock/reset modules from approved `crg-gen` workbooks. This skill only wires
 supplied modules. It does not generate reset synchronizers, reset-source logic,
 address decoders/crossbars, project dependency filelists or testbenches. Route those
 to `crg-gen`, `gen-asic-memmap`, `soc-build` and verification respectively. Existing

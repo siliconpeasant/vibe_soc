@@ -1455,8 +1455,102 @@ def expression_width(expr, signals):
 
 
 def constant_expression(expr):
+    if re.fullmatch(IDENT + r'::' + IDENT, uncomment(expr).strip()):
+        return True
     identifiers = re.sub(r"(?:\d+)?'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+|'[01xXzZ]", '', uncomment(expr))
     return not re.search(IDENT, identifiers) and expression_width(expr, {}) is not None
+
+
+def package_constant_bits(expr, module):
+    """Validate a qualified constant and measure its self-determined HDL width."""
+    options = getattr(module, 'elaboration', {})
+    if not options.get('packages') or not shutil.which('verilator'):
+        return None
+    cache = getattr(module, '_constant_cache', {})
+    if expr not in cache:
+        with tempfile.TemporaryDirectory(prefix='soc-integrate-constant-') as directory:
+            source = Path(directory) / 'soc_constant_probe.sv'
+            # A parameter initializer requires an actual constant, unlike $bits
+            # alone which also accepts a package variable. Keep the original
+            # enum/struct value in the connection, never replace it with an int.
+            # type(expr) on the output keeps an enum's dtype alive on 5.032;
+            # an untyped parameter-only probe can hit a compiler internal fault.
+            source.write_text('module soc_constant_probe(output type(' + expr + ') value_o);\n'
+                              'localparam type(' + expr + ') Value = ' + expr + ';\n'
+                              'localparam integer soc_constant_bits = $bits(Value);\n'
+                              'assign value_o = Value;\nendmodule\n')
+            output = Path(directory) / 'constant.xml'
+            command = ['verilator', '--xml-only', '--xml-output', str(output),
+                       '--Mdir', str(Path(directory) / 'obj'), '--top-module', 'soc_constant_probe', '-Wno-fatal']
+            command += ['-I' + str(p) for p in options.get('include_dirs', [])]
+            command += ['-D' + d for d in options.get('defines', [])]
+            result = subprocess.run(command + list(map(str, options['packages'])) + [str(source)],
+                                    capture_output=True, text=True, timeout=60)
+            if result.returncode:
+                errors = result.stderr[result.stderr.find('%Error'):].replace(str(directory), '<constant>')
+                raise ValueError(f'package constant {expr}: Verilator resolution failed:\n' +
+                                 '\n'.join(errors.splitlines()[:16]))
+            cache[expr] = ast_constants(ET.parse(output), 'soc_constant_probe', False)['soc_constant_bits']
+        module._constant_cache = cache
+    return cache[expr]
+
+
+def user_connections(top, references, instances=()):
+    """Graph simple user assignments; do not elaborate opaque custom RTL.
+
+    Only complete value-net lvalues and constant selections are recognized.
+    Struct member writes, concatenation lvalues, custom instances and generate
+    scopes remain opaque and need separate review/lint.
+    """
+    if top is None:
+        return []
+    references = {name: row for name, row in references.items() if row.get('direction') != 'interface'}
+    text = ''.join(getattr(top, 'user_regions', [])) + getattr(top, 'unmanaged_text', '')
+    # Conditional managed instances already participate through their real pins;
+    # their textual pin arguments are not extra consumers of their own outputs.
+    metadata = dict(instances={i['instance']: dict(module_name=i['module'].name) for i in instances})
+    for inst in reversed(preserved_instances(text, metadata)):
+        begin, end = inst['span']
+        text = text[:begin] + NON_NEWLINE.sub(' ', text[begin:end]) + text[end:]
+    text = COMMENTS.sub(lambda m: NON_NEWLINE.sub(' ', m[0]), text)
+    text = re.sub(r'\b(function|task|generate)\b.*?\bend\1\b',
+                  lambda m: NON_NEWLINE.sub(' ', m[0]), text, flags=re.S)
+    # Local declarations are not consumers. Retain declaration initializers as
+    # assignments but mask types and dimensions on the declaration's left side.
+    for declaration_match in list(re.finditer(r'\b(?:wire|logic|reg)\b[^;]*;', text)):
+        statement = declaration_match[0]
+        if '=' not in statement:
+            text = text[:declaration_match.start()] + NON_NEWLINE.sub(' ', statement) + text[declaration_match.end():]
+    assignments = list(re.finditer(r'(?<![\w$.\]])\b(' + IDENT + r'(?:\s*\[[^\]]+\])*)\s*(?:<=|=(?!=))', text))
+    rows, driven = [], set()
+    reads = list(text)
+    for match in assignments:
+        expr = match[1].strip()
+        base = net_base(expr)
+        if base not in references or (expr != base and selection_interval(expr) is None):
+            continue
+        prefix = text[:match.start()].rstrip()
+        # Distinguish nonblocking assignments from <= comparisons in an RHS
+        # or condition. Only recognize statement/declaration lvalues.
+        if prefix and not (prefix[-1] in ';:)' or
+                           re.search(r'\b(?:assign|begin|else|wire|logic|reg)\s*(?:\[[^\]]+\]\s*)*$', prefix)):
+            continue
+        if expr not in driven:
+            rows.append(dict(references[base], key='user.' + expr, signal=expr, module='', instance='', port='',
+                             annotation={}, direction='output', synthetic='user'))
+            driven.add(expr)
+        reads[match.start(1):match.end(1)] = ' ' * (match.end(1) - match.start(1))
+    text = ''.join(reads)
+    text = re.sub(r"(?:\d+)?'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+|'[01xXzZ]", '', text)
+    consumed = set()
+    for match in re.finditer(r'\b(' + IDENT + r')((?:\s*\[[^\]]+\])*)', text):
+        base, expr = match[1], match[0].strip()
+        if base not in references or expr in consumed or text[:match.start()].rstrip().endswith(('.', '::')):
+            continue
+        rows.append(dict(references[base], key='user.' + expr, signal=expr, module='', instance='', port='',
+                         annotation={}, direction='input', synthetic='user'))
+        consumed.add(expr)
+    return rows
 
 
 def default_instances(modules, data):
@@ -1984,6 +2078,11 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
             row = dict(module=module.name, instance=instance, port=name, direction=direction,
                        width=resolved, symbolic_width=width, detail=detail, bits=bits,
                        signal=expr, key=f'{instance}.{name}', annotation=annotation)
+            if re.fullmatch(IDENT + r'::' + IDENT, expr.strip()) and direction == 'input':
+                try:
+                    row['constant_bits'] = package_constant_bits(expr.strip(), module)
+                except ValueError as exc:
+                    raise ValueError(f'{module.file}:{detail["line"]}: {row["key"]}: {exc}') from None
             row['pad_aliases'] = [f'{instance}_{name}']
             if found and isinstance(value, str) and net_base(value):
                 row['pad_aliases'].append(net_base(value))
@@ -2007,6 +2106,11 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         for direction, width, name in previous_top.ports:
             detail = previous_top.details[name]
             references.setdefault(name, dict(width=width, bits=bit_width(width, detail.get('unpacked', '')), detail=detail))
+        for name, signal in getattr(previous_top, 'custom_signals', {}).items():
+            references.setdefault(name, signal)
+    if irq and irq['target'] not in {r['key'] for r in rows}:
+        references.setdefault(irq['target'], dict(width=f'[{irq["width"] - 1}:0]', bits=irq['width'],
+                                                detail=dict(type='wire', unpacked='')))
     expression_sinks = []
     for row in rows:
         if row['direction'] != 'input' or net_base(row['signal']) or constant_expression(row['signal']):
@@ -2026,6 +2130,12 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
         if base:
             groups.setdefault(base, []).append(row)
     irq_assign = irq_connections(irq, rows, groups, renames) if irq else None
+    custom_rows = user_connections(previous_top, references, instances)
+    for row in custom_rows:
+        row['signal'] = re.sub(r'\b' + IDENT + r'\b', lambda m: renames.get(m[0], m[0]), row['signal'])
+        base = net_base(row['signal'])
+        if base in groups:
+            groups[base].append(row)
     old = {}
     if previous_top:
         for d, w, n in previous_top.ports:
@@ -2152,7 +2262,7 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
                 signals.setdefault(name, signal)
     # General input expressions may reference old top inputs; retain their declarations.
     for row in rows:
-        if net_base(row['signal']) or literal_width(row['signal']) is not None or not row['signal'].strip():
+        if net_base(row['signal']) or constant_expression(row['signal']) or not row['signal'].strip():
             continue
         expression = re.sub(r"(?:\d+)?'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+|'[01xXzZ]|\$" + IDENT, '', uncomment(row['signal']))
         dependencies = re.findall(r'\b' + IDENT + r'\b', expression)
@@ -2165,7 +2275,7 @@ def build_top(instances, top_name='soc_top', map_data=None, previous_top=None, t
     for row in rows:
         if row['direction'] == 'interface' or not row['signal'].strip():
             continue
-        actual = expression_width(row['signal'], signals)
+        actual = row.get('constant_bits', expression_width(row['signal'], signals))
         expected = row['bits']
         if isinstance(actual, int) and isinstance(expected, int) and actual != expected:
             warn('width-mismatch', f'width mismatch {row["key"]}: port {expected} bits, connection {row["signal"].strip()} {actual} bits', [row['key']])
@@ -2491,12 +2601,13 @@ def lint_collateral(args, instances):
             rules.append(str(path / '*'))
     rules = list(dict.fromkeys(rules))
     lines = ['`verilator_config', '// Dependency diagnostics only; generated top warnings remain fatal.']
-    # Performance and C++ symbol-portability diagnostics are outside the lint
-    # group. Scope these to the same explicitly selected vendor sources too.
+    # These diagnostics are outside the default lint group on Verilator 5.032.
+    # Scope them to explicitly selected vendor sources, never the generated top.
     for source in rules:
         lines += ['lint_off -file ' + json.dumps(source),
                   'lint_off -rule UNOPTFLAT -file ' + json.dumps(source),
-                  'lint_off -rule SYMRSVDWORD -file ' + json.dumps(source)]
+                  'lint_off -rule SYMRSVDWORD -file ' + json.dumps(source),
+                  'lint_off -rule MULTIDRIVEN -file ' + json.dumps(source)]
     manifest = [json.dumps(p) for p in packages]
     manifest += [json.dumps('-I' + str(Path(d).resolve())) for d in args.include_dirs]
     manifest += [json.dumps('-D' + d) for d in args.defines]
