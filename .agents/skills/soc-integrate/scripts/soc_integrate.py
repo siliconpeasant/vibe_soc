@@ -1,1466 +1,1143 @@
 #!/usr/bin/env python3
-"""
-SoC Integrate - SOC顶层集成脚本
-功能: 提取子模块端口、自动生成实例化、集成到顶层
-"""
+"""Small, conservative RTL interface parser and SoC connection generator (stdlib only).
 
-import re
-import os
-import sys
+This is an interface parser, not an elaborator. Balanced lists are parsed rather
+than split with regular expressions; unsupported interface syntax is an error.
+"""
+import argparse
+import ast
 import csv
 import json
-import argparse
+import operator
+import re
+import sys
 from pathlib import Path
-from datetime import datetime
 
 
-class VerilogModule:
-    """表示一个Verilog模块"""
-    def __init__(self, name=""):
-        self.name = name
-        self.params = []      # [(name, default_value, type_str)]
-        self.ports = []       # [(direction, width, name)]
-    
-    def __repr__(self):
-        return f"Module({self.name}, ports={len(self.ports)}, params={len(self.params)})"
+IDENT = r'[A-Za-z_][\w$]*'
 
 
-def extract_modules(filepath):
-    """从Verilog文件中提取所有模块定义"""
-    with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-        content = f.read()
-    
-    modules = []
-    
-    # 找到所有 module 定义的位置
-    module_pattern = r'\bmodule\s+(\w+)'
-    module_matches = list(re.finditer(module_pattern, content))
-    
-    for i, match in enumerate(module_matches):
-        module_name = match.group(1)
-        start_pos = match.start()
-        
-        # 找到对应的 endmodule
-        if i + 1 < len(module_matches):
-            end_pos = module_matches[i + 1].start()
-        else:
-            # 查找最后一个 endmodule
-            endmatch = list(re.finditer(r'\bendmodule\b', content[start_pos:]))
-            if endmatch:
-                end_pos = start_pos + endmatch[-1].end()
-            else:
-                end_pos = len(content)
-        
-        module_content = content[start_pos:end_pos]
-        module = parse_module(module_name, module_content)
-        modules.append(module)
-    
-    return modules
+def uncomment(text):
+    """Mask comments, preserving offsets/newlines and quoted strings."""
+    pattern = r'"(?:\\.|[^"\\])*"|//[^\n]*|/\*.*?\*/'
+    return re.sub(pattern, lambda m: m[0] if m[0].startswith('"') else
+                  re.sub(r'[^\n]', ' ', m[0]), text, flags=re.S)
 
 
-def parse_module(name, content):
-    """解析单个模块的内容"""
-    module = VerilogModule(name)
-    
-    # 提取参数 (parameter / localparam)
-    param_pattern = r'parameter\s+(?:\[(\d+:\d+)\]\s+)?(\w+)\s*=\s*([^,;)]+)'
-    for match in re.finditer(param_pattern, content):
-        width = match.group(1) if match.group(1) else ""
-        param_name = match.group(2).strip()
-        default = match.group(3).strip()
-        module.params.append((param_name, default, width))
-    
-    # 提取端口 - 支持多种格式
-    # 格式1: input [7:0] port_name,
-    # 格式2: output reg [7:0] port_name,
-    # 格式3: inout wire port_name
-    
-    # 先找到端口声明区域（module 名后到 ); 之间）
-    port_section = extract_port_section(content)
-    if port_section:
-        ports = parse_ports_from_section(port_section)
-        module.ports = ports
-    
-    return module
+def fail(file, text, pos, construct):
+    raise ValueError(f'{file}:{text.count(chr(10), 0, pos) + 1}: unsupported {construct}')
 
 
-def extract_port_section(content):
-    """提取模块括号内的端口声明部分"""
-    # 找到第一个 ( 和匹配的 )
-    paren_start = content.find('(')
-    if paren_start == -1:
-        return None
-    
-    # 考虑参数列表 #(...)
-    # 跳过 parameter 列表
-    hash_pos = content.find('#')
-    if hash_pos != -1 and hash_pos < paren_start:
-        # 有参数，找到 # 后的 ( 和 )
-        param_paren = content.find('(', hash_pos)
-        if param_paren != -1:
-            # 找到匹配的 )
-            depth = 1
-            pos = param_paren + 1
-            while pos < len(content) and depth > 0:
-                if content[pos] == '(':
-                    depth += 1
-                elif content[pos] == ')':
-                    depth -= 1
-                pos += 1
-            # 真正的端口列表在参数列表之后
-            paren_start = content.find('(', pos)
-            if paren_start == -1:
-                return None
-    
-    # 找到匹配的 )
-    depth = 1
-    pos = paren_start + 1
-    while pos < len(content) and depth > 0:
-        if content[pos] == '(':
-            depth += 1
-        elif content[pos] == ')':
-            depth -= 1
-        if depth == 0:
-            break
+def balanced(text, pos, file='<text>'):
+    """Return contents and end offset of a balanced (), [] or {} group."""
+    pairs = {'(': ')', '[': ']', '{': '}'}
+    stack = [pairs[text[pos]]]
+    start = pos + 1
+    pos += 1
+    quoted = False
+    while pos < len(text):
+        char = text[pos]
+        if char == '"' and (pos == 0 or text[pos - 1] != '\\'):
+            quoted = not quoted
+        if not quoted:
+            if char in pairs:
+                stack.append(pairs[char])
+            elif char in ')]}':
+                if char != stack.pop():
+                    fail(file, text, pos, 'unbalanced delimiters')
+                if not stack:
+                    return text[start:pos], pos + 1
         pos += 1
-    
-    if depth == 0:
-        return content[paren_start+1:pos]
-    return None
+    fail(file, text, start - 1, 'unterminated delimiter')
 
 
-def parse_ports_from_section(section):
-    """从端口声明字符串中解析端口列表"""
-    ports = []
-    
-    # 清理注释
-    section = re.sub(r'//.*', '', section)
-    section = re.sub(r'/\*.*?\*/', '', section, flags=re.DOTALL)
-    
-    # 按逗号分割，但要处理数组维度中的逗号
-    # 使用更智能的方法：按分号/逗号分割，但要注意括号匹配
-    items = split_port_items(section)
-    
-    inherited = None
-    for item in items:
-        item = item.strip()
-        if not item:
+def split_port_items(text, separator=','):
+    clean = uncomment(text)
+    items, start, pos = [], 0, 0
+    while pos < len(text):
+        if clean[pos] in '([{':
+            _, pos = balanced(clean, pos)
             continue
-        port, inherited = parse_single_port(item, inherited)
-        ports.append(port)
-    
-    return ports
-
-
-def split_port_items(section):
-    """智能分割端口声明项"""
-    items = []
-    current = ""
-    paren_depth = 0
-    bracket_depth = 0
-    
-    for char in section:
-        if char == '(':
-            paren_depth += 1
-            current += char
-        elif char == ')':
-            paren_depth -= 1
-            current += char
-        elif char == '[':
-            bracket_depth += 1
-            current += char
-        elif char == ']':
-            bracket_depth -= 1
-            current += char
-        elif char == ',' and paren_depth == 0 and bracket_depth == 0:
-            items.append(current.strip())
-            current = ""
-        else:
-            current += char
-    
-    if current.strip():
-        items.append(current.strip())
-    
+        if clean[pos] == '"':
+            match = re.match(r'"(?:\\.|[^"\\])*"', clean[pos:])
+            if match:
+                pos += match.end()
+                continue
+        if clean[pos] == separator:
+            items.append(text[start:pos])
+            start = pos + 1
+        pos += 1
+    if clean[start:].strip():
+        items.append(text[start:])
     return items
 
 
-def parse_single_port(item, inherited=None):
-    """解析单个端口声明"""
-    # 模式: [direction] [reg/wire] [width] name
-    # 简化模式: direction width name
-    
-    # 移除末尾的分号
-    item = item.rstrip(';').strip()
-    
-    # 匹配方向
-    direction_match = re.match(r'(input|output|inout)\b', item, re.IGNORECASE)
-    if direction_match:
-        direction = direction_match.group(1).lower()
-        remaining = item[direction_match.end():].strip()
-        inherited_width = ""
-    elif inherited:
-        direction, inherited_width = inherited
-        remaining = item
-    else:
-        raise ValueError(
-            "only ANSI-style port declarations are supported; "
-            f"cannot parse port item: {item!r}"
-        )
-    
-    # 跳过 reg/wire 关键字
-    remaining = re.sub(r'^(reg|wire|logic|var)\b\s*', '', remaining, flags=re.IGNORECASE).strip()
-    if re.match(r'^(signed|unsigned)\b', remaining, re.IGNORECASE) or '::' in remaining:
-        raise ValueError(
-            "signed or package-typed ports require a normalized wrapper: "
-            f"{item!r}"
-        )
-    
-    # 提取位宽 [msb:lsb]
-    width = inherited_width
-    width_match = re.match(r'(\[.*?\])', remaining)
-    if width_match:
-        width = width_match.group(1)
-        remaining = remaining[width_match.end():].strip()
-    
-    # 剩余部分应该是端口名（可能包含 = default）
-    name_match = re.match(r'(\w+)', remaining)
-    if name_match:
-        name = name_match.group(1)
-        port = (direction, width, name)
-        return port, (direction, width)
+class Preprocessor:
+    def __init__(self, include_dirs=(), defines=()):
+        self.dirs = [Path(p) for p in include_dirs]
+        self.macros = {}
+        for define in defines:
+            name, sep, value = define.partition('=')
+            self.macros[name] = value if sep else '1'
+        self.active_files = []
+        self.locations = []
 
-    raise ValueError(f"cannot parse ANSI port item: {item!r}")
+    def read(self, file):
+        file = Path(file).resolve()
+        if file in self.active_files:
+            raise ValueError(f'{file}:1: recursive include')
+        self.active_files.append(file)
+        result, stack, active = [], [], True
+        text = uncomment(file.read_text(encoding='utf-8'))
+        for number, line in enumerate(text.splitlines(keepends=True), 1):
+            directive = re.match(r'\s*`(include|define|undef|ifdef|ifndef|elsif|else|endif)\b(.*)', line)
+            if directive:
+                kind, arg = directive.groups()
+                arg = arg.strip()
+                if kind in ('ifdef', 'ifndef'):
+                    cond = arg in self.macros
+                    if kind == 'ifndef':
+                        cond = not cond
+                    stack.append([active, cond, False])
+                    active = active and cond
+                elif kind in ('elsif', 'else', 'endif'):
+                    if not stack:
+                        raise ValueError(f'{file}:{number}: unmatched `{kind}')
+                    parent, taken, seen_else = stack[-1]
+                    if seen_else and kind != 'endif':
+                        raise ValueError(f'{file}:{number}: `{kind} after `else')
+                    if kind == 'endif':
+                        active = parent
+                        stack.pop()
+                    else:
+                        cond = kind == 'else' or arg in self.macros
+                        active = parent and not taken and cond
+                        stack[-1] = [parent, taken or cond, kind == 'else']
+                elif active and kind == 'define':
+                    match = re.fullmatch(r'(' + IDENT + r')(?:\s+(.*))?', arg)
+                    if not match:
+                        raise ValueError(f'{file}:{number}: unsupported function-like macro: {arg}')
+                    self.macros[match[1]] = match[2] or ''
+                elif active and kind == 'undef':
+                    self.macros.pop(arg, None)
+                elif active and kind == 'include':
+                    match = re.fullmatch(r'"([^"]+)"', arg)
+                    if not match:
+                        raise ValueError(f'{file}:{number}: unsupported include: {arg}')
+                    path = next((d / match[1] for d in [file.parent] + self.dirs
+                                 if (d / match[1]).is_file()), None)
+                    if path is None:
+                        raise ValueError(f'{file}:{number}: missing include "{match[1]}"')
+                    result.append(self.read(path))
+                    continue
+                result.append('\n')
+            elif active:
+                # Non-semantic standard directives need not affect port extraction.
+                if re.match(r'\s*`(?:timescale|default_nettype|celldefine|endcelldefine)\b', line):
+                    result.append('\n')
+                else:
+                    for _ in range(32):
+                        names = re.findall(r'`(' + IDENT + ')', line)
+                        if not names:
+                            break
+                        for name in names:
+                            if name not in self.macros:
+                                raise ValueError(f'{file}:{number}: undefined macro `{name}')
+                        line = re.sub(r'`(' + IDENT + ')', lambda m: self.macros[m[1]], line)
+                    else:
+                        raise ValueError(f'{file}:{number}: recursive macro expansion')
+                    result.append(line if line.endswith('\n') else line + '\n')
+            else:
+                result.append('\n')
+            self.locations.append((str(file), number))
+        if stack:
+            raise ValueError(f'{file}:{len(text.splitlines())}: unterminated `ifdef')
+        self.active_files.pop()
+        return ''.join(result)
+
+
+def constant(expr, values=None):
+    """Evaluate a deliberately small integer expression grammar, without eval."""
+    values = values or {}
+    expr = expr.replace('$clog2', 'clog2')
+    expr = re.sub(r"(\d+)?'[sS]?([bBoOdDhH])([0-9a-fA-F_]+)",
+                  lambda m: str(int(m[3].replace('_', ''), {'b': 2, 'o': 8, 'd': 10, 'h': 16}[m[2].lower()])), expr)
+    ops = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
+           ast.FloorDiv: operator.floordiv, ast.Div: operator.floordiv,
+           ast.Mod: operator.mod, ast.LShift: operator.lshift, ast.RShift: operator.rshift,
+           ast.BitOr: operator.or_, ast.BitAnd: operator.and_, ast.BitXor: operator.xor}
+
+    def walk(node):
+        if isinstance(node, ast.Constant) and type(node.value) is int:
+            return node.value
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'clog2' and len(node.args) == 1:
+            value = walk(node.args[0])
+            return (value - 1).bit_length() if value > 0 else 0
+        if isinstance(node, ast.Name) and node.id in values:
+            return int(values[node.id])
+        if isinstance(node, ast.BinOp) and type(node.op) in ops:
+            left, right = walk(node.left), walk(node.right)
+            if isinstance(node.op, (ast.LShift, ast.RShift)) and not 0 <= right <= 4096:
+                raise ValueError('shift out of range')
+            return ops[type(node.op)](left, right)
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.USub, ast.UAdd, ast.Invert)):
+            return {ast.USub: operator.neg, ast.UAdd: operator.pos, ast.Invert: operator.invert}[type(node.op)](walk(node.operand))
+        raise ValueError('symbolic expression')
+    try:
+        return walk(ast.parse(expr.strip(), mode='eval').body)
+    except (ValueError, SyntaxError, TypeError, ZeroDivisionError, OverflowError):
+        return None
+
+
+def resolve_param_width(width, params=()):
+    values = {}
+    for name, default, _ in params:
+        value = constant(default, values)
+        if value is not None:
+            values[name] = value
+
+    def dimension(match):
+        parts = match[1].split(':')
+        output = []
+        for part in parts:
+            value = constant(part, values)
+            output.append(str(value) if value is not None else part.strip())
+        return '[' + ':'.join(output) + ']'
+    return re.sub(r'\[([^\]]+)\]', dimension, width)
+
+
+def bit_width(width):
+    if not width:
+        return 1
+    result = 1
+    for dim in re.findall(r'\[([^\]]+)\]', width):
+        parts = dim.split(':')
+        if len(parts) != 2:
+            return None
+        hi, lo = map(constant, parts)
+        if hi is None or lo is None:
+            return None
+        result *= abs(hi - lo) + 1
+    return result
+
+
+class VerilogModule:
+    def __init__(self, name=''):
+        self.name = name
+        self.params = []             # Public parameters, backward-compatible tuples
+        self.localparams = []
+        self.ports = []              # Backward-compatible (direction, packed width, name)
+        self.details = {}            # Type text, unpacked dimensions and source location
+        self.file = ''
+
+    def metadata(self):
+        return {'module_name': self.name, 'file': self.file,
+                'params': self.params, 'localparams': self.localparams,
+                'ports': [dict(direction=d, width=w, name=n, **self.details.get(n, {}))
+                          for d, w, n in self.ports]}
+
+
+def parse_parameters(section, module, local=False):
+    inherited = ''
+    for item in split_port_items(section):
+        item = re.sub(r'^\s*(?:parameter|localparam)\b\s*', '', item).strip()
+        match = re.fullmatch(r'(.*?)\b(' + IDENT + r')\s*=\s*(.+)', item, re.S)
+        if not match:
+            raise ValueError(f'unsupported parameter declaration: {item}')
+        type_text, name, value = match.groups()
+        inherited = type_text.strip() or inherited
+        if any(p[0] == name for p in module.params + module.localparams):
+            raise ValueError(f'duplicate parameter: {name}')
+        if re.search(r'\btype\b', inherited):
+            raise ValueError(f'unsupported type parameter: {item}')
+        (module.localparams if local else module.params).append((name, value.strip(), inherited))
+
+
+def parse_port(item, inherited=None):
+    item = item.strip()
+    direction = re.match(r'(input|output|inout)\b\s*', item)
+    if direction:
+        kind = direction[1]
+        rest = item[direction.end():]
+    elif inherited and re.fullmatch(IDENT + r'\s*(?:\[[^\]]+\]\s*)*', item):
+        kind, type_text, width = inherited
+        rest = item
+        match = re.fullmatch(r'(' + IDENT + r')\s*((?:\[[^\]]+\]\s*)*)', rest)
+        return (kind, width, match[1]), {'type': type_text, 'unpacked': match[2].strip()}, inherited
+    else:
+        kind, rest = 'interface', item
+    match = re.fullmatch(r'(.*?)\b(' + IDENT + r')\s*((?:\[[^\]]+\]\s*)*)', rest, re.S)
+    if not match:
+        raise ValueError(f'unsupported port declaration: {item}')
+    prefix, name, unpacked = match.groups()
+    width = resolve_param_width(''.join(re.findall(r'\[[^\]]+\]', prefix)))
+    type_text = re.sub(r'\[[^\]]+\]', '', prefix).strip()
+    if kind == 'interface' and ('::' in type_text or type_text.endswith('_t')):
+        kind = 'input'  # Implicit direction on a clearly identified value type.
+    if kind == 'interface':
+        if unpacked.strip():
+            raise ValueError(f'unsupported interface array: {item}')
+        if not re.fullmatch(IDENT + r'(?:\.' + IDENT + ')?', type_text):
+            raise ValueError(f'unsupported interface port: {item}')
+    elif type_text and not re.fullmatch(
+            r'(?:(?:wire|reg|logic|var)\s*)?(?:(?:signed|unsigned)\s*)?|' +
+            r'(?:(?:wire|var)\s+)?' + IDENT + r'(?:::' + IDENT + r')*(?:\s+(?:signed|unsigned))?', type_text):
+        raise ValueError(f'unsupported port type: {item}')
+    detail = {'type': type_text, 'unpacked': resolve_param_width(unpacked.strip())}
+    return (kind, width, name), detail, (kind, type_text, width)
+
+
+def parse_module(name, content, file='<text>'):
+    module = VerilogModule(name)
+    module.file = str(file)
+    text = uncomment(content)
+    match = re.match(r'\s*module\s+' + re.escape(name) + r'\b\s*', text)
+    if not match:
+        fail(file, text, 0, 'module header')
+    pos = match.end()
+    try:
+        if text[pos:pos + 1] == '#':
+            pos += 1
+            while text[pos].isspace():
+                pos += 1
+            section, pos = balanced(text, pos, file)
+            parse_parameters(section, module)
+        while text[pos].isspace():
+            pos += 1
+        if text[pos] == ';':
+            section = ''
+        elif text[pos] == '(':
+            section, pos = balanced(text, pos, file)
+        else:
+            fail(file, text, pos, 'module port list')
+        while text[pos].isspace():
+            pos += 1
+        if text[pos] != ';':
+            fail(file, text, pos, 'module header terminator')
+        body = text[pos + 1:]
+        for param in re.finditer(r'\b(parameter|localparam)\s+([^;]+);', body):
+            parse_parameters(param[2], module, param[1] == 'localparam')
+        items = split_port_items(section)
+        non_ansi = bool(items) and all(re.fullmatch(IDENT, p.strip()) for p in items)
+        inherited = None
+        if non_ansi:
+            declared = {}
+            for decl in re.finditer(r'\b(input|output|inout)\b([^;]*);', body):
+                inherited = None
+                for item in split_port_items(decl[0][:-1]):
+                    port, detail, inherited = parse_port(item, inherited)
+                    if port[2] in declared:
+                        raise ValueError(f'duplicate port declaration: {port[2]}')
+                    declared[port[2]] = (port, detail)
+            for item in items:
+                name = item.strip()
+                if name not in declared:
+                    raise ValueError(f'non-ANSI port without direction declaration: {name}')
+                port, detail = declared.pop(name)
+                # Merge later storage declarations without changing header order.
+                for redecl in re.finditer(r'\b(reg|logic)\s+([^;]+);', body):
+                    storage = None
+                    for entry in split_port_items(redecl[0][:-1]):
+                        declaration_text = 'output ' + entry if storage is None else entry
+                        candidate, info, storage = parse_port(declaration_text, storage)
+                        if candidate[2] == name:
+                            detail['type'] = info['type']
+                            detail['unpacked'] = info['unpacked'] or detail['unpacked']
+                            if candidate[1]:
+                                port = (port[0], candidate[1], name)
+                module.ports.append(port)
+                module.details[name] = detail
+            if declared:
+                raise ValueError('body ports absent from header: ' + ', '.join(declared))
+        else:
+            for item in items:
+                pos = text.find(item.strip(), match.end())
+                port, detail, inherited = parse_port(item, inherited)
+                if port[2] in module.details:
+                    raise ValueError(f'duplicate port: {port[2]}')
+                module.ports.append(port)
+                module.details[port[2]] = detail
+        for _, _, port in module.ports:
+            module.details[port]['line'] = text.count('\n', 0, text.find(port)) + 1
+        return module
+    except (ValueError, IndexError) as exc:
+        fail(file, text, min(pos, len(text)), str(exc))
+
+
+def extract_modules(filepath, include_dirs=(), defines=()):
+    pp = Preprocessor(include_dirs, defines)
+    text = pp.read(filepath)
+    modules = []
+    scan = re.sub(r'"(?:\\.|[^"\\])*"', lambda m: re.sub(r'[^\n]', ' ', m[0]), text)
+    for match in re.finditer(r'\bmodule\s+(' + IDENT + ')', scan):
+        end = re.search(r'\bendmodule\b', scan[match.end():])
+        if not end:
+            fail(filepath, text, match.start(), 'missing endmodule')
+        line = text.count('\n', 0, match.start())
+        file, number = pp.locations[line] if line < len(pp.locations) else (str(filepath), line + 1)
+        try:
+            module = parse_module(match[1], text[match.start():match.end() + end.end()], file)
+        except ValueError as exc:
+            # Translate module-relative diagnostics back to preprocessed source.
+            loc = re.match(r'^(.*?):(\d+): (.*)', str(exc), re.S)
+            if loc:
+                offset = line + int(loc[2]) - 1
+                source, lineno = pp.locations[offset] if offset < len(pp.locations) else (file, number)
+                raise ValueError(f'{source}:{lineno}: {loc[3]}') from None
+            raise
+        module.file = str(Path(filepath).resolve())
+        modules.append(module)
+    if not modules:
+        raise ValueError(f'{filepath}:1: no module definition found')
+    return modules
+
+
+def select_module(file, name=None, **options):
+    modules = extract_modules(file, **options)
+    if name:
+        selected = next((m for m in modules if m.name == name), None)
+        if selected is None:
+            raise ValueError(f'{file}:1: module {name} not found')
+        return selected
+    return next((m for m in modules if m.name == Path(file).stem), modules[0])
+
+
+def write_text(file, text):
+    Path(file).write_text(text.rstrip('\n') + '\n', encoding='utf-8')
+
+
+def write_json(file, data):
+    write_text(file, json.dumps(data, indent=2, ensure_ascii=False))
+
+
+def declaration(direction, width, name, detail=None):
+    detail = detail or {}
+    type_text = detail.get('type', '')
+    # Storage in the child does not imply variable storage in the parent.
+    type_text = re.sub(r'\b(?:reg|var)\b', 'wire', type_text)
+    if not type_text:
+        type_text = 'wire'
+    suffix = detail.get('unpacked', '')
+    return ' '.join(p for p in [direction, type_text, width, name, suffix] if p)
 
 
 def generate_instance(module, instance_name=None, signal_prefix=None, show_width=True):
-    """生成实例化代码
-    signal_prefix: 信号名前缀，用于多模块集成时避免冲突
-    show_width: 是否在信号名后显示位宽
-    """
-    if not instance_name:
-        instance_name = f"u_{module.name.lower()}"
-    
-    lines = []
-    max_port_len = max(len(name) for _, _, name in module.ports) if module.ports else 0
-    
-    # 参数实例化
+    del show_width  # Connections are whole expressions; never add implicit slices.
+    instance_name = instance_name or f'u_{module.name.lower()}'
+    params = ''
     if module.params:
-        lines.append(f"    {module.name} #(")
-        for i, (pname, pdefault, pwidth) in enumerate(module.params):
-            comma = "," if i < len(module.params) - 1 else ""
-            lines.append(f"        .{pname:<{max_port_len}} ({pdefault}){comma}")
-        lines.append(f"    ) {instance_name} (")
-    else:
-        lines.append(f"    {module.name} {instance_name} (")
-    
-    # 端口实例化（位宽显示在信号名后: .port (signal[width])）
-    for i, (direction, width, name) in enumerate(module.ports):
-        comma = "," if i < len(module.ports) - 1 else ""
-        w = resolve_param_width(width, module.params) if width else ""
-        
-        # 自动生成连接信号名
-        prefix = signal_prefix if signal_prefix else ""
-        if direction == "input":
-            connect_sig = f"{prefix}{name}_i"
-        elif direction == "output":
-            connect_sig = f"{prefix}{name}_o"
-        else:
-            connect_sig = f"{prefix}{name}_io"
-        
-        if show_width and w:
-            lines.append(f"        .{name:<{max_port_len}} ({connect_sig}{w}){comma}")
-        else:
-            lines.append(f"        .{name:<{max_port_len}} ({connect_sig}){comma}")
-    
-    lines.append("    );")
-    return "\n".join(lines)
+        params = ' #(\n' + ',\n'.join(f'        .{n}({v})' for n, v, _ in module.params) + '\n    )'
+    ports = ',\n'.join(f'        .{n}({signal_prefix or ""}{n})' for _, _, n in module.ports)
+    return f'    {module.name}{params} {instance_name} (\n{ports}\n    );\n'
 
 
 def generate_port_declarations(module):
-    """生成端口声明代码（用于顶层）"""
-    lines = []
-    for direction, width, name in module.ports:
-        width_str = f" {width}" if width else ""
-        lines.append(f"    {direction}{width_str} {name},")
-    return "\n".join(lines)
+    return ',\n'.join('    ' + declaration(d, w, n, module.details[n]) for d, w, n in module.ports) + '\n'
 
 
 def generate_signal_declarations(module, signal_prefix=None):
-    """生成内部信号声明
-    signal_prefix: 信号名前缀，用于多模块集成时避免冲突
-    """
-    lines = []
-    prefix = signal_prefix if signal_prefix else ""
-    lines.append(f"    // {module.name} signals")
-    for direction, width, name in module.ports:
-        # 解析参数化位宽，尝试替换为默认值
-        resolved_width = resolve_param_width(width, module.params)
-        width_str = f" {resolved_width}" if resolved_width else ""
-        if direction == "input":
-            lines.append(f"    wire{width_str} {prefix}{name}_i;")
-        elif direction == "output":
-            lines.append(f"    wire{width_str} {prefix}{name}_o;")
-        else:
-            lines.append(f"    wire{width_str} {prefix}{name}_io;")
-    return "\n".join(lines)
-
-
-def resolve_param_width(width, params):
-    """解析参数化位宽，尝试用参数默认值替换"""
-    if not width:
-        return ""
-    
-    # 检查位宽中是否包含参数名
-    for pname, pdefault, pwidth in params:
-        if pname in width:
-            # 替换参数名为其默认值
-            width = width.replace(pname, str(pdefault))
-    
-    return width
+    return '\n'.join('    ' + declaration('', resolve_param_width(w, module.params + module.localparams),
+                                         (signal_prefix or '') + n, module.details[n]) + ';'
+                     for _, w, n in module.ports) + '\n'
 
 
 def generate_wrapper(module, wrapper_name=None):
-    """生成wrapper模块 - 内部实例化直接连接wrapper端口"""
-    if not wrapper_name:
-        wrapper_name = f"{module.name}_wrap"
-    
-    lines = []
-    max_port_len = max(len(name) for _, _, name in module.ports) if module.ports else 0
-    max_dir_len = max(len(d) for d, _, _ in module.ports) if module.ports else 0
-    max_width_len = max(len(w) if w else 0 for _, w, _ in module.ports) if module.ports else 0
-    
-    lines.append(f"module {wrapper_name} (")
-    
-    # 端口声明（对齐）
-    port_decls = []
-    for direction, width, name in module.ports:
-        w = width if width else ""
-        port_decls.append(f"    {direction:<{max_dir_len}} {w:<{max_width_len}} {name}")
-    lines.append(",\n".join(port_decls))
-    lines.append(");")
-    lines.append("")
-    
-    # 实例化 - 直接用wrapper端口名连接（不加_i/_o后缀）
-    instance_name = f"u_{module.name.lower()}_inst"
-    
+    name = wrapper_name or module.name + '_wrap'
+    params = ''
     if module.params:
-        lines.append(f"    {module.name} #(")
-        for i, (pname, pdefault, pwidth) in enumerate(module.params):
-            comma = "," if i < len(module.params) - 1 else ""
-            lines.append(f"        .{pname:<{max_port_len}} ({pdefault}){comma}")
-        lines.append(f"    ) {instance_name} (")
-    else:
-        lines.append(f"    {module.name} {instance_name} (")
-    
-    for i, (direction, width, name) in enumerate(module.ports):
-        comma = "," if i < len(module.ports) - 1 else ""
-        w = resolve_param_width(width, module.params) if width else ""
-        if w:
-            lines.append(f"        .{name:<{max_port_len}} ({name}{w}){comma}")
+        params = ' #(\n' + ',\n'.join(f'    parameter {t} {n} = {v}' for n, v, t in module.params) + '\n)'
+    ports = []
+    for d, w, n in module.ports:
+        if d == 'interface':
+            ports.append('    ' + module.details[n]['type'] + ' ' + n)
         else:
-            lines.append(f"        .{name:<{max_port_len}} ({name}){comma}")
-    
-    lines.append("    );")
-    lines.append("")
-    lines.append("endmodule")
-    
-    return "\n".join(lines)
+            ports.append('    ' + declaration(d, resolve_param_width(w), n, module.details[n]))
+    instance = generate_instance(module)
+    if module.params:
+        for n, v, _ in module.params:
+            instance = instance.replace(f'.{n}({v})', f'.{n}({n})', 1)
+    locals_text = ''.join(f'    localparam {t} {n} = {v};\n' for n, v, t in module.localparams)
+    return f'module {name}{params} (\n' + ',\n'.join(ports) + '\n);\n' + locals_text + instance + 'endmodule\n'
+
+
+class PortMap:
+    """Exact instance keys, legacy module keys, then ordered template rules."""
+    def __init__(self, data=None):
+        data = data or {}
+        self.data = data if any(k in data for k in ('mappings', 'templates', 'domains', 'annotations', 'instances', 'synchronizers')) else {'mappings': data}
+        self.mappings = self.data.get('mappings', {})
+        self.rules = []
+        self.exact = {}
+        for key, value in self.mappings.items():
+            if key.startswith(('regex:', 'glob:')) or any(c in key for c in '*?()\\'):
+                kind, pattern = key.split(':', 1) if key.startswith(('regex:', 'glob:')) else ('regex' if any(c in key for c in '()\\') else 'glob', key)
+                self.rules.append((kind, pattern, value))
+            else:
+                self.exact[key] = value
+        for rule in self.data.get('templates', []):
+            kind = 'regex' if 'regex' in rule else 'glob'
+            self.rules.append((kind, rule[kind], rule.get('value')))
+
+    def lookup(self, instance, module, port):
+        for key in (f'{instance}.{port}', f'{module}.{port}'):
+            if key in self.exact:
+                return True, self.exact[key]
+        key = f'{instance}.{port}'
+        for kind, pattern, value in self.rules:
+            if kind == 'glob':
+                # Capture '*' and '?' in order, while treating brackets literally.
+                regex = ''.join('(.*)' if c == '*' else '(.)' if c == '?' else re.escape(c) for c in pattern)
+            else:
+                regex = pattern
+            match = re.fullmatch(regex, key)
+            if match:
+                def replace(text):
+                    def capture(group):
+                        number = int(group[1])
+                        if number > len(match.groups()):
+                            raise ValueError(f'template {pattern!r}: missing capture ${number}')
+                        return match[number] or ''
+                    return re.sub(r'\$(\d+)', capture, text)
+                if isinstance(value, str):
+                    value = replace(value)
+                elif isinstance(value, dict):
+                    value = {k: replace(v) if isinstance(v, str) else v for k, v in value.items()}
+                return True, value
+        return False, None
+
+
+def named_connections(block, file='<top>'):
+    result = {}
+    for item in split_port_items(block):
+        clean = uncomment(item)
+        match = re.match(r'\s*\.(' + IDENT + r')\s*\(', clean)
+        if not match:
+            raise ValueError(f'{file}:1: unsupported positional/wildcard connection: {item.strip()}')
+        _, end = balanced(clean, match.end() - 1, file)
+        if clean[end:].strip():
+            raise ValueError(f'{file}:1: unsupported connection tail: {item.strip()}')
+        # Preserve the original expression, including comments and whitespace.
+        if match[1] in result:
+            fail(file, block, block.find(item), f'duplicate named connection {match[1]}')
+        result[match[1]] = item[match.end():end - 1]
+    return result
+
+
+def parse_top(top_file):
+    raw = Path(top_file).read_text()
+    text = uncomment(raw)
+    header = re.search(r'\bmodule\s+(' + IDENT + ')', text)
+    if not header:
+        fail(top_file, text, 0, 'missing top module')
+    start = header.end()
+    # Skip the top header so it cannot be mistaken for an instance.
+    if text[start:].lstrip().startswith('#'):
+        pos = text.index('(', start)
+        _, start = balanced(text, pos, top_file)
+    if text[start:].lstrip().startswith('('):
+        _, start = balanced(text, text.index('(', start), top_file)
+    start = text.index(';', start) + 1
+    for construct in ('assign', 'always', 'always_comb', 'always_ff', 'initial', 'generate', 'function', 'task'):
+        unsupported = re.search(r'\b' + construct + r'\b', text[start:])
+        if unsupported:
+            fail(top_file, text, start + unsupported.start(), f'top-level {construct}; update owns generated structure only')
+    instances = []
+    pattern = re.compile(r'\b(' + IDENT + r')\s*(#\s*\()?')
+    pos = start
+    keywords = {'module', 'endmodule', 'input', 'output', 'inout', 'wire', 'reg', 'logic',
+                'assign', 'parameter', 'localparam', 'always', 'initial', 'if', 'else', 'begin', 'end'}
+    while pos < len(text):
+        match = pattern.search(text, pos)
+        if not match:
+            break
+        pos = match.end()
+        if match[1] in keywords:
+            continue
+        parameters, parameter_text = {}, ''
+        if match[2]:
+            block, end = balanced(text, pos - 1, top_file)
+            parameters = named_connections(raw[pos:end - 1], top_file)
+            parameter_text = raw[match.start(2):end]
+            pos = end
+        inst = re.match(r'\s*(' + IDENT + r')\s*\(', text[pos:])
+        if not inst:
+            if re.match(r'\s*' + IDENT + r'\s*\[', text[pos:]):
+                fail(top_file, text, pos, 'instance arrays')
+            continue
+        open_pos = pos + inst.end() - 1
+        _, end = balanced(text, open_pos, top_file)
+        tail = re.match(r'\s*;', text[end:])
+        if not tail:
+            fail(top_file, text, end, 'instance array or multiple instances per statement')
+        block = raw[open_pos + 1:end - 1]
+        # Interface instances have an empty connection list.
+        ports = named_connections(block, top_file) if block.strip() else {}
+        instances.append(dict(module=match[1], instance=inst[1], parameters=parameters,
+                              parameter_text=parameter_text, ports=ports))
+        pos = end + tail.end()
+    metadata = {}
+    for line in raw.splitlines():
+        if line.startswith('// soc-integrate: '):
+            metadata = json.loads(line[len('// soc-integrate: '):])
+    top = parse_module(header[1], text[header.start():], str(top_file))
+    return header[1], instances, metadata, top
+
+
+def net_base(expr):
+    match = re.fullmatch(r'\s*(' + IDENT + r')\s*(?:\[[^\]]+\]\s*)*', uncomment(expr))
+    return match[1] if match else None
+
+
+def literal_width(expr):
+    match = re.fullmatch(r"(\d+)'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+", expr.strip())
+    if match:
+        return int(match[1])
+    if re.fullmatch(r"'[01xXzZ]", expr.strip()):
+        return 'fill'
+    if re.fullmatch(r'\d+', expr.strip()):
+        return 32
+    return None
+
+
+def expression_width(expr, signals):
+    expr = uncomment(expr).strip()
+    if expr.startswith('('):
+        inside, end = balanced(expr, 0)
+        if end == len(expr):
+            return expression_width(inside, signals)
+    width = literal_width(expr)
+    if width is not None:
+        return width
+    base = net_base(expr)
+    if base:
+        dims = ''.join(re.findall(r'\[[^\]]+\]', expr))
+        return bit_width(dims) if dims and ':' in dims else (1 if dims else signals.get(base, {}).get('bits'))
+    if expr.startswith('{') and expr.endswith('}'):
+        widths = [expression_width(x, signals) for x in split_port_items(expr[1:-1])]
+        return sum(widths) if all(isinstance(w, int) for w in widths) else None
+    return None
+
+
+def default_instances(modules, data):
+    specs = data.get('instances') if isinstance(data, dict) else None
+    if specs:
+        available = {m.name: m for m in modules}
+        return [dict(module=available[s['module']], instance=s['instance'],
+                     parameters=s.get('parameters', {}), parameter_text='', ports={}) for s in specs]
+    return [dict(module=m, instance=f'u_{m.name.lower()}', parameters={}, parameter_text='', ports={}) for m in modules]
+
+
+def port_signature(direction, width, detail, params):
+    """Conservatively compare resolved dimensions and value types for auto-sharing.
+
+    Implicit wires, wire/reg/logic storage and explicit unsigned logic have the
+    same value type. Named types and signedness remain distinct. Modports on
+    the same interface describe different views of one interface instance.
+    """
+    type_text = detail['type']
+    if direction == 'interface':
+        type_text = type_text.split('.')[0]
+    else:
+        type_text = re.sub(r'\b(?:wire|reg|var)\b', '', type_text)
+        type_text = ' '.join(type_text.split())
+        if type_text in ('', 'signed', 'unsigned'):
+            type_text = 'logic ' + type_text
+        if type_text.strip() in ('logic', 'logic unsigned'):
+            type_text = 'logic'
+    dimensions = (resolve_param_width(width, params),
+                  resolve_param_width(detail.get('unpacked', ''), params))
+    return (direction == 'interface', ' '.join(type_text.split()),
+            *(re.sub(r'\s+', '', dim) for dim in dimensions))
+
+
+def build_top(instances, top_name='soc_top', map_data=None, previous_top=None):
+    """Resolve connections, declare actual nets, and check the resulting graph."""
+    mapping = PortMap(map_data)
+    rows, groups, checks = [], {}, []
+
+    def warn(code, message, endpoints=()):
+        checks.append(dict(code=code, severity='warning', message=message, ports=list(endpoints)))
+
+    named_ports = {}
+    for inst in instances:
+        module = inst['module']
+        params = [(n, inst['parameters'].get(n, v), t) for n, v, t in module.params] + module.localparams
+        for direction, width, name in module.ports:
+            signature = port_signature(direction, width, module.details[name], params)
+            named_ports.setdefault(name, []).append((direction, signature, f'{inst["instance"]}.{name}'))
+    auto_shared, incompatible = set(), set()
+    for name, entries in named_ports.items():
+        directions = [entry[0] for entry in entries]
+        candidate = len(entries) > 1 and (directions.count('output') <= 1 or 'interface' in directions)
+        if candidate:
+            if len({entry[1] for entry in entries}) == 1:
+                auto_shared.add(name)
+            else:
+                incompatible.add(name)
+    reported_incompatible = set()
+    explicit_targets = set()
+    for inst in instances:
+        for _, _, port in inst['module'].ports:
+            found, value = mapping.lookup(inst['instance'], inst['module'].name, port)
+            if isinstance(value, dict):
+                value = value.get('signal', value.get('value'))
+            if found and isinstance(value, str) and net_base(value):
+                explicit_targets.add(net_base(value))
+    module_counts = {}
+    for inst in instances:
+        name = inst['module'].name
+        module_counts[name] = module_counts.get(name, 0) + 1
+    for inst in instances:
+        module, instance = inst['module'], inst['instance']
+        unknown_params = inst['parameters'].keys() - {p[0] for p in module.params}
+        if unknown_params:
+            raise ValueError(f'{module.file}:1: unknown parameter overrides on {instance}: {sorted(unknown_params)}')
+        params = [(n, inst['parameters'].get(n, v), t) for n, v, t in module.params] + module.localparams
+        for direction, width, name in module.ports:
+            found, value = mapping.lookup(instance, module.name, name)
+            annotation = value if isinstance(value, dict) else {}
+            if isinstance(value, dict):
+                found = 'signal' in value or 'value' in value
+                value = value.get('signal', value.get('value'))
+            if name in inst.get('ports', {}):
+                expr = inst['ports'][name]
+            elif found:
+                expr = '' if value is None else str(value)
+            else:
+                if name in incompatible and name not in reported_incompatible:
+                    warn('auto-share-incompatible',
+                         f'same-name port {name} has incompatible width/type declarations; '
+                         'exposed separately; use an explicit port map to connect',
+                         [entry[2] for entry in named_ports[name]])
+                    reported_incompatible.add(name)
+                shared = name in auto_shared or (direction == 'interface' and len(named_ports[name]) == 1)
+                prefix = instance if module_counts[module.name] > 1 else module.name.lower()
+                expr = name if shared else f'{prefix}_{name}'
+                # An explicitly named consumer also connects to the default producer name.
+                if direction == 'output' and name in explicit_targets:
+                    expr = name
+            detail = dict(module.details[name])
+            resolved = resolve_param_width(width, params)
+            detail['unpacked'] = resolve_param_width(detail.get('unpacked', ''), params)
+            built_in = re.fullmatch(r'(?:(?:wire|reg|logic|var)\s*)?(?:(?:signed|unsigned)\s*)?', detail['type'])
+            bits = bit_width(resolved + detail.get('unpacked', '')) if built_in and direction != 'interface' else None
+            row = dict(module=module.name, instance=instance, port=name, direction=direction,
+                       width=resolved, symbolic_width=width, detail=detail, bits=bits,
+                       signal=expr, key=f'{instance}.{name}', annotation=annotation)
+            rows.append(row)
+            base = net_base(expr)
+            if base:
+                groups.setdefault(base, []).append(row)
+            elif not expr.strip():
+                warn('undriven-input' if direction == 'input' else 'unused-output',
+                     f'{row["key"]} is unconnected', [row['key']])
+            elif literal_width(expr) is not None:
+                if direction != 'input':
+                    raise ValueError(f'{module.file}:{detail["line"]}: constant on {direction} {row["key"]}')
+            elif direction in ('output', 'inout', 'interface'):
+                raise ValueError(f'{module.file}:{detail["line"]}: unsupported {direction} connection: {expr}')
+    old = {}
+    if previous_top:
+        for d, w, n in previous_top.ports:
+            old[n] = dict(direction=d, width=w, bits=bit_width(w), detail=previous_top.details[n])
+    signals = {}
+    for base, entries in groups.items():
+        interface = [r for r in entries if r['direction'] == 'interface']
+        if interface:
+            types = {r['detail']['type'].split('.')[0] for r in interface}
+            if len(types) != 1 or len(interface) != len(entries):
+                raise ValueError(f'incompatible interface connection: {base}')
+            signals[base] = dict(direction='interface', width='', bits=None, detail={'type': next(iter(types))})
+            continue
+        drivers = [r for r in entries if r['direction'] in ('output', 'inout')]
+        source = next((r for r in drivers if r['direction'] == 'output'), entries[0])
+        direction = 'inout' if any(r['direction'] == 'inout' for r in entries) else (
+            '' if drivers and any(r['direction'] == 'input' for r in entries) else
+            'output' if drivers else 'input')
+        width, bits = source['width'], source['bits']
+        # Part selections describe a wider parent net, not an implicit truncation.
+        slices = [re.search(r'\[\s*(\d+)\s*(?::\s*(\d+)\s*)?\]', r['signal']) for r in entries]
+        high = max((max(int(s[1]), int(s[2] or s[1])) for s in slices if s), default=-1)
+        if high >= 0 and (not width or bits is None or high + 1 > bits):
+            width, bits = f'[{high}:0]', high + 1
+        signals[base] = dict(direction=direction, width=width, bits=bits, detail=source['detail'])
+        for i, driver in enumerate(drivers):
+            for other in drivers[i + 1:]:
+                def interval(row):
+                    m = re.search(r'\[(\d+)(?::(\d+))?\]', row['signal'].replace(' ', ''))
+                    return (min(int(m[1]), int(m[2] or m[1])), max(int(m[1]), int(m[2] or m[1]))) if m else (0, (bits or 1) - 1)
+                a, b = interval(driver), interval(other)
+                if max(a[0], b[0]) <= min(a[1], b[1]):
+                    warn('multiple-driver', f'{base} has multiple drivers: {driver["key"]}, {other["key"]}', [driver['key'], other['key']])
+    # General input expressions may reference old top inputs; retain their declarations.
+    for row in rows:
+        if net_base(row['signal']) or literal_width(row['signal']) is not None or not row['signal'].strip():
+            continue
+        expression = re.sub(r"(?:\d+)?'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+|'[01xXzZ]|\$" + IDENT, '', uncomment(row['signal']))
+        dependencies = re.findall(r'\b' + IDENT + r'\b', expression)
+        for dep in dependencies:
+            if dep not in signals and dep in old:
+                signals[dep] = old[dep]
+        unknown = [dep for dep in dependencies if dep not in signals and dep not in old]
+        if unknown:
+            raise ValueError(f'unsupported expression dependencies in {row["key"]}: {", ".join(unknown)}')
+    for row in rows:
+        if row['direction'] == 'interface' or not row['signal'].strip():
+            continue
+        actual = expression_width(row['signal'], signals)
+        expected = row['bits']
+        if isinstance(actual, int) and isinstance(expected, int) and actual != expected:
+            warn('width-mismatch', f'width mismatch {row["key"]}: port {expected} bits, connection {row["signal"].strip()} {actual} bits', [row['key']])
+        elif actual is None or expected is None:
+            warn('width-unknown', f'cannot determine width of {row["key"]} ({row["signal"].strip()})', [row['key']])
+    # Infer a module's domain from the actual connected clock net. Multiple clocks
+    # need per-port annotations; guessing one would conceal crossings.
+    domains = {}
+    for inst in instances:
+        clocks = [r['signal'].strip() for r in rows if r['instance'] == inst['instance'] and
+                  re.fullmatch(r'(?:clk(?:_\w+)?|\w+_clk(?:_i|_o)?)', r['port'])]
+        domains[inst['instance']] = list(dict.fromkeys(clocks))
+    annotations = mapping.data.get('annotations', {})
+    domain_map = mapping.data.get('domains', {})
+    synchronizers = mapping.data.get('synchronizers', [])
+
+    def domain(row):
+        ann = annotations.get(row['key'], annotations.get(f'{row["module"]}.{row["port"]}', {}))
+        ann = dict(ann, **row['annotation'])
+        spec = domain_map.get(row['instance'], domain_map.get(row['module']))
+        if isinstance(spec, dict):
+            spec = spec.get(row['port'], spec.get('clock'))
+        clock = ann.get('clock', spec)
+        if clock:
+            clock_row = next((r for r in rows if r['instance'] == row['instance'] and r['port'] == clock), None)
+            return clock_row['signal'].strip() if clock_row else clock
+        values = domains[row['instance']]
+        return values[0] if len(values) == 1 else None
+
+    for base, entries in groups.items():
+        for sink in [r for r in entries if r['direction'] == 'input']:
+            ann = annotations.get(sink['key'], annotations.get(f'{sink["module"]}.{sink["port"]}', {}))
+            if sink['annotation'].get('sync') or ann.get('sync') or sink['key'] in synchronizers or sink['instance'] in synchronizers:
+                continue
+            for source in [r for r in entries if r['direction'] == 'output']:
+                a, b = domain(source), domain(sink)
+                if a and b and a != b:
+                    warn('cdc', f'CDC crossing {base}: {source["key"]} ({a}) -> {sink["key"]} ({b}) without declared synchronizer', [source['key'], sink['key']])
+                elif len(domains[sink['instance']]) > 1 and b is None:
+                    warn('cdc-unknown', f'ambiguous clock domain for {sink["key"]}; annotate clock', [sink['key']])
+    metadata = {'version': 1, 'port_map': mapping.data,
+                'instances': {i['instance']: dict(i['module'].metadata(), overrides=i['parameters']) for i in instances}}
+    lines = ['// Generated by soc_integrate.py; named connection expressions survive update.',
+             '// soc-integrate: ' + json.dumps(metadata, separators=(',', ':')),
+             f'module {top_name} (']
+    ports, internal = [], []
+    # Preserve the actual previous header order, even for dependencies that were
+    # discovered late through manual expressions. New external ports follow it.
+    signal_order = [name for name in old if name in signals]
+    signal_order += [name for name in signals if name not in old]
+    for name in signal_order:
+        signal = signals[name]
+        d, w, detail = signal['direction'], signal['width'], signal['detail']
+        if d == 'interface':
+            internal.append(f'    {detail["type"]} {name} ();')
+        elif d:
+            ports.append('    ' + declaration(d, w, name, detail))
+        else:
+            internal.append('    ' + declaration('', w, name, detail) + ';')
+    lines += [',\n'.join(ports), ');'] + internal
+    for inst in instances:
+        module = inst['module']
+        params = inst.get('parameter_text', '')
+        if not params and inst['parameters']:
+            params = '#(' + ', '.join(f'.{k}({v})' for k, v in inst['parameters'].items()) + ')'
+        lines.append(f'    {module.name} {params} {inst["instance"]} (')
+        connections = [row for row in rows if row['instance'] == inst['instance']]
+        for index, row in enumerate(connections):
+            empty = not row['signal'].strip()
+            if empty:
+                lines.append('        // verilator lint_off PINCONNECTEMPTY')
+            comma = ',' if index < len(connections) - 1 else ''
+            lines.append(f'        .{row["port"]}({row["signal"]}){comma}')
+            if empty:
+                lines.append('        // verilator lint_on PINCONNECTEMPTY')
+        lines.append('    );')
+    lines.append('endmodule')
+    shared = {net: [r['key'] for r in entries] for net, entries in groups.items() if len(entries) > 1}
+    return '\n'.join(lines) + '\n', rows, checks, shared, metadata
+
+
+def generate_top(modules, top_name='soc_top', port_map=None):
+    return build_top(default_instances(modules, port_map or {}), top_name, port_map)[0]
+
+
+def extract_map_from_top(top_file, expand=False):
+    _, instances, meta, _ = parse_top(top_file)
+    data = dict(meta.get('port_map', {}))
+    mapping = PortMap(data)
+    mappings = dict(mapping.mappings)
+    shared = {}
+    for inst in instances:
+        for port, expr in inst['ports'].items():
+            found, value = mapping.lookup(inst['instance'], inst['module'], port)
+            expected = value.get('signal', value.get('value')) if isinstance(value, dict) else value
+            if expand or not found or (expr.strip() != (expected or '').strip()):
+                mappings[f'{inst["instance"]}.{port}'] = dict(value, signal=expr) if isinstance(value, dict) else expr
+            base = net_base(expr)
+            if base:
+                shared.setdefault(base, []).append(f'{inst["instance"]}.{port}')
+    data['mappings'] = mappings
+    interface_types = {p.get('type', '').split('.')[0] for m in meta.get('instances', {}).values()
+                       for p in m.get('ports', []) if p['direction'] == 'interface'}
+    data['instances'] = [i for i in instances if i['module'] not in interface_types]
+    data['shared_signals'] = {k: v for k, v in shared.items() if len(v) > 1}
+    return data
+
+
+def port_changes(instances, meta):
+    messages, checks = [], []
+    for inst in instances:
+        module, name = inst['module'], inst['instance']
+        old_meta = meta.get('instances', {}).get(name, {})
+        old = {p['name']: p for p in old_meta.get('ports', [])}
+        previous = set(inst['ports'])
+        current = {n: (d, w) for d, w, n in module.ports}
+        for port in sorted(current.keys() - previous):
+            messages.append(f'[NEW] {name}.{port}')
+        for port in sorted(previous - current.keys()):
+            messages.append(f'[DEL] {name}.{port}')
+        for port in sorted(previous & current.keys() & old.keys()):
+            d, w = current[port]
+            changed = []
+            if d != old[port]['direction']:
+                changed.append(f'direction {old[port]["direction"]} -> {d}')
+            previous_params = [(n, old_meta.get('overrides', {}).get(n, v), t) for n, v, t in old_meta.get('params', [])]
+            previous_width = resolve_param_width(old[port]['width'], previous_params + old_meta.get('localparams', []))
+            current_params = [(n, inst['parameters'].get(n, v), t) for n, v, t in module.params] + module.localparams
+            current_width = resolve_param_width(w, current_params)
+            if w != old[port]['width'] or current_width != previous_width:
+                changed.append(f'width {previous_width or "1"} -> {current_width or "1"}')
+            if module.details[port].get('unpacked', '') != old[port].get('unpacked', ''):
+                changed.append('unpacked dimensions changed')
+            if module.details[port].get('type') != old[port].get('type', ''):
+                changed.append('type changed')
+            if changed:
+                message = f'[MOD] {name}.{port}: ' + ', '.join(changed)
+                messages.append(message)
+                checks.append(dict(code='port-change', severity='warning', message=message, ports=[f'{name}.{port}']))
+    return messages, checks
+
+
+def load_update(target, files, options):
+    config = {}
+    if str(target).endswith('.json'):
+        config = json.loads(Path(target).read_text())
+        target = config['output_file']
+        files = files or [entry['file'] for entry in config['modules']]
+    name, parsed, meta, top = parse_top(target)
+    if not files:
+        files = list(dict.fromkeys(v['file'] for v in meta.get('instances', {}).values() if v.get('file')))
+    available = {}
+    for file in files:
+        available.update((m.name, m) for m in extract_modules(file, **options))
+    interface_types = {m.details[n]['type'].split('.')[0] for m in available.values()
+                       for d, _, n in m.ports if d == 'interface'}
+    instances = []
+    for inst in parsed:
+        if inst['module'] not in available:
+            # Native interface declarations are retained by the connected child ports.
+            if inst['module'] in interface_types and not inst['ports'] and not inst['parameter_text']:
+                continue
+            raise ValueError(f'{target}:1: current RTL required for module {inst["module"]}; supply --files')
+        inst['module'] = available[inst['module']]
+        instances.append(inst)
+    if not instances:
+        raise ValueError(f'{target}:1: no supported module instances found')
+    if not meta and config.get('port_snapshot'):
+        meta['instances'] = {i['instance']: {'ports': config['port_snapshot'].get(i['module'].name, [])} for i in instances}
+    return target, name, instances, meta, top, config
+
+
+def report_checks(checks):
+    for check in checks:
+        print(f'Warning [{check["code"]}]: {check["message"]}')
+    print(f'Checks: {len(checks)} warning(s)')
 
 
 def export_csv(module, filepath):
-    """导出端口信息到CSV"""
-    with open(filepath, 'w', newline='') as f:
-        writer = csv.writer(f)
+    with open(filepath, 'w', newline='') as stream:
+        writer = csv.writer(stream)
         writer.writerow(['Direction', 'Width', 'Port Name'])
-        for direction, width, name in module.ports:
-            writer.writerow([direction, width, name])
-    print(f"Info: CSV exported to {filepath}")
+        writer.writerows(module.ports)
 
 
-def do_update(config, config_path, top_name_override=None, output_file_override=None, map_file_override=None):
-    """核心 update 逻辑：根据配置重新生成顶层"""
-    top_name = top_name_override if top_name_override else config['top_module']
-    output_file = output_file_override if output_file_override else config.get('output_file')
-    
-    # === 第1步：如果顶层文件存在，先提取当前的手动修改 ===
-    if output_file and os.path.exists(output_file):
-        print(f"Info: Extracting current mappings from {output_file}")
-        extracted = extract_map_from_top(output_file)
-        extracted_map = extracted.get('mappings', {})
-        extracted_shared = extracted.get('shared_signals', {})
-        
-        if extracted_map:
-            config['mappings'] = extracted_map
-            config['shared_signals'] = extracted_shared
-            with open(config_path, 'w') as f:
-                json.dump(config, f, indent=2, ensure_ascii=False)
-            print(f"Info: Synced {len(extracted_map)} mappings from top to config")
-            for sig, conns in extracted_shared.items():
-                print(f"  {sig}: {', '.join(conns)}")
-            print()
-    
-    # 端口映射
-    if map_file_override:
-        with open(map_file_override, 'r') as f:
-            map_data = json.load(f)
-        port_map = map_data.get('mappings', {})
-        print(f"Info: Using override port map from {map_file_override}")
+def emit_result(args, instances, name, data, previous=None, changes=None, extra_checks=()):
+    code, rows, checks, shared, _ = build_top(instances, name, data, previous)
+    checks = list(extra_checks) + checks
+    report_checks(checks)
+    if args.strict and checks:
+        raise ValueError('strict check failed; no output written')
+    if args.output:
+        write_text(args.output, code)
+        print(f'Top written: {args.output}')
     else:
-        port_map = config.get('mappings', {})
-        if port_map:
-            print(f"Info: Using port map ({len(port_map)} mappings)")
-    
-    print(f"Info: Updating top module '{top_name}' from config: {config_path}")
-    print(f"      Modules:")
-    for mod in config['modules']:
-        print(f"        - {mod['module_name']} ({mod['file']})")
-    print()
-    
-    # 重新提取所有模块端口
-    all_modules = []
-    for mod in config['modules']:
-        filepath = mod['file']
-        if not os.path.exists(filepath):
-            print(f"Error: Module file not found: {filepath}")
-            sys.exit(1)
-        modules = extract_modules(filepath)
-        selected = next((m for m in modules if m.name == mod['module_name']), None)
-        if not selected:
-            print(f"Error: Module '{mod['module_name']}' not found in {filepath}")
-            sys.exit(1)
-        all_modules.append(selected)
-        print(f"Info: Refreshed {mod['module_name']} from {filepath}")
-    
-    # === 计算端口变更 ===
-    old_snapshot = config.get('port_snapshot', {})
-    port_changes = {}
-    deleted_ports = {}
-    new_snapshot = {}
-    has_changes = False
-    
-    for module in all_modules:
-        mod_name = module.name
-        old_ports = {p['name']: (p['direction'], p['width']) for p in old_snapshot.get(mod_name, [])}
-        new_ports = {n: (d, w) for d, w, n in module.ports}
-        new_snapshot[mod_name] = [{'direction': d, 'width': w, 'name': n} for d, w, n in module.ports]
-        
-        mod_changes = {}
-        for port_name, (direction, width) in new_ports.items():
-            if port_name not in old_ports:
-                mod_changes[port_name] = 'NEW'
-                has_changes = True
-            elif old_ports[port_name] != (direction, width):
-                mod_changes[port_name] = 'MOD'
-                has_changes = True
-        
-        mod_deleted = []
-        for port_name in old_ports:
-            if port_name not in new_ports:
-                direction, width = old_ports[port_name]
-                mod_deleted.append((port_name, direction, width))
-                has_changes = True
-        
-        if mod_deleted:
-            deleted_ports[mod_name] = mod_deleted
-            deleted_names = [p[0] for p in mod_deleted]
-            print(f"  [!] {mod_name}: deleted ports: {', '.join(deleted_names)}")
-        
-        if mod_changes:
-            port_changes[mod_name] = mod_changes
-            for port_name, mark in mod_changes.items():
-                print(f"  [{mark}] {mod_name}.{port_name}")
-    
-    if has_changes:
-        print()
-    
-    # 重新生成顶层
-    top_code = generate_top(all_modules, top_name, port_map, port_changes, deleted_ports)
-    
-    # 更新配置文件中的快照
-    config['port_snapshot'] = new_snapshot
-    
-    if output_file:
-        with open(output_file, 'w') as f:
-            f.write(top_code)
-        print(f"\nInfo: Top module updated and written to {output_file}")
-    else:
-        print(f"\nInfo: Top module '{top_name}' updated (no output file specified)")
-        print(top_code)
-    
-    # 保存更新后的配置文件
-    with open(config_path, 'w') as f:
-        json.dump(config, f, indent=2, ensure_ascii=False)
-    print(f"Info: Config updated: {config_path}")
-    
-    # 生成 CSV review 文件
-    config_dir = os.path.dirname(config_path)
-    csv_path = os.path.join(config_dir, f"{top_name}.integrate.csv")
-    
-    csv_rows = [['Module', 'Port', 'Direction', 'Width', 'Signal', 'Shared_With', 'Status']]
-    for module in all_modules:
-        mod_name = module.name
-        mod_changes_map = port_changes.get(mod_name, {})
-        old_ports_dict = {p['name']: (p['direction'], p['width']) for p in old_snapshot.get(mod_name, [])}
-        
-        for direction, width, port_name in module.ports:
-            map_key = f"{mod_name}.{port_name}"
-            signal = port_map.get(map_key, f"{mod_name.lower()}_{port_name}")
-            
-            shared_with = ''
-            shared_signals = config.get('shared_signals', {})
-            if signal in shared_signals:
-                others = [mp.split('.', 1)[0] for mp in shared_signals[signal] if mp != map_key]
-                if others:
-                    shared_with = ', '.join(sorted(set(others)))
-            
-            status = mod_changes_map.get(port_name, '')
-            csv_rows.append([
-                mod_name, port_name, direction, width if width else '',
-                signal, shared_with, status
-            ])
-        
-        current_port_names = {n for _, _, n in module.ports}
-        for port_name, (direction, width) in old_ports_dict.items():
-            if port_name not in current_port_names:
-                csv_rows.append([
-                    mod_name, port_name, direction, width if width else '',
-                    '', '', 'DEL'
-                ])
-    
-    with open(csv_path, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(csv_rows)
-    print(f"Info: CSV review updated: {csv_path}")
+        print(code, end='')
+    directory = Path(args.output).resolve().parent if args.output else Path.cwd()
+    if args.track:
+        config = dict(top_module=name, output_file=str(Path(args.output).resolve()) if args.output else None,
+                      modules=[dict(file=i['module'].file, module_name=i['module'].name, instance_name=i['instance']) for i in instances],
+                      port_map=data, mappings=PortMap(data).mappings, shared_signals=shared,
+                      port_snapshot={i['module'].name: i['module'].metadata()['ports'] for i in instances}, checks=checks)
+        write_json(directory / f'{name}.integrate.json', config)
+    if args.csv:
+        with open(directory / f'{name}.integrate.csv', 'w', newline='') as stream:
+            writer = csv.writer(stream)
+            writer.writerow(['Module', 'Instance', 'Port', 'Direction', 'Width', 'Signal', 'Shared_With', 'Status', 'Checks'])
+            for row in rows:
+                others = [k for k in shared.get(net_base(row['signal']), []) if k != row['key']]
+                status = next((m.split(']')[0][1:] for m in changes or [] if row['key'] in m), '')
+                warnings = '; '.join(c['code'] for c in checks if row['key'] in c['ports'])
+                writer.writerow([row['module'], row['instance'], row['port'], row['direction'], row['width'], row['signal'], ', '.join(others), status, warnings])
+    return checks
 
 
-def generate_top(modules, top_name="soc_top", port_map=None, port_changes=None, deleted_ports=None):
-    """
-    port_changes: {module_name: {port_name: 'NEW'|'MOD', ...}, ...}
-    deleted_ports: {module_name: [(port_name, direction, width), ...], ...}
-    """
-    """生成顶层SoC模块，智能连接同名端口
-    
-    规则：
-    1. 同名端口且所有方向都是 input/inout → 顶层 input 端口（外部输入）
-    2. 同名端口 output + input 混合 → 内部 wire（output 驱动 input）
-    3. 同名端口 output + output → 不共享，各自独立
-    4. 独有端口 → 作为顶层端口（加模块前缀避免冲突）
-    5. 端口映射: 通过 port_map 把不同名端口映射到同一信号名
-    
-    port_map 格式: {"module_name.port_name": "target_signal_name", ...}
-    """
-    if port_map is None:
-        port_map = {}
-    
-    # 1. 收集所有端口，应用映射，按 target_name 分组
-    mapped_ports = {}  # target_name -> [(module, direction, width, original_name), ...]
-    for module in modules:
-        for direction, width, name in module.ports:
-            map_key = f"{module.name}.{name}"
-            target_name = port_map.get(map_key, name)
-            
-            if target_name not in mapped_ports:
-                mapped_ports[target_name] = []
-            mapped_ports[target_name].append((module, direction, width, name))
-    
-    # 2. 判断共享端口（基于 target_name）
-    #   input+input   → external_shared: 顶层 input 端口（外部输入）
-    #   output+input  → internal_signals: 内部 wire（output 驱动 input）
-    #   output+output → module_unique:   各自独立，不共享
-    external_shared = {}   # target_name -> (direction, width)  顶层端口
-    internal_signals = {}  # target_name -> width               内部 wire
-    module_unique = {}     # module.name -> {original_port_name: (direction, width, target_name)}
-    
-    for target_name, entries in mapped_ports.items():
-        directions = [e[1] for e in entries]
-        unique_dirs = set(directions)
-        
-        # input + input (>=2 modules, all input/inout) → 顶层 input 端口
-        if len(entries) >= 2 and len(unique_dirs) == 1 and list(unique_dirs)[0] in ('input', 'inout'):
-            width = entries[0][2]
-            first_module = entries[0][0]
-            resolved_width = resolve_param_width(width, first_module.params)
-            external_shared[target_name] = (list(unique_dirs)[0], resolved_width)
-        
-        # output + input (mixed) → 内部 wire（output 驱动 input）
-        elif len(entries) >= 2 and unique_dirs == {'input', 'output'} and directions.count('output') == 1:
-            output_entry = next(e for e in entries if e[1] == 'output')
-            width = output_entry[2]
-            resolved_width = resolve_param_width(width, output_entry[0].params)
-            internal_signals[target_name] = resolved_width
-        
-        # 其他情况（包括 output+output）→ 不共享
+def compare_ports(module, snapshot):
+    old = {p['name']: (p['direction'], p['width']) for p in snapshot['ports']}
+    now = {n: (d, w) for d, w, n in module.ports}
+    messages = []
+    for name in sorted(now.keys() - old.keys()):
+        messages.append(f'[NEW] {module.name}.{name}')
+    for name in sorted(old.keys() - now.keys()):
+        messages.append(f'[DEL] {module.name}.{name}')
+    for name in sorted(old.keys() & now.keys()):
+        if old[name] != now[name]:
+            messages.append(f'[MOD] {module.name}.{name}: {old[name]} -> {now[name]}')
+    return messages
+
+
+def parser():
+    cli = argparse.ArgumentParser(description=__doc__)
+    subs = cli.add_subparsers(dest='command', required=True)
+    for command in ('extract', 'instantiate', 'wrap', 'csv', 'snapshot', 'diff', 'check', 'extract-map', 'integrate', 'update', 'remove'):
+        sub = subs.add_parser(command)
+        sub.add_argument('-I', '--include-dir', dest='include_dirs', action='append', default=[])
+        sub.add_argument('-D', '--define', dest='defines', action='append', default=[])
+        sub.add_argument('--strict', action='store_true', help='Warnings fail without writing outputs')
+        sub.add_argument('-m', '--module')
+        sub.add_argument('-n', '--name')
+        sub.add_argument('-o', '--output')
+        if command == 'integrate':
+            sub.add_argument('files', nargs='+')
         else:
-            for module, direction, width, original_name in entries:
-                if module.name not in module_unique:
-                    module_unique[module.name] = {}
-                resolved_width = resolve_param_width(width, module.params)
-                module_unique[module.name][original_name] = (direction, resolved_width, target_name)
-    
-    # 3. 计算对齐参数
-    # 收集所有顶层端口用于计算对齐宽度
-    all_top_ports = []
-    for name, (direction, width) in external_shared.items():
-        all_top_ports.append((direction, width, name))
-    for module in modules:
-        if module.name in module_unique:
-            for name, (direction, width, target_name) in module_unique[module.name].items():
-                map_key = f"{module.name}.{name}"
-                if map_key in port_map:
-                    sig_name = target_name
-                else:
-                    sig_name = f"{module.name.lower()}_{target_name}"
-                all_top_ports.append((direction, width, sig_name))
-    
-    max_dir_len = max(len(d) for d, _, _ in all_top_ports) if all_top_ports else 0
-    max_width_len = max(len(w) if w else 0 for _, w, _ in all_top_ports) if all_top_ports else 0
-    
-    # 计算每个模块实例化的端口名最大长度（用于 .port(signal) 对齐）
-    inst_port_max = {}
-    for module in modules:
-        inst_port_max[module.name] = max(len(name) for _, _, name in module.ports) if module.ports else 0
-    
-    # 辅助函数：格式化端口声明行
-    def fmt_port(direction, width, name):
-        w = width if width else ""
-        return f"    {direction:<{max_dir_len}} {w:<{max_width_len}} {name}"
-    
-    # 辅助函数：格式化 wire 声明行
-    def fmt_wire(width, name, mod_max_width):
-        w = width if width else ""
-        return f"    wire {w:<{mod_max_width}} {name};"
-    
-    # 辅助函数：格式化实例化端口连接
-    def fmt_inst(port, signal, max_len):
-        return f"        .{port:<{max_len}} ({signal})"
-    
-    # 4. 生成顶层模块
-    lines = []
-    lines.append("// ============================================================================")
-    lines.append(f"// {top_name}")
-    lines.append("// ============================================================================")
-    lines.append("// AUTO-GENERATED by soc_integrate.py")
-    lines.append(f"// Timestamp: {datetime.now().isoformat()}")
-    lines.append("//")
-    lines.append("// DO NOT EDIT THIS FILE DIRECTLY.")
-    lines.append("// Modify sub-modules and re-run: soc_integrate.py integrate ...")
-    lines.append("// For manual connections, use assign statements in a separate file.")
-    lines.append("// ============================================================================")
-    lines.append("")
-    lines.append(f"module {top_name} (")
-    
-    # 顶层端口列表
-    top_port_list = []
-    internal_wires = []
-    
-    # 外部共享端口（input+input）→ 顶层 input 端口
-    for name, (direction, width) in external_shared.items():
-        top_port_list.append(fmt_port(direction, width, name))
-    
-    # 内部共享信号（output+input）→ 内部 wire 声明
-    for name, width in internal_signals.items():
-        w_str = f" {width}" if width else ""
-        internal_wires.append(f"    wire{w_str} {name};")
-    
-    # 独有端口 → 顶层端口
-    for module in modules:
-        if module.name in module_unique:
-            for original_name, (direction, width, target_name) in module_unique[module.name].items():
-                map_key = f"{module.name}.{original_name}"
-                if map_key in port_map:
-                    sig_name = target_name
-                else:
-                    sig_name = f"{module.name.lower()}_{target_name}"
-                top_port_list.append(fmt_port(direction, width, sig_name))
-    
-    lines.append(",\n".join(top_port_list))
-    lines.append(");")
-    lines.append("")
-    
-    # 内部wire声明
-    if internal_wires:
-        lines.append("    // Internal shared signals")
-        for wire_decl in internal_wires:
-            lines.append(wire_decl)
-        lines.append("")
-    
-    # 5. 实例化
-    for module in modules:
-        instance_name = f"u_{module.name.lower()}"
-        max_p = inst_port_max[module.name]
-        
-        # 参数
-        if module.params:
-            lines.append(f"    {module.name} #(")
-            for i, (pname, pdefault, pwidth) in enumerate(module.params):
-                comma = "," if i < len(module.params) - 1 else ""
-                lines.append(f"        .{pname:<{max_p}} ({pdefault}){comma}")
-            lines.append(f"    ) {instance_name} (")
+            sub.add_argument('file')
+        if command in ('integrate', 'update', 'remove'):
+            sub.add_argument('--map')
+            sub.add_argument('--csv', action='store_true', help='Opt in to review CSV')
+            sub.add_argument('--track', action='store_true', help='Opt in to .integrate.json')
+            sub.add_argument('--no-config', action='store_true', help=argparse.SUPPRESS)
+        if command in ('update', 'diff', 'check', 'remove'):
+            sub.add_argument('--files', nargs='+', default=[])
+        if command in ('diff', 'check'):
+            sub.add_argument('snapshot', nargs='?')
+        if command == 'remove':
+            sub.add_argument('module_name')
+        if command == 'extract-map':
+            sub.add_argument('--verify', nargs='+')
+            sub.add_argument('--expand', action='store_true')
+        if command == 'snapshot':
+            sub.add_argument('-f', '--format', choices=('json', 'csv', 'both'), default='both')
+            sub.add_argument('-v', '--version', default='1.0.0')
+            sub.add_argument('-c', '--changelog', default='')
+    return cli
+
+
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    expanded = []
+    for arg in argv:
+        if arg.startswith('+incdir+'):
+            for directory in arg[len('+incdir+'):].split('+'):
+                expanded += ['-I', directory]
+        elif arg.startswith('+define+'):
+            for define in arg[len('+define+'):].split('+'):
+                expanded += ['-D', define]
         else:
-            lines.append(f"    {module.name} {instance_name} (")
-        
-        # 先计算所有端口连接行的最大长度（用于注释对齐）
-        port_lines = []
-        for i, (direction, width, name) in enumerate(module.ports):
-            comma = "," if i < len(module.ports) - 1 else ""
-            w = resolve_param_width(width, module.params) if width else ""
-            map_key = f"{module.name}.{name}"
-            target_name = port_map.get(map_key, name)
-            
-            if target_name in external_shared or target_name in internal_signals:
-                signal = target_name
+            expanded.append(arg)
+    args = parser().parse_args(expanded)
+    options = dict(include_dirs=args.include_dirs, defines=args.defines)
+    if getattr(args, 'no_config', False):
+        args.track = False
+    try:
+        if args.command == 'integrate':
+            modules = [select_module(file, **options) for file in args.files]
+            data = json.loads(Path(args.map).read_text()) if args.map else {}
+            emit_result(args, default_instances(modules, data), args.name or 'soc_top', data)
+        elif args.command in ('update', 'remove') or (args.command in ('diff', 'check') and not args.snapshot):
+            target, name, instances, meta, top, config = load_update(args.file, args.files, options)
+            if args.command == 'remove':
+                instances = [i for i in instances if i['module'].name != args.module_name]
+            messages, checks = port_changes(instances, meta)
+            for message in messages:
+                print(message)
+            if args.command == 'diff':
+                report_checks(checks)
+                if args.strict and checks:
+                    return 1
+            elif args.command == 'check':
+                _, _, graph_checks, _, _ = build_top(instances, name, meta.get('port_map', {}), top)
+                report_checks(checks + graph_checks)
+                if args.strict and (checks or graph_checks):
+                    return 1
             else:
-                if map_key in port_map:
-                    signal = target_name
-                else:
-                    signal = f"{module.name.lower()}_{target_name}"
-            
-            if w:
-                line = f"        .{name:<{max_p}} ({signal}{w}){comma}"
+                data = json.loads(Path(args.map).read_text()) if args.map else meta.get('port_map', config.get('port_map', {'mappings': config.get('mappings', {})}))
+                args.output = args.output or target
+                emit_result(args, instances, args.name or name, data, top, messages, checks)
+        elif args.command == 'extract-map':
+            data = extract_map_from_top(args.file, args.expand)
+            if args.verify:
+                available = {m.name: m for f in args.verify for m in extract_modules(f, **options)}
+                for inst in data['instances']:
+                    module = available.get(inst['module'])
+                    if not module:
+                        raise ValueError(f'unknown module {inst["module"]}')
+                    unknown = set(inst['ports']) - {n for _, _, n in module.ports}
+                    if unknown:
+                        raise ValueError(f'unknown ports on {inst["instance"]}: {sorted(unknown)}')
+            if args.output:
+                write_json(args.output, data)
             else:
-                line = f"        .{name:<{max_p}} ({signal}){comma}"
-            port_lines.append((line, direction, width, name))
-        
-        max_line_len = max(len(l) for l, _, _, _ in port_lines) if port_lines else 0
-        
-        # 输出端口连接，注释放在行尾
-        mod_changes = (port_changes or {}).get(module.name, {})
-        for line, direction, width, name in port_lines:
-            change_mark = mod_changes.get(name, '')
-            if change_mark:
-                comment = f"// {direction} [{change_mark}]"
+                print(json.dumps(data, indent=2))
+        else:
+            module = select_module(args.file, args.module, **options)
+            if args.command == 'extract':
+                text = json.dumps(module.metadata(), indent=2)
+            elif args.command == 'instantiate':
+                text = generate_instance(module, args.name)
+            elif args.command == 'wrap':
+                text = generate_wrapper(module, args.name)
+            elif args.command == 'csv':
+                export_csv(module, args.output or 'ports.csv')
+                return 0
+            elif args.command == 'snapshot':
+                prefix = args.output or str(Path(args.file).with_name(module.name + '_ports'))
+                data = dict(module.metadata(), version=args.version, changelog=args.changelog)
+                if args.format in ('json', 'both'):
+                    write_json(prefix + '.json', data)
+                if args.format in ('csv', 'both'):
+                    export_csv(module, prefix + '.csv')
+                return 0
             else:
-                comment = f"// {direction}"
-            lines.append(f"{line:<{max_line_len}}  {comment}")
-        
-        # 添加删除端口的注释
-        mod_deleted = (deleted_ports or {}).get(module.name, [])
-        for port_name, direction, width in mod_deleted:
-            w_str = f" {width}" if width else ""
-            lines.append(f"        // [DEL] {port_name} ({direction}{w_str})")
-        
-        lines.append("    );")
-        lines.append("")
-    
-    lines.append("endmodule")
-    return "\n".join(lines)
-
-
-def extract_map_from_top(top_file):
-    """从顶层 .v 文件中提取实例化连接关系，生成 port map
-    
-    返回: {
-        "mappings": {"module.port": "signal", ...},
-        "shared_signals": {"signal": ["module.port", ...], ...},
-        "instances": [{"module": "...", "instance": "...", "ports": {...}}, ...]
-    }
-    """
-    with open(top_file, 'r') as f:
-        content = f.read()
-    
-    # 去掉单行注释和多行注释
-    content = re.sub(r'//.*', '', content)
-    content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
-    
-    # 先去掉参数块 #( ... )，处理一层嵌套括号
-    content = re.sub(r'#\s*\((?:[^()]|\([^)]*\))*\)', '', content)
-    
-    # 匹配实例化块: module_name instance_name ( ... );
-    # 排除 module 声明 (module top_name (...))
-    inst_pattern = r'(\w+)\s+(\w+)\s*\((.*?)\)\s*;'
-    
-    mappings = {}
-    shared_signals = {}  # signal -> [module.port, ...]
-    instances = []
-    
-    for match in re.finditer(inst_pattern, content, re.DOTALL):
-        module_name = match.group(1)
-        instance_name = match.group(2)
-        port_block = match.group(3)
-        
-        # 跳过 module 声明
-        if module_name == 'module' or module_name == 'endmodule':
-            continue
-        
-        # 提取 .port(signal) 连接
-        port_pattern = r'\.(\w+)\s*\(\s*([^)]+?)\s*\)'
-        inst_ports = {}
-        
-        for port_match in re.finditer(port_pattern, port_block):
-            port_name = port_match.group(1)
-            signal_name = port_match.group(2).strip()
-            
-            # 去掉位宽标注，如 signal[3:0]、signal[31:0] → signal
-            signal_name = re.sub(r'\[.*?\]$', '', signal_name)
-            
-            inst_ports[port_name] = signal_name
-            
-            map_key = f"{module_name}.{port_name}"
-            mappings[map_key] = signal_name
-            
-            # 记录共享信号
-            if signal_name not in shared_signals:
-                shared_signals[signal_name] = []
-            shared_signals[signal_name].append(map_key)
-        
-        instances.append({
-            'module': module_name,
-            'instance': instance_name,
-            'ports': inst_ports
-        })
-    
-    # 只保留真正有共享的信号（连接数 >= 2）
-    shared_signals = {k: v for k, v in shared_signals.items() if len(v) >= 2}
-    
-    return {
-        'mappings': mappings,
-        'shared_signals': shared_signals,
-        'instances': instances
-    }
-
-
-def main():
-    parser = argparse.ArgumentParser(description='SoC Integrate - 顶层集成工具')
-    subparsers = parser.add_subparsers(dest='command')
-    
-    # extract 命令
-    extract_parser = subparsers.add_parser('extract', help='提取模块端口')
-    extract_parser.add_argument('file', help='Verilog文件路径')
-    extract_parser.add_argument('-m', '--module', help='指定模块名（文件中有多个模块时）')
-    extract_parser.add_argument('-o', '--output', help='输出文件路径')
-    
-    # instantiate 命令
-    inst_parser = subparsers.add_parser('instantiate', help='生成实例化代码')
-    inst_parser.add_argument('file', help='Verilog文件路径')
-    inst_parser.add_argument('-m', '--module', help='指定模块名')
-    inst_parser.add_argument('-n', '--name', help='实例名')
-    inst_parser.add_argument('-o', '--output', help='输出文件路径')
-    
-    # wrap 命令
-    wrap_parser = subparsers.add_parser('wrap', help='生成wrapper模块')
-    wrap_parser.add_argument('file', help='Verilog文件路径')
-    wrap_parser.add_argument('-m', '--module', help='指定模块名')
-    wrap_parser.add_argument('-n', '--name', help='wrapper模块名')
-    wrap_parser.add_argument('-o', '--output', help='输出文件路径')
-    
-    # csv 命令
-    csv_parser = subparsers.add_parser('csv', help='导出端口到CSV')
-    csv_parser.add_argument('file', help='Verilog文件路径')
-    csv_parser.add_argument('-m', '--module', help='指定模块名')
-    csv_parser.add_argument('-o', '--output', default='ports.csv', help='CSV文件路径')
-    
-    # snapshot 命令 - 保存端口快照
-    snap_parser = subparsers.add_parser('snapshot', help='保存端口快照')
-    snap_parser.add_argument('file', help='Verilog文件路径')
-    snap_parser.add_argument('-m', '--module', help='指定模块名')
-    snap_parser.add_argument('-o', '--output', help='输出文件路径前缀（默认: <module>_ports）')
-    snap_parser.add_argument('-f', '--format', choices=['json', 'csv', 'both'], default='both',
-                            help='输出格式: json/csv/both (默认: both)')
-    snap_parser.add_argument('-v', '--version', default='1.0.0', help='版本号 (默认: 1.0.0)')
-    snap_parser.add_argument('-c', '--changelog', default='', help='变更说明')
-    
-    # diff 命令 - 比较端口变化
-    diff_parser = subparsers.add_parser('diff', help='对比当前端口与快照的差异')
-    diff_parser.add_argument('file', help='当前Verilog文件路径')
-    diff_parser.add_argument('snapshot', help='快照JSON文件路径')
-    diff_parser.add_argument('-m', '--module', help='指定模块名')
-    
-    # check 命令 - 检查端口完整性
-    check_parser = subparsers.add_parser('check', help='检查端口是否符合规范')
-    check_parser.add_argument('file', help='Verilog文件路径')
-    check_parser.add_argument('spec', help='规范JSON文件路径（快照）')
-    check_parser.add_argument('-m', '--module', help='指定模块名')
-    
-    # extract-map 命令 - 从顶层 .v 提取连接关系
-    emap_parser = subparsers.add_parser('extract-map', help='从顶层 .v 提取实例化连接关系，生成 port map')
-    emap_parser.add_argument('file', help='顶层Verilog文件路径')
-    emap_parser.add_argument('-o', '--output', help='输出JSON文件路径（默认: stdout）')
-    emap_parser.add_argument('--verify', nargs='+', help='原始模块Verilog文件列表，用于验证模块和端口存在性')
-    
-    # integrate 命令
-    int_parser = subparsers.add_parser('integrate', help='集成多个模块到顶层')
-    int_parser.add_argument('files', nargs='+', help='Verilog文件路径列表')
-    int_parser.add_argument('-n', '--name', default='soc_top', help='顶层模块名')
-    int_parser.add_argument('-o', '--output', help='输出文件路径')
-    int_parser.add_argument('--map', help='端口映射JSON文件路径 (格式: {"mappings": {"module.port": "signal"}})')
-    int_parser.add_argument('--no-config', action='store_true',
-                           help='不生成 integrate 配置文件')
-    
-    # update 命令 - 一键刷新端口重新生成顶层
-    update_parser = subparsers.add_parser('update', help='根据配置文件重新生成顶层')
-    update_parser.add_argument('config', help='integrate 配置文件路径 (.integrate.json)')
-    update_parser.add_argument('-o', '--output', help='覆盖输出文件路径')
-    update_parser.add_argument('--map', help='覆盖端口映射文件路径')
-    update_parser.add_argument('-n', '--name', help='覆盖顶层模块名')
-    
-    # remove 命令 - 从集成配置中删除模块并自动刷新顶层
-    remove_parser = subparsers.add_parser('remove', help='从集成配置中删除指定模块并自动刷新顶层')
-    remove_parser.add_argument('config', help='integrate 配置文件路径 (.integrate.json)')
-    remove_parser.add_argument('module_name', help='要删除的模块名')
-    
-
-    args = parser.parse_args()
-    
-    if not args.command:
-        parser.print_help()
-        sys.exit(1)
-    
-    # 执行命令
-    if args.command == 'extract':
-        modules = extract_modules(args.file)
-        
-        if args.module:
-            module = next((m for m in modules if m.name == args.module), None)
-            if not module:
-                print(f"Error: Module '{args.module}' not found in {args.file}")
-                sys.exit(1)
-            modules = [module]
-        
-        for module in modules:
-            print(f"\nModule: {module.name}")
-            print(f"Parameters ({len(module.params)}):")
-            for pname, pdefault, pwidth in module.params:
-                width_str = f" {pwidth}" if pwidth else ""
-                print(f"  parameter{width_str} {pname} = {pdefault}")
-            
-            print(f"\nPorts ({len(module.ports)}):")
-            print(f"{'Direction':<10} {'Width':<12} {'Name'}")
-            print("-" * 40)
-            for direction, width, name in module.ports:
-                width_str = width if width else "1"
-                print(f"{direction:<10} {width_str:<12} {name}")
-            
-            print(f"\n--- Port Declarations ---")
-            print(generate_port_declarations(module))
-    
-    elif args.command == 'instantiate':
-        modules = extract_modules(args.file)
-        
-        if args.module:
-            module = next((m for m in modules if m.name == args.module), None)
-        else:
-            module = modules[0] if modules else None
-        
-        if not module:
-            print("Error: No module found")
-            sys.exit(1)
-        
-        instance_code = generate_instance(module, args.name)
-        
-        if args.output:
-            with open(args.output, 'w') as f:
-                f.write(instance_code)
-            print(f"Info: Instance code written to {args.output}")
-        else:
-            print(instance_code)
-    
-    elif args.command == 'wrap':
-        modules = extract_modules(args.file)
-        
-        if args.module:
-            module = next((m for m in modules if m.name == args.module), None)
-        else:
-            module = modules[0] if modules else None
-        
-        if not module:
-            print("Error: No module found")
-            sys.exit(1)
-        
-        wrapper_code = generate_wrapper(module, args.name)
-        
-        if args.output:
-            with open(args.output, 'w') as f:
-                f.write(wrapper_code)
-            print(f"Info: Wrapper written to {args.output}")
-        else:
-            print(wrapper_code)
-    
-    elif args.command == 'csv':
-        modules = extract_modules(args.file)
-        
-        if args.module:
-            module = next((m for m in modules if m.name == args.module), None)
-        else:
-            module = modules[0] if modules else None
-        
-        if not module:
-            print("Error: No module found")
-            sys.exit(1)
-        
-        export_csv(module, args.output)
-    
-    elif args.command == 'extract-map':
-        result = extract_map_from_top(args.file)
-        
-        # 可选：验证模块和端口是否存在于原始文件中
-        verified_modules = {}
-        if args.verify:
-            for vfile in args.verify:
-                modules = extract_modules(vfile)
-                for m in modules:
-                    verified_modules[m.name] = {n for _, _, n in m.ports}
-        
-        # 过滤验证结果
-        valid_mappings = {}
-        warnings = []
-        for map_key, signal in result['mappings'].items():
-            if verified_modules:
-                module_name, port_name = map_key.split('.', 1)
-                if module_name not in verified_modules:
-                    warnings.append(f"Warning: Module '{module_name}' not found in verification files")
-                    valid_mappings[map_key] = signal
-                elif port_name not in verified_modules[module_name]:
-                    warnings.append(f"Warning: Port '{map_key}' not found in module definition")
-                else:
-                    valid_mappings[map_key] = signal
+                messages = compare_ports(module, json.loads(Path(args.snapshot).read_text()))
+                print('\n'.join(messages) if messages else 'No port changes')
+                return 1 if messages and args.command == 'check' else 0
+            if args.output:
+                write_text(args.output, text)
             else:
-                valid_mappings[map_key] = signal
-        
-        result['mappings'] = valid_mappings
-        
-        if warnings:
-            for w in warnings:
-                print(w)
-            print()
-        
-        # 输出报告
-        print(f"Extracted {len(result['instances'])} instances, {len(valid_mappings)} mappings")
-        print(f"Shared signals: {len(result['shared_signals'])}")
-        for sig, conns in result['shared_signals'].items():
-            print(f"  {sig}: {', '.join(conns)}")
-        print()
-        
-        # 生成JSON输出
-        output_data = {
-            'source_file': args.file,
-            'mappings': valid_mappings
-        }
-        if result['shared_signals']:
-            output_data['shared_signals'] = result['shared_signals']
-        
-        json_str = json.dumps(output_data, indent=2, ensure_ascii=False)
-        
-        if args.output:
-            with open(args.output, 'w') as f:
-                f.write(json_str)
-            print(f"Info: Port map written to {args.output}")
-        else:
-            print(json_str)
-    
-    elif args.command == 'integrate':
-        all_modules = []
-        module_configs = []
-        for filepath in args.files:
-            filepath_abs = os.path.abspath(filepath)
-            modules = extract_modules(filepath)
-            if modules:
-                # 默认只取每个文件的第一个模块（主模块）
-                # 如果文件名和模块名匹配，取匹配的模块
-                basename = os.path.splitext(os.path.basename(filepath))[0]
-                matched = [m for m in modules if m.name == basename]
-                if matched:
-                    selected = matched[0]
-                else:
-                    selected = modules[0]
-                all_modules.append(selected)
-                module_configs.append({
-                    'file': filepath_abs,
-                    'module_name': selected.name
-                })
-        
-        # 加载端口映射文件
-        port_map = {}
-        port_map_file = None
-        if args.map:
-            port_map_file = os.path.abspath(args.map)
-            with open(args.map, 'r') as f:
-                map_data = json.load(f)
-            port_map = map_data.get('mappings', {})
-            print(f"Info: Loaded port mappings from {args.map}")
-            for key, val in port_map.items():
-                print(f"  {key} → {val}")
-            print()
-        
-        top_code = generate_top(all_modules, args.name, port_map)
-        
-        output_file = args.output
-        if output_file:
-            output_file = os.path.abspath(output_file)
-            with open(output_file, 'w') as f:
-                f.write(top_code)
-            print(f"Info: Top module written to {output_file}")
-        else:
-            print(top_code)
-        
-        # 保存配置文件（默认启用，--no-config 禁用）
-        if not args.no_config:
-            # 计算共享信号信息（用于配置和CSV）
-            # 反向计算：signal -> [module.port, ...]
-            shared_signals = {}
-            for map_key, signal in port_map.items():
-                if signal not in shared_signals:
-                    shared_signals[signal] = []
-                shared_signals[signal].append(map_key)
-            shared_signals = {k: v for k, v in shared_signals.items() if len(v) >= 2}
-            
-            # 保存端口快照（用于下次 update 时检测增删改）
-            port_snapshot = {}
-            for module in all_modules:
-                port_snapshot[module.name] = [
-                    {'direction': d, 'width': w, 'name': n}
-                    for d, w, n in module.ports
-                ]
-            
-            config_data = {
-                'top_module': args.name,
-                'output_file': output_file,
-                'modules': module_configs,
-                'mappings': port_map,
-                'shared_signals': shared_signals,
-                'port_snapshot': port_snapshot,
-                'generated_at': datetime.now().isoformat()
-            }
-            # 配置文件放在输出文件同目录，或当前目录
-            if output_file:
-                config_dir = os.path.dirname(output_file)
-                config_path = os.path.join(config_dir, f"{args.name}.integrate.json")
-                csv_path = os.path.join(config_dir, f"{args.name}.integrate.csv")
-            else:
-                config_path = f"{args.name}.integrate.json"
-                csv_path = f"{args.name}.integrate.csv"
-            
-            with open(config_path, 'w') as f:
-                json.dump(config_data, f, indent=2, ensure_ascii=False)
-            print(f"Info: Integrate config saved to {config_path}")
-            
-            # 生成 CSV review 文件
-            csv_rows = [['Module', 'Port', 'Direction', 'Width', 'Signal', 'Shared_With', 'Status']]
-            for module in all_modules:
-                for direction, width, port_name in module.ports:
-                    map_key = f"{module.name}.{port_name}"
-                    signal = port_map.get(map_key, f"{module.name.lower()}_{port_name}")
-                    
-                    # 查找共享该信号的其他模块
-                    shared_with = ''
-                    if signal in shared_signals:
-                        others = [mp.split('.', 1)[0] for mp in shared_signals[signal] if mp != map_key]
-                        if others:
-                            shared_with = ', '.join(sorted(set(others)))
-                    
-                    csv_rows.append([
-                        module.name,
-                        port_name,
-                        direction,
-                        width if width else '',
-                        signal,
-                        shared_with,
-                        ''
-                    ])
-            
-            with open(csv_path, 'w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerows(csv_rows)
-            print(f"Info: Integrate review CSV saved to {csv_path}")
-            print(f"      Use 'python3 scripts/soc_integrate.py update {config_path}' to refresh")
-            
-
-    
-    elif args.command == 'remove':
-        # 读取配置文件
-        with open(args.config, 'r') as f:
-            config = json.load(f)
-        
-        module_name = args.module_name
-        modules = config.get('modules', [])
-        removed_mods = [m for m in modules if m['module_name'] == module_name]
-        
-        if not removed_mods:
-            print(f"Error: Module '{module_name}' not found in config")
-            sys.exit(1)
-        
-        # 从 modules 列表中删除
-        config['modules'] = [m for m in modules if m['module_name'] != module_name]
-        
-        # 清理 port_snapshot 中该模块的快照
-        if 'port_snapshot' in config and module_name in config['port_snapshot']:
-            del config['port_snapshot'][module_name]
-        
-        # 清理 mappings 中该模块相关的条目
-        prefix = module_name + '.'
-        if 'mappings' in config:
-            config['mappings'] = {k: v for k, v in config['mappings'].items() if not k.startswith(prefix)}
-        
-        # 清理 shared_signals 中该模块相关的条目
-        if 'shared_signals' in config:
-            new_shared = {}
-            for sig, conns in config['shared_signals'].items():
-                filtered = [mp for mp in conns if not mp.startswith(prefix)]
-                if filtered:
-                    new_shared[sig] = filtered
-            config['shared_signals'] = new_shared
-        
-        print(f"Info: Removed module '{module_name}' from config")
-        print(f"Info: Auto-updating top module ...")
-        print()
-        
-        # 保存中间配置
-        with open(args.config, 'w') as f:
-            json.dump(config, f, indent=2, ensure_ascii=False)
-        
-        # 自动执行 update
-        do_update(config, args.config)
-    
-    elif args.command == 'update':
-        # 读取配置文件
-        with open(args.config, 'r') as f:
-            config = json.load(f)
-        
-        do_update(config, args.config, args.name, args.output, args.map)
-        
-
-    
-    elif args.command == 'snapshot':
-        modules = extract_modules(args.file)
-        
-        if args.module:
-            module = next((m for m in modules if m.name == args.module), None)
-        else:
-            module = modules[0] if modules else None
-        
-        if not module:
-            print("Error: No module found")
-            sys.exit(1)
-        
-        # 构建快照数据
-        snapshot = {
-            "module_name": module.name,
-            "file": os.path.basename(args.file),
-            "timestamp": datetime.now().isoformat(),
-            "version": args.version,
-            "changelog": args.changelog,
-            "params": [
-                {"name": p[0], "default": p[1], "width": p[2]}
-                for p in module.params
-            ],
-            "ports": [
-                {"direction": d, "width": w, "name": n}
-                for d, w, n in module.ports
-            ]
-        }
-        
-        # Default snapshot path = alongside the Verilog source (RTL dir),
-        # not the current working directory. Keeps port history co-located
-        # with the file it describes.
-        if args.output:
-            output_prefix = args.output
-        else:
-            src_dir = os.path.dirname(os.path.abspath(args.file))
-            output_prefix = os.path.join(src_dir, f"{module.name}_ports")
-        
-        # 输出 JSON
-        if args.format in ('json', 'both'):
-            json_file = output_prefix + ".json"
-            with open(json_file, 'w') as f:
-                json.dump(snapshot, f, indent=2)
-            print(f"Info: JSON snapshot saved to {json_file}")
-        
-        # 输出 CSV
-        if args.format in ('csv', 'both'):
-            csv_file = output_prefix + ".csv"
-            with open(csv_file, 'w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow(['Module', module.name])
-                writer.writerow(['Version', args.version])
-                writer.writerow(['File', os.path.basename(args.file)])
-                writer.writerow(['Timestamp', snapshot['timestamp']])
-                if args.changelog:
-                    writer.writerow(['Changelog', args.changelog])
-                writer.writerow([])
-                
-                if module.params:
-                    writer.writerow(['=== Parameters ==='])
-                    writer.writerow(['Name', 'Default', 'Width'])
-                    for p in module.params:
-                        writer.writerow([p[0], p[1], p[2]])
-                    writer.writerow([])
-                
-                writer.writerow(['=== Ports ==='])
-                writer.writerow(['Direction', 'Width', 'Name'])
-                for d, w, n in module.ports:
-                    writer.writerow([d, w if w else '', n])
-            print(f"Info: CSV snapshot saved to {csv_file}")
-    
-    elif args.command == 'diff':
-        modules = extract_modules(args.file)
-        
-        if args.module:
-            module = next((m for m in modules if m.name == args.module), None)
-        else:
-            module = modules[0] if modules else None
-        
-        if not module:
-            print("Error: No module found")
-            sys.exit(1)
-        
-        # 加载快照
-        with open(args.snapshot, 'r') as f:
-            snapshot = json.load(f)
-        
-        # 构建当前端口字典
-        current_ports = {n: (d, w) for d, w, n in module.ports}
-        snapshot_ports = {p['name']: (p['direction'], p['width']) for p in snapshot['ports']}
-        
-        current_names = set(current_ports.keys())
-        snapshot_names = set(snapshot_ports.keys())
-        
-        added = current_names - snapshot_names
-        removed = snapshot_names - current_names
-        common = current_names & snapshot_names
-        
-        modified = []
-        for name in common:
-            curr_dir, curr_w = current_ports[name]
-            snap_dir, snap_w = snapshot_ports[name]
-            if curr_dir != snap_dir or curr_w != snap_w:
-                modified.append({
-                    'name': name,
-                    'old': (snap_dir, snap_w),
-                    'new': (curr_dir, curr_w)
-                })
-        
-        # 输出差异报告
-        print(f"\n{'='*60}")
-        print(f"Port Diff: {module.name}")
-        print(f"{'='*60}")
-        print(f"Snapshot: {snapshot['file']} ({snapshot['timestamp']})")
-        print(f"Current:  {os.path.basename(args.file)}")
-        print()
-        
-        if added:
-            print(f"[+] Added ({len(added)}):")
-            for name in sorted(added):
-                d, w = current_ports[name]
-                w_str = f" {w}" if w else ""
-                print(f"    {d:<6}{w_str:<12} {name}")
-            print()
-        
-        if removed:
-            print(f"[-] Removed ({len(removed)}):")
-            for name in sorted(removed):
-                d, w = snapshot_ports[name]
-                w_str = f" {w}" if w else ""
-                print(f"    {d:<6}{w_str:<12} {name}")
-            print()
-        
-        if modified:
-            print(f"[~] Modified ({len(modified)}):")
-            for item in modified:
-                name = item['name']
-                old_d, old_w = item['old']
-                new_d, new_w = item['new']
-                old_w_str = old_w if old_w else ""
-                new_w_str = new_w if new_w else ""
-                
-                changes = []
-                if old_d != new_d:
-                    changes.append(f"direction: {old_d}→{new_d}")
-                if old_w != new_w:
-                    changes.append(f"width: {old_w_str}→{new_w_str}")
-                
-                print(f"    {old_d:<6} {old_w_str:<10} {name}")
-                print(f"    ↓")
-                print(f"    {new_d:<6} {new_w_str:<10} {name}  ({', '.join(changes)})")
-                print()
-        
-        if not added and not removed and not modified:
-            print("✓ No changes detected. Ports are identical.")
-        else:
-            total = len(added) + len(removed) + len(modified)
-            print(f"Summary: {total} changes ({len(added)} added, {len(removed)} removed, {len(modified)} modified)")
-    
-    elif args.command == 'check':
-        modules = extract_modules(args.file)
-        
-        if args.module:
-            module = next((m for m in modules if m.name == args.module), None)
-        else:
-            module = modules[0] if modules else None
-        
-        if not module:
-            print("Error: No module found")
-            sys.exit(1)
-        
-        # 加载规范
-        with open(args.spec, 'r') as f:
-            spec = json.load(f)
-        
-        current_ports = {n: (d, w) for d, w, n in module.ports}
-        spec_ports = {p['name']: (p['direction'], p['width']) for p in spec['ports']}
-        
-        current_names = set(current_ports.keys())
-        spec_names = set(spec_ports.keys())
-        
-        missing = spec_names - current_names      # 规范有但当前没有
-        extra = current_names - spec_names         # 当前有但规范没有
-        common = current_names & spec_names
-        
-        mismatched = []
-        for name in common:
-            curr_dir, curr_w = current_ports[name]
-            spec_dir, spec_w = spec_ports[name]
-            if curr_dir != spec_dir or curr_w != spec_w:
-                mismatched.append({
-                    'name': name,
-                    'expected': (spec_dir, spec_w),
-                    'actual': (curr_dir, curr_w)
-                })
-        
-        print(f"\n{'='*60}")
-        print(f"Port Check: {module.name}")
-        print(f"{'='*60}")
-        print(f"Spec:     {args.spec}")
-        print(f"Current:  {os.path.basename(args.file)}")
-        print()
-        
-        errors = 0
-        
-        if missing:
-            print(f"[!] Missing ({len(missing)}) - required by spec but not found:")
-            for name in sorted(missing):
-                d, w = spec_ports[name]
-                w_str = f" {w}" if w else ""
-                print(f"    {d:<6}{w_str:<12} {name}")
-                errors += 1
-            print()
-        
-        if extra:
-            print(f"[!] Extra ({len(extra)}) - not in spec:")
-            for name in sorted(extra):
-                d, w = current_ports[name]
-                w_str = f" {w}" if w else ""
-                print(f"    {d:<6}{w_str:<12} {name}")
-                errors += 1
-            print()
-        
-        if mismatched:
-            print(f"[!] Mismatched ({len(mismatched)}) - does not match spec:")
-            for item in mismatched:
-                name = item['name']
-                exp_d, exp_w = item['expected']
-                act_d, act_w = item['actual']
-                exp_w_str = exp_w if exp_w else ""
-                act_w_str = act_w if act_w else ""
-                print(f"    Expected: {exp_d:<6} {exp_w_str:<10} {name}")
-                print(f"    Actual:   {act_d:<6} {act_w_str:<10} {name}")
-                errors += 1
-            print()
-        
-        if errors == 0:
-            print(f"✓ All {len(spec_ports)} ports match the spec.")
-        else:
-            print(f"✗ Found {errors} issues. Please fix before integration.")
-            sys.exit(1)
+                print(text, end='' if text.endswith('\n') else '\n')
+        return 0
+    except (ValueError, OSError, KeyError, re.error) as exc:
+        print(f'Error: {exc}', file=sys.stderr)
+        return 1
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
