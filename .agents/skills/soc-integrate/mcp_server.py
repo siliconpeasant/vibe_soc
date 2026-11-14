@@ -84,7 +84,8 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
                   csv: bool = False, track: bool = False, strict: bool = False,
                   include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None,
                   lint_config: bool = False, library_dirs: list[str] | None = None,
-                  vendor_dirs: list[str] | None = None, force: bool = False) -> str:
+                  vendor_dirs: list[str] | None = None, force: bool = False,
+                  flist: bool = False, smoke_tb: bool = False, cycles: int = 10) -> str:
     """Generate a top and print width/driver/connectivity/heuristic CDC checks.
 
     Exact instance.port then legacy module.port keys override ordered regex/glob
@@ -92,8 +93,9 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
     lint_config emits vendor-scoped .vlt/.lint.f; generated top warnings stay fatal.
     csv opts into review CSV; track opts into .integrate.json (both default off).
     strict rejects warnings before writing outputs. CDC checks are structural hints.
+    flist emits a package-first .f; smoke_tb emits a bounded harness and build/run command.
 
-    Parameters: module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force
+    Parameters: module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force, flist, smoke_tb, cycles
     """
     args = module_files + _options(name=top_name, output=output_file, map=port_map)
     if csv:
@@ -106,6 +108,10 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
         args += ['-y', directory]
     if force:
         args += ['--force']
+    if flist:
+        args += ['--flist']
+    if smoke_tb:
+        args += ['--smoke-tb', '--cycles', str(cycles)]
     for directory in vendor_dirs or []:
         args += ['--vendor-dir', directory]
     return _call('integrate', args, include_dirs, defines, strict, packages)
@@ -238,6 +244,82 @@ def soc_remove(config_file: str, module_name: str, module_files: list[str] | Non
     for directory in vendor_dirs or []:
         args += ['--vendor-dir', directory]
     return _call('remove', args, include_dirs, defines, strict, packages)
+
+
+@mcp.tool()
+def soc_flist(top_file: str, output: str = '', module_files: list[str] | None = None,
+              search_path: str = '', recursive: bool = True, include_dirs: list[str] | None = None,
+              defines: list[str] | None = None, packages: list[str] | None = None,
+              library_dirs: list[str] | None = None) -> str:
+    """Write a package-first integration filelist; optional discovery reuses soc-build.
+
+    Tracked tops supply child sources; module_files replaces those dependencies.
+    XML interfaces require HDL implementations. No lint waivers are added.
+
+    Parameters: top_file, output, module_files, search_path, recursive, include_dirs, defines, packages, library_dirs
+    """
+    args = [top_file] + _options(output=output, search_path=search_path)
+    if module_files:
+        args += ['--files'] + module_files
+    if not recursive:
+        args += ['--no-recursive']
+    for directory in library_dirs or []:
+        args += ['-y', directory]
+    return _call('flist', args, include_dirs, defines, packages=packages)
+
+
+@mcp.tool()
+def soc_smoke_tb(top_file: str, output: str = '', module_name: str = '', cycles: int = 10,
+                 reset_cycles: int = 2, period: int = 10, run: bool = False,
+                 module_files: list[str] | None = None, include_dirs: list[str] | None = None,
+                 defines: list[str] | None = None, packages: list[str] | None = None,
+                 library_dirs: list[str] | None = None) -> str:
+    """Generate a Verilator clock/reset smoke harness and optional real build/run.
+
+    Inputs tie to zero; detected resets assert then release with naming polarity.
+    run builds in a disposable directory and requires the executable's PASS line.
+    Inout/interface ports require a separately reviewed testbench.
+
+    Parameters: top_file, output, module_name, cycles, reset_cycles, period, run, module_files, include_dirs, defines, packages, library_dirs
+    """
+    args = [top_file] + _options(output=output, module=module_name)
+    args += ['--cycles', str(cycles), '--reset-cycles', str(reset_cycles), '--period', str(period)]
+    if run:
+        args += ['--run']
+    if module_files:
+        args += ['--files'] + module_files
+    for directory in library_dirs or []:
+        args += ['-y', directory]
+    return _call('smoke-tb', args, include_dirs, defines, packages=packages)
+
+
+@mcp.tool()
+def soc_ipxact_import(component_file: str, output: str = '',
+                      packages: list[str] | None = None) -> str:
+    """Import IEEE 1685-2014/2022 component wire ports and bus-interface metadata.
+
+    Emits the same module JSON model as soc_extract. Register maps use xml2yml.
+
+    Parameters: component_file, output, packages
+    """
+    return _call('ipxact-import', [component_file] + _options(output=output), packages=packages)
+
+
+@mcp.tool()
+def soc_ipxact_export(verilog_file: str, output: str = '', module_name: str = '',
+                      ipxact_version: str = '2014', bus_interfaces: str = '',
+                      include_dirs: list[str] | None = None, defines: list[str] | None = None,
+                      packages: list[str] | None = None) -> str:
+    """Export a module/top as an IP-XACT component, retaining known bus groups.
+
+    bus_interfaces optionally names a JSON object containing bus_interfaces.
+    Packed wire ports are supported; native HDL interfaces/unpacked arrays fail.
+
+    Parameters: verilog_file, output, module_name, ipxact_version, bus_interfaces, include_dirs, defines, packages
+    """
+    args = [verilog_file] + _options(output=output, module=module_name,
+                                    ipxact_version=ipxact_version, bus_interfaces=bus_interfaces)
+    return _call('ipxact-export', args, include_dirs, defines, packages=packages)
 
 
 if __name__ == '__main__':

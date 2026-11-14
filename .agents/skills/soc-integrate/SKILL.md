@@ -13,6 +13,17 @@ Tools:
 - `soc_extract`, `soc_instantiate`, `soc_wrap`, `soc_csv`
 - `soc_integrate`, `soc_check`, `soc_extract_map`, `soc_update`, `soc_remove`
 - `soc_snapshot`, `soc_diff`
+- `soc_flist`, `soc_smoke_tb`, `soc_ipxact_import`, `soc_ipxact_export`
+
+## Implementation and compatibility
+
+`scripts/soc_integrate.py` is the backward-compatible CLI/import entry point.
+Its historical public symbols remain re-exported (including the legacy
+`resolve_types` version-detector injection seam). Implementation lives under
+`scripts/soc_integrate_lib/`: common text/dimension helpers, parse, preprocess,
+extract, render, portmap, build, update, checks, lint, filelist, smoke, ipxact,
+and cli. Static regexes compile at module import; map templates compile once per
+map. MCP glue stays in `mcp_server.py`. See [the tiny import example](examples/structure/README.md).
 
 ## Outputs and refresh
 
@@ -356,6 +367,70 @@ regenerate collateral when moving the checkout or changing dependencies.
 
 ## Filelists and integration boundaries
 
+`soc_flist` / `flist top.sv` writes `top.f` (or `-o FILE`) using tracked child and
+interface sources. Explicit `module_files` / `--files` replaces tracked sources.
+Optional `search_path` / `--search-path DIR` delegates discovery to sibling
+`soc-build/scripts/soc_gen_flist.py`; `recursive=False` / `--no-recursive`
+limits discovery. Active package declarations are detected and ordered with the
+existing preprocessed dependency sorter, followed by interface definitions,
+other dependencies and the top. `packages`, include directories, defines and
+library directories are retained as absolute, quoted source/option lines in the
+soc-build-compatible plain `.f` format. No lint waivers are added. Supply all
+package dependencies explicitly or via discovery. This is a selected-source
+manifest, not a full HDL dependency elaborator; keep unrelated RTL/testbenches
+out of discovery directories. Directory discovery requires the sibling skill.
+
+`integrate --flist` (MCP `flist=True`) requests this manifest alongside the top.
+`integrate --smoke-tb --cycles 10` (MCP `smoke_tb=True`) also emits an SV smoke
+harness, its `.f`, and a shell-quoted build/run recipe using
+`verilator --binary --timing -Wall`. Standalone `smoke-tb top.sv --run` / MCP
+`soc_smoke_tb(run=True)` actually builds in disposable storage, executes, and
+requires exit 0 plus the executable's `PASS: <top> smoke` line. No `obj_dir` is
+created in the checkout. See [the executable small example](examples/smoke/README.md).
+
+Clock naming follows `clk`, `clk_*`, `*_clk`, `*_clk_i`/`*_clk_o`; reset detection
+uses rst/reset tokens (including rstn/resetn). `_n`, `_ni`, `_no`, `_n_i`/`_n_o`
+and rstn/resetn forms assert low; other reset names assert high. Clocks/resets
+must be scalar bits. Resets start asserted and release after `reset_cycles`
+(default 2); all detected clocks toggle together with an even integer `period`
+(default 10). The harness finishes after `cycles` (default 10, greater than
+reset_cycles). Other inputs tie to zero, outputs are displayed, and `$finish`
+ends simulation. Combinational tops also work. Native interfaces and inouts
+require a reviewed testbench and fail explicitly. This is a wiring smoke test;
+it makes no protocol, CDC, reset-policy, DFT or functional coverage claim.
+
+## IP-XACT components
+
+`soc_ipxact_import` / `ipxact-import component.xml` reads IEEE 1685-2014/2022
+`ipxact:component` XML with stdlib `xml.etree.ElementTree`, returning the same
+module JSON model as `soc_extract`. All extraction/integration module inputs
+also accept `.xml`. Export any supported HDL module or generated top with
+`ipxact-export top.sv -o top.xml --ipxact-version 2022` (default 2014).
+See [the self-contained component and HDL implementation](examples/ipxact/README.md).
+
+The supported subset is scalar/packed wire ports, direction, ordered vector
+bounds, wire type names, public parameter names/defaults, and busInterfaces:
+name, busType VLNV, one master/slave/initiator/target mode, abstractionRef VLNV
+and logical/physical port names. Namespace prefixes are arbitrary. Native HDL
+interfaces, unpacked arrays, non-wire XML ports, sliced port maps and unsupported
+bus modes fail explicitly. Other component sections are outside this subset and
+are not round-tripped. XML is interface metadata, so lint/smoke/filelists need
+HDL implementations; replace tracked XML sources using `--files` / module_files.
+Register/address/clock/reset/DFT generators remain with the sibling skills below.
+Export uses master/slave for 2014 and equivalent initiator/target names for 2022,
+following [Accellera's schemas](https://www.accellera.org/downloads/standards/ip-xact).
+
+Known bus groups import/export as `bus_interfaces` in the module model. For an
+HDL top, supply `--bus-interfaces FILE` / MCP `bus_interfaces` naming a JSON object
+with a `bus_interfaces` list, or store that list in the integration map; generated
+top export reads it from metadata. Physical names must be actual top port names.
+Groups are explicit; protocol names are not inferred from signal spelling.
+Each group has this shape (multiple abstractions/maps are supported):
+
+```json
+{"bus_interfaces":[{"name":"control","bus_type":{"vendor":"example.org","library":"bus","name":"simple","version":"1.0"},"mode":"slave","abstraction_types":[{"abstraction_type":{"vendor":"example.org","library":"bus","name":"simple_rtl","version":"1.0"},"port_maps":[{"logical_port":"DATA","physical_port":"data_i"}]}]}]}
+```
+
 `integrate -f filelist` accepts source lines, `+incdir+`, `+define+`, `-I`, `-D`,
 `-y`, comments (`#` and `//`) and nested `-f` lists. Paths resolve against each
 filelist's directory. `update`/`remove`/top `check`/top `diff` also accept `-f`
@@ -381,11 +456,15 @@ soc_extract(verilog_file, module_name, include_dirs, defines, packages)
 soc_instantiate(verilog_file, instance_name, module_name, include_dirs, defines, packages)
 soc_wrap(verilog_file, module_name, wrapper_name, output, include_dirs, defines, packages)
 soc_csv(verilog_file, module_name, output, include_dirs, defines, packages)
-soc_integrate(module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force)
+soc_integrate(module_files, top_name, output_file, port_map, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs, force, flist, smoke_tb, cycles)
 soc_update(config_file, output, port_map, top_name, module_files, top_file, csv, track, strict, include_dirs, defines, packages, lint_config, library_dirs, vendor_dirs)
 soc_extract_map(top_file, output, verify_modules, expand, include_dirs, defines, packages)
 soc_check(verilog_file, spec_file, module_name, module_files, strict, include_dirs, defines, packages)
 soc_snapshot(verilog_file, module_name, output, format_type, version, changelog, include_dirs, defines, packages)
 soc_diff(verilog_file, snapshot_file, module_name, module_files, include_dirs, defines, packages, strict)
 soc_remove(config_file, module_name, module_files, include_dirs, defines, packages, lint_config, library_dirs, output, strict, port_map, vendor_dirs)
+soc_flist(top_file, output, module_files, search_path, recursive, include_dirs, defines, packages, library_dirs)
+soc_smoke_tb(top_file, output, module_name, cycles, reset_cycles, period, run, module_files, include_dirs, defines, packages, library_dirs)
+soc_ipxact_import(component_file, output, packages)
+soc_ipxact_export(verilog_file, output, module_name, ipxact_version, bus_interfaces, include_dirs, defines, packages)
 ```
