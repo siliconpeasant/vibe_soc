@@ -82,9 +82,8 @@ class VerilogParserTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'without direction declaration'):
             self.parse('module dut(a,b); input a; endmodule\n')
 
-    def test_function_macro_error(self):
-        with self.assertRaisesRegex(ValueError, 'function-like macro'):
-            self.parse('`define F(x) x\nmodule dut(); endmodule\n')
+    def test_unused_function_macro_define(self):
+        self.assertEqual(self.parse('`define F(x) x\nmodule dut(); endmodule\n').name, 'dut')
 
     def test_unknown_macro_error(self):
         with self.assertRaisesRegex(ValueError, 'undefined macro'):

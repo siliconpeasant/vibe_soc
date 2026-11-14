@@ -14,11 +14,13 @@ SCRIPT = Path(__file__).parent / 'scripts' / 'soc_integrate.py'
 mcp = FastMCP(name='soc-integrate', instructions='Extract, connect, check and refresh RTL interfaces.')
 
 
-def _call(command, args, include_dirs=None, defines=None, strict=False):
+def _call(command, args, include_dirs=None, defines=None, strict=False, packages=None):
     for directory in include_dirs or []:
         args += ['-I', directory]
     for define in defines or []:
         args += ['-D', define]
+    for package in packages or []:
+        args += ['--package', package]
     if strict:
         args += ['--strict']
     return run_python(SCRIPT, command, *args)
@@ -34,40 +36,41 @@ def _options(**options):
 
 @mcp.tool()
 def soc_extract(verilog_file: str, module_name: str = '', include_dirs: list[str] | None = None,
-                defines: list[str] | None = None) -> str:
+                defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Extract directions, symbolic widths, types, dimensions and parameter defaults.
 
     include_dirs searches `include files; defines contains NAME or NAME=value.
+    packages lists package/typedef files in dependency order for width resolution.
     Unsupported interface syntax reports source file, line and construct.
     """
-    return _call('extract', [verilog_file] + _options(module=module_name), include_dirs, defines)
+    return _call('extract', [verilog_file] + _options(module=module_name), include_dirs, defines, packages=packages)
 
 
 @mcp.tool()
 def soc_instantiate(verilog_file: str, instance_name: str = '', module_name: str = '',
-                    include_dirs: list[str] | None = None, defines: list[str] | None = None) -> str:
+                    include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Generate named whole-expression connections without implicit bus slicing."""
-    return _call('instantiate', [verilog_file] + _options(name=instance_name, module=module_name), include_dirs, defines)
+    return _call('instantiate', [verilog_file] + _options(name=instance_name, module=module_name), include_dirs, defines, packages=packages)
 
 
 @mcp.tool()
 def soc_wrap(verilog_file: str, module_name: str = '', wrapper_name: str = '', output: str = '',
-             include_dirs: list[str] | None = None, defines: list[str] | None = None) -> str:
+             include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Generate a passthrough wrapper preserving parameter and port type text."""
-    return _call('wrap', [verilog_file] + _options(module=module_name, name=wrapper_name, output=output), include_dirs, defines)
+    return _call('wrap', [verilog_file] + _options(module=module_name, name=wrapper_name, output=output), include_dirs, defines, packages=packages)
 
 
 @mcp.tool()
 def soc_csv(verilog_file: str, module_name: str = '', output: str = 'ports.csv',
-            include_dirs: list[str] | None = None, defines: list[str] | None = None) -> str:
+            include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Explicitly export a module's ports as CSV; integration CSV is separately opt-in."""
-    return _call('csv', [verilog_file] + _options(module=module_name, output=output), include_dirs, defines)
+    return _call('csv', [verilog_file] + _options(module=module_name, output=output), include_dirs, defines, packages=packages)
 
 
 @mcp.tool()
 def soc_integrate(module_files: list[str], top_name: str, output_file: str, port_map: str = '',
                   csv: bool = False, track: bool = False, strict: bool = False,
-                  include_dirs: list[str] | None = None, defines: list[str] | None = None) -> str:
+                  include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Generate a top and print width/driver/connectivity/heuristic CDC checks.
 
     Exact instance.port then legacy module.port keys override ordered regex/glob
@@ -80,14 +83,14 @@ def soc_integrate(module_files: list[str], top_name: str, output_file: str, port
         args += ['--csv']
     if track:
         args += ['--track']
-    return _call('integrate', args, include_dirs, defines, strict)
+    return _call('integrate', args, include_dirs, defines, strict, packages)
 
 
 @mcp.tool()
 def soc_update(config_file: str = '', output: str = '', port_map: str = '', top_name: str = '',
                module_files: list[str] | None = None, top_file: str = '', csv: bool = False,
                track: bool = False, strict: bool = False, include_dirs: list[str] | None = None,
-               defines: list[str] | None = None) -> str:
+               defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Refresh named instances from CURRENT RTL, preserving manual expressions verbatim.
 
     Pass top_file and module_files for JSON-free update. config_file also accepts
@@ -105,13 +108,13 @@ def soc_update(config_file: str = '', output: str = '', port_map: str = '', top_
         args += ['--csv']
     if track:
         args += ['--track']
-    return _call('update', args, include_dirs, defines, strict)
+    return _call('update', args, include_dirs, defines, strict, packages)
 
 
 @mcp.tool()
 def soc_extract_map(top_file: str, output: str = '', verify_modules: list[str] | None = None,
                     expand: bool = False, include_dirs: list[str] | None = None,
-                    defines: list[str] | None = None) -> str:
+                    defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Extract named connections from the top without JSON; retain original templates.
 
     expand explicitly materializes every instance.port mapping. Manual overrides
@@ -122,13 +125,13 @@ def soc_extract_map(top_file: str, output: str = '', verify_modules: list[str] |
         args += ['--verify'] + verify_modules
     if expand:
         args += ['--expand']
-    return _call('extract-map', args, include_dirs, defines)
+    return _call('extract-map', args, include_dirs, defines, packages=packages)
 
 
 @mcp.tool()
 def soc_check(verilog_file: str, spec_file: str = '', module_name: str = '',
               module_files: list[str] | None = None, strict: bool = False,
-              include_dirs: list[str] | None = None, defines: list[str] | None = None) -> str:
+              include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Check a module against a port spec, or a top's graph against CURRENT RTL.
 
     With spec_file, missing/extra/modified ports fail. Without it, supply the top
@@ -138,23 +141,23 @@ def soc_check(verilog_file: str, spec_file: str = '', module_name: str = '',
     args = [verilog_file] + ([spec_file] if spec_file else []) + _options(module=module_name)
     if module_files:
         args += ['--files'] + module_files
-    return _call('check', args, include_dirs, defines, strict)
+    return _call('check', args, include_dirs, defines, strict, packages)
 
 
 @mcp.tool()
 def soc_snapshot(verilog_file: str, module_name: str = '', output: str = '',
                  format_type: str = 'both', version: str = '1.0.0', changelog: str = '',
-                 include_dirs: list[str] | None = None, defines: list[str] | None = None) -> str:
+                 include_dirs: list[str] | None = None, defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Save JSON/CSV port metadata for optional historical diffing."""
     args = [verilog_file] + _options(module=module_name, output=output, format=format_type,
                                     version=version, changelog=changelog)
-    return _call('snapshot', args, include_dirs, defines)
+    return _call('snapshot', args, include_dirs, defines, packages=packages)
 
 
 @mcp.tool()
 def soc_diff(verilog_file: str, snapshot_file: str = '', module_name: str = '',
              module_files: list[str] | None = None, include_dirs: list[str] | None = None,
-             defines: list[str] | None = None) -> str:
+             defines: list[str] | None = None, packages: list[str] | None = None) -> str:
     """Diff a module against a snapshot, or a top's instances against CURRENT RTL.
 
     Omit snapshot_file and supply module_files for JSON-free [NEW]/[DEL]/[MOD].
@@ -162,13 +165,18 @@ def soc_diff(verilog_file: str, snapshot_file: str = '', module_name: str = '',
     args = [verilog_file] + ([snapshot_file] if snapshot_file else []) + _options(module=module_name)
     if module_files:
         args += ['--files'] + module_files
-    return _call('diff', args, include_dirs, defines)
+    return _call('diff', args, include_dirs, defines, packages=packages)
 
 
 @mcp.tool()
-def soc_remove(config_file: str, module_name: str) -> str:
+def soc_remove(config_file: str, module_name: str, module_files: list[str] | None = None,
+               include_dirs: list[str] | None = None, defines: list[str] | None = None,
+               packages: list[str] | None = None) -> str:
     """Remove a dependency from a tracked integration and regenerate its top."""
-    return _call('remove', [config_file, module_name])
+    args = [config_file, module_name]
+    if module_files:
+        args += ['--files'] + module_files
+    return _call('remove', args, include_dirs, defines, packages=packages)
 
 
 if __name__ == '__main__':

@@ -48,8 +48,24 @@ from that comment. Without prior metadata, additions/deletions are detectable;
 old internal port directions/widths cannot generally be recovered. Provide
 current RTL with `--files` (MCP `module_files`); generated source paths are an
 optional convenience. Snapshot-based `diff module.sv snapshot.json` and spec
-`check module.sv spec.json` remain available. Refresh owns generated declarations
-and instances: arbitrary hand-written top logic is outside its supported scope.
+`check module.sv spec.json` remain available. Refresh owns generated declarations and named instances. Protect custom logic
+with paired markers (multiple blocks are supported):
+
+```systemverilog
+// soc-integrate:user begin
+wire custom_enable;
+assign custom_enable = test_mode;
+// soc-integrate:user end
+```
+
+Blocks are preserved verbatim by `update` and by `integrate -o` when regenerating
+an existing top. Their contents are opaque to connection checks. Nested or
+unmatched markers fail before writing. Other unrecognized body statements,
+including extra declarations, assign/always logic and unknown module instances,
+are skipped and reported with `[unmanaged]` source lines by diff/check/update.
+**Outside protected blocks these statements are omitted on update**; move custom
+logic into a user block before refreshing. Positional/wildcard connections,
+arrays and duplicate pins on managed instances still fail explicitly.
 
 ## Maps and templates
 
@@ -86,8 +102,11 @@ and `?` (one character); other characters, including brackets, are literal.
 objects such as `{"signal":"data","clock":"clk_a","sync":true}`. Objects containing only `clock`/`sync` annotations keep the default connection;
 put annotations in `annotations` when they should apply independently of mappings.
 
-Selections (`sig[7:4]`, `sig[3]`) are explicit connections; the parent bus is
-declared large enough for numeric indices. Constants (`1'b0`, `'0`, `8'hFF`, `'1`)
+Selections (`sig[7:4]`, `sig[3]`, `sig[$1*8 +: 8]`,
+`sig[($1+1)*8-1 -: 8]`) are explicit connections. After template substitution,
+constant integer arithmetic determines the selected interval, parent bus size,
+connection width and driver overlap. Symbolic selections retain unknown widths;
+negative indices and nonpositive indexed widths fail explicitly. Constants (`1'b0`, `'0`, `8'hFF`, `'1`)
 are valid input tie-offs. `null` and `""` emit `.port()`: outputs report unused;
 inputs warn as undriven and should instead receive a constant when tied off.
 Generated empty connections are individually enclosed in Verilator
@@ -96,7 +115,17 @@ acknowledge the explicit mapping without suppressing the soc-integrate checks.
 Constants on outputs/inouts are errors. No automatic truncation/extension or
 implicit slicing is performed.
 
-Unmapped same-name inputs share an external input only when their normalized
+Inout pads never auto-share. Bus-like ports (`tl_*`, `*_req`/`*_rsp` including
+`_i`/`_o` suffixes, names containing `h2d`/`d2h`, `axi_`/`apb_`/`ahb_` prefixes)
+and package/user/struct value types are also excluded from automatic sharing.
+They receive separate instance/module-prefixed nets, with `auto-share-blocked`
+messages when same-name candidates exist. To opt in, map each endpoint explicitly
+to the same signal, e.g. `{"mappings":{"u_a.tl_i":"host","u_b.tl_i":"host"}}`.
+Sharing multiple typed/bus inputs this way produces `explicit-bus-share` so the
+protocol intent stays visible. Scalar clock/reset inputs retain auto-sharing.
+Native interface/modport connections retain their existing interface rules.
+
+Other unmapped same-name inputs share an external input only when their normalized
 resolved widths, type text and unpacked dimensions match. One compatible output
 plus inputs connects through an internal net. Normalization treats implicit
 wires and wire/reg/logic storage as the same four-state value type; signedness
@@ -147,7 +176,8 @@ clock/reset-domain and synchronizer intent with the relevant signoff tools.
 
 Supports ANSI continuations, non-ANSI ordered headers plus body direction
 statements, wire/reg/logic, signedness, multiple names, packed/unpacked dimensions,
-output storage redeclarations, header/body parameters and body localparams.
+output storage redeclarations, header/body parameters, parameters with unpacked dimensions, header package imports,
+and body localparams.
 Extraction preserves symbolic widths and defaults. Generated concrete dimensions
 simplify constant integer arithmetic (`[WIDTH-1:0]` with WIDTH=8 becomes `[7:0]`);
 symbolic dimensions remain symbolic. Wrappers forward public parameters;
@@ -163,14 +193,38 @@ Modports are retained in child metadata; the interface declaration uses the base
 type. Parameterized interface declarations, interface arrays, inline aggregates,
 default-valued ports, positional/wildcard instance connections and instance
 arrays/multiple instances per statement are unsupported and fail explicitly.
-The parser is not a complete SystemVerilog elaborator; it does not parse package
-bodies to compute typedef widths or determine interface parameters. Unsupported
+The parser is not a complete SystemVerilog elaborator. With ordered package
+sources it asks Verilator to elaborate an isolated public header through
+`--xml-only` (the width-resolved AST in 5.032; `--json-only` runs before width
+resolution). This resolves package typedef/packed struct bit counts and package
+constants in packed dimensions without needing child implementations. Original
+type spelling remains in metadata. Unqualified imported port types receive
+package-qualified declarations in the parent; with multiple wildcard imports,
+qualify the port type explicitly in the source (otherwise extraction fails with
+a location and explanation). Resolved counts describe default parameters;
+nontrivial overrides of named types conservatively retain unknown widths.
+Package files must include all transitive package dependencies in compile order.
+Without packages, named types remain symbolic and produce `width-unknown` checks.
+Parameterized interfaces, inline structs/aggregates, type parameters, default
+port values and full behavioral elaboration remain outside the parser's scope. Unsupported
 port declarations report a file, line and construct rather than dropping ports.
 
-All RTL-reading tools accept `include_dirs`/`defines` (CLI repeated `-I dir`,
-`-D NAME[=value]`, `+incdir+dir+dir`, `+define+NAME=value+NAME`). Include lookup
-searches the containing directory then include directories. Object-like defines,
-macro substitution, nested ifdef/ifndef/elsif/else/endif and undef are supported.
-Missing includes, undefined/recursive/function-like macros, malformed conditionals
-and unsupported interface syntax are explicit errors. This is not a replacement
-for a full compiler preprocessor.
+All RTL-reading MCP tools accept `include_dirs`, `defines` and `packages`.
+CLI equivalents are repeated `-I dir`, `-D NAME[=value]`, `--package file.sv`
+(in dependency order), plus `+incdir+dir+dir` / `+define+NAME=value+NAME`.
+When Verilator is on PATH, extraction uses `verilator -E --relative-includes`
+with those options and parses its output. Retained `line directives map each port
+and diagnostic to the original source file and absolute line, including includes.
+Function-like macros in headers and bodies are handled by Verilator.
+
+Without Verilator the built-in preprocessor supports includes, object macros,
+nested conditionals and undef. Function-like defines and body calls are skipped;
+a function-like macro in a port/parameter header fails with a source location and
+an instruction to install Verilator. Missing includes, undefined object macros,
+recursive expansion and malformed conditionals fail explicitly. The fallback
+cannot resolve package typedef widths or elaborate function-like header macros.
+
+```bash
+python3 scripts/soc_integrate.py extract peripheral.sv -I rtl/prim \
+  --package rtl/common_pkg.sv --package rtl/peripheral_reg_pkg.sv -D FEATURE=1
+```
