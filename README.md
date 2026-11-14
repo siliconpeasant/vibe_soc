@@ -461,7 +461,7 @@ chip/top/de/rtl/vendor/opentitan/
 chip/top/de/rtl/generated/opentitan_fusesoc/
 ```
 
-集成应通过 `soc-integrate` 工具生成和刷新，复杂连接使用显式 port map。不要手工改自动生成的实例连接；子模块端口变化后用配置刷新并重新检查。
+集成应通过 `soc-integrate` 工具生成和刷新，复杂连接使用显式 port map。不要手工改自动生成的实例连接；子模块端口变化后可直接从 top 和当前 RTL 刷新/diff，无需 JSON。CSV (`--csv`) 和追踪 JSON (`--track`) 独立按需启用、默认关闭。总线/结构体和 inout pad 需要显式映射才能共享；自定义逻辑放在 `soc-integrate:user begin/end` 注释区域，刷新会保留。
 
 ## 仿真、回归与覆盖率
 
