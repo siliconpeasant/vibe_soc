@@ -33,6 +33,7 @@ async def main():
             initialized = await session.initialize()
             listing = await session.list_tools()
             tools = {tool.name: tool.inputSchema for tool in listing.tools}
+            assert len(tools) == 11, tools
             assert 'soc_check' in tools, tools
             skill_root = __import__('pathlib').Path(sys.argv[2]).parent
             docs = (skill_root/'SKILL.md').read_text()
@@ -59,6 +60,12 @@ async def main():
                 assert 'library_dirs' in tools[name]['properties']
             for schema in tools.values():
                 assert 'packages' in schema['properties']
+                assert 'library_dirs' in schema['properties']
+            assert tools['soc_integrate']['properties']['chip']['default'] is False
+            for flag in ('domains', 'irq_json', 'irq_header'):
+                assert tools['soc_integrate']['properties'][flag]['default'] == ''
+            for flag in ('chip', 'domains', 'port_map'):
+                assert flag in tools['soc_check']['properties']
             result = await session.call_tool('soc_extract', {'verilog_file': sys.argv[3]})
             assert not result.isError, result
             payload = json.loads(result.content[0].text)
@@ -100,6 +107,12 @@ async def main():
             assert peripheral['param_dims']['Policy'] == '[NumRegs]', peripheral
             if shutil.which('verilator'):
                 assert next(p for p in peripheral['ports'] if p['name']=='tl_i')['bits'] == 8, peripheral
+            body_fixture = fixture.parent/'batch_a'
+            result = await session.call_tool('soc_extract', dict(verilog_file=str(body_fixture/'body_types.sv'),
+                library_dirs=[str(body_fixture/'lib')]))
+            assert not result.isError, result
+            body_data = json.loads(result.content[0].text)
+            assert body_data['ports'][1]['bits'] == 8, body_data
             # Batch 2 keeps the protocol schema/call order while sorting packages.
             base = out.parent/'z_pkg.sv'
             base.write_text('package z_pkg; typedef logic [8:0] t; endpackage\n')
@@ -118,6 +131,32 @@ async def main():
             result = await session.call_tool('soc_diff', dict(verilog_file=str(out), module_files=[str(source)], strict=True))
             assert result.isError and '[REN?] u_dut.y -> u_dut.renamed' in result.content[0].text, result
             source.write_text(original)
+            batch_b = fixture.parent/'batch_b'
+            irq_map = out.parent/'irq-map.json'
+            irq_map.write_text(json.dumps(dict(
+                pads=['u_irq_sink.irq_o'], mappings={'u_irq_source.event_i': "'0"},
+                irq={'target':'u_irq_sink.intr_src_i', 'sources':['u_irq_source.intr_*_o']})))
+            manifest = out.parent/'domains.json'
+            manifest.write_text(json.dumps([dict(name='main', clk='clock', rst='reset_n', top=True)]))
+            irq_top = out.parent/'irq_top.sv'
+            table, header = out.parent/'irq.json', out.parent/'irq.h'
+            result = await session.call_tool('soc_integrate', dict(
+                module_files=[str(batch_b/'irq_source.sv'), str(batch_b/'irq_sink.sv')],
+                top_name='irq_top', output_file=str(irq_top), port_map=str(irq_map), chip=True,
+                domains=str(manifest), irq_json=str(table), irq_header=str(header), strict=True))
+            assert not result.isError, result
+            assert len(json.loads(table.read_text())['irqs']) == 3
+            assert '#define IRQ_TOP_IRQ_COUNT 3' in header.read_text()
+            assert '.clk_i(clock)' in irq_top.read_text()
+            result = await session.call_tool('soc_check', dict(verilog_file=str(irq_top),
+                module_files=[str(batch_b/'irq_source.sv'), str(batch_b/'irq_sink.sv')],
+                chip=True, domains=str(manifest), port_map=str(irq_map), strict=True))
+            assert not result.isError, result
+            irq_map.write_text(json.dumps(dict(chip=True, pads=['does_not_exist'])))
+            result = await session.call_tool('soc_check', dict(verilog_file=str(irq_top),
+                module_files=[str(batch_b/'irq_source.sv'), str(batch_b/'irq_sink.sv')],
+                port_map=str(irq_map)))
+            assert result.isError and 'pad-unmatched' in result.content[0].text, result
             print(json.dumps({'initialized': initialized.serverInfo.name,
                               'tools': sorted(tools), 'call': payload['module_name']}))
 asyncio.run(main())

@@ -27,11 +27,11 @@ class RemainingLimitations(unittest.TestCase):
   reg q;
   wire h;
   wire g;
-  assign w = dut_a;
+  assign w = u_dut_a;
   always_comb begin : comb
     c = w;
   end
-  always_ff @(posedge dut_a) begin : seq
+  always_ff @(posedge u_dut_a) begin : seq
     q <= c;
   end
   always @(q) $display("q=%b", q);
@@ -84,8 +84,8 @@ class RemainingLimitations(unittest.TestCase):
         dut = self.source('dut', 'module dut(input a, output y); assign y=a; endmodule')
         top = self.root/'top.sv'
         self.cli('integrate', dut, '-n', 'top', '-o', top)
-        custom = "  wire custom = dut_a;  /* keep initializer */\n"
-        code = top.read_text().replace('.a(dut_a)', '.a(custom)').replace('.y(dut_y)', '// custom pin comment\n        .y(dut_y)')
+        custom = "  wire custom = u_dut_a;  /* keep initializer */\n"
+        code = top.read_text().replace('.a(u_dut_a)', '.a(custom)').replace('.y(u_dut_y)', '// custom pin comment\n        .y(u_dut_y)')
         code = code.replace('endmodule\n', custom+'endmodule\n')
         preamble = '`default_nettype none\n// user file header\n'
         suffix = '\n`default_nettype wire\n'

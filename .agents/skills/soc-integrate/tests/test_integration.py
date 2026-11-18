@@ -73,8 +73,8 @@ class IntegrationTest(unittest.TestCase):
         self.assertIn('auto-share-incompatible', result.stderr)
         top = MODULE.extract_modules(self.root / 'top.sv')[0]
         self.assertEqual([n for _, _, n in top.ports],
-                         ['non_ansi_a', 'non_ansi_y', 'pkg_typed_a', 'pkg_typed_y'])
-        self.assertEqual(top.details['pkg_typed_a']['type'], 'pkg::word_t')
+                         ['u_non_ansi_a', 'u_non_ansi_y', 'u_pkg_typed_a', 'u_pkg_typed_y'])
+        self.assertEqual(top.details['u_pkg_typed_a']['type'], 'pkg::word_t')
         checks = json.loads((self.root / 'top.integrate.json').read_text())['checks']
         self.assertTrue(any(c['code'] == 'auto-share-incompatible' for c in checks))
         with (self.root / 'top.integrate.csv').open() as stream:
@@ -95,14 +95,14 @@ class IntegrationTest(unittest.TestCase):
                 result = self.cli('integrate', a, b, '-n', 'top', '-o', 'top.sv')
                 self.assertIn('auto-share-incompatible', result.stderr)
                 ports = MODULE.extract_modules(self.root / 'top.sv')[0].ports
-                self.assertEqual([n for _, _, n in ports], ['a_a', 'b_a'])
+                self.assertEqual([n for _, _, n in ports], ['u_a_a', 'u_b_a'])
         # Equivalent defaults, storage spelling and whitespace still auto-share.
         a = self.source('a', 'module a #(parameter N=8)(input wire [N-1:0] x, output y); assign y=&x; endmodule')
         b = self.source('b', 'module b(input logic unsigned [ 7 : 0 ] x, output y); assign y=&x; endmodule')
         result = self.cli('integrate', a, b, '-n', 'top', '-o', 'top.sv')
         self.assertIn('Checks: 0 warning(s)', result.stderr)
         self.assertEqual([n for _, _, n in MODULE.extract_modules(self.root / 'top.sv')[0].ports],
-                         ['x', 'a_y', 'b_y'])
+                         ['x', 'u_a_y', 'u_b_y'])
         self.lint(a, b, self.root / 'top.sv')
 
     def test_intentional_empty_pins_have_local_lint_comments(self):
@@ -130,15 +130,15 @@ class IntegrationTest(unittest.TestCase):
         top = self.root / 'top.sv'
         self.cli('integrate', counter, other, '-n', 'top', '-o', top)
         original_names = [n for _, _, n in MODULE.extract_modules(top)[0].ports]
-        self.assertEqual(original_names, ['counter_en', 'counter_gone', 'counter_y', 'other_x', 'other_z'])
+        self.assertEqual(original_names, ['u_counter_en', 'u_counter_gone', 'u_counter_y', 'u_other_x', 'u_other_z'])
         # Expression dependencies are discovered after ordinary connections.
-        top.write_text(top.read_text().replace('.en(counter_en)', ".en( counter_en & 1'b1 )"))
+        top.write_text(top.read_text().replace('.en(u_counter_en)', ".en( u_counter_en & 1'b1 )"))
         counter.write_text('module counter(input new_i, output new_o, output y, input en); assign y=en & new_i; assign new_o=en; endmodule\n')
         self.cli('update', top, '--files', counter, other)
         updated_names = [n for _, _, n in MODULE.extract_modules(top)[0].ports]
-        expected = [n for n in original_names if n != 'counter_gone'] + ['counter_new_i', 'counter_new_o']
+        expected = [n for n in original_names if n != 'u_counter_gone'] + ['u_counter_new_i', 'u_counter_new_o']
         self.assertEqual(updated_names, expected)
-        self.assertIn(".en( counter_en & 1'b1 )", top.read_text())
+        self.assertIn(".en( u_counter_en & 1'b1 )", top.read_text())
         self.lint(counter, other, top)
         self.cli('update', top, '--files', counter, other)
         self.assertEqual([n for _, _, n in MODULE.extract_modules(top)[0].ports], expected)
@@ -255,7 +255,7 @@ class IntegrationTest(unittest.TestCase):
         mod = self.source('dut', 'module dut #(parameter WIDTH=8)(input [WIDTH-1:0] a, input enable, output [WIDTH-1:0] y); assign y=enable ? a : 0; endmodule')
         self.cli('integrate', mod, '-n', 'top', '-o', 'top.sv')
         top = self.root / 'top.sv'
-        code = top.read_text().replace('.a(dut_a)', '.a( { dut_a[7:4], /* keep ), [ , */ dut_a[3:0] } )')
+        code = top.read_text().replace('.a(u_dut_a)', '.a( { u_dut_a[7:4], /* keep ), [ , */ u_dut_a[3:0] } )')
         code = code.replace('dut  u_dut (', 'dut #(.WIDTH(8)) u_dut (')
         top.write_text(code)
         mod.write_text('module dut #(parameter WIDTH=8)(input [WIDTH-1:0] a, input extra, output [WIDTH-1:0] y); assign y=extra ? a : 0; endmodule\n')
@@ -265,16 +265,16 @@ class IntegrationTest(unittest.TestCase):
         result = self.cli('update', top, '--files', mod)
         self.assertIn('[NEW] u_dut.extra', result.stdout)
         updated = top.read_text()
-        self.assertIn('.a( { dut_a[7:4], /* keep ), [ , */ dut_a[3:0] } )', updated)
+        self.assertIn('.a( { u_dut_a[7:4], /* keep ), [ , */ u_dut_a[3:0] } )', updated)
         self.assertIn('#(.WIDTH(8))', updated)
         self.assertNotIn('.enable(', updated)
-        self.assertNotIn('input wire dut_enable', updated)
+        self.assertNotIn('input wire u_dut_enable', updated)
         self.assertTrue(updated.endswith('\n'))
         self.assertFalse((self.root / 'top.integrate.json').exists())
         self.assertFalse((self.root / 'top.integrate.csv').exists())
         self.lint(mod, top)
         extracted = json.loads(self.cli('extract-map', top).stdout)
-        self.assertEqual(extracted['mappings']['u_dut.a'], ' { dut_a[7:4], /* keep ), [ , */ dut_a[3:0] } ')
+        self.assertEqual(extracted['mappings']['u_dut.a'], ' { u_dut_a[7:4], /* keep ), [ , */ u_dut_a[3:0] } ')
 
     def test_update_width_direction_warning_and_sidecars(self):
         mod = self.source('dut', 'module dut(input a, output y); assign y=a; endmodule')
@@ -346,7 +346,7 @@ class IntegrationTest(unittest.TestCase):
         pkg = self.source('pkg', 'package pkg; typedef logic [7:0] word_t; endpackage')
         mod = self.source('dut', 'module dut(input pkg::word_t a, output pkg::word_t y); assign y=a; endmodule')
         self.cli('integrate', mod, '-n', 'top', '-o', 'top.sv')
-        self.assertIn('input pkg::word_t dut_a', (self.root / 'top.sv').read_text())
+        self.assertIn('input pkg::word_t u_dut_a', (self.root / 'top.sv').read_text())
         self.lint(pkg, mod, self.root / 'top.sv')
         mod.write_text('module dut(a,y); input wire signed [7:0] a; output [7:0] y; reg [7:0] y; always @* y=a; endmodule\n')
         self.cli('integrate', mod, '-n', 'top', '-o', 'top.sv')
@@ -428,9 +428,9 @@ class IntegrationTest(unittest.TestCase):
         mod = self.source('dut', 'module dut(input [7:0] a, output [7:0] y); assign y=a; endmodule')
         self.cli('integrate', mod, '-n', 'top', '-o', 'top.sv')
         top = self.root / 'top.sv'
-        top.write_text(top.read_text().replace('.a(dut_a)', ".a( (dut_a ^ 8'hAA) )"))
+        top.write_text(top.read_text().replace('.a(u_dut_a)', ".a( (u_dut_a ^ 8'hAA) )"))
         self.cli('update', top, '--files', mod)
-        self.assertIn(".a( (dut_a ^ 8'hAA) )", top.read_text())
+        self.assertIn(".a( (u_dut_a ^ 8'hAA) )", top.read_text())
         self.lint(mod, top)
 
 if __name__ == '__main__':
