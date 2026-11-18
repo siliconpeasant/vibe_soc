@@ -74,7 +74,7 @@ class VerilogParserTest(unittest.TestCase):
             self.parse('`include "absent.vh"\nmodule dut(); endmodule\n')
 
     def test_unsupported_ports_are_errors(self):
-        for port in ('input struct packed {logic a;} x', 'input [3:0] x = 0', '.x(a)', 'input a garbage extra', 'interface bus x'):
+        for port in ('input struct packed {logic a;} x', 'input [3:0] x = 0', '.x(a)', 'input a garbage extra', 'interface bus x', 'bus_if #(.W(32)).mp s'):
             with self.subTest(port=port), self.assertRaisesRegex(ValueError, r'dut.sv:\d+: unsupported'):
                 self.parse(f'module dut(\n{port}\n); endmodule\n')
 
@@ -82,9 +82,8 @@ class VerilogParserTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'without direction declaration'):
             self.parse('module dut(a,b); input a; endmodule\n')
 
-    def test_function_macro_error(self):
-        with self.assertRaisesRegex(ValueError, 'function-like macro'):
-            self.parse('`define F(x) x\nmodule dut(); endmodule\n')
+    def test_unused_function_macro_define(self):
+        self.assertEqual(self.parse('`define F(x) x\nmodule dut(); endmodule\n').name, 'dut')
 
     def test_unknown_macro_error(self):
         with self.assertRaisesRegex(ValueError, 'undefined macro'):
@@ -104,9 +103,11 @@ class VerilogParserTest(unittest.TestCase):
         self.assertEqual(m.details['q']['type'], 'reg')
         self.assertEqual(m.details['r']['type'], 'reg')
 
-    def test_unsupported_interface_array(self):
-        with self.assertRaisesRegex(ValueError, 'interface array'):
-            self.parse('module dut(bus_if.slave s [2]); endmodule\n')
+    def test_interface_arrays(self):
+        for dims in ('[2]', '[0:N-1]'):
+            m = self.parse(f'module dut #(parameter N=2)(bus_if.slave s {dims}); endmodule\n')
+            self.assertEqual(m.details['s']['unpacked'], dims)
+            self.assertEqual(m.ports[0][0], 'interface')
 
     def test_clog2_parameter(self):
         self.assertEqual(MODULE.resolve_param_width('[N-1:0]', [('DEPTH', '16', ''), ('N', '$clog2(DEPTH)', '')]), '[3:0]')

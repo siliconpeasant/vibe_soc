@@ -55,7 +55,7 @@ class IntegrationTest(unittest.TestCase):
     def test_default_no_sidecars_and_clean_lint(self):
         a, b, mapping = self.pair()
         result = self.cli('integrate', a, b, '--map', mapping, '-n', 'top', '-o', 'top.sv')
-        self.assertIn('Checks: 0 warning(s)', result.stdout)
+        self.assertIn('Checks: 0 warning(s)', result.stderr)
         self.assertFalse((self.root / 'top.integrate.json').exists())
         self.assertFalse((self.root / 'top.integrate.csv').exists())
         code = (self.root / 'top.sv').read_text()
@@ -70,7 +70,7 @@ class IntegrationTest(unittest.TestCase):
         scalar = self.source('non_ansi', 'module non_ansi(a,y); input a; output y; assign y=a; endmodule')
         typed = self.source('pkg_typed', 'module pkg_typed(input pkg::word_t a, output wire y); assign y=&a; endmodule')
         result = self.cli('integrate', scalar, typed, '-n', 'top', '-o', 'top.sv', '--track', '--csv')
-        self.assertIn('auto-share-incompatible', result.stdout)
+        self.assertIn('auto-share-incompatible', result.stderr)
         top = MODULE.extract_modules(self.root / 'top.sv')[0]
         self.assertEqual([n for _, _, n in top.ports],
                          ['non_ansi_a', 'non_ansi_y', 'pkg_typed_a', 'pkg_typed_y'])
@@ -93,14 +93,14 @@ class IntegrationTest(unittest.TestCase):
                 a = self.source('a', f'module a({left}); endmodule')
                 b = self.source('b', f'module b({right}); endmodule')
                 result = self.cli('integrate', a, b, '-n', 'top', '-o', 'top.sv')
-                self.assertIn('auto-share-incompatible', result.stdout)
+                self.assertIn('auto-share-incompatible', result.stderr)
                 ports = MODULE.extract_modules(self.root / 'top.sv')[0].ports
                 self.assertEqual([n for _, _, n in ports], ['a_a', 'b_a'])
         # Equivalent defaults, storage spelling and whitespace still auto-share.
         a = self.source('a', 'module a #(parameter N=8)(input wire [N-1:0] x, output y); assign y=&x; endmodule')
         b = self.source('b', 'module b(input logic unsigned [ 7 : 0 ] x, output y); assign y=&x; endmodule')
         result = self.cli('integrate', a, b, '-n', 'top', '-o', 'top.sv')
-        self.assertIn('Checks: 0 warning(s)', result.stdout)
+        self.assertIn('Checks: 0 warning(s)', result.stderr)
         self.assertEqual([n for _, _, n in MODULE.extract_modules(self.root / 'top.sv')[0].ports],
                          ['x', 'a_y', 'b_y'])
         self.lint(a, b, self.root / 'top.sv')
@@ -109,8 +109,8 @@ class IntegrationTest(unittest.TestCase):
         mod = self.source('dut', 'module dut(input a, input optional_i, output y, output optional_o); assign y=a ^ optional_i; assign optional_o=a; endmodule')
         mapping = self.mapping({'mappings': {'dut.optional_i': '', 'dut.optional_o': None}})
         result = self.cli('integrate', mod, '--map', mapping, '-n', 'top', '-o', 'top.sv')
-        self.assertIn('undriven-input', result.stdout)
-        self.assertIn('unused-output', result.stdout)
+        self.assertIn('undriven-input', result.stderr)
+        self.assertIn('unused-output', result.stderr)
         code = (self.root / 'top.sv').read_text()
         self.assertEqual(code.count('// verilator lint_off PINCONNECTEMPTY'), 2)
         self.assertEqual(code.count('// verilator lint_on PINCONNECTEMPTY'), 2)
@@ -120,8 +120,8 @@ class IntegrationTest(unittest.TestCase):
                       '        // verilator lint_on PINCONNECTEMPTY', code)
         self.lint(mod, self.root / 'top.sv')
         result = self.cli('update', 'top.sv', '--files', mod)
-        self.assertIn('undriven-input', result.stdout)
-        self.assertIn('unused-output', result.stdout)
+        self.assertIn('undriven-input', result.stderr)
+        self.assertIn('unused-output', result.stderr)
         self.lint(mod, self.root / 'top.sv')
 
     def test_update_preserves_surviving_top_port_order_and_appends_new(self):
@@ -164,14 +164,14 @@ class IntegrationTest(unittest.TestCase):
     def test_width_warning_no_silent_slice_and_strict(self):
         a, b, mapping = self.pair(4)
         result = self.cli('integrate', a, b, '--map', mapping, '-o', 'top.sv', '-n', 'top', '--csv', '--track')
-        self.assertIn('width mismatch', result.stdout)
+        self.assertIn('width mismatch', result.stderr)
         self.assertIn('.data_i(q)', (self.root / 'top.sv').read_text())
         self.assertNotIn('q[3:0]', (self.root / 'top.sv').read_text())
         checks = json.loads((self.root / 'top.integrate.json').read_text())['checks']
         self.assertEqual(checks[0]['code'], 'width-mismatch')
         self.assertIn('width-mismatch', (self.root / 'top.integrate.csv').read_text())
         result = self.cli('integrate', a, b, '--map', mapping, '-o', 'strict.sv', '--strict', ok=False)
-        self.assertIn('width mismatch', result.stdout)
+        self.assertIn('width mismatch', result.stderr)
         self.assertIn('strict check failed', result.stderr)
         self.assertFalse((self.root / 'strict.sv').exists())
 
@@ -209,47 +209,47 @@ class IntegrationTest(unittest.TestCase):
         code = (self.root / 'top.sv').read_text()
         self.assertIn('.y()', code)
         self.assertIn('.a(sig[7:4])', code)
-        self.assertNotIn('width mismatch', result.stdout)
-        self.assertIn('unused-output', result.stdout)
+        self.assertNotIn('width mismatch', result.stderr)
+        self.assertIn('unused-output', result.stderr)
         data['mappings']['dut.f'] = ''
         result = self.cli('integrate', mod, '--map', self.mapping(data), '-o', 'top.sv')
-        self.assertIn('undriven-input', result.stdout)
-        self.cli('integrate', mod, '--map', self.mapping(data), '--strict', ok=False)
+        self.assertIn('undriven-input', result.stderr)
+        self.cli('integrate', mod, '-n', 'top', '--map', self.mapping(data), '--strict', ok=False)
 
     def test_multiple_driver_and_disjoint_slices(self):
         a = self.source('a', 'module a(input x, output y); assign y=x; endmodule')
         b = self.source('b', 'module b(input x, output y); assign y=x; endmodule')
         mapping = self.mapping({'mappings': {'a.y': 'q', 'b.y': 'q'}})
         result = self.cli('integrate', a, b, '--map', mapping, '-o', 'top.sv')
-        self.assertIn('multiple-driver', result.stdout)
-        self.cli('integrate', a, b, '--map', mapping, '--strict', ok=False)
+        self.assertIn('multiple-driver', result.stderr)
+        self.cli('integrate', a, b, '-n', 'top', '--map', mapping, '--strict', ok=False)
         mapping = self.mapping({'mappings': {'a.y': 'q[0]', 'b.y': 'q[1]'}})
         result = self.cli('integrate', a, b, '--map', mapping, '-n', 'top', '-o', 'top.sv')
-        self.assertNotIn('multiple-driver', result.stdout)
+        self.assertNotIn('multiple-driver', result.stderr)
         self.lint(a, b, self.root / 'top.sv')
 
     def test_cdc_and_synchronizer_annotations(self):
         a = self.source('a', 'module a(input clk_a, input x, output reg q); always @(posedge clk_a) q<=x; endmodule')
         b = self.source('b', 'module b(input b_clk, input q, output reg y); always @(posedge b_clk) y<=q; endmodule')
         result = self.cli('integrate', a, b, '-n', 'top', '-o', 'top.sv')
-        self.assertIn('CDC crossing', result.stdout)
+        self.assertIn('CDC crossing', result.stderr)
         for extra in ({'annotations': {'u_b.q': {'sync': True}}}, {'synchronizers': ['u_b.q']},
                       {'mappings': {'b.q': {'signal': 'q', 'sync': True}}}):
             result = self.cli('integrate', a, b, '--map', self.mapping(extra), '-o', 'top.sv')
-            self.assertNotIn('CDC crossing', result.stdout)
+            self.assertNotIn('CDC crossing', result.stderr)
         data = {'domains': {'u_a': 'common', 'u_b': {'clock': 'common'}}}
         result = self.cli('integrate', a, b, '--map', self.mapping(data), '-o', 'top.sv')
-        self.assertNotIn('CDC crossing', result.stdout)
-        self.cli('integrate', a, b, '--strict', ok=False)
+        self.assertNotIn('CDC crossing', result.stderr)
+        self.cli('integrate', a, b, '-n', 'top', '--strict', ok=False)
 
     def test_per_port_clock_annotations_and_multiclock(self):
         a = self.source('a', 'module a(input clk_a, input x, output q); assign q=clk_a & x; endmodule')
         b = self.source('b', 'module b(input clk_b, input other_clk, input q, output y); assign y=q & clk_b & other_clk; endmodule')
         result = self.cli('integrate', a, b, '-o', 'top.sv')
-        self.assertIn('cdc-unknown', result.stdout)
+        self.assertIn('cdc-unknown', result.stderr)
         mapping = self.mapping({'annotations': {'u_a.q': {'clock': 'clk_a'}, 'u_b.q': {'clock': 'clk_b'}}})
         result = self.cli('integrate', a, b, '--map', mapping, '-o', 'top.sv')
-        self.assertIn('CDC crossing', result.stdout)
+        self.assertIn('CDC crossing', result.stderr)
 
     def test_update_no_json_add_remove_and_preserve_expression(self):
         mod = self.source('dut', 'module dut #(parameter WIDTH=8)(input [WIDTH-1:0] a, input enable, output [WIDTH-1:0] y); assign y=enable ? a : 0; endmodule')
@@ -284,7 +284,7 @@ class IntegrationTest(unittest.TestCase):
         self.assertIn('[MOD] u_dut.a: width', result.stdout)
         self.assertIn('[MOD] u_dut.y: direction', result.stdout)
         result = self.cli('update', 'top.sv', '--files', mod, '--csv', '--track')
-        self.assertIn('port-change', result.stdout)
+        self.assertIn('port-change', result.stderr)
         self.assertTrue((self.root / 'top.integrate.csv').exists())
         self.assertTrue((self.root / 'top.integrate.json').exists())
         self.assertTrue(json.loads((self.root / 'top.integrate.json').read_text())['checks'])
@@ -313,7 +313,7 @@ class IntegrationTest(unittest.TestCase):
         a, b, mapping = self.pair(4)
         self.cli('integrate', a, b, '--map', mapping, '-n', 'top', '-o', 'top.sv')
         result = self.cli('check', 'top.sv', '--files', a, b)
-        self.assertIn('width mismatch', result.stdout)
+        self.assertIn('width mismatch', result.stderr)
         self.cli('check', 'top.sv', '--files', a, b, '--strict', ok=False)
 
     def test_cli_include_define_forms(self):
@@ -402,13 +402,13 @@ class IntegrationTest(unittest.TestCase):
         self.cli('wrap', mod, '-n', 'top', '-o', 'top.sv')
         self.lint(mod, self.root / 'top.sv')
         mod.write_text('module dut(input logic signed [3:0] a [0:1], output logic signed [3:0] y [0:1]); assign y=a; endmodule\n')
-        self.cli('integrate', mod, '-n', 'top', '-o', 'top.sv')
+        self.cli('integrate', mod, '-n', 'top', '-o', 'top.sv', '--force')
         self.lint(mod, self.root / 'top.sv')
 
     def test_invalid_template_capture_and_missing_include_cli(self):
         mod = self.source('dut', 'module dut(input a); endmodule')
         mapping = self.mapping({'templates': [{'regex': 'u_dut.a', 'value': '$2'}]})
-        self.assertIn('missing capture $2', self.cli('integrate', mod, '--map', mapping, ok=False).stderr)
+        self.assertIn('missing capture $2', self.cli('integrate', mod, '-n', 'top', '--map', mapping, ok=False).stderr)
         mod.write_text('`include "missing.vh"\nmodule dut(); endmodule\n')
         self.assertIn('missing include', self.cli('extract', mod, ok=False).stderr)
 
@@ -417,7 +417,7 @@ class IntegrationTest(unittest.TestCase):
         b = self.source('b', 'module b(input clk, input q, output y); assign y=clk & q; endmodule')
         data = {'mappings': {'b.q': {'clock': 'clk', 'sync': True}}}
         result = self.cli('integrate', a, b, '--map', self.mapping(data), '-n', 'top', '-o', 'top.sv')
-        self.assertIn('Checks: 0 warning(s)', result.stdout)
+        self.assertIn('Checks: 0 warning(s)', result.stderr)
         self.assertIn('.q(q)', (self.root / 'top.sv').read_text())
         self.cli('extract-map', 'top.sv', '-o', 'extracted.json')
         extracted = json.loads((self.root / 'extracted.json').read_text())
